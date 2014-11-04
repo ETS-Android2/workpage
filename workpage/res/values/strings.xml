@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Workpage</string>
+    <string name="about_section_name">About</string>
+    <string name="app_description">Task manager</string>
+    <string name="app_version_1">Version:</string>
+    <string name="app_version_2">0.1</string>
+    <string name="app_author_1">Author:</string>
+    <string name="app_author_2">Jose A. Jimenez</string>
+    <string name="app_license_1">License:</string>
+    <string name="app_license_2">GPL 3.0</string>
 </resources>
