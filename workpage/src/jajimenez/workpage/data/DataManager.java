@@ -104,6 +104,6 @@ public class DataManager extends SQLiteOpenHelper {
         db.execSQL(taskTagsTableSql);
         db.execSQL(workspacesTableSql);
 
-        this.onCreate(db);
+        onCreate(db);
     }
 }
