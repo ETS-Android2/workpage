@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Task extends Entity {
-    private int workspaceId;
+    private long workspaceId;
     private String title;
     private String description;
     private String startDateTime;
     private String endDateTime;
     private boolean done;
 
-    private List<Integer> tags;
-    private List<Integer> subtasks;
-    private List<Integer> requiredTasks;
+    private List<Long> tags;
+    private List<Long> subtasks;
+    private List<Long> requiredTasks;
 
     public Task() {
         super();
@@ -25,12 +25,12 @@ public class Task extends Entity {
         this.endDateTime = null;
         this.done = false;
 
-        this.tags = new ArrayList<Integer>();
-        this.subtasks = new ArrayList<Integer>();
-        this.requiredTasks = new ArrayList<Integer>();
+        this.tags = new ArrayList<Long>();
+        this.subtasks = new ArrayList<Long>();
+        this.requiredTasks = new ArrayList<Long>();
     }
 
-    public Task(int workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Integer> tags, List<Integer> subtasks, List<Integer> requiredTasks) {
+    public Task(long workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
         super();
 
         this.workspaceId = workspaceId;
@@ -45,7 +45,7 @@ public class Task extends Entity {
         this.requiredTasks = requiredTasks;
     }
 
-    public Task(int id, int workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Integer> tags, List<Integer> subtasks, List<Integer> requiredTasks) {
+    public Task(long id, long workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
         super(id);
         this.workspaceId = workspaceId;
         this.title = title;
@@ -59,7 +59,7 @@ public class Task extends Entity {
         this.requiredTasks = requiredTasks;
     }
 
-    public int getWorkspaceId() {
+    public long getWorkspaceId() {
         return this.workspaceId;
     }
 
@@ -83,19 +83,19 @@ public class Task extends Entity {
         return this.done;
     }
 
-    public List<Integer> getTags() {
+    public List<Long> getTags() {
         return this.tags;
     }
 
-    public List<Integer> getSubtasks() {
+    public List<Long> getSubtasks() {
         return this.subtasks;
     }
 
-    public List<Integer> getRequiredTasks() {
+    public List<Long> getRequiredTasks() {
         return this.requiredTasks;
     }
 
-    public void setWorkspaceId(int workspaceId) {
+    public void setWorkspaceId(long workspaceId) {
         this.workspaceId = workspaceId;
     }
 
@@ -119,15 +119,15 @@ public class Task extends Entity {
         this.done = done;
     }
 
-    public void setTags(List<Integer> tags) {
+    public void setTags(List<Long> tags) {
         this.tags = tags;
     }
 
-    public void setSubstasks(List<Integer> subtasks) {
+    public void setSubstasks(List<Long> subtasks) {
         this.subtasks = subtasks;
     }
 
-    public void setRequiredTasks(List<Integer> requiredTasks) {
+    public void setRequiredTasks(List<Long> requiredTasks) {
         this.requiredTasks = requiredTasks;
     }
 }

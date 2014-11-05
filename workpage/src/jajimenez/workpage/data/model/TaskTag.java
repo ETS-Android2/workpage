@@ -1,9 +1,9 @@
 package jajimenez.workpage.data.model;
 
 public class TaskTag extends Entity {
-    private int workspaceId;
+    private long workspaceId;
     private String name;
-    private int order;
+    private long order;
 
     public TaskTag() {
         super();
@@ -12,21 +12,21 @@ public class TaskTag extends Entity {
         this.order = 0;
     }
 
-    public TaskTag(int workspaceId, String name, int order) {
+    public TaskTag(long workspaceId, String name, long order) {
         super();
         this.workspaceId = workspaceId;
         this.name = name;
         this.order = order;
     }
 
-    public TaskTag(int id, int workspaceId, String name, int order) {
+    public TaskTag(long id, long workspaceId, String name, long order) {
         super(id);
         this.workspaceId = workspaceId;
         this.name = name;
         this.order = order;
     }
 
-    public int getWorkspaceId() {
+    public long getWorkspaceId() {
         return this.workspaceId;
     }
 
@@ -34,11 +34,11 @@ public class TaskTag extends Entity {
         return this.name;
     }
 
-    public int getOrder() {
+    public long getOrder() {
         return this.order;
     }
 
-    public void setWorkspaceId(int workspaceId) {
+    public void setWorkspaceId(long workspaceId) {
         this.workspaceId = workspaceId;
     }
 
@@ -46,7 +46,7 @@ public class TaskTag extends Entity {
         this.name = name;
     }
 
-    public void setOrder(int order) {
+    public void setOrder(long order) {
         this.order = order;
     }
 }

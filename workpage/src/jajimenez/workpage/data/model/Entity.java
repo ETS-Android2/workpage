@@ -1,17 +1,17 @@
 package jajimenez.workpage.data.model;
 
 public class Entity {
-    private int id;
+    private long id;
 
     public Entity() {
         this.id = -1;
     }
 
-    public Entity(int id) {
+    public Entity(long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 }

@@ -2,7 +2,7 @@ package jajimenez.workpage.data.model;
 
 public class Workspace extends Entity {
     private String name;
-    private int order;
+    private long order;
 
     public Workspace() {
         super();
@@ -10,13 +10,13 @@ public class Workspace extends Entity {
         this.order = 0;
     }
 
-    public Workspace(String name, int order) {
+    public Workspace(String name, long order) {
         super();
         this.name = name;
         this.order = order;
     }
 
-    public Workspace(int id, String name, int order) {
+    public Workspace(long id, String name, long order) {
         super(id);
         this.name = name;
         this.order = order;
@@ -26,7 +26,7 @@ public class Workspace extends Entity {
         return this.name;
     }
 
-    public int getOrder() {
+    public long getOrder() {
         return this.order;
     }
 
@@ -34,7 +34,7 @@ public class Workspace extends Entity {
         this.name = name;
     }
 
-    public void setOrder(int order) {
+    public void setOrder(long order) {
         this.order = order;
     }
 }
