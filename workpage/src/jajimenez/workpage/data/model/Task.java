@@ -1,7 +1,7 @@
 package jajimenez.workpage.data.model;
 
 import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Task extends Entity {
     private long workspaceId;
@@ -25,9 +25,9 @@ public class Task extends Entity {
         this.endDateTime = null;
         this.done = false;
 
-        this.tags = new ArrayList<Long>();
-        this.subtasks = new ArrayList<Long>();
-        this.requiredTasks = new ArrayList<Long>();
+        this.tags = new LinkedList<Long>();
+        this.subtasks = new LinkedList<Long>();
+        this.requiredTasks = new LinkedList<Long>();
     }
 
     public Task(long workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
