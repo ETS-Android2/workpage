@@ -1,8 +1,11 @@
 package jajimenez.workpage.data;
 
 import android.content.Context;
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import jajimenez.workpage.data.model.Workspace;
 
 public class DataManager extends SQLiteOpenHelper {
     public static final String DB_NAME = "workpage.db";
@@ -105,5 +108,31 @@ public class DataManager extends SQLiteOpenHelper {
         db.execSQL(workspacesTableSql);
 
         onCreate(db);
+    }
+
+    // Creates or updates a workspace in the database.
+    // If the ID of the workspace is less than 0, it
+    // inserts a new row in the Workspaces table
+    // ignoring that ID. Otherwise, it updates the row
+    // of the given ID.
+    public void saveWorkspace(Workspace workspace) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        long id = workspace.getId();
+        ContentValues values = new ContentValues();
+        values.put("name", workspace.getName());
+        values.put("order", workspace.getOrder());
+
+        try {
+            if (id < 0) {
+                values.put("id", id);
+                db.insert("workspaces", null, values);
+            } else {
+                db.update("workspaces", values, "id = ?", new String[] { String.valueOf(id) });
+            }
+        }
+        finally {
+            db.close();
+        }
     }
 }
