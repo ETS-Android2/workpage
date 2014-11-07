@@ -1,7 +1,11 @@
 package jajimenez.workpage.data;
 
+import java.util.List;
+import java.util.LinkedList;
+
 import android.content.Context;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -108,6 +112,29 @@ public class DataManager extends SQLiteOpenHelper {
         db.execSQL(workspacesTableSql);
 
         onCreate(db);
+    }
+
+    public List<Workspace> getAllWorkspaces() {
+        List<Workspace> workspaces = new LinkedList<Workspace>(); 
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM workspaces ORDER BY order;", null);
+            Workspace workspace = null;
+
+            if (cursor.moveToFirst()) {
+                do {
+                    // New workspace object, setting its ID, Name and Order.
+                    workspace = new Workspace(cursor.getLong(0), cursor.getString(1), cursor.getLong(2));
+                    workspaces.add(workspace);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            db.close();
+        }
+
+        return workspaces;
     }
 
     // Creates or updates a workspace in the database.
