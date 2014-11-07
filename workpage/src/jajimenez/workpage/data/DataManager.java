@@ -30,16 +30,16 @@ public class DataManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String workspacesTableSql = "CREATE TABLE workspaces (" +
-            "id    INTEGER PRIMARY KEY, " +
-            "name  TEXT NOT NULL, " +
-            "order INTEGER NOT NULL DEFAULT 0" +
+            "id         INTEGER PRIMARY KEY, " +
+            "name       TEXT NOT NULL, " +
+            "list_order INTEGER NOT NULL DEFAULT 0" +
             ");";
 
         String taskTagsTableSql = "CREATE TABLE task_tags (" +
             "id           INTEGER PRIMARY KEY, " +
             "workspace_id INTEGER, " +
             "name         TEXT NOT NULL, " +
-            "order        INTEGER NOT NULL DEFAULT 0, " +
+            "list_order   INTEGER NOT NULL DEFAULT 0, " +
 
             "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
@@ -120,7 +120,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT * FROM workspaces ORDER BY order;", null);
+            Cursor cursor = db.rawQuery("SELECT * FROM workspaces ORDER BY list_order;", null);
             Workspace workspace = null;
 
             if (cursor.moveToFirst()) {
@@ -148,7 +148,7 @@ public class DataManager extends SQLiteOpenHelper {
         long id = workspace.getId();
         ContentValues values = new ContentValues();
         values.put("name", workspace.getName());
-        values.put("order", workspace.getOrder());
+        values.put("list_order", workspace.getOrder());
 
         try {
             if (id < 0) {
