@@ -143,7 +143,7 @@ public class DataManager extends SQLiteOpenHelper {
     // ignoring that ID. Otherwise, it updates the row
     // of the given ID.
     public void saveWorkspace(Workspace workspace) {
-        SQLiteDatabase db = getWritableDatabase();
+        SQLiteDatabase db = null;
 
         long id = workspace.getId();
         ContentValues values = new ContentValues();
@@ -151,6 +151,8 @@ public class DataManager extends SQLiteOpenHelper {
         values.put("list_order", workspace.getOrder());
 
         try {
+            db = getWritableDatabase();
+            
             if (id < 0) {
                 values.put("id", id);
                 db.insert("workspaces", null, values);
