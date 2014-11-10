@@ -9,14 +9,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import jajimenez.workpage.R;
 import jajimenez.workpage.data.model.Workspace;
 
 public class DataManager extends SQLiteOpenHelper {
+    private Context context;
+
     public static final String DB_NAME = "workpage.db";
     public static final int DB_VERSION = 1;
 
     public DataManager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -34,6 +38,12 @@ public class DataManager extends SQLiteOpenHelper {
             "name       TEXT NOT NULL, " +
             "list_order INTEGER NOT NULL DEFAULT 0" +
             ");";
+
+        String initialWorkspacePersonalSql = "INSERT INTO workspaces(name, list_order) " +
+            "VALUES ('" + context.getString(R.string.initial_workspace_personal) + "', 0);";
+
+        String initialWorkspaceWorkSql = "INSERT INTO workspaces(name, list_order) " +
+            "VALUES ('" + context.getString(R.string.initial_workspace_work) + "', 1);";
 
         String taskTagsTableSql = "CREATE TABLE task_tags (" +
             "id           INTEGER PRIMARY KEY, " +
@@ -88,6 +98,8 @@ public class DataManager extends SQLiteOpenHelper {
             ");";
             
         db.execSQL(workspacesTableSql);
+        db.execSQL(initialWorkspacePersonalSql);
+        db.execSQL(initialWorkspaceWorkSql);
         db.execSQL(taskTagsTableSql);
         db.execSQL(tasksTableSql);
         db.execSQL(taskTagsRelationshipsTableSql);

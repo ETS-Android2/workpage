@@ -9,4 +9,8 @@
     <string name="app_author_2">Jose A. Jimenez</string>
     <string name="app_license_1">License:</string>
     <string name="app_license_2">GPL 3.0</string>
+    <string name="switch_workspace">Switch workspace</string>
+    <string name="cancel">Cancel</string>
+    <string name="initial_workspace_personal">Personal</string>
+    <string name="initial_workspace_work">Work</string>
 </resources>
