@@ -5,7 +5,7 @@ import java.util.List;
 import android.content.Context;
 
 import jajimenez.workpage.data.DataManager;
-import jajimenez.workpage.data.model.Workspace;
+import jajimenez.workpage.data.model.TaskContext;
 
 public class ApplicationLogic {
     private Context context;
@@ -14,7 +14,7 @@ public class ApplicationLogic {
         this.context = context;
     }
 
-    public List<Workspace> getAllWorspaces() {
-        return (new DataManager(context)).getAllWorkspaces();
+    public List<TaskContext> getAllTaskContexts() {
+        return (new DataManager(context)).getAllTaskContexts();
     }
 }

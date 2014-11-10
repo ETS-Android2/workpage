@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import jajimenez.workpage.R;
-import jajimenez.workpage.data.model.Workspace;
+import jajimenez.workpage.data.model.TaskContext;
 
 public class DataManager extends SQLiteOpenHelper {
     private Context context;
@@ -33,38 +33,38 @@ public class DataManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String workspacesTableSql = "CREATE TABLE workspaces (" +
+        String taskContextsTableSql = "CREATE TABLE task_contexts (" +
             "id         INTEGER PRIMARY KEY, " +
             "name       TEXT NOT NULL, " +
             "list_order INTEGER NOT NULL DEFAULT 0" +
             ");";
 
-        String initialWorkspacePersonalSql = "INSERT INTO workspaces(name, list_order) " +
-            "VALUES ('" + context.getString(R.string.initial_workspace_personal) + "', 0);";
+        String initialTaskContextPersonalSql = "INSERT INTO task_contexts(name, list_order) " +
+            "VALUES ('" + context.getString(R.string.initial_task_context_personal) + "', 0);";
 
-        String initialWorkspaceWorkSql = "INSERT INTO workspaces(name, list_order) " +
-            "VALUES ('" + context.getString(R.string.initial_workspace_work) + "', 1);";
+        String initialTaskContextWorkSql = "INSERT INTO task_contexts(name, list_order) " +
+            "VALUES ('" + context.getString(R.string.initial_task_context_work) + "', 1);";
 
         String taskTagsTableSql = "CREATE TABLE task_tags (" +
-            "id           INTEGER PRIMARY KEY, " +
-            "workspace_id INTEGER, " +
-            "name         TEXT NOT NULL, " +
-            "list_order   INTEGER NOT NULL DEFAULT 0, " +
+            "id              INTEGER PRIMARY KEY, " +
+            "task_context_id INTEGER, " +
+            "name            TEXT NOT NULL, " +
+            "list_order      INTEGER NOT NULL DEFAULT 0, " +
 
-            "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON UPDATE CASCADE ON DELETE CASCADE" +
+            "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
 
         String tasksTableSql = "CREATE TABLE tasks (" +
-            "id             INTEGER PRIMARY KEY, " +
-            "workspace_id   INTEGER, " +
-            "title          TEXT NOT NULL, " +
-            "description    TEXT, " +
-            "start_datetime TEXT, " +
-            "end_datetime   TEXT, " +
-            "done           INTEGER NOT NULL DEFAULT 0, " +
-            "done_datetime  TEXT, " +
+            "id              INTEGER PRIMARY KEY, " +
+            "task_context_id INTEGER, " +
+            "title           TEXT NOT NULL, " +
+            "description     TEXT, " +
+            "start_datetime  TEXT, " +
+            "end_datetime    TEXT, " +
+            "done            INTEGER NOT NULL DEFAULT 0, " +
+            "done_datetime   TEXT, " +
 
-            "FOREIGN KEY (workspace_id) REFERENCES workspaces(id) ON UPDATE CASCADE ON DELETE CASCADE" +
+            "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
 
         String taskTagsRelationshipsTableSql = "CREATE TABLE task_tag_relationships (" +
@@ -97,9 +97,9 @@ public class DataManager extends SQLiteOpenHelper {
             "FOREIGN KEY (required_task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
             
-        db.execSQL(workspacesTableSql);
-        db.execSQL(initialWorkspacePersonalSql);
-        db.execSQL(initialWorkspaceWorkSql);
+        db.execSQL(taskContextsTableSql);
+        db.execSQL(initialTaskContextPersonalSql);
+        db.execSQL(initialTaskContextWorkSql);
         db.execSQL(taskTagsTableSql);
         db.execSQL(tasksTableSql);
         db.execSQL(taskTagsRelationshipsTableSql);
@@ -114,62 +114,63 @@ public class DataManager extends SQLiteOpenHelper {
         String taskTagsRelationshipsTableSql = "DROP TABLE IF EXISTS task_tag_relationships;";
         String tasksTableSql                 = "DROP TABLE IF EXISTS tasks;";
         String taskTagsTableSql              = "DROP TABLE IF EXISTS task_tags;";
-        String workspacesTableSql            = "DROP TABLE IF EXISTS workspaces;";
+        String taskContextsTableSql          = "DROP TABLE IF EXISTS task_contexts;";
         
         db.execSQL(tasksRequirementsTableSql);
         db.execSQL(subtasksTableSql);
         db.execSQL(taskTagsRelationshipsTableSql);
         db.execSQL(tasksTableSql);
         db.execSQL(taskTagsTableSql);
-        db.execSQL(workspacesTableSql);
+        db.execSQL(taskContextsTableSql);
 
         onCreate(db);
     }
 
-    public List<Workspace> getAllWorkspaces() {
-        List<Workspace> workspaces = new LinkedList<Workspace>(); 
+    // Returns all task contexts.
+    public List<TaskContext> getAllTaskContexts() {
+        List<TaskContext> taskContexts = new LinkedList<TaskContext>(); 
         SQLiteDatabase db = null;
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT * FROM workspaces ORDER BY list_order;", null);
-            Workspace workspace = null;
+            Cursor cursor = db.rawQuery("SELECT * FROM task_contexts ORDER BY list_order;", null);
+            TaskContext taskContext = null;
 
             if (cursor.moveToFirst()) {
                 do {
-                    // New workspace object, setting its ID, Name and Order.
-                    workspace = new Workspace(cursor.getLong(0), cursor.getString(1), cursor.getLong(2));
-                    workspaces.add(workspace);
+                    // New TaskContext object, setting its ID, Name and Order.
+                    taskContext = new TaskContext(cursor.getLong(0), cursor.getString(1), cursor.getLong(2));
+                    taskContexts.add(taskContext);
                 } while (cursor.moveToNext());
             }
         } finally {
             db.close();
         }
 
-        return workspaces;
+        return taskContexts;
     }
 
-    // Creates or updates a workspace in the database.
-    // If the ID of the workspace is less than 0, it
-    // inserts a new row in the Workspaces table
+    // Creates or updates a task context in the database.
+    // If the ID of the task context is less than 0, it
+    // inserts a new row in the "task_contexts" table
     // ignoring that ID. Otherwise, it updates the row
     // of the given ID.
-    public void saveWorkspace(Workspace workspace) {
+    public void saveTaskContext(TaskContext taskContext) {
         SQLiteDatabase db = null;
 
-        long id = workspace.getId();
+        long id = taskContext.getId();
         ContentValues values = new ContentValues();
-        values.put("name", workspace.getName());
-        values.put("list_order", workspace.getOrder());
+        values.put("name", taskContext.getName());
+        values.put("list_order", taskContext.getOrder());
 
         try {
             db = getWritableDatabase();
             
             if (id < 0) {
                 values.put("id", id);
-                db.insert("workspaces", null, values);
+                db.insert("task_contexts", null, values);
             } else {
-                db.update("workspaces", values, "id = ?", new String[] { String.valueOf(id) });
+                db.update("task_contexts", values, "id = ?", new String[] { String.valueOf(id) });
             }
         }
         finally {

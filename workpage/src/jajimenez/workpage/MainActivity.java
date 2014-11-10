@@ -14,7 +14,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 
 import jajimenez.workpage.logic.ApplicationLogic;
-import jajimenez.workpage.data.model.Workspace;
+import jajimenez.workpage.data.model.TaskContext;
 
 public class MainActivity extends Activity {
     @Override
@@ -36,18 +36,18 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    public void onSwitchWorkspaceSelected(MenuItem item) {
+    public void onSwitchTaskContextSelected(MenuItem item) {
         ApplicationLogic applicationLogic = new ApplicationLogic(this);
 
-        List<Workspace> workspaces = applicationLogic.getAllWorspaces();
-        int workspaceCount = workspaces.size();
-        String[] workspaceNames = new String[workspaceCount];
-        for (int i = 0; i < workspaceCount; i++) workspaceNames[i] = workspaces.get(i).getName();
+        List<TaskContext> taskContexts = applicationLogic.getAllTaskContexts();
+        int taskContextCount = taskContexts.size();
+        String[] taskContextNames = new String[taskContextCount];
+        for (int i = 0; i < taskContextCount; i++) taskContextNames[i] = (taskContexts.get(i)).getName();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.switch_workspace);
+        builder.setTitle(R.string.switch_task_context);
         builder.setNegativeButton(R.string.cancel, null);
-        builder.setSingleChoiceItems(workspaceNames, 0, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(taskContextNames, 0, new DialogInterface.OnClickListener() {
             // ToDo
             @Override
             public void onClick(DialogInterface dialog, int id) {

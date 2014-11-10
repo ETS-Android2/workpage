@@ -1,22 +1,22 @@
 package jajimenez.workpage.data.model;
 
-public class Workspace extends Entity {
+public class TaskContext extends Entity {
     private String name;
     private long order;
 
-    public Workspace() {
+    public TaskContext() {
         super();
         this.name = "";
         this.order = 0;
     }
 
-    public Workspace(String name, long order) {
+    public TaskContext(String name, long order) {
         super();
         this.name = name;
         this.order = order;
     }
 
-    public Workspace(long id, String name, long order) {
+    public TaskContext(long id, String name, long order) {
         super(id);
         this.name = name;
         this.order = order;
