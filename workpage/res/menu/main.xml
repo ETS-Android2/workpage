@@ -3,6 +3,12 @@
     <item android:id="@+id/switch_task_context"
           android:title="@string/switch_task_context"
           android:onClick="onSwitchTaskContextSelected" />
+
+    <item android:id="@+id/add_task"
+          android:icon="@drawable/ic_action_new"
+          android:title="@string/add_task"
+          android:showAsAction="ifRoom" />
+
     <item android:id="@+id/about"
           android:title="@string/about_section_name"
           android:onClick="onAboutItemSelected" />
