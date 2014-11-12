@@ -126,6 +126,23 @@ public class DataManager extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public TaskContext getTaskContext(long taskContextId) {
+        TaskContext taskContext = null;
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT name, list_order FROM task_contexts WHERE id = ?;", new String[] { String.valueOf(taskContextId) });
+
+            // New TaskContext object, setting its ID, Name and Order.
+            if (cursor.moveToFirst()) taskContext = new TaskContext(taskContextId, cursor.getString(0), cursor.getLong(1));
+        } finally {
+            db.close();
+        }
+
+        return taskContext;
+    }
+
     // Returns all task contexts.
     public List<TaskContext> getAllTaskContexts() {
         List<TaskContext> taskContexts = new LinkedList<TaskContext>(); 

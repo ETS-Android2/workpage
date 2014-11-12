@@ -37,20 +37,32 @@ public class MainActivity extends Activity {
     }
 
     public void onSwitchTaskContextSelected(MenuItem item) {
-        ApplicationLogic applicationLogic = new ApplicationLogic(this);
+        final ApplicationLogic applicationLogic = new ApplicationLogic(this);
 
-        List<TaskContext> taskContexts = applicationLogic.getAllTaskContexts();
+        TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
+        long currentTaskContextId = currentTaskContext.getId();
+
+        int selectedItem = -1;
+
+        final List<TaskContext> taskContexts = applicationLogic.getAllTaskContexts();
         int taskContextCount = taskContexts.size();
         String[] taskContextNames = new String[taskContextCount];
-        for (int i = 0; i < taskContextCount; i++) taskContextNames[i] = (taskContexts.get(i)).getName();
+        TaskContext t = null;
+
+        for (int i = 0; i < taskContextCount; i++) {
+            t = taskContexts.get(i);
+            taskContextNames[i] = t.getName();
+
+            if (t.getId() == currentTaskContextId) selectedItem = i;
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.switch_task_context);
         builder.setNegativeButton(R.string.cancel, null);
-        builder.setSingleChoiceItems(taskContextNames, 0, new DialogInterface.OnClickListener() {
-            // ToDo
+        builder.setSingleChoiceItems(taskContextNames, selectedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
+                applicationLogic.setCurrentTaskContext(taskContexts.get(id));
                 dialog.dismiss();
             }
         });
