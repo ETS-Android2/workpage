@@ -13,5 +13,5 @@
     <string name="cancel">Cancel</string>
     <string name="initial_task_context_personal">Personal</string>
     <string name="initial_task_context_work">Work</string>
-    <string name="add_task">New task</string>
+    <string name="new_task">New task</string>
 </resources>

@@ -4,9 +4,9 @@
           android:title="@string/switch_task_context"
           android:onClick="onSwitchTaskContextSelected" />
 
-    <item android:id="@+id/add_task"
+    <item android:id="@+id/new_task"
           android:icon="@drawable/ic_action_new"
-          android:title="@string/add_task"
+          android:title="@string/new_task"
           android:showAsAction="ifRoom" />
 
     <item android:id="@+id/about"
