@@ -2,7 +2,6 @@ package jajimenez.workpage;
 
 import java.util.List;
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -17,10 +16,18 @@ import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
 
 public class MainActivity extends Activity {
+    private ApplicationLogic applicationLogic = null;
+    private TaskContext currentTaskContext = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        this.applicationLogic = new ApplicationLogic(this);
+        this.currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+
+        updateInterface();
     }
 
     @Override
@@ -37,11 +44,7 @@ public class MainActivity extends Activity {
     }
 
     public void onSwitchTaskContextSelected(MenuItem item) {
-        final ApplicationLogic applicationLogic = new ApplicationLogic(this);
-
-        TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
         long currentTaskContextId = currentTaskContext.getId();
-
         int selectedItem = -1;
 
         final List<TaskContext> taskContexts = applicationLogic.getAllTaskContexts();
@@ -62,12 +65,21 @@ public class MainActivity extends Activity {
         builder.setSingleChoiceItems(taskContextNames, selectedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                applicationLogic.setCurrentTaskContext(taskContexts.get(id));
+                TaskContext newCurrentTaskContext = taskContexts.get(id);
+
+                MainActivity.this.currentTaskContext = newCurrentTaskContext;
+                MainActivity.this.applicationLogic.setCurrentTaskContext(newCurrentTaskContext);
+
                 dialog.dismiss();
+                MainActivity.this.updateInterface();
             }
         });
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void updateInterface() {
+        setTitle(currentTaskContext.getName());
     }
 }
