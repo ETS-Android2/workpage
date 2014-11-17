@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 
 import jajimenez.workpage.data.DataManager;
 import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.Task;
 
 public class ApplicationLogic {
     public static final String PREFERENCES_FILE = "jajimenez_workpage_preferences";
@@ -36,5 +37,9 @@ public class ApplicationLogic {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(CURRENT_TASK_CONTEXT_ID_PREF_KEY, taskContext.getId());
         editor.commit();
+    }
+
+    public void saveTask(Task task) {
+        dataManager.saveTask(task);
     }
 }

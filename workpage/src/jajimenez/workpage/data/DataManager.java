@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import jajimenez.workpage.R;
 import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.Task;
 
 public class DataManager extends SQLiteOpenHelper {
     private Context context;
@@ -193,5 +194,9 @@ public class DataManager extends SQLiteOpenHelper {
         finally {
             db.close();
         }
+    }
+
+    // ToDo
+    public void saveTask(Task task) {
     }
 }

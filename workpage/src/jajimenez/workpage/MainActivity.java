@@ -24,8 +24,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        this.applicationLogic = new ApplicationLogic(this);
-        this.currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+        applicationLogic = new ApplicationLogic(this);
+        currentTaskContext = this.applicationLogic.getCurrentTaskContext();
 
         updateInterface();
     }
@@ -38,12 +38,11 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public void onAboutItemSelected(MenuItem item) {
-        Intent intent = new Intent(this, AboutActivity.class);
-        startActivity(intent);
+    private void updateInterface() {
+        setTitle(currentTaskContext.getName());
     }
 
-    public void onSwitchTaskContextSelected(MenuItem item) {
+    public void onSwitchTaskContextItemSelected(MenuItem item) {
         long currentTaskContextId = currentTaskContext.getId();
         int selectedItem = -1;
 
@@ -79,7 +78,16 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
-    private void updateInterface() {
-        setTitle(currentTaskContext.getName());
+    public void onNewTaskItemSelected(MenuItem item) {
+        Intent intent = new Intent(this, EditTaskActivity.class);
+        intent.putExtra("action", "new");
+        intent.putExtra("task_context_id", currentTaskContext.getId());
+
+        startActivity(intent);
+    }
+
+    public void onAboutItemSelected(MenuItem item) {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
     }
 }

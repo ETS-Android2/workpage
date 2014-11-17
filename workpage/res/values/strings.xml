@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Workpage</string>
-    <string name="about_section_name">About</string>
     <string name="app_description">Task manager</string>
-    <string name="app_version_1">Version:</string>
-    <string name="app_version_2">0.1</string>
-    <string name="app_author_1">Author:</string>
-    <string name="app_author_2">Jose A. Jimenez</string>
-    <string name="app_license_1">License:</string>
-    <string name="app_license_2">GPL 3.0</string>
-    <string name="switch_task_context">Switch context</string>
-    <string name="cancel">Cancel</string>
+    <string name="app_version">0.1</string>
+    <string name="app_author">Jose A. Jimenez</string>
+    <string name="app_license">GPL 3.0</string>
+
     <string name="initial_task_context_personal">Personal</string>
     <string name="initial_task_context_work">Work</string>
+
+    <string name="switch_task_context">Switch context</string>
+    <string name="cancel">Cancel</string>
+
     <string name="new_task">New task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="dates">Dates:</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
+    <string name="save">Save</string>
+    <string name="title_error">Please, enter the title.</string>
+    <string name="dates_error">Please, enter valid dates.</string>
+    <string name="task_saved">Task saved.</string>
+
+    <string name="about">About</string>
+    <string name="version">Version:</string>
+    <string name="author">Author:</string>
+    <string name="license">License:</string>
 </resources>
