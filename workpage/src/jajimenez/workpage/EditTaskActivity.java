@@ -1,12 +1,11 @@
 package jajimenez.workpage;
 
-import java.util.Locale;
 import java.util.Calendar;
+import java.text.DateFormat;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DatePickerDialog;
-//import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
@@ -33,8 +32,8 @@ public class EditTaskActivity extends Activity {
 
     private ApplicationLogic applicationLogic = null;
     private Task currentTask = null;
-    private Calendar currentStartDate = null;
-    private Calendar currentEndDate = null;
+    private Calendar selectedFromDate = null;
+    private Calendar selectedToDate = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,10 +57,10 @@ public class EditTaskActivity extends Activity {
             setTitle(R.string.edit_task);
         } else {
             currentTask = new Task();
-            currentTask.setWorkspaceId(intent.getLongExtra("task_context_id", -1));
+            currentTask.setTaskContextId(intent.getLongExtra("task_context_id", -1));
 
-            currentStartDate = Calendar.getInstance();
-            currentEndDate = Calendar.getInstance();
+            selectedFromDate = Calendar.getInstance();
+            selectedToDate = Calendar.getInstance();
 
             setTitle(R.string.new_task);
             fromButton.setEnabled(false);
@@ -80,26 +79,13 @@ public class EditTaskActivity extends Activity {
     }
 
     private void updateInterface() {
-        fromButton.setText(getInterfaceFormattedDate(currentStartDate));
-        toButton.setText(getInterfaceFormattedDate(currentEndDate));
+        fromButton.setText(getInterfaceFormattedDate(selectedFromDate));
+        toButton.setText(getInterfaceFormattedDate(selectedToDate));
     }
 
     private String getInterfaceFormattedDate(Calendar calendar) {
-        Locale locale = Locale.getDefault();
-
-        String day = String.format(locale, "%02d", calendar.get(Calendar.DAY_OF_MONTH));
-        String month = calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, locale);
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-
-        return String.format(locale, "%s %s %s", day, month, year);
-    }
-
-    private String getIso8601FormattedDate(Calendar calendar) {
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        return String.format("%d-%02d-%02d 00:00:00.000", year, month, day);
+        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        return dateFormat.format(calendar.getTime());
     }
 
     public void onSaveItemSelected(MenuItem item) {
@@ -107,24 +93,18 @@ public class EditTaskActivity extends Activity {
 
         // Check values
         boolean titleValid = (title.length() > 0);
-        boolean datesValid = (!fromCheckBox.isChecked() || !toCheckBox.isChecked() || currentEndDate.compareTo(currentStartDate) >= 0);
+        boolean datesValid = (!fromCheckBox.isChecked() || !toCheckBox.isChecked() || selectedToDate.compareTo(selectedFromDate) >= 0);
 
         if (titleValid && datesValid) {
-            String description = (descriptionEditText.getText()).toString();
-
-            String startDateTime;
-            if (fromCheckBox.isChecked()) startDateTime = getIso8601FormattedDate(currentStartDate);
-            else startDateTime = "";
-
-            String endDateTime;
-            if (toCheckBox.isChecked()) endDateTime = getIso8601FormattedDate(currentEndDate);
-            else endDateTime = "";
-
             // Update Current Task
             currentTask.setTitle(title);
-            currentTask.setDescription(description);
-            currentTask.setStartDateTime(startDateTime);
-            currentTask.setEndDateTime(endDateTime);
+            currentTask.setDescription((descriptionEditText.getText()).toString());
+
+            if (fromCheckBox.isChecked()) currentTask.setStartDateTime(selectedFromDate);
+            else currentTask.setStartDateTime(null);
+
+            if (toCheckBox.isChecked()) currentTask.setEndDateTime(selectedToDate);
+            else currentTask.setEndDateTime(null);
 
             // Save Current Task
             applicationLogic.saveTask(currentTask);
@@ -148,12 +128,12 @@ public class EditTaskActivity extends Activity {
     }
 
     public void onFromButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerDialogFragment(currentStartDate);
+        DialogFragment fragment = new DatePickerDialogFragment(selectedFromDate);
         fragment.show(getFragmentManager(), "from_date_picker");
     }
 
     public void onToButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerDialogFragment(currentEndDate);
+        DialogFragment fragment = new DatePickerDialogFragment(selectedToDate);
         fragment.show(getFragmentManager(), "to_date_picker");
     }
 

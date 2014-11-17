@@ -6,28 +6,31 @@ public class TaskContext extends Entity {
 
     public TaskContext() {
         super();
-        this.name = "";
-        this.order = 0;
+
+        name = "";
+        order = 0;
     }
 
     public TaskContext(String name, long order) {
         super();
+
         this.name = name;
         this.order = order;
     }
 
     public TaskContext(long id, String name, long order) {
         super(id);
+
         this.name = name;
         this.order = order;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public long getOrder() {
-        return this.order;
+        return order;
     }
 
     public void setName(String name) {

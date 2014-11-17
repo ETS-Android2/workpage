@@ -7,13 +7,15 @@ public class TaskTag extends Entity {
 
     public TaskTag() {
         super();
-        this.workspaceId = -1;
-        this.name = "";
-        this.order = 0;
+
+        workspaceId = -1;
+        name = "";
+        order = 0;
     }
 
     public TaskTag(long workspaceId, String name, long order) {
         super();
+
         this.workspaceId = workspaceId;
         this.name = name;
         this.order = order;
@@ -21,21 +23,22 @@ public class TaskTag extends Entity {
 
     public TaskTag(long id, long workspaceId, String name, long order) {
         super(id);
+
         this.workspaceId = workspaceId;
         this.name = name;
         this.order = order;
     }
 
     public long getWorkspaceId() {
-        return this.workspaceId;
+        return workspaceId;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public long getOrder() {
-        return this.order;
+        return order;
     }
 
     public void setWorkspaceId(long workspaceId) {

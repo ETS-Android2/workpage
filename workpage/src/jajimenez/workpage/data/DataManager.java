@@ -2,6 +2,7 @@ package jajimenez.workpage.data;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Calendar;
 
 import android.content.Context;
 import android.content.ContentValues;
@@ -175,8 +176,8 @@ public class DataManager extends SQLiteOpenHelper {
     // of the given ID.
     public void saveTaskContext(TaskContext taskContext) {
         SQLiteDatabase db = null;
-
         long id = taskContext.getId();
+
         ContentValues values = new ContentValues();
         values.put("name", taskContext.getName());
         values.put("list_order", taskContext.getOrder());
@@ -184,19 +185,59 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getWritableDatabase();
             
-            if (id < 0) {
-                values.put("id", id);
-                db.insert("task_contexts", null, values);
-            } else {
-                db.update("task_contexts", values, "id = ?", new String[] { String.valueOf(id) });
-            }
+            if (id < 0) db.insert("task_contexts", null, values);
+            else db.update("task_contexts", values, "id = ?", new String[] { String.valueOf(id) });
         }
         finally {
             db.close();
         }
     }
 
-    // ToDo
+    // Creates or updates a task in the database.
+    // If the ID of the task is less than 0, it
+    // inserts a new row in the "tasks" table
+    // ignoring that ID. Otherwise, it updates
+    // the row of the given ID.
     public void saveTask(Task task) {
+        SQLiteDatabase db = null;
+        long id = task.getId();
+
+        ContentValues values = new ContentValues();
+        values.put("task_context_id", task.getTaskContextId());
+        values.put("title", task.getTitle());
+        values.put("description", task.getDescription());
+        values.put("start_datetime", getIso8601FormattedDate(task.getStartDateTime()));
+        values.put("end_datetime", getIso8601FormattedDate(task.getEndDateTime()));
+
+        if (task.isDone()) values.put("done", 1);
+        else values.put("done", 0);
+            
+        values.put("done_datetime", getIso8601FormattedDate(task.getDoneDateTime()));
+
+        try {
+            db = getWritableDatabase();
+            
+            if (id < 0) db.insert("tasks", null, values);
+            else db.update("tasks", values, "id = ?", new String[] { String.valueOf(id) });
+        }
+        finally {
+            db.close();
+        }
+    }
+
+    private String getIso8601FormattedDate(Calendar calendar) {
+        String date;
+
+        if (calendar != null) {
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            date = String.format("%d-%02d-%02d 00:00:00.000", year, month, day);
+        } else {
+            date = "";
+        }
+
+        return date; 
     }
 }

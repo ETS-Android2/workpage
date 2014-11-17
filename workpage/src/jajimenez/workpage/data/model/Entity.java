@@ -4,7 +4,7 @@ public class Entity {
     private long id;
 
     public Entity() {
-        this.id = -1;
+        id = -1;
     }
 
     public Entity(long id) {
@@ -12,6 +12,6 @@ public class Entity {
     }
 
     public long getId() {
-        return this.id;
+        return id;
     }
 }

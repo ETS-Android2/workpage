@@ -2,14 +2,16 @@ package jajimenez.workpage.data.model;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Calendar;
 
 public class Task extends Entity {
-    private long workspaceId;
+    private long taskContextId;
     private String title;
     private String description;
-    private String startDateTime;
-    private String endDateTime;
+    private Calendar startDateTime;
+    private Calendar endDateTime;
     private boolean done;
+    private Calendar doneDateTime;
 
     private List<Long> tags;
     private List<Long> subtasks;
@@ -18,85 +20,99 @@ public class Task extends Entity {
     public Task() {
         super();
         
-        this.workspaceId = -1;
-        this.title = "";
-        this.description = "";
-        this.startDateTime = null;
-        this.endDateTime = null;
-        this.done = false;
+        taskContextId = -1;
+        title = "";
+        description = "";
+        startDateTime = null;
+        endDateTime = null;
+        done = false;
+        doneDateTime = null;
 
-        this.tags = new LinkedList<Long>();
-        this.subtasks = new LinkedList<Long>();
-        this.requiredTasks = new LinkedList<Long>();
+        tags = new LinkedList<Long>();
+        subtasks = new LinkedList<Long>();
+        requiredTasks = new LinkedList<Long>();
     }
 
-    public Task(long workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
+    public Task(long taskContextId, String title, String description,
+        Calendar startDateTime, Calendar endDateTime, boolean done, Calendar doneDateTime,
+        List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
+
         super();
 
-        this.workspaceId = workspaceId;
+        this.taskContextId = taskContextId;
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.done = done;
+        this.doneDateTime = doneDateTime;
 
         this.tags = tags;
         this.subtasks = subtasks;
         this.requiredTasks = requiredTasks;
     }
 
-    public Task(long id, long workspaceId, String title, String description, String startDateTime, String endDateTime, boolean done, List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
+    public Task(long id, long taskContextId, String title, String description,
+        Calendar startDateTime, Calendar endDateTime, boolean done, Calendar doneDateTime,
+        List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
+
         super(id);
-        this.workspaceId = workspaceId;
+
+        this.taskContextId = taskContextId;
         this.title = title;
         this.description = description;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.done = done;
+        this.doneDateTime = doneDateTime;
 
         this.tags = tags;
         this.subtasks = subtasks;
         this.requiredTasks = requiredTasks;
     }
 
-    public long getWorkspaceId() {
-        return this.workspaceId;
+    public long getTaskContextId() {
+        return taskContextId;
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
-    public String getStartDateTime() {
-        return this.startDateTime;
+    public Calendar getStartDateTime() {
+        return startDateTime;
     }
 
-    public String getEndDateTime() {
-        return this.endDateTime;
+    public Calendar getEndDateTime() {
+        return endDateTime;
     }
 
     public boolean isDone() {
-        return this.done;
+        return done;
+    }
+
+    public Calendar getDoneDateTime() {
+        return doneDateTime;
     }
 
     public List<Long> getTags() {
-        return this.tags;
+        return tags;
     }
 
     public List<Long> getSubtasks() {
-        return this.subtasks;
+        return subtasks;
     }
 
     public List<Long> getRequiredTasks() {
-        return this.requiredTasks;
+        return requiredTasks;
     }
 
-    public void setWorkspaceId(long workspaceId) {
-        this.workspaceId = workspaceId;
+    public void setTaskContextId(long taskContextId) {
+        this.taskContextId = taskContextId;
     }
 
     public void setTitle(String title) {
@@ -107,16 +123,20 @@ public class Task extends Entity {
         this.description = description;
     }
 
-    public void setStartDateTime(String startDateTime) {
+    public void setStartDateTime(Calendar startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public void setEndDateTime(String endDateTime) {
+    public void setEndDateTime(Calendar endDateTime) {
         this.endDateTime = endDateTime;
     }
 
     public void setDone(boolean done) {
         this.done = done;
+    }
+
+    public void setDoneDateTime(Calendar doneDateTime) {
+        this.doneDateTime = doneDateTime;
     }
 
     public void setTags(List<Long> tags) {
