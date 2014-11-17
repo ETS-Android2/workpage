@@ -1,8 +1,14 @@
 Workpage
 --------
 
-Task manager for Android
+Productivity manager for Android.
 
 Version: 0.1
 Author:  Jose A. Jimenez <jajimenezcarm@gmail.com>
 License: GPL 3.0
+
+
+Requirements:
+-------------
+
+Android 4.1.2 (API Level 16)
