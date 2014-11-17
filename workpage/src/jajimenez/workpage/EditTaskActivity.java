@@ -5,9 +5,9 @@ import java.util.Calendar;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
+//import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
@@ -148,19 +148,19 @@ public class EditTaskActivity extends Activity {
     }
 
     public void onFromButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerFragment(currentStartDate);
+        DialogFragment fragment = new DatePickerDialogFragment(currentStartDate);
         fragment.show(getFragmentManager(), "from_date_picker");
     }
 
     public void onToButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerFragment(currentEndDate);
+        DialogFragment fragment = new DatePickerDialogFragment(currentEndDate);
         fragment.show(getFragmentManager(), "to_date_picker");
     }
 
-    private class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+    private class DatePickerDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
         private Calendar calendar;
 
-        public DatePickerFragment(Calendar calendar) {
+        public DatePickerDialogFragment(Calendar calendar) {
             super();
             this.calendar = calendar;
         }
