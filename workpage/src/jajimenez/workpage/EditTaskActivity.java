@@ -107,7 +107,7 @@ public class EditTaskActivity extends Activity {
 
         // Check values
         boolean titleValid = (title.length() > 0);
-        boolean datesValid = (!fromCheckBox.isEnabled() || !toCheckBox.isEnabled() || currentEndDate.compareTo(currentStartDate) >= 0);
+        boolean datesValid = (!fromCheckBox.isChecked() || !toCheckBox.isChecked() || currentEndDate.compareTo(currentStartDate) >= 0);
 
         if (titleValid && datesValid) {
             String description = (descriptionEditText.getText()).toString();
