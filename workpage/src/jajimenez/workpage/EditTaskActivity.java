@@ -39,6 +39,7 @@ public class EditTaskActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_task);
+        (getActionBar()).setDisplayHomeAsUpEnabled(true);
 
         titleEditText = (EditText)findViewById(R.id.title_edittext);
         descriptionEditText = (EditText)findViewById(R.id.description_edittext);
