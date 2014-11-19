@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText android:id="@+id/title_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="@string/title" />
+
+    <EditText android:id="@+id/description_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text|textMultiLine"
+        android:lines="3"
+        android:gravity="left|top"
+        android:hint="@string/description" />
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textStyle="bold"
+        android:text="@string/dates" />
+
+    <TableLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp">
+
+        <TableRow>
+            <CheckBox android:id="@+id/from_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="@string/from"
+                android:onClick="onFromCheckBoxClicked" />
+
+            <Button android:id="@+id/from_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="01.02.2014"
+                android:onClick="onFromButtonClicked" />
+        </TableRow>
+        <TableRow>
+            <CheckBox android:id="@+id/to_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="@string/to"
+                android:onClick="onToCheckBoxClicked" />
+
+            <Button android:id="@+id/to_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="01.02.2014"
+                android:onClick="onToButtonClicked" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
