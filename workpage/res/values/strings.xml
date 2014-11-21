@@ -11,6 +11,7 @@
 
     <string name="switch_task_context">Switch context</string>
     <string name="cancel">Cancel</string>
+    <string name="no_tasks">There are no tasks.</string>
 
     <string name="new_task">New task</string>
     <string name="edit_task">Edit task</string>
