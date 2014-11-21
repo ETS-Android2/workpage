@@ -36,7 +36,11 @@ public class MainActivity extends ListActivity {
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         updateInterface();
     }
 
