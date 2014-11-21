@@ -193,6 +193,46 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
+    // Returns all open tasks that belong to a given task context.
+    //
+    // Every returned task is incomplete because this method is used
+    // to get a list of tasks, without displaying every task's details.
+    //
+    // An open task means it's due for the current day or it's due
+    // for a range of dates that includes the current day or it 
+    // doesn't have any date set (that means it could be done
+    // in the current day or as soon as possible).
+    public List<Task> getAllOpenTasks(TaskContext taskContext) {
+        List<Task> tasks = new LinkedList<Task>();
+        long taskContextId = taskContext.getId();
+        String currentDay = getIso8601FormattedDate(Calendar.getInstance());
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT tasks.id, tasks.title " +
+                "FROM tasks " +
+                "WHERE tasks.task_context_id = ? AND " +
+                "(tasks.start_datetime IS NULL OR tasks.start_datetime = '' OR tasks.start_datetime <= ?) AND " +
+                "(tasks.end_datetime IS NULL OR tasks.start_datetime = '' OR tasks.end_datetime >= ?) AND " +
+                "tasks.done = 0;", new String[] { String.valueOf(taskContextId), currentDay, currentDay });
+
+            Task task = null;
+
+            if (cursor.moveToFirst()) {
+                do {
+                    // New Task object setting its ID, Task Context ID and Title.
+                    task = new Task(cursor.getLong(0), taskContextId, cursor.getString(1), null, null, null, false, null, null, null, null);
+                    tasks.add(task);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            db.close();
+        }
+
+        return tasks;
+    }
+
     // Creates or updates a task in the database.
     // If the ID of the task is less than 0, it
     // inserts a new row in the "tasks" table
