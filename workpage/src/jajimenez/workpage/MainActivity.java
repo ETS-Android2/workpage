@@ -1,5 +1,7 @@
 package jajimenez.workpage;
 
+import java.util.Calendar;
+
 import java.util.List;
 import java.util.ArrayList;
 import android.app.Activity;
@@ -21,7 +23,9 @@ import android.content.DialogInterface;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import jajimenez.workpage.R;
 import jajimenez.workpage.logic.ApplicationLogic;
+import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.Task;
 
@@ -89,35 +93,99 @@ public class MainActivity extends ListActivity {
         }
 
         @Override
-        public View getView(int position, View rowView, ViewGroup parent) {
-            TaskRowViewTag tag = null;
+        public View getView(int position, View rowView, ViewGroup parentViewGroup) {
+            TextView titleTextView = null;
+            TextView details1TextView = null;
+            TextView details2TextView = null;
 
             if (rowView == null) {
                 LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
                 rowView = inflater.inflate(resource, null);
 
-                tag = new TaskRowViewTag((TextView) rowView.findViewById(R.id.title_textview));
-                rowView.setTag(tag);
-            } else {
-                tag = (TaskRowViewTag) rowView.getTag();
+                titleTextView = (TextView) rowView.findViewById(R.id.taskrow_title);
+                details1TextView = (TextView) rowView.findViewById(R.id.taskrow_details_1);
+                details2TextView = (TextView) rowView.findViewById(R.id.taskrow_details_2);
+
+                TaskRowViewTag viewTag = new TaskRowViewTag();
+
+                viewTag.titleTextView = titleTextView;
+                viewTag.details1TextView = details1TextView;
+                viewTag.details2TextView = details2TextView;
+
+                rowView.setTag(viewTag);
+            }
+            else {
+                TaskRowViewTag viewTag = (TaskRowViewTag) rowView.getTag();
+
+                titleTextView = viewTag.titleTextView;
+                details1TextView = viewTag.details1TextView;
+                details2TextView = viewTag.details2TextView;
             }
 
             Task task = getItem(position);
-            (tag.getTitleTextView()).setText(task.getTitle());
+
+            String title = task.getTitle();
+            Calendar start = task.getStart();
+            Calendar deadline = task.getDeadline();
+            List<Long> taskTags = task.getTags();
+
+            titleTextView.setText(title);
+
+            if (taskTags != null && taskTags.size() > 0) {
+                details2TextView.setText(getTaskDatesText(start, deadline));
+            }
+            else {
+                // ToDo: List task's tags
+                details1TextView.setText(getTaskDatesText(start, deadline));
+            }
 
             return rowView;
         }
-    }
 
-    private class TaskRowViewTag {
-        private TextView titleTextView;
+        private String getTaskDatesText(Calendar start, Calendar deadline) {
+            String text = null;
 
-        public TaskRowViewTag(TextView titleTextView) {
-            this.titleTextView = titleTextView;
+            DateTimeTool tool = new DateTimeTool();
+            String formattedStart = null;
+            String formattedDeadline = null;
+
+            if (start != null && deadline != null) {
+                formattedStart = tool.getInterfaceFormattedDate(start);
+                formattedDeadline = tool.getInterfaceFormattedDate(deadline);
+
+                text = getString(R.string.task_start_deadline, formattedStart, formattedDeadline);
+            }
+            else if (start != null) {
+                formattedStart = tool.getInterfaceFormattedDate(start);
+                text = getString(R.string.task_start, formattedStart);
+            }
+            else if (deadline != null) {
+                formattedDeadline = tool.getInterfaceFormattedDate(deadline);
+                text = getString(R.string.task_deadline, formattedDeadline);
+            }
+            else {
+                text = "";
+            }
+
+            return text;
         }
 
-        public TextView getTitleTextView() {
-            return titleTextView;
+        private class TaskRowViewTag {
+            public TextView titleTextView = null;
+            public TextView details1TextView = null;
+            public TextView details2TextView = null;
+        }
+    }
+
+    private class LoadAllCurrentOpenTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+        @Override
+        protected List<Task> doInBackground(Void... parameters) {
+            return MainActivity.this.applicationLogic.getAllCurrentOpenTasks(MainActivity.this.currentTaskContext);
+        }
+
+        @Override
+        protected void onPostExecute(List<Task> tasks) {
+            MainActivity.this.updateTaskListInterface(tasks);
         }
     }
 
@@ -155,18 +223,6 @@ public class MainActivity extends ListActivity {
             });
 
             return builder.create();
-        }
-    }
-
-    private class LoadAllCurrentOpenTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
-        @Override
-        protected List<Task> doInBackground(Void... parameters) {
-            return MainActivity.this.applicationLogic.getAllCurrentOpenTasks(MainActivity.this.currentTaskContext);
-        }
-
-        @Override
-        protected void onPostExecute(List<Task> tasks) {
-            MainActivity.this.updateTaskListInterface(tasks);
         }
     }
 }

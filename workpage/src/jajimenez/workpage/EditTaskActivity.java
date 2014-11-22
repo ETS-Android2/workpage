@@ -1,7 +1,6 @@
 package jajimenez.workpage;
 
 import java.util.Calendar;
-import java.text.DateFormat;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,20 +19,21 @@ import android.widget.Toast;
 import android.content.Intent;
 
 import jajimenez.workpage.logic.ApplicationLogic;
+import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.Task;
 
 public class EditTaskActivity extends Activity {
     private EditText titleEditText = null;
     private EditText descriptionEditText = null;
-    private CheckBox fromCheckBox = null;
-    private CheckBox toCheckBox = null;
-    private Button fromButton = null;
-    private Button toButton = null;
+    private CheckBox startCheckBox = null;
+    private CheckBox deadlineCheckBox = null;
+    private Button startButton = null;
+    private Button deadlineButton = null;
 
     private ApplicationLogic applicationLogic = null;
     private Task currentTask = null;
-    private Calendar selectedFromDate = null;
-    private Calendar selectedToDate = null;
+    private Calendar selectedStartDate = null;
+    private Calendar selectedDeadlineDate = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,12 +41,12 @@ public class EditTaskActivity extends Activity {
         setContentView(R.layout.edit_task);
         (getActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        titleEditText = (EditText)findViewById(R.id.title_edittext);
-        descriptionEditText = (EditText)findViewById(R.id.description_edittext);
-        fromCheckBox = (CheckBox)findViewById(R.id.from_checkbox);
-        toCheckBox = (CheckBox)findViewById(R.id.to_checkbox);
-        fromButton = (Button)findViewById(R.id.from_button);
-        toButton = (Button)findViewById(R.id.to_button);
+        titleEditText = (EditText) findViewById(R.id.edittask_title);
+        descriptionEditText = (EditText) findViewById(R.id.edittask_description);
+        startCheckBox = (CheckBox) findViewById(R.id.edittask_start_checkbox);
+        deadlineCheckBox = (CheckBox) findViewById(R.id.edittask_deadline_checkbox);
+        startButton = (Button) findViewById(R.id.edittask_start_button);
+        deadlineButton = (Button) findViewById(R.id.edittask_deadline_button);
 
         applicationLogic = new ApplicationLogic(this);
 
@@ -56,16 +56,17 @@ public class EditTaskActivity extends Activity {
         if (action != null && action.equals("edit")) {
             // ToDo
             setTitle(R.string.edit_task);
-        } else {
+        }
+        else {
             currentTask = new Task();
             currentTask.setTaskContextId(intent.getLongExtra("task_context_id", -1));
 
-            selectedFromDate = Calendar.getInstance();
-            selectedToDate = Calendar.getInstance();
+            selectedStartDate = Calendar.getInstance();
+            selectedDeadlineDate = Calendar.getInstance();
 
             setTitle(R.string.new_task);
-            fromButton.setEnabled(false);
-            toButton.setEnabled(false);
+            startButton.setEnabled(false);
+            deadlineButton.setEnabled(false);
         }
 
         updateInterface();
@@ -80,13 +81,10 @@ public class EditTaskActivity extends Activity {
     }
 
     private void updateInterface() {
-        fromButton.setText(getInterfaceFormattedDate(selectedFromDate));
-        toButton.setText(getInterfaceFormattedDate(selectedToDate));
-    }
-
-    private String getInterfaceFormattedDate(Calendar calendar) {
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        return dateFormat.format(calendar.getTime());
+        DateTimeTool tool = new DateTimeTool();
+        
+        startButton.setText(tool.getInterfaceFormattedDate(selectedStartDate));
+        deadlineButton.setText(tool.getInterfaceFormattedDate(selectedDeadlineDate));
     }
 
     public void onSaveItemSelected(MenuItem item) {
@@ -94,18 +92,18 @@ public class EditTaskActivity extends Activity {
 
         // Check values
         boolean titleValid = (title.length() > 0);
-        boolean datesValid = (!fromCheckBox.isChecked() || !toCheckBox.isChecked() || selectedToDate.compareTo(selectedFromDate) >= 0);
+        boolean datesValid = (!startCheckBox.isChecked() || !deadlineCheckBox.isChecked() || selectedDeadlineDate.compareTo(selectedStartDate) >= 0);
 
         if (titleValid && datesValid) {
             // Update Current Task
             currentTask.setTitle(title);
             currentTask.setDescription((descriptionEditText.getText()).toString());
 
-            if (fromCheckBox.isChecked()) currentTask.setStartDateTime(selectedFromDate);
-            else currentTask.setStartDateTime(null);
+            if (startCheckBox.isChecked()) currentTask.setStart(selectedStartDate);
+            else currentTask.setStart(null);
 
-            if (toCheckBox.isChecked()) currentTask.setEndDateTime(selectedToDate);
-            else currentTask.setEndDateTime(null);
+            if (deadlineCheckBox.isChecked()) currentTask.setDeadline(selectedDeadlineDate);
+            else currentTask.setDeadline(null);
 
             // Save Current Task
             applicationLogic.saveTask(currentTask);
@@ -113,29 +111,31 @@ public class EditTaskActivity extends Activity {
 
             // Close the activity
             finish();
-        } else if (!titleValid) {
+        }
+        else if (!titleValid) {
             Toast.makeText(this, R.string.title_error, Toast.LENGTH_SHORT).show();
-        } else if (!datesValid) {
+        }
+        else if (!datesValid) {
             Toast.makeText(this, R.string.dates_error, Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void onFromCheckBoxClicked(View view) {
-        fromButton.setEnabled(fromCheckBox.isChecked());
+    public void onStartCheckBoxClicked(View view) {
+        startButton.setEnabled(startCheckBox.isChecked());
     }
 
-    public void onToCheckBoxClicked(View view) {
-        toButton.setEnabled(toCheckBox.isChecked());
+    public void onDeadlineCheckBoxClicked(View view) {
+        deadlineButton.setEnabled(deadlineCheckBox.isChecked());
     }
 
-    public void onFromButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerDialogFragment(selectedFromDate);
-        fragment.show(getFragmentManager(), "from_date_picker");
+    public void onStartButtonClicked(View view) {
+        DialogFragment fragment = new DatePickerDialogFragment(selectedStartDate);
+        fragment.show(getFragmentManager(), "start_date_picker");
     }
 
-    public void onToButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerDialogFragment(selectedToDate);
-        fragment.show(getFragmentManager(), "to_date_picker");
+    public void onDeadlineButtonClicked(View view) {
+        DialogFragment fragment = new DatePickerDialogFragment(selectedDeadlineDate);
+        fragment.show(getFragmentManager(), "deadline_date_picker");
     }
 
     private class DatePickerDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {

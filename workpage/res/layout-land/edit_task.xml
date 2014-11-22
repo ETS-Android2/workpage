@@ -4,13 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText android:id="@+id/title_edittext"
+    <EditText android:id="@+id/edittask_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:hint="@string/title" />
 
-    <EditText android:id="@+id/description_edittext"
+    <EditText android:id="@+id/edittask_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text|textMultiLine"
@@ -30,32 +30,30 @@
         android:paddingLeft="20dp">
 
         <TableRow>
-            <CheckBox android:id="@+id/from_checkbox"
+            <CheckBox android:id="@+id/edittask_start_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10dp"
-                android:text="@string/from"
-                android:onClick="onFromCheckBoxClicked" />
+                android:text="@string/start"
+                android:onClick="onStartCheckBoxClicked" />
 
-            <Button android:id="@+id/from_button"
+            <Button android:id="@+id/edittask_start_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01.02.2014"
-                android:onClick="onFromButtonClicked" />
+                android:onClick="onStartButtonClicked" />
         </TableRow>
         <TableRow>
-            <CheckBox android:id="@+id/to_checkbox"
+            <CheckBox android:id="@+id/edittask_deadline_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10dp"
-                android:text="@string/to"
-                android:onClick="onToCheckBoxClicked" />
+                android:text="@string/deadline"
+                android:onClick="onDeadlineCheckBoxClicked" />
 
-            <Button android:id="@+id/to_button"
+            <Button android:id="@+id/edittask_deadline_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="01.02.2014"
-                android:onClick="onToButtonClicked" />
+                android:onClick="onDeadlineButtonClicked" />
         </TableRow>
     </TableLayout>
 </LinearLayout>

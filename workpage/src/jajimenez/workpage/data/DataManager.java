@@ -11,7 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import jajimenez.workpage.R;
+import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class DataManager extends SQLiteOpenHelper {
@@ -57,14 +59,14 @@ public class DataManager extends SQLiteOpenHelper {
             ");";
 
         String tasksTableSql = "CREATE TABLE tasks (" +
-            "id              INTEGER PRIMARY KEY, " +
-            "task_context_id INTEGER, " +
-            "title           TEXT NOT NULL, " +
-            "description     TEXT, " +
-            "start_datetime  TEXT, " +
-            "end_datetime    TEXT, " +
-            "done            INTEGER NOT NULL DEFAULT 0, " +
-            "done_datetime   TEXT, " +
+            "id                INTEGER PRIMARY KEY, " +
+            "task_context_id   INTEGER, " +
+            "title             TEXT NOT NULL, " +
+            "description       TEXT, " +
+            "start_datetime    TEXT, " +
+            "deadline_datetime TEXT, " +
+            "done              INTEGER NOT NULL DEFAULT 0, " +
+            "done_datetime     TEXT, " +
 
             "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
@@ -128,23 +130,6 @@ public class DataManager extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public TaskContext getTaskContext(long taskContextId) {
-        TaskContext taskContext = null;
-        SQLiteDatabase db = null;
-
-        try {
-            db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT name, list_order FROM task_contexts WHERE id = ?;", new String[] { String.valueOf(taskContextId) });
-
-            // New TaskContext object, setting its ID, Name and Order.
-            if (cursor.moveToFirst()) taskContext = new TaskContext(taskContextId, cursor.getString(0), cursor.getLong(1));
-        } finally {
-            db.close();
-        }
-
-        return taskContext;
-    }
-
     // Returns all task contexts.
     public List<TaskContext> getAllTaskContexts() {
         List<TaskContext> taskContexts = new LinkedList<TaskContext>(); 
@@ -156,15 +141,40 @@ public class DataManager extends SQLiteOpenHelper {
 
             if (cursor.moveToFirst()) {
                 do {
-                    // New TaskContext object, setting its ID, Name and Order.
-                    taskContexts.add(new TaskContext(cursor.getLong(0), cursor.getString(1), cursor.getLong(2)));
+                    long id = cursor.getLong(0);
+                    String name = cursor.getString(1);
+                    long order = cursor.getLong(2);
+
+                    taskContexts.add(new TaskContext(id, name, order));
                 } while (cursor.moveToNext());
             }
-        } finally {
+        }
+        finally {
             db.close();
         }
 
         return taskContexts;
+    }
+
+    public TaskContext getTaskContext(long id) {
+        TaskContext taskContext = null;
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT name, list_order FROM task_contexts WHERE id = ?;", new String[] { String.valueOf(id) });
+
+            if (cursor.moveToFirst()) {
+                String name = cursor.getString(0);
+                long order = cursor.getLong(1);
+                taskContext = new TaskContext(id, name, order);
+            }
+        }
+        finally {
+            db.close();
+        }
+
+        return taskContext;
     }
 
     // Creates or updates a task context in the database.
@@ -172,13 +182,13 @@ public class DataManager extends SQLiteOpenHelper {
     // inserts a new row in the "task_contexts" table
     // ignoring that ID. Otherwise, it updates the row
     // of the given ID.
-    public void saveTaskContext(TaskContext taskContext) {
+    public void saveTaskContext(TaskContext context) {
         SQLiteDatabase db = null;
-        long id = taskContext.getId();
+        long id = context.getId();
 
         ContentValues values = new ContentValues();
-        values.put("name", taskContext.getName());
-        values.put("list_order", taskContext.getOrder());
+        values.put("name", context.getName());
+        values.put("list_order", context.getOrder());
 
         try {
             db = getWritableDatabase();
@@ -204,15 +214,18 @@ public class DataManager extends SQLiteOpenHelper {
     //
     // Every returned task is incomplete because this method is used
     // to get a list of tasks, without displaying every task's details.
-    public List<Task> getAllCurrentOpenTasks(TaskContext taskContext) {
+    public List<Task> getAllCurrentOpenTasks(TaskContext context) {
         List<Task> tasks = new LinkedList<Task>();
-        long taskContextId = taskContext.getId();
-        String currentDay = getIso8601FormattedDate(Calendar.getInstance());
+        long taskContextId = context.getId();
+
+        DateTimeTool tool = new DateTimeTool();
+        String currentDay = tool.getIso8601DateTime(Calendar.getInstance());
+
         SQLiteDatabase db = null;
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT tasks.id, tasks.title " +
+            Cursor cursor = db.rawQuery("SELECT id, title, start_datetime, deadline_datetime " +
                 "FROM tasks " +
                 "WHERE tasks.task_context_id = ? AND " +
                 "(tasks.start_datetime IS NULL OR tasks.start_datetime = '' OR tasks.start_datetime <= ?) AND " +
@@ -220,11 +233,20 @@ public class DataManager extends SQLiteOpenHelper {
 
             if (cursor.moveToFirst()) {
                 do {
-                    // New Task object setting its ID, Task Context ID and Title.
-                    tasks.add(new Task(cursor.getLong(0), taskContextId, cursor.getString(1), null, null, null, false, null, null, null, null));
-                } while (cursor.moveToNext());
+                    long id = cursor.getLong(0);
+                    String title = cursor.getString(1);
+                    Calendar start = tool.getCalendar(cursor.getString(2));
+                    Calendar deadline = tool.getCalendar(cursor.getString(3));
+                    List<Long> tags = new LinkedList<Long>();
+                    List<Long> subtasks = new LinkedList<Long>();
+                    List<Long> requiredTasks = new LinkedList<Long>();
+
+                    tasks.add(new Task(id, taskContextId, title, null, start, deadline, false, null, tags, subtasks, requiredTasks));
+                }
+                while (cursor.moveToNext());
             }
-        } finally {
+        }
+        finally {
             db.close();
         }
 
@@ -240,17 +262,19 @@ public class DataManager extends SQLiteOpenHelper {
         SQLiteDatabase db = null;
         long id = task.getId();
 
+        DateTimeTool tool = new DateTimeTool();
+
         ContentValues values = new ContentValues();
         values.put("task_context_id", task.getTaskContextId());
         values.put("title", task.getTitle());
         values.put("description", task.getDescription());
-        values.put("start_datetime", getIso8601FormattedDate(task.getStartDateTime()));
-        values.put("end_datetime", getIso8601FormattedDate(task.getEndDateTime()));
+        values.put("start_datetime", tool.getIso8601DateTime(task.getStart()));
+        values.put("deadline_datetime", tool.getIso8601DateTime(task.getDeadline()));
 
         if (task.isDone()) values.put("done", 1);
         else values.put("done", 0);
             
-        values.put("done_datetime", getIso8601FormattedDate(task.getDoneDateTime()));
+        values.put("done_datetime", tool.getIso8601DateTime(task.getDoneTime()));
 
         try {
             db = getWritableDatabase();
@@ -261,19 +285,5 @@ public class DataManager extends SQLiteOpenHelper {
         finally {
             db.close();
         }
-    }
-
-    private String getIso8601FormattedDate(Calendar calendar) {
-        String date = null;
-
-        if (calendar != null) {
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            date = String.format("%d-%02d-%02d 00:00:00.000", year, month, day);
-        }
-
-        return date; 
     }
 }

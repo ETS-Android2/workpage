@@ -18,8 +18,11 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="dates">Dates:</string>
-    <string name="from">From:</string>
-    <string name="to">To:</string>
+    <string name="start">Start:</string>
+    <string name="deadline">Deadline:</string>
+    <string name="task_start">Start: %1$s</string>
+    <string name="task_deadline">Deadline: %1$s</string>
+    <string name="task_start_deadline">Start: %1$s | Deadline: %2$s</string>
     <string name="save">Save</string>
     <string name="title_error">Please, enter the title.</string>
     <string name="dates_error">Please, enter valid dates.</string>

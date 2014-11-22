@@ -4,7 +4,16 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView android:id="@+id/title_textview"
+    <TextView android:id="@+id/taskrow_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp" />
+
+    <TextView android:id="@+id/taskrow_details_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView android:id="@+id/taskrow_details_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

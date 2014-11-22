@@ -8,10 +8,10 @@ public class Task extends Entity {
     private long taskContextId;
     private String title;
     private String description;
-    private Calendar startDateTime;
-    private Calendar endDateTime;
+    private Calendar start;
+    private Calendar deadline;
     private boolean done;
-    private Calendar doneDateTime;
+    private Calendar doneTime;
 
     private List<Long> tags;
     private List<Long> subtasks;
@@ -23,10 +23,10 @@ public class Task extends Entity {
         taskContextId = -1;
         title = "";
         description = "";
-        startDateTime = null;
-        endDateTime = null;
+        start = null;
+        deadline = null;
         done = false;
-        doneDateTime = null;
+        doneTime = null;
 
         tags = new LinkedList<Long>();
         subtasks = new LinkedList<Long>();
@@ -34,7 +34,7 @@ public class Task extends Entity {
     }
 
     public Task(long taskContextId, String title, String description,
-        Calendar startDateTime, Calendar endDateTime, boolean done, Calendar doneDateTime,
+        Calendar start, Calendar deadline, boolean done, Calendar doneTime,
         List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
 
         super();
@@ -42,10 +42,10 @@ public class Task extends Entity {
         this.taskContextId = taskContextId;
         this.title = title;
         this.description = description;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.start = start;
+        this.deadline = deadline;
         this.done = done;
-        this.doneDateTime = doneDateTime;
+        this.doneTime = doneTime;
 
         this.tags = tags;
         this.subtasks = subtasks;
@@ -53,7 +53,7 @@ public class Task extends Entity {
     }
 
     public Task(long id, long taskContextId, String title, String description,
-        Calendar startDateTime, Calendar endDateTime, boolean done, Calendar doneDateTime,
+        Calendar start, Calendar deadline, boolean done, Calendar doneTime,
         List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
 
         super(id);
@@ -61,10 +61,10 @@ public class Task extends Entity {
         this.taskContextId = taskContextId;
         this.title = title;
         this.description = description;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.start = start;
+        this.deadline = deadline;
         this.done = done;
-        this.doneDateTime = doneDateTime;
+        this.doneTime = doneTime;
 
         this.tags = tags;
         this.subtasks = subtasks;
@@ -83,20 +83,20 @@ public class Task extends Entity {
         return description;
     }
 
-    public Calendar getStartDateTime() {
-        return startDateTime;
+    public Calendar getStart() {
+        return start;
     }
 
-    public Calendar getEndDateTime() {
-        return endDateTime;
+    public Calendar getDeadline() {
+        return deadline;
     }
 
     public boolean isDone() {
         return done;
     }
 
-    public Calendar getDoneDateTime() {
-        return doneDateTime;
+    public Calendar getDoneTime() {
+        return doneTime;
     }
 
     public List<Long> getTags() {
@@ -123,20 +123,20 @@ public class Task extends Entity {
         this.description = description;
     }
 
-    public void setStartDateTime(Calendar startDateTime) {
-        this.startDateTime = startDateTime;
+    public void setStart(Calendar start) {
+        this.start = start;
     }
 
-    public void setEndDateTime(Calendar endDateTime) {
-        this.endDateTime = endDateTime;
+    public void setDeadline(Calendar deadline) {
+        this.deadline = deadline;
     }
 
     public void setDone(boolean done) {
         this.done = done;
     }
 
-    public void setDoneDateTime(Calendar doneDateTime) {
-        this.doneDateTime = doneDateTime;
+    public void setDoneTime(Calendar doneTime) {
+        this.doneTime = doneTime;
     }
 
     public void setTags(List<Long> tags) {
