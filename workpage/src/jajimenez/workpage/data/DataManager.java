@@ -153,13 +153,11 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT * FROM task_contexts ORDER BY list_order;", null);
-            TaskContext taskContext = null;
 
             if (cursor.moveToFirst()) {
                 do {
                     // New TaskContext object, setting its ID, Name and Order.
-                    taskContext = new TaskContext(cursor.getLong(0), cursor.getString(1), cursor.getLong(2));
-                    taskContexts.add(taskContext);
+                    taskContexts.add(new TaskContext(cursor.getLong(0), cursor.getString(1), cursor.getLong(2)));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -193,16 +191,20 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
-    // Returns all open tasks that belong to a given task context.
+    // Returns all open tasks that belong to a given task context and
+    // that could be done at the current moment.
+    //
+    // A current open task means one of the following cases:
+    // 1) It's due for the current day.
+    // 2) It's due for a range of dates that includes the current day.
+    // 3) It doesn't have any date set (that means it could be done
+    //    in the current day or as soon as possible).
+    // 4) It was due for a day or range of days before the current day
+    //    but it's not done yet (it's delayed).
     //
     // Every returned task is incomplete because this method is used
     // to get a list of tasks, without displaying every task's details.
-    //
-    // An open task means it's due for the current day or it's due
-    // for a range of dates that includes the current day or it 
-    // doesn't have any date set (that means it could be done
-    // in the current day or as soon as possible).
-    public List<Task> getAllOpenTasks(TaskContext taskContext) {
+    public List<Task> getAllCurrentOpenTasks(TaskContext taskContext) {
         List<Task> tasks = new LinkedList<Task>();
         long taskContextId = taskContext.getId();
         String currentDay = getIso8601FormattedDate(Calendar.getInstance());
@@ -214,16 +216,12 @@ public class DataManager extends SQLiteOpenHelper {
                 "FROM tasks " +
                 "WHERE tasks.task_context_id = ? AND " +
                 "(tasks.start_datetime IS NULL OR tasks.start_datetime = '' OR tasks.start_datetime <= ?) AND " +
-                "(tasks.end_datetime IS NULL OR tasks.start_datetime = '' OR tasks.end_datetime >= ?) AND " +
-                "tasks.done = 0;", new String[] { String.valueOf(taskContextId), currentDay, currentDay });
-
-            Task task = null;
+                "tasks.done = 0;", new String[] { String.valueOf(taskContextId), currentDay });
 
             if (cursor.moveToFirst()) {
                 do {
                     // New Task object setting its ID, Task Context ID and Title.
-                    task = new Task(cursor.getLong(0), taskContextId, cursor.getString(1), null, null, null, false, null, null, null, null);
-                    tasks.add(task);
+                    tasks.add(new Task(cursor.getLong(0), taskContextId, cursor.getString(1), null, null, null, false, null, null, null, null));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -266,7 +264,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     private String getIso8601FormattedDate(Calendar calendar) {
-        String date;
+        String date = null;
 
         if (calendar != null) {
             int year = calendar.get(Calendar.YEAR);
@@ -274,8 +272,6 @@ public class DataManager extends SQLiteOpenHelper {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             date = String.format("%d-%02d-%02d 00:00:00.000", year, month, day);
-        } else {
-            date = "";
         }
 
         return date; 

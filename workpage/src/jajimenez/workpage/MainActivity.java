@@ -54,7 +54,7 @@ public class MainActivity extends ListActivity {
 
     private void updateInterface() {
         setTitle(currentTaskContext.getName());
-        (new LoadAllOpenTasksDBTask()).execute();
+        (new LoadAllCurrentOpenTasksDBTask()).execute();
     }
 
     private void updateTaskListInterface(List<Task> tasks) {
@@ -158,10 +158,10 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    private class LoadAllOpenTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+    private class LoadAllCurrentOpenTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
         @Override
         protected List<Task> doInBackground(Void... parameters) {
-            return MainActivity.this.applicationLogic.getAllOpenTasks(MainActivity.this.currentTaskContext);
+            return MainActivity.this.applicationLogic.getAllCurrentOpenTasks(MainActivity.this.currentTaskContext);
         }
 
         @Override

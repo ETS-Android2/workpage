@@ -39,8 +39,8 @@ public class ApplicationLogic {
         editor.commit();
     }
 
-    public List<Task> getAllOpenTasks(TaskContext taskContext) {
-        return dataManager.getAllOpenTasks(taskContext);
+    public List<Task> getAllCurrentOpenTasks(TaskContext taskContext) {
+        return dataManager.getAllCurrentOpenTasks(taskContext);
     }
 
     public void saveTask(Task task) {
