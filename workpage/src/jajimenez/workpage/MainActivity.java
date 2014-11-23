@@ -17,11 +17,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.LayoutInflater;
+import android.view.ActionMode;
 import android.content.Context;
 import android.content.Intent;
 import android.content.DialogInterface;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.AbsListView;
+import android.widget.ListView;
 
 import jajimenez.workpage.R;
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -37,9 +40,46 @@ public class MainActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        createContextualMenu();
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+    }
+
+    private void createContextualMenu() {
+        ListView listView = getListView();
+
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override   
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.main_context, menu);
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                // Do nothing
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                // ToDo
+                return false;
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                // ToDo
+            }
+        });
     }
 
     @Override
