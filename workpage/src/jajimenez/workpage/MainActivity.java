@@ -130,13 +130,10 @@ public class MainActivity extends ListActivity {
             List<Long> taskTags = task.getTags();
 
             titleTextView.setText(title);
+            details1TextView.setText(getTaskDatesText(start, deadline));
 
             if (taskTags != null && taskTags.size() > 0) {
-                details2TextView.setText(getTaskDatesText(start, deadline));
-            }
-            else {
-                // ToDo: List task's tags
-                details1TextView.setText(getTaskDatesText(start, deadline));
+                // ToDo: List task's tags on "details2TextView"
             }
 
             return rowView;
