@@ -4,13 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText android:id="@+id/edittask_title"
+    <EditText android:id="@+id/editTask_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:hint="@string/title" />
 
-    <EditText android:id="@+id/edittask_description"
+    <EditText android:id="@+id/editTask_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text|textMultiLine"
@@ -30,27 +30,27 @@
         android:paddingLeft="20dp">
 
         <TableRow>
-            <CheckBox android:id="@+id/edittask_start_checkbox"
+            <CheckBox android:id="@+id/editTask_start_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10dp"
                 android:text="@string/start"
                 android:onClick="onStartCheckBoxClicked" />
 
-            <Button android:id="@+id/edittask_start_button"
+            <Button android:id="@+id/editTask_start_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onStartButtonClicked" />
         </TableRow>
         <TableRow>
-            <CheckBox android:id="@+id/edittask_deadline_checkbox"
+            <CheckBox android:id="@+id/editTask_deadline_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10dp"
                 android:text="@string/deadline"
                 android:onClick="onDeadlineCheckBoxClicked" />
 
-            <Button android:id="@+id/edittask_deadline_button"
+            <Button android:id="@+id/editTask_deadline_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onDeadlineButtonClicked" />

@@ -41,12 +41,12 @@ public class EditTaskActivity extends Activity {
         setContentView(R.layout.edit_task);
         (getActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        titleEditText = (EditText) findViewById(R.id.edittask_title);
-        descriptionEditText = (EditText) findViewById(R.id.edittask_description);
-        startCheckBox = (CheckBox) findViewById(R.id.edittask_start_checkbox);
-        deadlineCheckBox = (CheckBox) findViewById(R.id.edittask_deadline_checkbox);
-        startButton = (Button) findViewById(R.id.edittask_start_button);
-        deadlineButton = (Button) findViewById(R.id.edittask_deadline_button);
+        titleEditText = (EditText) findViewById(R.id.editTask_title);
+        descriptionEditText = (EditText) findViewById(R.id.editTask_description);
+        startCheckBox = (CheckBox) findViewById(R.id.editTask_start_checkbox);
+        deadlineCheckBox = (CheckBox) findViewById(R.id.editTask_deadline_checkbox);
+        startButton = (Button) findViewById(R.id.editTask_start_button);
+        deadlineButton = (Button) findViewById(R.id.editTask_deadline_button);
 
         applicationLogic = new ApplicationLogic(this);
 

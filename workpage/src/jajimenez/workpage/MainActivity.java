@@ -189,9 +189,9 @@ public class MainActivity extends ListActivity {
                 LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
                 itemView = inflater.inflate(resource, null);
 
-                titleTextView = (TextView) itemView.findViewById(R.id.tasklistitem_title);
-                details1TextView = (TextView) itemView.findViewById(R.id.tasklistitem_details_1);
-                details2TextView = (TextView) itemView.findViewById(R.id.tasklistitem_details_2);
+                titleTextView = (TextView) itemView.findViewById(R.id.taskListItem_title);
+                details1TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_1);
+                details2TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_2);
 
                 TaskItemViewTag viewTag = new TaskItemViewTag();
 
