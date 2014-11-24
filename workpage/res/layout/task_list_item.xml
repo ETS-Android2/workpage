@@ -2,18 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/task_list_item">
 
-    <TextView android:id="@+id/taskrow_title"
+    <TextView android:id="@+id/tasklistitem_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp" />
 
-    <TextView android:id="@+id/taskrow_details_1"
+    <TextView android:id="@+id/tasklistitem_details_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/taskrow_details_2"
+    <TextView android:id="@+id/tasklistitem_details_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </LinearLayout>

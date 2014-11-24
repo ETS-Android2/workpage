@@ -44,10 +44,12 @@ public class MainActivity extends ListActivity {
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+
+        updateInterface();
     }
 
     private void createContextualMenu() {
-        ListView listView = getListView();
+        final ListView listView = getListView();
 
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -77,15 +79,10 @@ public class MainActivity extends ListActivity {
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                // ToDo
+                int selectedTaskCount = listView.getCheckedItemCount();
+                mode.setTitle(MainActivity.this.getString(R.string.selected_tasks, selectedTaskCount));
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateInterface();
     }
 
     @Override
@@ -96,13 +93,19 @@ public class MainActivity extends ListActivity {
         return true;
     }
 
+    // This method will be called when coming back from EditTask activity.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) updateInterface();
+    }
+
     private void updateInterface() {
         setTitle(currentTaskContext.getName());
         (new LoadAllCurrentOpenTasksDBTask()).execute();
     }
 
     private void updateTaskListInterface(List<Task> tasks) {
-        TaskAdapter adapter = new TaskAdapter(this, R.layout.task_row, tasks);
+        TaskAdapter adapter = new TaskAdapter(this, R.layout.task_list_item, tasks);
         setListAdapter(adapter);
     }
 
@@ -116,7 +119,7 @@ public class MainActivity extends ListActivity {
         intent.putExtra("action", "new");
         intent.putExtra("task_context_id", currentTaskContext.getId());
 
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     public void onAboutItemSelected(MenuItem item) {
@@ -133,18 +136,18 @@ public class MainActivity extends ListActivity {
         }
 
         @Override
-        public View getView(int position, View rowView, ViewGroup parentViewGroup) {
+        public View getView(int position, View itemView, ViewGroup parentViewGroup) {
             TextView titleTextView = null;
             TextView details1TextView = null;
             TextView details2TextView = null;
 
-            if (rowView == null) {
+            if (itemView == null) {
                 LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
-                rowView = inflater.inflate(resource, null);
+                itemView = inflater.inflate(resource, null);
 
-                titleTextView = (TextView) rowView.findViewById(R.id.taskrow_title);
-                details1TextView = (TextView) rowView.findViewById(R.id.taskrow_details_1);
-                details2TextView = (TextView) rowView.findViewById(R.id.taskrow_details_2);
+                titleTextView = (TextView) itemView.findViewById(R.id.tasklistitem_title);
+                details1TextView = (TextView) itemView.findViewById(R.id.tasklistitem_details_1);
+                details2TextView = (TextView) itemView.findViewById(R.id.tasklistitem_details_2);
 
                 TaskRowViewTag viewTag = new TaskRowViewTag();
 
@@ -152,10 +155,10 @@ public class MainActivity extends ListActivity {
                 viewTag.details1TextView = details1TextView;
                 viewTag.details2TextView = details2TextView;
 
-                rowView.setTag(viewTag);
+                itemView.setTag(viewTag);
             }
             else {
-                TaskRowViewTag viewTag = (TaskRowViewTag) rowView.getTag();
+                TaskRowViewTag viewTag = (TaskRowViewTag) itemView.getTag();
 
                 titleTextView = viewTag.titleTextView;
                 details1TextView = viewTag.details1TextView;
@@ -176,7 +179,7 @@ public class MainActivity extends ListActivity {
                 // ToDo: List task's tags on "details2TextView"
             }
 
-            return rowView;
+            return itemView;
         }
 
         private String getTaskDatesText(Calendar start, Calendar deadline) {
@@ -190,15 +193,15 @@ public class MainActivity extends ListActivity {
                 formattedStart = tool.getInterfaceFormattedDate(start);
                 formattedDeadline = tool.getInterfaceFormattedDate(deadline);
 
-                text = getString(R.string.task_start_deadline, formattedStart, formattedDeadline);
+                text = MainActivity.this.getString(R.string.task_start_deadline, formattedStart, formattedDeadline);
             }
             else if (start != null) {
                 formattedStart = tool.getInterfaceFormattedDate(start);
-                text = getString(R.string.task_start, formattedStart);
+                text = MainActivity.this.getString(R.string.task_start, formattedStart);
             }
             else if (deadline != null) {
                 formattedDeadline = tool.getInterfaceFormattedDate(deadline);
-                text = getString(R.string.task_deadline, formattedDeadline);
+                text = MainActivity.this.getString(R.string.task_deadline, formattedDeadline);
             }
             else {
                 text = "";

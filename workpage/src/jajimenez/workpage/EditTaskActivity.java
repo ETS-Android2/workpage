@@ -110,6 +110,7 @@ public class EditTaskActivity extends Activity {
             Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show();
 
             // Close the activity
+            setResult(RESULT_OK);
             finish();
         }
         else if (!titleValid) {

@@ -12,6 +12,10 @@
     <string name="switch_task_context">Switch context</string>
     <string name="cancel">Cancel</string>
     <string name="no_tasks">There are no tasks.</string>
+    <string name="set_status">Set status</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="selected_tasks">%1$d selected</string>
 
     <string name="new_task">New task</string>
     <string name="edit_task">Edit task</string>
@@ -27,10 +31,6 @@
     <string name="title_error">Please, enter the title.</string>
     <string name="dates_error">Please, enter valid dates.</string>
     <string name="task_saved">Task saved.</string>
-
-    <string name="set_status">Set status</string>
-    <string name="edit">Edit</string>
-    <string name="delete">Delete</string>
 
     <string name="about">About</string>
     <string name="version">Version:</string>
