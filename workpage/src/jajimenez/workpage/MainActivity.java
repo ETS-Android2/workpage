@@ -60,7 +60,7 @@ public class MainActivity extends ListActivity {
             @Override   
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.main_context, menu);
+                inflater.inflate(R.menu.main_contextual_action_bar, menu);
 
                 return true;
             }
@@ -78,15 +78,15 @@ public class MainActivity extends ListActivity {
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.maincontext_menu_status:
+                    case R.id.mainContextualActionBar_menu_status:
                         // ToDo
                         // mode.finish(); --> Closes the context action bar
                         return true;
-                    case R.id.maincontext_menu_edit:
+                    case R.id.mainContextualActionBar_menu_edit:
                         // ToDo
                         // mode.finish(); --> Closes the context action bar
                         return true;
-                    case R.id.maincontext_menu_delete:
+                    case R.id.mainContextualActionBar_menu_delete:
                         DialogFragment fragment = new DeleteTaskDialogFragment(mode);
                         fragment.show(getFragmentManager(), "delete_task");
                         return true;
@@ -100,7 +100,7 @@ public class MainActivity extends ListActivity {
                 int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
                 mode.setTitle(MainActivity.this.getString(R.string.selected_tasks, selectedTaskCount));
 
-                MenuItem editItem = (mode.getMenu()).findItem(R.id.maincontext_menu_edit);
+                MenuItem editItem = (mode.getMenu()).findItem(R.id.mainContextualActionBar_menu_edit);
                 editItem.setEnabled(selectedTaskCount == 1);
             }
         });
