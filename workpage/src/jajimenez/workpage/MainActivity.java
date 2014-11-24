@@ -327,7 +327,7 @@ public class MainActivity extends ListActivity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            builder.setTitle(resources.getQuantityString(R.plurals.delete_selected_task, selectedTaskCount, selectedTaskCount));
+            builder.setMessage(resources.getQuantityString(R.plurals.delete_selected_task, selectedTaskCount, selectedTaskCount));
             builder.setNegativeButton(R.string.cancel, null);
             builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                 @Override
