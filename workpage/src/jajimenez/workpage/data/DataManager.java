@@ -226,10 +226,10 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT id, title, start_datetime, deadline_datetime " +
-                "FROM tasks " +
-                "WHERE tasks.task_context_id = ? AND " +
-                "(tasks.start_datetime IS NULL OR tasks.start_datetime = '' OR tasks.start_datetime <= ?) AND " +
-                "tasks.done = 0;", new String[] { String.valueOf(taskContextId), currentDay });
+                "FROM tasks WHERE task_context_id = ? AND " +
+                "(start_datetime IS NULL OR start_datetime = '' OR start_datetime <= ?) AND " +
+                "tasks.done = 0 " +
+                "ORDER BY deadline_datetime;", new String[] { String.valueOf(taskContextId), currentDay });
 
             if (cursor.moveToFirst()) {
                 do {
