@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:icon="@drawable/ic_action_settings"
+    <item android:id="@+id/maincontext_menu_status"
+        android:icon="@drawable/ic_action_settings"
         android:title="@string/set_status"
         android:showAsAction="ifRoom" />
 
-    <item android:icon="@drawable/ic_action_edit"
+    <item android:id="@+id/maincontext_menu_edit"
+        android:icon="@drawable/ic_action_edit"
         android:title="@string/edit"
         android:showAsAction="ifRoom" />
 
-    <item android:icon="@drawable/ic_action_discard"
+    <item android:id="@+id/maincontext_menu_delete"
+        android:icon="@drawable/ic_action_discard"
         android:title="@string/delete"
         android:showAsAction="ifRoom" />
 </menu>

@@ -3,7 +3,8 @@ package jajimenez.workpage;
 import java.util.Calendar;
 
 import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import android.util.SparseBooleanArray;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.Dialog;
@@ -11,6 +12,7 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.os.AsyncTask;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Menu;
@@ -25,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import jajimenez.workpage.R;
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -33,14 +36,17 @@ import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.Task;
 
 public class MainActivity extends ListActivity {
-    private ApplicationLogic applicationLogic = null;
-    private TaskContext currentTaskContext = null;
+    private ListView listView;
+
+    private ApplicationLogic applicationLogic;
+    private TaskContext currentTaskContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        createContextualMenu();
+        listView = getListView();
+        createContextualActionBar();
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = this.applicationLogic.getCurrentTaskContext();
@@ -48,9 +54,7 @@ public class MainActivity extends ListActivity {
         updateInterface();
     }
 
-    private void createContextualMenu() {
-        final ListView listView = getListView();
-
+    private void createContextualActionBar() {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override   
@@ -73,13 +77,27 @@ public class MainActivity extends ListActivity {
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                // ToDo
-                return false;
+                switch (item.getItemId()) {
+                    case R.id.maincontext_menu_status:
+                        // ToDo
+                        // mode.finish(); --> Closes the context action bar
+                        return true;
+                    case R.id.maincontext_menu_edit:
+                        // ToDo
+                        // mode.finish(); --> Closes the context action bar
+                        return true;
+                    case R.id.maincontext_menu_delete:
+                        DialogFragment fragment = new DeleteTaskDialogFragment(mode);
+                        fragment.show(getFragmentManager(), "delete_task");
+                        return true;
+                    default:
+                        return false;
+                }
             }
 
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                int selectedTaskCount = listView.getCheckedItemCount();
+                int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
                 mode.setTitle(MainActivity.this.getString(R.string.selected_tasks, selectedTaskCount));
             }
         });
@@ -109,6 +127,11 @@ public class MainActivity extends ListActivity {
         setListAdapter(adapter);
     }
 
+    private void updateTaskListInterfaceByRemove(List<Task> tasksToRemove) {
+        TaskAdapter adapter = (TaskAdapter) getListAdapter();
+        for (Task task : tasksToRemove) adapter.remove(task);
+    }
+
     public void onSwitchTaskContextItemSelected(MenuItem item) {
         DialogFragment fragment = new SwitchTaskContextDialogFragment();
         fragment.show(getFragmentManager(), "switch_task_context");
@@ -125,6 +148,24 @@ public class MainActivity extends ListActivity {
     public void onAboutItemSelected(MenuItem item) {
         Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);
+    }
+
+    private List<Task> getSelectedTasks() {
+        List<Task> selectedTasks = new LinkedList<Task>();
+        
+        TaskAdapter adapter = (TaskAdapter) getListAdapter();
+        SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
+        int itemCount = listView.getCount();
+
+        for (int i = 0; i < itemCount; i++) {
+            if (itemSelectedStates.get(i)) {
+                // The task with position "i" is selected.
+                Task task = adapter.getItem(i);
+                selectedTasks.add(task);
+            }
+        }
+
+        return selectedTasks;
     }
 
     private class TaskAdapter extends ArrayAdapter<Task> {
@@ -149,7 +190,7 @@ public class MainActivity extends ListActivity {
                 details1TextView = (TextView) itemView.findViewById(R.id.tasklistitem_details_1);
                 details2TextView = (TextView) itemView.findViewById(R.id.tasklistitem_details_2);
 
-                TaskRowViewTag viewTag = new TaskRowViewTag();
+                TaskItemViewTag viewTag = new TaskItemViewTag();
 
                 viewTag.titleTextView = titleTextView;
                 viewTag.details1TextView = details1TextView;
@@ -158,7 +199,7 @@ public class MainActivity extends ListActivity {
                 itemView.setTag(viewTag);
             }
             else {
-                TaskRowViewTag viewTag = (TaskRowViewTag) itemView.getTag();
+                TaskItemViewTag viewTag = (TaskItemViewTag) itemView.getTag();
 
                 titleTextView = viewTag.titleTextView;
                 details1TextView = viewTag.details1TextView;
@@ -210,10 +251,16 @@ public class MainActivity extends ListActivity {
             return text;
         }
 
-        private class TaskRowViewTag {
-            public TextView titleTextView = null;
-            public TextView details1TextView = null;
-            public TextView details2TextView = null;
+        private class TaskItemViewTag {
+            public TextView titleTextView;
+            public TextView details1TextView;
+            public TextView details2TextView;
+
+            public TaskItemViewTag() {
+                titleTextView = null;
+                details1TextView = null;
+                details2TextView = null;
+            }
         }
     }
 
@@ -259,6 +306,48 @@ public class MainActivity extends ListActivity {
 
                     dialog.dismiss();
                     MainActivity.this.updateInterface();
+                }
+            });
+
+            return builder.create();
+        }
+    }
+
+    private class DeleteTaskDialogFragment extends DialogFragment {
+        private ActionMode mode;
+
+        public DeleteTaskDialogFragment(ActionMode mode) {
+            this.mode = mode;
+        }
+
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final List<Task> selectedTasks = MainActivity.this.getSelectedTasks();
+            final int selectedTaskCount = selectedTasks.size();
+            final Resources resources = MainActivity.this.getResources();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(resources.getQuantityString(R.plurals.delete_selected_task, selectedTaskCount, selectedTaskCount));
+            builder.setNegativeButton(R.string.cancel, null);
+            builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    for (Task task : selectedTasks) {
+                        // ToDo: implement this method called:
+                        // MainActivity.this.applicationLogic.deleteTask(id);
+                    }
+
+                    String text = resources.getQuantityString(R.plurals.task_deleted, selectedTaskCount, selectedTaskCount);
+                    Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+
+                    // Close the dialog.
+                    dialog.dismiss();
+
+                    // Close the contextual action bar.
+                    DeleteTaskDialogFragment.this.mode.finish();
+
+                    // Update the list view.
+                    updateTaskListInterfaceByRemove(selectedTasks);
                 }
             });
 
