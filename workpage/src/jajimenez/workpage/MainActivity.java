@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.R;
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -101,7 +102,16 @@ public class MainActivity extends ListActivity {
                 mode.setTitle(MainActivity.this.getString(R.string.selected_tasks, selectedTaskCount));
 
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.mainContextualActionBar_menu_edit);
-                editItem.setEnabled(selectedTaskCount == 1);
+                Drawable editItemIcon = editItem.getIcon();
+
+                if (selectedTaskCount == 1) {
+                    editItem.setEnabled(true);
+                    editItemIcon.setAlpha(255);
+                }
+                else {
+                    editItem.setEnabled(false);
+                    editItemIcon.setAlpha(127);
+                }
             }
         });
     }
