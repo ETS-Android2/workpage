@@ -46,4 +46,8 @@ public class ApplicationLogic {
     public void saveTask(Task task) {
         dataManager.saveTask(task);
     }
+
+    public void deleteTasks(List<Task> tasks) {
+        dataManager.deleteTasks(tasks);
+    }
 }

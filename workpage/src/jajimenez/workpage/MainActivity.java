@@ -335,10 +335,7 @@ public class MainActivity extends ListActivity {
             builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    for (Task task : selectedTasks) {
-                        // ToDo: implement this method called:
-                        // MainActivity.this.applicationLogic.deleteTask(id);
-                    }
+                    MainActivity.this.applicationLogic.deleteTasks(selectedTasks);
 
                     String text = resources.getQuantityString(R.plurals.task_deleted, selectedTaskCount, selectedTaskCount);
                     Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();

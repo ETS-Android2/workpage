@@ -286,4 +286,16 @@ public class DataManager extends SQLiteOpenHelper {
             db.close();
         }
     }
+
+    public void deleteTasks(List<Task> tasks) {
+        SQLiteDatabase db = null;
+        
+        try {
+            db = getWritableDatabase();
+            for (Task t : tasks) db.delete("tasks", "id = ?", new String[] { String.valueOf(t.getId()) });
+        }
+        finally {
+            db.close();
+        }
+    }
 }
