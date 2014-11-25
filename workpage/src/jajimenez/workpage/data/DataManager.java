@@ -130,7 +130,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all task contexts.
     public List<TaskContext> getAllTaskContexts() {
-        List<TaskContext> taskContexts = new LinkedList<TaskContext>(); 
+        List<TaskContext> contexts = new LinkedList<TaskContext>(); 
         SQLiteDatabase db = null;
 
         try {
@@ -143,7 +143,7 @@ public class DataManager extends SQLiteOpenHelper {
                     String name = cursor.getString(1);
                     long order = cursor.getLong(2);
 
-                    taskContexts.add(new TaskContext(id, name, order));
+                    contexts.add(new TaskContext(id, name, order));
                 } while (cursor.moveToNext());
             }
         }
@@ -151,11 +151,11 @@ public class DataManager extends SQLiteOpenHelper {
             db.close();
         }
 
-        return taskContexts;
+        return contexts;
     }
 
     public TaskContext getTaskContext(long id) {
-        TaskContext taskContext = null;
+        TaskContext context = null;
         SQLiteDatabase db = null;
 
         try {
@@ -165,14 +165,14 @@ public class DataManager extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 String name = cursor.getString(0);
                 long order = cursor.getLong(1);
-                taskContext = new TaskContext(id, name, order);
+                context = new TaskContext(id, name, order);
             }
         }
         finally {
             db.close();
         }
 
-        return taskContext;
+        return context;
     }
 
     // Creates or updates a task context in the database.
@@ -199,6 +199,34 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
+    // Returns all the task tags that belong to a given task context.
+    public List<TaskTag> getAllTaskTags(TaskContext context) {
+        List<TaskTag> tags = new LinkedList<TaskTag>();
+
+        long contextId = context.getId();
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM task_tags ORDER BY list_order;", null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    long id = cursor.getLong(0);
+                    String name = cursor.getString(1);
+                    long order = cursor.getLong(2);
+
+                    tags.add(new TaskTag(id, contextId, name, order));
+                } while (cursor.moveToNext());
+            }
+        }
+        finally {
+            db.close();
+        }
+
+        return tags;
+    }
+
     // Returns all open tasks that belong to a given task context and
     // that could be done at the current moment.
     //
@@ -214,7 +242,7 @@ public class DataManager extends SQLiteOpenHelper {
     // to get a list of tasks, without displaying every task's details.
     public List<Task> getAllCurrentOpenTasks(TaskContext context) {
         List<Task> tasks = new LinkedList<Task>();
-        long taskContextId = context.getId();
+        long contextId = context.getId();
 
         DateTimeTool tool = new DateTimeTool();
         String currentDay = tool.getIso8601DateTime(Calendar.getInstance());
@@ -227,7 +255,7 @@ public class DataManager extends SQLiteOpenHelper {
                 "FROM tasks WHERE task_context_id = ? AND " +
                 "(start_datetime IS NULL OR start_datetime = '' OR start_datetime <= ?) AND " +
                 "tasks.done = 0 " +
-                "ORDER BY deadline_datetime;", new String[] { String.valueOf(taskContextId), currentDay });
+                "ORDER BY deadline_datetime;", new String[] { String.valueOf(contextId), currentDay });
 
             if (cursor.moveToFirst()) {
                 do {
@@ -239,7 +267,7 @@ public class DataManager extends SQLiteOpenHelper {
                     List<Long> subtasks = new LinkedList<Long>();
                     List<Long> requiredTasks = new LinkedList<Long>();
 
-                    tasks.add(new Task(id, taskContextId, title, null, start, deadline, false, null, tags, subtasks, requiredTasks));
+                    tasks.add(new Task(id, contextId, title, null, start, deadline, false, null, tags, subtasks, requiredTasks));
                 }
                 while (cursor.moveToNext());
             }
