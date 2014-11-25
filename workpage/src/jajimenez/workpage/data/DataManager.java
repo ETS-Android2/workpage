@@ -28,14 +28,6 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     @Override
-    public SQLiteDatabase getWritableDatabase() {
-        SQLiteDatabase db = super.getWritableDatabase();
-        db.execSQL("PRAGMA foreign_keys = ON;");
-
-        return db;
-    }
-
-    @Override
     public void onCreate(SQLiteDatabase db) {
         String taskContextsTableSql = "CREATE TABLE task_contexts (" +
             "id         INTEGER PRIMARY KEY, " +
@@ -128,6 +120,12 @@ public class DataManager extends SQLiteOpenHelper {
         db.execSQL(taskContextsTableSql);
 
         onCreate(db);
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
     }
 
     // Returns all task contexts.
