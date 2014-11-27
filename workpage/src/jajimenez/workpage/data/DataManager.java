@@ -178,7 +178,8 @@ public class DataManager extends SQLiteOpenHelper {
     // Creates or updates a task context in the database.
     // If the ID of the task context is less than 0, it
     // inserts a new row in the "task_contexts" table
-    // ignoring that ID. Otherwise, it updates the row
+    // ignoring that ID and updates the ID attribute of
+    // the TaskContext given object. Otherwise, it updates the row
     // of the given ID.
     public void saveTaskContext(TaskContext context) {
         SQLiteDatabase db = null;
@@ -191,8 +192,13 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getWritableDatabase();
             
-            if (id < 0) db.insert("task_contexts", null, values);
-            else db.update("task_contexts", values, "id = ?", new String[] { String.valueOf(id) });
+            if (id < 0) {
+                long newId = db.insert("task_contexts", null, values);
+                context.setId(newId);
+            }
+            else {
+                db.update("task_contexts", values, "id = ?", new String[] { String.valueOf(id) });
+            }
         }
         finally {
             db.close();
@@ -231,7 +237,7 @@ public class DataManager extends SQLiteOpenHelper {
     // If the ID of the task tag is less than 0, it
     // inserts a new row in the "task_tags" table
     // ignoring that ID and updates the ID attribute
-    // of the given tag object. Otherwise, it updates
+    // of the given TaskTag object. Otherwise, it updates
     // the row of the given ID.
     public void saveTaskTag(TaskTag tag) {
         SQLiteDatabase db = null;
@@ -313,7 +319,8 @@ public class DataManager extends SQLiteOpenHelper {
     // Creates or updates a task in the database.
     // If the ID of the task is less than 0, it
     // inserts a new row in the "tasks" table
-    // ignoring that ID. Otherwise, it updates
+    // ignoring that ID and updates the ID attribute
+    // of the given Task object. Otherwise, it updates
     // the row of the given ID.
     public void saveTask(Task task) {
         SQLiteDatabase db = null;
@@ -336,8 +343,13 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getWritableDatabase();
             
-            if (id < 0) db.insert("tasks", null, values);
-            else db.update("tasks", values, "id = ?", new String[] { String.valueOf(id) });
+            if (id < 0) {
+                long newId = db.insert("tasks", null, values);
+                task.setId(newId);
+            }
+            else {
+                db.update("tasks", values, "id = ?", new String[] { String.valueOf(id) });
+            }
         }
         finally {
             db.close();
