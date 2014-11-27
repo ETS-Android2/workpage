@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Calendar;
 
 public class Task extends Entity {
-    private long taskContextId;
+    private long contextId;
     private String title;
     private String description;
     private Calendar start;
@@ -20,7 +20,7 @@ public class Task extends Entity {
     public Task() {
         super();
         
-        taskContextId = -1;
+        contextId = -1;
         title = "";
         description = "";
         start = null;
@@ -33,13 +33,13 @@ public class Task extends Entity {
         requiredTasks = new LinkedList<Long>();
     }
 
-    public Task(long taskContextId, String title, String description,
+    public Task(long contextId, String title, String description,
         Calendar start, Calendar deadline, boolean done, Calendar doneTime,
         List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
 
         super();
 
-        this.taskContextId = taskContextId;
+        this.contextId = contextId;
         this.title = title;
         this.description = description;
         this.start = start;
@@ -52,13 +52,13 @@ public class Task extends Entity {
         this.requiredTasks = requiredTasks;
     }
 
-    public Task(long id, long taskContextId, String title, String description,
+    public Task(long id, long contextId, String title, String description,
         Calendar start, Calendar deadline, boolean done, Calendar doneTime,
         List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
 
         super(id);
 
-        this.taskContextId = taskContextId;
+        this.contextId = contextId;
         this.title = title;
         this.description = description;
         this.start = start;
@@ -71,8 +71,8 @@ public class Task extends Entity {
         this.requiredTasks = requiredTasks;
     }
 
-    public long getTaskContextId() {
-        return taskContextId;
+    public long getContextId() {
+        return contextId;
     }
 
     public String getTitle() {
@@ -111,8 +111,8 @@ public class Task extends Entity {
         return requiredTasks;
     }
 
-    public void setTaskContextId(long taskContextId) {
-        this.taskContextId = taskContextId;
+    public void setContextId(long contextId) {
+        this.contextId = contextId;
     }
 
     public void setTitle(String title) {

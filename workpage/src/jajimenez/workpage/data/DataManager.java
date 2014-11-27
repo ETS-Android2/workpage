@@ -227,6 +227,37 @@ public class DataManager extends SQLiteOpenHelper {
         return tags;
     }
 
+    // Creates or updates a task tag in the database.
+    // If the ID of the task tag is less than 0, it
+    // inserts a new row in the "task_tags" table
+    // ignoring that ID and updates the ID attribute
+    // of the given tag object. Otherwise, it updates
+    // the row of the given ID.
+    public void saveTaskTag(TaskTag tag) {
+        SQLiteDatabase db = null;
+        long id = tag.getId();
+
+        ContentValues values = new ContentValues();
+        values.put("task_context_id", tag.getContextId());
+        values.put("name", tag.getName());
+        values.put("list_order", tag.getOrder());
+
+        try {
+            db = getWritableDatabase();
+            
+            if (id < 0) {
+                long newId = db.insert("task_tags", null, values);
+                tag.setId(newId);
+            }
+            else {
+                db.update("task_tags", values, "id = ?", new String[] { String.valueOf(id) });
+            }
+        }
+        finally {
+            db.close();
+        }
+    }
+
     // Returns all open tasks that belong to a given task context and
     // that could be done at the current moment.
     //
@@ -291,7 +322,7 @@ public class DataManager extends SQLiteOpenHelper {
         DateTimeTool tool = new DateTimeTool();
 
         ContentValues values = new ContentValues();
-        values.put("task_context_id", task.getTaskContextId());
+        values.put("task_context_id", task.getContextId());
         values.put("title", task.getTitle());
         values.put("description", task.getDescription());
         values.put("start_datetime", tool.getIso8601DateTime(task.getStart()));
