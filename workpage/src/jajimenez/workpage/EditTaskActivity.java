@@ -2,6 +2,7 @@ package jajimenez.workpage;
 
 import java.util.Calendar;
 
+import java.util.List;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DatePickerDialog;
@@ -16,24 +17,32 @@ import android.widget.CheckBox;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
+import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
 import android.content.Intent;
+import android.text.TextWatcher;
+import android.text.Editable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
+import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class EditTaskActivity extends Activity {
-    private EditText titleEditText = null;
-    private EditText descriptionEditText = null;
-    private CheckBox startCheckBox = null;
-    private CheckBox deadlineCheckBox = null;
-    private Button startButton = null;
-    private Button deadlineButton = null;
+    private EditText titleEditText;
+    private EditText descriptionEditText;
+    private CheckBox startCheckBox;
+    private CheckBox deadlineCheckBox;
+    private Button startButton;
+    private Button deadlineButton;
+    private AutoCompleteTextView addTagAutoTextView;
+    private Button addTagButton; 
 
-    private ApplicationLogic applicationLogic = null;
-    private Task currentTask = null;
-    private Calendar selectedStartDate = null;
-    private Calendar selectedDeadlineDate = null;
+    private ApplicationLogic applicationLogic;
+    private Task currentTask;
+    private Calendar selectedStartDate;
+    private Calendar selectedDeadlineDate;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,8 @@ public class EditTaskActivity extends Activity {
         deadlineCheckBox = (CheckBox) findViewById(R.id.editTask_deadline_checkbox);
         startButton = (Button) findViewById(R.id.editTask_start_button);
         deadlineButton = (Button) findViewById(R.id.editTask_deadline_button);
+        addTagAutoTextView = (AutoCompleteTextView) findViewById(R.id.editTask_addTag_autotextview);
+        addTagButton = (Button) findViewById(R.id.editTask_addTag_button);
 
         applicationLogic = new ApplicationLogic(this);
 
@@ -59,7 +70,7 @@ public class EditTaskActivity extends Activity {
         }
         else {
             currentTask = new Task();
-            currentTask.setTaskContextId(intent.getLongExtra("task_context_id", -1));
+            currentTask.setContextId(intent.getLongExtra("task_context_id", -1));
 
             selectedStartDate = Calendar.getInstance();
             selectedDeadlineDate = Calendar.getInstance();
@@ -69,7 +80,34 @@ public class EditTaskActivity extends Activity {
             deadlineButton.setEnabled(false);
         }
 
+        setTagCompletionSuggestions();
+        addTagAutoTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                EditTaskActivity.this.addTagButton.setEnabled(after > 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Nothing to do.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Nothing to do.
+            }
+        });
+
+        addTagButton.setEnabled(false);
         updateInterface();
+    }
+
+    private void setTagCompletionSuggestions() {
+        TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
+        List<TaskTag> tags = applicationLogic.getAllTaskTags(context);
+
+        ArrayAdapter<TaskTag> adapter = new ArrayAdapter<TaskTag>(this, android.R.layout.simple_dropdown_item_1line, tags);
+        addTagAutoTextView.setAdapter(adapter);
     }
 
     @Override
@@ -137,6 +175,16 @@ public class EditTaskActivity extends Activity {
     public void onDeadlineButtonClicked(View view) {
         DialogFragment fragment = new DatePickerDialogFragment(selectedDeadlineDate);
         fragment.show(getFragmentManager(), "deadline_date_picker");
+    }
+
+    public void onAddTagButtonClicked(View view) {
+        String name = (addTagAutoTextView.getText()).toString();
+        TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0);
+
+        (currentTask.getTags()).add(tag);
+        // ToDo: Show tag in activity. 
+        // ToDo: remove tag from suggestions (from adapter)
+        addTagAutoTextView.setText("");
     }
 
     private class DatePickerDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {

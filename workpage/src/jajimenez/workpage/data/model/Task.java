@@ -13,7 +13,7 @@ public class Task extends Entity {
     private boolean done;
     private Calendar doneTime;
 
-    private List<Long> tags;
+    private List<TaskTag> tags;
     private List<Long> subtasks;
     private List<Long> requiredTasks;
 
@@ -28,14 +28,14 @@ public class Task extends Entity {
         done = false;
         doneTime = null;
 
-        tags = new LinkedList<Long>();
+        tags = new LinkedList<TaskTag>();
         subtasks = new LinkedList<Long>();
         requiredTasks = new LinkedList<Long>();
     }
 
     public Task(long contextId, String title, String description,
         Calendar start, Calendar deadline, boolean done, Calendar doneTime,
-        List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
+        List<TaskTag> tags, List<Long> subtasks, List<Long> requiredTasks) {
 
         super();
 
@@ -54,7 +54,7 @@ public class Task extends Entity {
 
     public Task(long id, long contextId, String title, String description,
         Calendar start, Calendar deadline, boolean done, Calendar doneTime,
-        List<Long> tags, List<Long> subtasks, List<Long> requiredTasks) {
+        List<TaskTag> tags, List<Long> subtasks, List<Long> requiredTasks) {
 
         super(id);
 
@@ -99,7 +99,7 @@ public class Task extends Entity {
         return doneTime;
     }
 
-    public List<Long> getTags() {
+    public List<TaskTag> getTags() {
         return tags;
     }
 
@@ -139,7 +139,7 @@ public class Task extends Entity {
         this.doneTime = doneTime;
     }
 
-    public void setTags(List<Long> tags) {
+    public void setTags(List<TaskTag> tags) {
         this.tags = tags;
     }
 

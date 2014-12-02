@@ -44,6 +44,10 @@ public class ApplicationLogic {
         return dataManager.getAllCurrentOpenTasks(context);
     }
 
+    public TaskContext getTaskContext(long id) {
+        return dataManager.getTaskContext(id);
+    }
+
     public List<TaskTag> getAllTaskTags(TaskContext context) {
         return dataManager.getAllTaskTags(context);
     }

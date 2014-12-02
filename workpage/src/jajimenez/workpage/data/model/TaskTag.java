@@ -1,6 +1,8 @@
 package jajimenez.workpage.data.model;
 
-public class TaskTag extends Entity {
+import java.lang.Comparable;
+
+public class TaskTag extends Entity implements Comparable<TaskTag> {
     private long contextId;
     private String name;
     private long order;
@@ -51,5 +53,22 @@ public class TaskTag extends Entity {
 
     public void setOrder(long order) {
         this.order = order;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof TaskTag && compareTo((TaskTag) other) == 0);
+    }
+
+    public int compareTo(TaskTag other) {
+        int result = 1;
+        if (other != null) result = this.name.compareTo(other.name);
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

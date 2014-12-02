@@ -56,4 +56,32 @@
                 android:onClick="onDeadlineButtonClicked" />
         </TableRow>
     </TableLayout>
+
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textStyle="bold"
+        android:text="@string/tags" />
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+            <AutoCompleteTextView android:id="@+id/editTask_addTag_autotextview"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="text"
+                android:completionThreshold="1"
+                android:hint="@string/tag_name" />
+            
+            <Button android:id="@+id/editTask_addTag_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add"
+                android:onClick="onAddTagButtonClicked" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/editTag_tags_linearlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

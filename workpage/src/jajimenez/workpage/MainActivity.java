@@ -34,6 +34,7 @@ import jajimenez.workpage.R;
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class MainActivity extends ListActivity {
@@ -224,7 +225,7 @@ public class MainActivity extends ListActivity {
             String title = task.getTitle();
             Calendar start = task.getStart();
             Calendar deadline = task.getDeadline();
-            List<Long> taskTags = task.getTags();
+            List<TaskTag> taskTags = task.getTags();
 
             titleTextView.setText(title);
             details1TextView.setText(getTaskDatesText(start, deadline));

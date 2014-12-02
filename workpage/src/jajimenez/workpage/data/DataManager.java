@@ -17,10 +17,10 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class DataManager extends SQLiteOpenHelper {
-    private Context context;
-
     public static final String DB_NAME = "workpage.db";
     public static final int DB_VERSION = 1;
+
+    private Context context;
 
     public DataManager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -144,7 +144,8 @@ public class DataManager extends SQLiteOpenHelper {
                     long order = cursor.getLong(2);
 
                     contexts.add(new TaskContext(id, name, order));
-                } while (cursor.moveToNext());
+                }
+                while (cursor.moveToNext());
             }
         }
         finally {
@@ -214,7 +215,8 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT * FROM task_tags ORDER BY list_order;", null);
+            Cursor cursor = db.rawQuery("SELECT id, name, list_order FROM task_tags WHERE task_context_id = ? " +
+                "ORDER BY list_order;", new String[] { String.valueOf(contextId) });
 
             if (cursor.moveToFirst()) {
                 do {
@@ -223,7 +225,8 @@ public class DataManager extends SQLiteOpenHelper {
                     long order = cursor.getLong(2);
 
                     tags.add(new TaskTag(id, contextId, name, order));
-                } while (cursor.moveToNext());
+                }
+                while (cursor.moveToNext());
             }
         }
         finally {
@@ -233,14 +236,53 @@ public class DataManager extends SQLiteOpenHelper {
         return tags;
     }
 
-    // Creates or updates a task tag in the database.
-    // If the ID of the task tag is less than 0, it
-    // inserts a new row in the "task_tags" table
-    // ignoring that ID and updates the ID attribute
-    // of the given TaskTag object. Otherwise, it updates
-    // the row of the given ID.
-    public void saveTaskTag(TaskTag tag) {
-        SQLiteDatabase db = null;
+    // Returns all the task tags related to a given task, using an already open DB connection.
+    // This is an auxiliar method intended to be used only inside the "getTask" method.
+    private List<TaskTag> getAllTaskTags(SQLiteDatabase db, long taskId) {
+        List<TaskTag> tags = new LinkedList<TaskTag>();
+
+        Cursor cursor = db.rawQuery("SELECT t.id, t.task_context_id, t.name, t.list_order FROM task_tags AS t, task_tag_relationships AS r " +
+            "WHERE t.id = r.task_tag_id AND r.task_id = ? " +
+            "ORDER BY t.list_order;", new String[] { String.valueOf(taskId) });
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(0);
+                long contextId = cursor.getLong(1);
+                String name = cursor.getString(2);
+                long order = cursor.getLong(3);
+
+                tags.add(new TaskTag(id, contextId, name, order));
+            }
+            while (cursor.moveToNext());
+        }
+
+        return tags;
+    }
+
+    // This is an auxiliar method intended to be used only inside the "getTask" method.
+    private TaskTag getTaskTag(SQLiteDatabase db, String name) {
+        TaskTag tag = null;
+
+        Cursor cursor = db.rawQuery("SELECT id, task_context_id, list_order FROM task_tags " +
+            "WHERE name = ? " +
+            "ORDER BY list_order;", new String[] { name });
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(0);
+                long contextId = cursor.getLong(1);
+                long order = cursor.getLong(2);
+
+                tag = new TaskTag(id, contextId, name, order);
+            }
+            while (cursor.moveToNext());
+        }
+
+        return tag;
+    }
+
+    private void saveTaskTag(SQLiteDatabase db, TaskTag tag) {
         long id = tag.getId();
 
         ContentValues values = new ContentValues();
@@ -248,16 +290,21 @@ public class DataManager extends SQLiteOpenHelper {
         values.put("name", tag.getName());
         values.put("list_order", tag.getOrder());
 
+        if (id < 0) {
+            long newId = db.insert("task_tags", null, values);
+            tag.setId(newId);
+        }
+        else {
+            db.update("task_tags", values, "id = ?", new String[] { String.valueOf(id) });
+        }
+    }
+    
+    public void saveTaskTag(TaskTag tag) {
+        SQLiteDatabase db = null;
+
         try {
             db = getWritableDatabase();
-            
-            if (id < 0) {
-                long newId = db.insert("task_tags", null, values);
-                tag.setId(newId);
-            }
-            else {
-                db.update("task_tags", values, "id = ?", new String[] { String.valueOf(id) });
-            }
+            saveTaskTag(db, tag);    
         }
         finally {
             db.close();
@@ -300,7 +347,7 @@ public class DataManager extends SQLiteOpenHelper {
                     String title = cursor.getString(1);
                     Calendar start = tool.getCalendar(cursor.getString(2));
                     Calendar deadline = tool.getCalendar(cursor.getString(3));
-                    List<Long> tags = new LinkedList<Long>();
+                    List<TaskTag> tags = getAllTaskTags(db, id);
                     List<Long> subtasks = new LinkedList<Long>();
                     List<Long> requiredTasks = new LinkedList<Long>();
 
@@ -350,9 +397,55 @@ public class DataManager extends SQLiteOpenHelper {
             else {
                 db.update("tasks", values, "id = ?", new String[] { String.valueOf(id) });
             }
+
+            updateTaskTagRelationships(db, task);
         }
         finally {
             db.close();
+        }
+    }
+
+    // This is an auxiliar method intended to be used only inside the "saveTask" method.
+    // "db" must represent an already open DB.
+    private void updateTaskTagRelationships(SQLiteDatabase db, Task task) {
+        // Delete old tag relationships
+        long taskId = task.getId();
+
+        List<TaskTag> oldTags = getAllTaskTags(db, taskId); // Every old tag has a valid ID in the DB, as they come from the DB.
+        List<TaskTag> newTags = task.getTags();             // Every new task can have or not a valid ID in the DB, as they come from the application.
+
+        // The comparison to know if a task is contained in a list is through the
+        // name of the task, not the ID (see method "equals" in TaskTag class. 
+        for (TaskTag t : oldTags) {
+            if (!newTags.contains(t)) {
+                long oldTagId = t.getId();
+                db.delete("task_tag_relationships", "task_id = ? AND task_tag_id = ?", new String[] { String.valueOf(taskId), String.valueOf(oldTagId) });
+            }
+        }
+
+        // Save new tags and tag relationships
+        for (TaskTag tag : newTags) {
+            // Check if the tag already exists in the DB. If not, we save it
+            // (this is needed before saving the task tag relationship).
+            TaskTag dbTag = getTaskTag(db, tag.getName());
+
+            // If "tag" is null, it means that it does not exist in the DB yet. In that case, we save it.
+            // After saving it in the DB, the "tag" object will contain its actual ID in the DB, returned
+            // by the function "saveTaskTag".
+            if (dbTag == null) saveTaskTag(db, tag);
+            long tagId = tag.getId();
+
+            // Check if relationship already exists. If not, we create it.
+            Cursor cursor = db.rawQuery("SELECT * FROM task_tag_relationships " +
+                "WHERE task_id = ? AND task_tag_id = ?;", new String[] { String.valueOf(taskId), String.valueOf(tagId)});
+
+            if (!cursor.moveToFirst()) {
+                ContentValues tagRelValues = new ContentValues();
+                tagRelValues.put("task_id", taskId);
+                tagRelValues.put("task_tag_id", tagId);
+
+                db.insert("task_tag_relationships", null, tagRelValues);
+            }
         }
     }
 
