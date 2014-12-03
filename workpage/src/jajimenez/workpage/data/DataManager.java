@@ -425,15 +425,27 @@ public class DataManager extends SQLiteOpenHelper {
 
         // Save new tags and tag relationships
         for (TaskTag tag : newTags) {
+            long tagId = -1;
+            // Note: "tag" has a not valid ID yet.
+
             // Check if the tag already exists in the DB. If not, we save it
             // (this is needed before saving the task tag relationship).
+            //
+            // A tag is considered to exist if there is a tag in the DB that has its same name.
             TaskTag dbTag = getTaskTag(db, tag.getName());
 
-            // If "tag" is null, it means that it does not exist in the DB yet. In that case, we save it.
-            // After saving it in the DB, the "tag" object will contain its actual ID in the DB, returned
-            // by the function "saveTaskTag".
-            if (dbTag == null) saveTaskTag(db, tag);
-            long tagId = tag.getId();
+            // If "dbTag" is null, it means that the tag does not exist in the DB yet. In that case,
+            // we save the "tag" object. After saving the "tag" object, it will contain its actual
+            // ID in the DB, set by the "saveTaskTag" function.
+            //
+            // If "dbTag" is not null, as it comes from the DB, it has a valid ID.
+            if (dbTag == null) {
+                saveTaskTag(db, tag);
+                tagId = tag.getId();
+            }
+            else {
+                tagId = dbTag.getId();
+            }
 
             // Check if relationship already exists. If not, we create it.
             Cursor cursor = db.rawQuery("SELECT * FROM task_tag_relationships " +
