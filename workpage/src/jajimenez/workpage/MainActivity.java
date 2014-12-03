@@ -225,13 +225,30 @@ public class MainActivity extends ListActivity {
             String title = task.getTitle();
             Calendar start = task.getStart();
             Calendar deadline = task.getDeadline();
-            List<TaskTag> taskTags = task.getTags();
+            List<TaskTag> tags = task.getTags();
 
+            // Show title
             titleTextView.setText(title);
-            details1TextView.setText(getTaskDatesText(start, deadline));
 
-            if (taskTags != null && taskTags.size() > 0) {
+            // Show Tags and Dates
+            int tagCount = tags.size();
+            String tagsText = "";
+            String datesText = getTaskDatesText(start, deadline);
+
+            if (tags != null && tagCount > 0) {
                 // ToDo: List task's tags on "details2TextView"
+                for (int i = 0; i < tagCount; i++) {
+                    String name = (tags.get(i)).getName();
+
+                    if (i == (tagCount - 1)) tagsText += name;
+                    else tagsText += (name + ", ");
+                }
+
+                details1TextView.setText(tagsText);
+                details2TextView.setText(datesText);
+            }
+            else {
+                details1TextView.setText(datesText);
             }
 
             return itemView;
