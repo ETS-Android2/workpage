@@ -1,87 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <EditText android:id="@+id/editTask_title"
+    <LinearLayout 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:hint="@string/title" />
+        android:orientation="vertical"
+        android:focusableInTouchMode="true">
 
-    <EditText android:id="@+id/editTask_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text|textMultiLine"
-        android:lines="3"
-        android:gravity="left|top"
-        android:hint="@string/description" />
+        <EditText android:id="@+id/editTask_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:hint="@string/title" />
 
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:textStyle="bold"
-        android:text="@string/dates" />
+        <EditText android:id="@+id/editTask_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text|textMultiLine"
+            android:lines="3"
+            android:gravity="left|top"
+            android:hint="@string/description" />
 
-    <TableLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="20dp">
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:textStyle="bold"
+            android:text="@string/dates" />
 
-        <TableRow>
-            <CheckBox android:id="@+id/editTask_start_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="10dp"
-                android:text="@string/start"
-                android:onClick="onStartCheckBoxClicked" />
+        <TableLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp">
 
-            <Button android:id="@+id/editTask_start_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onStartButtonClicked" />
-        </TableRow>
-        <TableRow>
-            <CheckBox android:id="@+id/editTask_deadline_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingRight="10dp"
-                android:text="@string/deadline"
-                android:onClick="onDeadlineCheckBoxClicked" />
+            <TableRow>
+                <CheckBox android:id="@+id/editTask_start_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:text="@string/start"
+                    android:onClick="onStartCheckBoxClicked" />
 
-            <Button android:id="@+id/editTask_deadline_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onDeadlineButtonClicked" />
-        </TableRow>
-    </TableLayout>
+                <Button android:id="@+id/editTask_start_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onStartButtonClicked" />
+            </TableRow>
+            <TableRow>
+                <CheckBox android:id="@+id/editTask_deadline_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:text="@string/deadline"
+                    android:onClick="onDeadlineCheckBoxClicked" />
 
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:textStyle="bold"
-        android:text="@string/tags" />
+                <Button android:id="@+id/editTask_deadline_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onDeadlineButtonClicked" />
+            </TableRow>
+        </TableLayout>
 
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:textStyle="bold"
+            android:text="@string/tags" />
 
-            <AutoCompleteTextView android:id="@+id/editTask_addTag_autotextview"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="text"
-                android:completionThreshold="1"
-                android:hint="@string/tag_name" />
-            
-            <Button android:id="@+id/editTask_addTag_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add"
-                android:onClick="onAddTagButtonClicked" />
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+                <AutoCompleteTextView android:id="@+id/editTask_addTag_autotextview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="text"
+                    android:completionThreshold="1"
+                    android:hint="@string/tag_name" />
+                
+                <Button android:id="@+id/editTask_addTag_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add"
+                    android:onClick="onAddTagButtonClicked" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/editTask_addedTags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
     </LinearLayout>
-    <LinearLayout android:id="@+id/editTag_tags_linearlayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+</ScrollView>

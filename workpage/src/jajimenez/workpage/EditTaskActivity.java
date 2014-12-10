@@ -1,8 +1,8 @@
 package jajimenez.workpage;
 
 import java.util.Calendar;
-
 import java.util.List;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DatePickerDialog;
@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.Button;
@@ -19,6 +20,8 @@ import android.widget.DatePicker;
 import android.widget.Toast;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.content.Intent;
 import android.text.TextWatcher;
 import android.text.Editable;
@@ -38,6 +41,7 @@ public class EditTaskActivity extends Activity {
     private Button deadlineButton;
     private AutoCompleteTextView addTagAutoTextView;
     private Button addTagButton; 
+    private LinearLayout addedTagsLinearLayout;
 
     private ApplicationLogic applicationLogic;
     private Task currentTask;
@@ -58,6 +62,7 @@ public class EditTaskActivity extends Activity {
         deadlineButton = (Button) findViewById(R.id.editTask_deadline_button);
         addTagAutoTextView = (AutoCompleteTextView) findViewById(R.id.editTask_addTag_autotextview);
         addTagButton = (Button) findViewById(R.id.editTask_addTag_button);
+        addedTagsLinearLayout = (LinearLayout) findViewById(R.id.editTask_addedTags);
 
         applicationLogic = new ApplicationLogic(this);
 
@@ -84,12 +89,13 @@ public class EditTaskActivity extends Activity {
         addTagAutoTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                EditTaskActivity.this.addTagButton.setEnabled(after > 0);
+                // Nothing to do.
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Nothing to do.
+                String text = (s.toString()).trim();
+                EditTaskActivity.this.addTagButton.setEnabled(text.length() > 0);
             }
 
             @Override
@@ -99,15 +105,22 @@ public class EditTaskActivity extends Activity {
         });
 
         addTagButton.setEnabled(false);
+        addInitialTaskViews();
+
         updateInterface();
     }
 
     private void setTagCompletionSuggestions() {
         TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
-        List<TaskTag> tags = applicationLogic.getAllTaskTags(context);
+        List<TaskTag> suggestedTags = applicationLogic.getAllTaskTags(context);
+        suggestedTags.removeAll(currentTask.getTags());
 
-        ArrayAdapter<TaskTag> adapter = new ArrayAdapter<TaskTag>(this, android.R.layout.simple_dropdown_item_1line, tags);
+        ArrayAdapter<TaskTag> adapter = new ArrayAdapter<TaskTag>(this, android.R.layout.simple_dropdown_item_1line, suggestedTags);
         addTagAutoTextView.setAdapter(adapter);
+    }
+
+    private void addInitialTaskViews() {
+        // ToDo
     }
 
     @Override
@@ -145,17 +158,17 @@ public class EditTaskActivity extends Activity {
 
             // Save Current Task
             applicationLogic.saveTask(currentTask);
-            Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT).show();
+            (Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT)).show();
 
             // Close the activity
             setResult(RESULT_OK);
             finish();
         }
         else if (!titleValid) {
-            Toast.makeText(this, R.string.title_error, Toast.LENGTH_SHORT).show();
+            (Toast.makeText(this, R.string.title_error, Toast.LENGTH_SHORT)).show();
         }
         else if (!datesValid) {
-            Toast.makeText(this, R.string.dates_error, Toast.LENGTH_SHORT).show();
+            (Toast.makeText(this, R.string.dates_error, Toast.LENGTH_SHORT)).show();
         }
     }
 
@@ -178,13 +191,42 @@ public class EditTaskActivity extends Activity {
     }
 
     public void onAddTagButtonClicked(View view) {
-        String name = (addTagAutoTextView.getText()).toString();
-        TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0);
+        String name = ((addTagAutoTextView.getText()).toString()).trim();
+        final TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0);
+        final List<TaskTag> tags = currentTask.getTags();
 
-        (currentTask.getTags()).add(tag);
-        // ToDo: Show tag in activity. 
-        // ToDo: remove tag from suggestions (from adapter)
-        addTagAutoTextView.setText("");
+        if (tags.contains(tag)) {
+            (Toast.makeText(this, R.string.tag_already_added, Toast.LENGTH_SHORT)).show();
+        }
+        else {
+            // We add the new tag to the tag list of the current task.
+            tags.add(tag);
+
+            // We remove the new tag from the suggestions (if the tag already existed). This is by removing it
+            // from the "suggestedTags" object, as that object is the source for the sugestions adapter.
+            final ArrayAdapter<TaskTag> suggestedTagsAdapter = (ArrayAdapter<TaskTag>) addTagAutoTextView.getAdapter();
+            suggestedTagsAdapter.remove(tag);
+
+            final TaskTagView tagView = new TaskTagView(this);
+            tagView.setText(name);
+            tagView.setOnRemoveIconClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // We remove the tag from the tag list of the current task.
+                    tags.remove(tag);
+
+                    // We add the new tag from the suggestions. This is by adding it to the "suggestedTags"
+                    // object, as that object is the source for the sugestions adapter.
+                    suggestedTagsAdapter.add(tag);
+
+                    // We remove the tag view.
+                    addedTagsLinearLayout.removeView(tagView);
+                }
+            });
+
+            // We add the tag view and clear the text box.
+            addedTagsLinearLayout.addView(tagView);
+            addTagAutoTextView.setText("");
+        }
     }
 
     private class DatePickerDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
