@@ -52,6 +52,10 @@ public class ApplicationLogic {
         return dataManager.getAllTaskTags(context);
     }
 
+    public Task getTask(long id) {
+        return dataManager.getTask(id);
+    }
+
     public void saveTask(Task task) {
         dataManager.saveTask(task);
     }

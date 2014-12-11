@@ -269,14 +269,11 @@ public class DataManager extends SQLiteOpenHelper {
             "ORDER BY list_order;", new String[] { name });
 
         if (cursor.moveToFirst()) {
-            do {
-                long id = cursor.getLong(0);
-                long contextId = cursor.getLong(1);
-                long order = cursor.getLong(2);
+            long id = cursor.getLong(0);
+            long contextId = cursor.getLong(1);
+            long order = cursor.getLong(2);
 
-                tag = new TaskTag(id, contextId, name, order);
-            }
-            while (cursor.moveToNext());
+            tag = new TaskTag(id, contextId, name, order);
         }
 
         return tag;
@@ -347,6 +344,7 @@ public class DataManager extends SQLiteOpenHelper {
                     String title = cursor.getString(1);
                     Calendar start = tool.getCalendar(cursor.getString(2));
                     Calendar deadline = tool.getCalendar(cursor.getString(3));
+
                     List<TaskTag> tags = getAllTaskTags(db, id);
                     List<Long> subtasks = new LinkedList<Long>();
                     List<Long> requiredTasks = new LinkedList<Long>();
@@ -361,6 +359,40 @@ public class DataManager extends SQLiteOpenHelper {
         }
 
         return tasks;
+    }
+
+    public Task getTask(long id) {
+        Task task = null;
+
+        DateTimeTool tool = new DateTimeTool();
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT task_context_id, title, description, start_datetime, deadline_datetime, done, done_datetime " +
+                "FROM tasks WHERE id = ?;", new String[] { String.valueOf(id) });
+
+            if (cursor.moveToFirst()) {
+                long contextId = cursor.getLong(0);
+                String title = cursor.getString(1);
+                String description = cursor.getString(2);
+                Calendar start = tool.getCalendar(cursor.getString(3));
+                Calendar deadline = tool.getCalendar(cursor.getString(4));
+                boolean done = (cursor.getInt(5) != 0);
+                Calendar doneDate = tool.getCalendar(cursor.getString(6));
+
+                List<TaskTag> tags = getAllTaskTags(db, id);
+                List<Long> subtasks = new LinkedList<Long>();
+                List<Long> requiredTasks = new LinkedList<Long>();
+
+                task = new Task(id, contextId, title, description, start, deadline, done, doneDate, tags, subtasks, requiredTasks);
+            }
+        }
+        finally {
+            db.close();
+        }
+
+        return task;
     }
 
     // Creates or updates a task in the database.

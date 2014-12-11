@@ -77,24 +77,43 @@ public class MainActivity extends ListActivity {
                 // Do nothing
             }
 
+            // Returns "true" if this callback handled the event, "false"
+            // if the standard "MenuItem" invocation should continue.
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                boolean eventHandled;
+
                 switch (item.getItemId()) {
                     case R.id.mainContextualActionBar_menu_status:
                         // ToDo
-                        // mode.finish(); --> Closes the context action bar
-                        return true;
+                        eventHandled = true;
+                        break;
+                        
                     case R.id.mainContextualActionBar_menu_edit:
-                        // ToDo
-                        // mode.finish(); --> Closes the context action bar
-                        return true;
+                        // Open the task edition activity:
+                        long selectedTaskId = ((getSelectedTasks()).get(0)).getId();
+
+                        Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
+                        intent.putExtra("action", "edit");
+                        intent.putExtra("task_id", selectedTaskId);
+
+                        startActivityForResult(intent, 0);
+                        mode.finish(); // Close the context action bar
+                        eventHandled = true;
+                        break;
+
                     case R.id.mainContextualActionBar_menu_delete:
+                        // Show a deletion confirmation dialog.
                         DialogFragment fragment = new DeleteTaskDialogFragment(mode);
                         fragment.show(getFragmentManager(), "delete_task");
-                        return true;
+                        eventHandled = true;
+                        break;
+
                     default:
-                        return false;
+                        eventHandled = false;
                 }
+
+                return eventHandled;
             }
 
             @Override
