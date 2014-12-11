@@ -2,6 +2,7 @@ package jajimenez.workpage;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.LinkedList;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -44,6 +45,7 @@ public class EditTaskActivity extends Activity {
     private LinearLayout addedTagsLinearLayout;
 
     private ApplicationLogic applicationLogic;
+    private List<TaskTag> contextTags;
     private Task currentTask;
     private Calendar selectedStartDate;
     private Calendar selectedDeadlineDate;
@@ -126,6 +128,9 @@ public class EditTaskActivity extends Activity {
             deadlineButton.setEnabled(false);
         }
 
+        TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
+        contextTags = applicationLogic.getAllTaskTags(context);
+
         setTagCompletionSuggestions();
         if (action.equals("edit")) addInitialTaskTagViews();
 
@@ -134,7 +139,7 @@ public class EditTaskActivity extends Activity {
 
     private void setTagCompletionSuggestions() {
         TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
-        List<TaskTag> suggestedTags = applicationLogic.getAllTaskTags(context);
+        List<TaskTag> suggestedTags = new LinkedList<TaskTag>(contextTags);
         suggestedTags.removeAll(currentTask.getTags());
 
         ArrayAdapter<TaskTag> adapter = new ArrayAdapter<TaskTag>(this, android.R.layout.simple_dropdown_item_1line, suggestedTags);
@@ -216,24 +221,24 @@ public class EditTaskActivity extends Activity {
     public void onAddTagButtonClicked(View view) {
         String name = ((addTagAutoTextView.getText()).toString()).trim();
         TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0);
-        List<TaskTag> tags = currentTask.getTags();
+        List<TaskTag> taskTags = currentTask.getTags();
 
-        if (tags.contains(tag)) {
+        if (taskTags.contains(tag)) {
             (Toast.makeText(this, R.string.tag_already_added, Toast.LENGTH_SHORT)).show();
         }
         else {
             // Add the new tag to the tag list of the current task.
-            tags.add(tag);
+            taskTags.add(tag);
 
             // Add a new tag view.
-            addTaskTagView(tag, tags);
+            addTaskTagView(tag, taskTags);
 
             // Clear the text box.
             addTagAutoTextView.setText("");
         }
     }
 
-    private void addTaskTagView(final TaskTag tag, final List<TaskTag> tags) {
+    private void addTaskTagView(final TaskTag tag, final List<TaskTag> taskTags) {
         // Remove the new tag from the suggestions (if the tag already existed). This is by removing it
         // from the "suggestedTags" object, as that object is the source for the sugestions adapter.
         final ArrayAdapter<TaskTag> suggestedTagsAdapter = (ArrayAdapter<TaskTag>) addTagAutoTextView.getAdapter();
@@ -245,11 +250,12 @@ public class EditTaskActivity extends Activity {
         tagView.setOnRemoveIconClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Remove the tag from the tag list of the current task.
-                tags.remove(tag);
+                taskTags.remove(tag);
 
-                // Add the new tag from the suggestions. This is by adding it to the "suggestedTags"
+                // Add the tag to the suggestions, if it previously existed in the
+                // current task context. This is by adding it to the "suggestedTags"
                 // object, as that object is the source for the sugestions adapter.
-                suggestedTagsAdapter.add(tag);
+                if (contextTags.contains(tag)) suggestedTagsAdapter.add(tag);
 
                 // Remove the tag view.
                 addedTagsLinearLayout.removeView(tagView);
