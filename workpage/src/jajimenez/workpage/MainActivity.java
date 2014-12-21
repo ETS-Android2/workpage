@@ -38,20 +38,26 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class MainActivity extends ListActivity {
+    private TextView viewTextView;
     private ListView listView;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
+    private String currentView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        viewTextView = (TextView) findViewById(R.id.main_view);
         listView = getListView();
+
         createContextualActionBar();
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+        currentView = "";
 
         updateInterface();
     }
@@ -151,7 +157,17 @@ public class MainActivity extends ListActivity {
     }
 
     private void updateInterface() {
-        setTitle(currentTaskContext.getName());
+        // Information about the current task context.
+        (getActionBar()).setSubtitle(currentTaskContext.getName());
+
+        // Information about the current view.
+        currentView = this.applicationLogic.getCurrentView();
+        
+        if (currentView.equals("open")) viewTextView.setText(R.string.open);
+        else if (currentView.equals("now")) viewTextView.setText(R.string.doable_now);
+        else if (currentView.equals("closed")) viewTextView.setText(R.string.closed);
+
+        // Show tasks.
         (new LoadAllCurrentOpenTasksDBTask()).execute();
     }
 
@@ -168,6 +184,11 @@ public class MainActivity extends ListActivity {
     public void onSwitchTaskContextItemSelected(MenuItem item) {
         DialogFragment fragment = new SwitchTaskContextDialogFragment();
         fragment.show(getFragmentManager(), "switch_task_context");
+    }
+
+    public void onViewItemSelected(MenuItem item) {
+        Intent intent = new Intent(MainActivity.this, ViewActivity.class);
+        startActivityForResult(intent, 0);
     }
 
     public void onNewTaskItemSelected(MenuItem item) {
@@ -317,7 +338,13 @@ public class MainActivity extends ListActivity {
     private class LoadAllCurrentOpenTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
         @Override
         protected List<Task> doInBackground(Void... parameters) {
-            return MainActivity.this.applicationLogic.getAllCurrentOpenTasks(MainActivity.this.currentTaskContext);
+            List<Task> tasks = null;
+
+            if (currentView.equals("now")) tasks = MainActivity.this.applicationLogic.getDoableNowTasks(MainActivity.this.currentTaskContext, null);
+            else if (currentView.equals("open")) tasks = MainActivity.this.applicationLogic.getOpenTasks(MainActivity.this.currentTaskContext, null);
+            else if (currentView.equals("closed")) tasks = MainActivity.this.applicationLogic.getClosedTasks(MainActivity.this.currentTaskContext, null);
+
+            return tasks;
         }
 
         @Override

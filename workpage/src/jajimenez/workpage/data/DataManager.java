@@ -309,9 +309,9 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     // Returns all open tasks that belong to a given task context and
-    // that could be done at the current moment.
+    // that could be done at the current moment (Doable-Now tasks).
     //
-    // A current open task means one of the following cases:
+    // A Doable-Now task means one of the following cases:
     // 1) It's due for the current day.
     // 2) It's due for a range of dates that includes the current day.
     // 3) It doesn't have any date set (that means it could be done
@@ -321,7 +321,7 @@ public class DataManager extends SQLiteOpenHelper {
     //
     // Every returned task is incomplete because this method is used
     // to get a list of tasks, without displaying every task's details.
-    public List<Task> getAllCurrentOpenTasks(TaskContext context) {
+    public List<Task> getDoableNowTasks(TaskContext context, List<TaskTag> filterTags) {
         List<Task> tasks = new LinkedList<Task>();
         long contextId = context.getId();
 
@@ -332,11 +332,32 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT id, title, start_datetime, deadline_datetime " +
-                "FROM tasks WHERE task_context_id = ? AND " +
-                "(start_datetime IS NULL OR start_datetime = '' OR start_datetime <= ?) AND " +
-                "tasks.done = 0 " +
-                "ORDER BY deadline_datetime;", new String[] { String.valueOf(contextId), currentDay });
+            String query = "SELECT tasks.id, tasks.title, tasks.start_datetime, tasks.deadline_datetime " +
+                "FROM tasks, task_tag_relationships, task_tags " +
+                "WHERE tasks.task_context_id = ? " +
+                "AND tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id " +
+                "AND (tasks.start_datetime IS NULL OR tasks.start_datetime = '' OR tasks.start_datetime <= ?) " +
+                "AND tasks.done = 0 ";
+
+            if (filterTags != null) {
+                int tagCount = filterTags.size();
+
+                if (tagCount > 0) {
+                    query += "AND (";
+
+                    for (int i = 0; i < tagCount; i++) {
+                        TaskTag tag = filterTags.get(i);
+                        query += String.format("task_tags.name = '%s' ", tag.getName());
+
+                        if (i < (tagCount - 1)) query += "OR ";
+                    }
+
+                    query += ") ";
+                }
+            }
+
+            query += "ORDER BY deadline_datetime;";
+            Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), currentDay });
 
             if (cursor.moveToFirst()) {
                 do {
@@ -350,6 +371,68 @@ public class DataManager extends SQLiteOpenHelper {
                     List<Long> requiredTasks = new LinkedList<Long>();
 
                     tasks.add(new Task(id, contextId, title, null, start, deadline, false, null, tags, subtasks, requiredTasks));
+                }
+                while (cursor.moveToNext());
+            }
+        }
+        finally {
+            db.close();
+        }
+
+        return tasks;
+    }
+
+    public List<Task> getTasks(TaskContext context, boolean done, List<TaskTag> filterTags) {
+        List<Task> tasks = new LinkedList<Task>();
+        long contextId = context.getId();
+
+        DateTimeTool tool = new DateTimeTool();
+        String currentDay = tool.getIso8601DateTime(Calendar.getInstance());
+
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            String query = "SELECT tasks.id, tasks.title, tasks.start_datetime, tasks.deadline_datetime " +
+                "FROM tasks, task_tag_relationships, task_tags " +
+                "WHERE tasks.task_context_id = ? " +
+                "AND tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id ";
+
+            if (done) query += "AND tasks.done = 1 ";
+            else query += "AND tasks.done = 0 ";
+
+            if (filterTags != null) {
+                int tagCount = filterTags.size();
+
+                if (tagCount > 0) {
+                    query += "AND (";
+
+                    for (int i = 0; i < tagCount; i++) {
+                        TaskTag tag = filterTags.get(i);
+                        query += String.format("task_tags.name = '%s' ", tag.getName());
+
+                        if (i < (tagCount - 1)) query += "OR ";
+                    }
+
+                    query += ") ";
+                }
+            }
+
+            query += "ORDER BY deadline_datetime;";
+            Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId)  });
+
+            if (cursor.moveToFirst()) {
+                do {
+                    long id = cursor.getLong(0);
+                    String title = cursor.getString(1);
+                    Calendar start = tool.getCalendar(cursor.getString(2));
+                    Calendar deadline = tool.getCalendar(cursor.getString(3));
+
+                    List<TaskTag> tags = getAllTaskTags(db, id);
+                    List<Long> subtasks = new LinkedList<Long>();
+                    List<Long> requiredTasks = new LinkedList<Long>();
+
+                    tasks.add(new Task(id, contextId, title, null, start, deadline, done, null, tags, subtasks, requiredTasks));
                 }
                 while (cursor.moveToNext());
             }

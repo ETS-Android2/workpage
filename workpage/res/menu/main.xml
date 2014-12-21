@@ -5,8 +5,13 @@
 
     <item android:icon="@drawable/ic_action_new"
         android:title="@string/new_task"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:onClick="onNewTaskItemSelected" />
+
+    <item android:icon="@drawable/ic_action_view_as_list"
+        android:title="@string/view_1"
+        android:showAsAction="always"
+        android:onClick="onViewItemSelected" />
 
     <item android:title="@string/about"
         android:onClick="onAboutItemSelected" />

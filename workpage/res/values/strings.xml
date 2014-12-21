@@ -45,6 +45,12 @@
     <string name="dates_error">Please, enter valid dates.</string>
     <string name="task_saved">Task saved.</string>
 
+    <string name="view_1">View</string>
+    <string name="view_2">View:</string>
+    <string name="open">Open</string>
+    <string name="doable_now">Doable Now</string>
+    <string name="closed">Closed</string>
+
     <string name="about">About</string>
     <string name="version">Version:</string>
     <string name="author">Author:</string>

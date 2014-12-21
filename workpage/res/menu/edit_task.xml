@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:icon="@drawable/ic_action_accept"
         android:title="@string/save"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:onClick="onSaveItemSelected" />
 </menu>
