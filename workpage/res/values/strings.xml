@@ -50,6 +50,8 @@
     <string name="open">Open</string>
     <string name="doable_now">Doable Now</string>
     <string name="closed">Closed</string>
+    <string name="filter_by_tags">Filter by tags:</string>
+    <string name="show_only">Select 1 or more tags to show only the tasks that have any of those tags, or none to show all the tasks.</string>
 
     <string name="about">About</string>
     <string name="version">Version:</string>

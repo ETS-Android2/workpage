@@ -1,9 +1,9 @@
 package jajimenez.workpage;
 
 import java.util.Calendar;
-
 import java.util.List;
 import java.util.LinkedList;
+
 import android.util.SparseBooleanArray;
 import android.app.Activity;
 import android.app.ListActivity;
@@ -39,11 +39,14 @@ import jajimenez.workpage.data.model.Task;
 
 public class MainActivity extends ListActivity {
     private TextView viewTextView;
+    private TextView filterTagsTitleTextView;
+    private TextView filterTagsValueTextView;
     private ListView listView;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
     private String currentView;
+    private List<TaskTag> currentFilterTags;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,8 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.main);
 
         viewTextView = (TextView) findViewById(R.id.main_view);
+        filterTagsTitleTextView = (TextView) findViewById(R.id.main_filterTags_title);
+        filterTagsValueTextView = (TextView) findViewById(R.id.main_filterTags_value);
         listView = getListView();
 
         createContextualActionBar();
@@ -58,6 +63,7 @@ public class MainActivity extends ListActivity {
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = this.applicationLogic.getCurrentTaskContext();
         currentView = "";
+        currentFilterTags = new LinkedList<TaskTag>();
 
         updateInterface();
     }
@@ -166,6 +172,32 @@ public class MainActivity extends ListActivity {
         if (currentView.equals("open")) viewTextView.setText(R.string.open);
         else if (currentView.equals("now")) viewTextView.setText(R.string.doable_now);
         else if (currentView.equals("closed")) viewTextView.setText(R.string.closed);
+
+        // Information about the current filter tags.
+        currentFilterTags = this.applicationLogic.getCurrentFilterTags();
+
+        int filterTagCount = 0;
+        if (currentFilterTags != null) filterTagCount = currentFilterTags.size();
+
+        if (filterTagCount == 0) {
+            filterTagsTitleTextView.setVisibility(View.GONE);
+            filterTagsValueTextView.setVisibility(View.GONE);
+
+            filterTagsValueTextView.setText("");
+        }
+        else {
+            filterTagsTitleTextView.setVisibility(View.VISIBLE);
+            filterTagsValueTextView.setVisibility(View.VISIBLE);
+
+            String tagsText = "";
+
+            for (int i = 0; i < filterTagCount; i++) {
+                tagsText += (currentFilterTags.get(i)).getName();
+                if (i < (filterTagCount - 1)) tagsText += ", ";
+            }
+
+            filterTagsValueTextView.setText(tagsText);
+        }
 
         // Show tasks.
         (new LoadAllCurrentOpenTasksDBTask()).execute();
@@ -340,9 +372,9 @@ public class MainActivity extends ListActivity {
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
-            if (currentView.equals("now")) tasks = MainActivity.this.applicationLogic.getDoableNowTasks(MainActivity.this.currentTaskContext, null);
-            else if (currentView.equals("open")) tasks = MainActivity.this.applicationLogic.getOpenTasks(MainActivity.this.currentTaskContext, null);
-            else if (currentView.equals("closed")) tasks = MainActivity.this.applicationLogic.getClosedTasks(MainActivity.this.currentTaskContext, null);
+            if (currentView.equals("now")) tasks = MainActivity.this.applicationLogic.getDoableNowTasks(MainActivity.this.currentTaskContext, currentFilterTags);
+            else if (currentView.equals("open")) tasks = MainActivity.this.applicationLogic.getOpenTasks(MainActivity.this.currentTaskContext, currentFilterTags);
+            else if (currentView.equals("closed")) tasks = MainActivity.this.applicationLogic.getClosedTasks(MainActivity.this.currentTaskContext, currentFilterTags);
 
             return tasks;
         }
@@ -380,6 +412,7 @@ public class MainActivity extends ListActivity {
 
                     MainActivity.this.currentTaskContext = newCurrentTaskContext;
                     MainActivity.this.applicationLogic.setCurrentTaskContext(newCurrentTaskContext);
+                    MainActivity.this.applicationLogic.setCurrentFilterTags(new LinkedList<TaskTag>());
 
                     dialog.dismiss();
                     MainActivity.this.updateInterface();

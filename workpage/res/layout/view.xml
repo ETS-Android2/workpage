@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/view_2"
-        android:textStyle="bold" />
-
-    <RadioGroup android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RadioButton android:id="@+id/view_open"
-            android:layout_width="match_parent"
+        <TextView android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/open"
-            android:onClick="onViewRadioButtonClicked" />
+            android:text="@string/view_2"
+            android:textStyle="bold" />
 
-        <RadioButton android:id="@+id/view_now"
-            android:layout_width="match_parent"
+        <RadioGroup android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/doable_now"
-            android:onClick="onViewRadioButtonClicked" />
+            android:orientation="vertical">
 
-        <RadioButton android:id="@+id/view_closed"
+            <RadioButton android:id="@+id/view_open"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/open"
+                android:onClick="onViewRadioButtonClicked" />
+
+            <RadioButton android:id="@+id/view_now"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/doable_now"
+                android:onClick="onViewRadioButtonClicked" />
+
+            <RadioButton android:id="@+id/view_closed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/closed"
+                android:onClick="onViewRadioButtonClicked" />
+        </RadioGroup>
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/filter_by_tags"
+            android:textStyle="bold" />
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/show_only" />
+
+        <LinearLayout android:id="@+id/view_tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/closed"
-            android:onClick="onViewRadioButtonClicked" />
-    </RadioGroup>
-</LinearLayout>
+            android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>
