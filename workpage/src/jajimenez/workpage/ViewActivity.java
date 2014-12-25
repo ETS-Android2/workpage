@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.LinearLayout;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
@@ -21,6 +22,7 @@ public class ViewActivity extends Activity {
     private RadioButton viewNowRadioButton;
     private RadioButton viewClosedRadioButton;
     private LinearLayout tagsLinearLayout;
+    private TextView noTagsTextView;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
@@ -37,6 +39,7 @@ public class ViewActivity extends Activity {
         viewNowRadioButton = (RadioButton) findViewById(R.id.view_now);
         viewClosedRadioButton = (RadioButton) findViewById(R.id.view_closed);
         tagsLinearLayout = (LinearLayout) findViewById(R.id.view_tags);
+        noTagsTextView = (TextView) findViewById(R.id.view_noTags);
 
         (getActionBar()).setDisplayHomeAsUpEnabled(true);
         setResult(RESULT_OK);
@@ -57,23 +60,28 @@ public class ViewActivity extends Activity {
         List<TaskTag> tags = applicationLogic.getAllTaskTags(currentTaskContext);
         CheckBox tagCheckBox;
 
-        for (final TaskTag tag : tags) {
-            tagCheckBox = new CheckBox(this);
-            tagCheckBox.setText(tag.getName());
-            tagCheckBox.setChecked(currentFilterTags.contains(tag));
-            tagCheckBox.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CheckBox tagCheckBox = (CheckBox) v;
+        if (tags.size() > 0) {
+            for (final TaskTag tag : tags) {
+                tagCheckBox = new CheckBox(this);
+                tagCheckBox.setText(tag.getName());
+                tagCheckBox.setChecked(currentFilterTags.contains(tag));
+                tagCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CheckBox tagCheckBox = (CheckBox) v;
 
-                    if (tagCheckBox.isChecked()) ViewActivity.this.currentFilterTags.add(tag);
-                    else ViewActivity.this.currentFilterTags.remove(tag);
+                        if (tagCheckBox.isChecked()) ViewActivity.this.currentFilterTags.add(tag);
+                        else ViewActivity.this.currentFilterTags.remove(tag);
 
-                    ViewActivity.this.applicationLogic.setCurrentFilterTags(ViewActivity.this.currentFilterTags);
-                }
-            });
+                        ViewActivity.this.applicationLogic.setCurrentFilterTags(ViewActivity.this.currentFilterTags);
+                    }
+                });
 
-            tagsLinearLayout.addView(tagCheckBox);
+                tagsLinearLayout.addView(tagCheckBox);
+            }
+        }
+        else {
+            noTagsTextView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -113,7 +113,9 @@ public class EditTaskActivity extends Activity {
             titleEditText.setText(currentTask.getTitle());
             descriptionEditText.setText(currentTask.getDescription());
             startCheckBox.setChecked(startDate);
+            startButton.setEnabled(startDate);
             deadlineCheckBox.setChecked(deadlineDate);
+            deadlineButton.setEnabled(deadlineDate);
         }
         else {
             currentTask = new Task();
