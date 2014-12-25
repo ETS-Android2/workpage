@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.text.DateFormat;
 
 public class DateTimeTool {
+    // This function only considers the date of "calendar" (year, month and day),
+    // ignoring its time (hour, minute, second, millisecond).
     public String getIso8601DateTime(Calendar calendar) {
         String date = null;
 
