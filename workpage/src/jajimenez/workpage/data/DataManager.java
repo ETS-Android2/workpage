@@ -58,7 +58,6 @@ public class DataManager extends SQLiteOpenHelper {
             "start_datetime    TEXT, " +
             "deadline_datetime TEXT, " +
             "done              INTEGER NOT NULL DEFAULT 0, " +
-            "done_datetime     TEXT, " +
 
             "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
@@ -73,47 +72,21 @@ public class DataManager extends SQLiteOpenHelper {
             "FOREIGN KEY (task_tag_id) REFERENCES task_tags(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
         
-        String subtasksTableSql = "CREATE TABLE subtasks (" +
-            "id             INTEGER PRIMARY KEY, " +
-            "parent_task_id INTEGER, " +
-            "child_task_id  INTEGER, " +
-            
-            "UNIQUE (parent_task_id, child_task_id), " +
-            "FOREIGN KEY (parent_task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
-            "FOREIGN KEY (child_task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE" +
-            ");";
-
-        String taskRequirementsTableSql = "CREATE TABLE task_requirements (" +
-            "id               INTEGER PRIMARY KEY, " +
-            "task_id          INTEGER, " +
-            "required_task_id INTEGER, " +
-
-            "UNIQUE (task_id, required_task_id), " +
-            "FOREIGN KEY (task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
-            "FOREIGN KEY (required_task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE" +
-            ");";
-            
         db.execSQL(taskContextsTableSql);
         db.execSQL(initialTaskContextPersonalSql);
         db.execSQL(initialTaskContextWorkSql);
         db.execSQL(taskTagsTableSql);
         db.execSQL(tasksTableSql);
         db.execSQL(taskTagsRelationshipsTableSql);
-        db.execSQL(subtasksTableSql);
-        db.execSQL(taskRequirementsTableSql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String tasksRequirementsTableSql     = "DROP TABLE IF EXISTS task_requirements;";
-        String subtasksTableSql              = "DROP TABLE IF EXISTS subtasks;";
         String taskTagsRelationshipsTableSql = "DROP TABLE IF EXISTS task_tag_relationships;";
         String tasksTableSql                 = "DROP TABLE IF EXISTS tasks;";
         String taskTagsTableSql              = "DROP TABLE IF EXISTS task_tags;";
         String taskContextsTableSql          = "DROP TABLE IF EXISTS task_contexts;";
         
-        db.execSQL(tasksRequirementsTableSql);
-        db.execSQL(subtasksTableSql);
         db.execSQL(taskTagsRelationshipsTableSql);
         db.execSQL(tasksTableSql);
         db.execSQL(taskTagsTableSql);
@@ -423,12 +396,9 @@ public class DataManager extends SQLiteOpenHelper {
                     String title = cursor.getString(1);
                     Calendar start = tool.getCalendar(cursor.getString(2));
                     Calendar deadline = tool.getCalendar(cursor.getString(3));
-
                     List<TaskTag> tags = getAllTaskTags(db, id);
-                    List<Long> subtasks = new LinkedList<Long>();
-                    List<Long> requiredTasks = new LinkedList<Long>();
 
-                    tasks.add(new Task(id, contextId, title, null, start, deadline, false, null, tags, subtasks, requiredTasks));
+                    tasks.add(new Task(id, contextId, title, null, start, deadline, false, tags));
                 }
                 while (cursor.moveToNext());
             }
@@ -500,12 +470,9 @@ public class DataManager extends SQLiteOpenHelper {
                     String title = cursor.getString(1);
                     Calendar start = tool.getCalendar(cursor.getString(2));
                     Calendar deadline = tool.getCalendar(cursor.getString(3));
-
                     List<TaskTag> tags = getAllTaskTags(db, id);
-                    List<Long> subtasks = new LinkedList<Long>();
-                    List<Long> requiredTasks = new LinkedList<Long>();
 
-                    tasks.add(new Task(id, contextId, title, null, start, deadline, done, null, tags, subtasks, requiredTasks));
+                    tasks.add(new Task(id, contextId, title, null, start, deadline, done, tags));
                 }
                 while (cursor.moveToNext());
             }
@@ -525,7 +492,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT task_context_id, title, description, start_datetime, deadline_datetime, done, done_datetime " +
+            Cursor cursor = db.rawQuery("SELECT task_context_id, title, description, start_datetime, deadline_datetime, done " +
                 "FROM tasks WHERE id = ?;", new String[] { String.valueOf(id) });
 
             if (cursor.moveToFirst()) {
@@ -535,13 +502,9 @@ public class DataManager extends SQLiteOpenHelper {
                 Calendar start = tool.getCalendar(cursor.getString(3));
                 Calendar deadline = tool.getCalendar(cursor.getString(4));
                 boolean done = (cursor.getInt(5) != 0);
-                Calendar doneDate = tool.getCalendar(cursor.getString(6));
-
                 List<TaskTag> tags = getAllTaskTags(db, id);
-                List<Long> subtasks = new LinkedList<Long>();
-                List<Long> requiredTasks = new LinkedList<Long>();
 
-                task = new Task(id, contextId, title, description, start, deadline, done, doneDate, tags, subtasks, requiredTasks);
+                task = new Task(id, contextId, title, description, start, deadline, done, tags);
             }
         }
         finally {
@@ -572,8 +535,6 @@ public class DataManager extends SQLiteOpenHelper {
 
         if (task.isDone()) values.put("done", 1);
         else values.put("done", 0);
-            
-        values.put("done_datetime", tool.getIso8601DateTime(task.getDoneTime()));
 
         try {
             db = getWritableDatabase();

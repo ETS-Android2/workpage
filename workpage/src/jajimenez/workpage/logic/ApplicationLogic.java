@@ -14,7 +14,7 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class ApplicationLogic {
-    public static final String PREFERENCES_FILE = "jajimenez_workpage_preferences";
+    public static final String PREFERENCES_FILE = "workpage_preferences";
     public static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
     public static final String CURRENT_VIEW_PREF_KEY = "current_view";
     public static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
