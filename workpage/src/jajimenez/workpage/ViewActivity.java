@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.LinearLayout;
 import android.widget.CheckBox;
@@ -18,9 +19,9 @@ import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 
 public class ViewActivity extends Activity {
-    private RadioButton viewOpenRadioButton;
-    private RadioButton viewDoableTodayRadioButton;
-    private RadioButton viewClosedRadioButton;
+    private RadioButton openRadioButton;
+    private RadioButton doableTodayRadioButton;
+    private RadioButton closedRadioButton;
     private LinearLayout tagsLinearLayout;
     private TextView noTagsTextView;
 
@@ -35,9 +36,9 @@ public class ViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view);
 
-        viewOpenRadioButton = (RadioButton) findViewById(R.id.view_open);
-        viewDoableTodayRadioButton = (RadioButton) findViewById(R.id.view_doableToday);
-        viewClosedRadioButton = (RadioButton) findViewById(R.id.view_closed);
+        openRadioButton = (RadioButton) findViewById(R.id.view_open);
+        doableTodayRadioButton = (RadioButton) findViewById(R.id.view_doableToday);
+        closedRadioButton = (RadioButton) findViewById(R.id.view_closed);
         tagsLinearLayout = (LinearLayout) findViewById(R.id.view_tags);
         noTagsTextView = (TextView) findViewById(R.id.view_noTags);
 
@@ -50,12 +51,33 @@ public class ViewActivity extends Activity {
         currentFilterTags = applicationLogic.getCurrentFilterTags();
 
         updateInterface();
+
+        openRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) applicationLogic.setCurrentView("open");
+            }
+        });
+
+        doableTodayRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) applicationLogic.setCurrentView("doable_today");
+            }
+        });
+
+        closedRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) applicationLogic.setCurrentView("closed");
+            }
+        });
     }
 
     private void updateInterface() {
-        if (currentView.equals("open")) viewOpenRadioButton.setChecked(true);
-        else if (currentView.equals("doable_today")) viewDoableTodayRadioButton.setChecked(true);
-        else if (currentView.equals("closed")) viewClosedRadioButton.setChecked(true);
+        if (currentView.equals("open")) openRadioButton.setChecked(true);
+        else if (currentView.equals("doable_today")) doableTodayRadioButton.setChecked(true);
+        else if (currentView.equals("closed")) closedRadioButton.setChecked(true);
 
         List<TaskTag> tags = applicationLogic.getAllTaskTags(currentTaskContext);
         CheckBox tagCheckBox;
@@ -85,9 +107,15 @@ public class ViewActivity extends Activity {
         }
     }
 
-    public void onViewRadioButtonClicked(View view) {
-        if (viewOpenRadioButton.isChecked()) applicationLogic.setCurrentView("open"); 
-        else if (viewDoableTodayRadioButton.isChecked()) applicationLogic.setCurrentView("doable_today"); 
-        else if (viewClosedRadioButton.isChecked()) applicationLogic.setCurrentView("closed"); 
+    public void onOpenDescriptionTextViewClicked(View view) {
+        openRadioButton.setChecked(true);
+    }
+
+    public void onDoableTodayDescriptionTextViewClicked(View view) {
+        doableTodayRadioButton.setChecked(true);
+    }
+
+    public void onClosedDescriptionTextViewClicked(View view) {
+        closedRadioButton.setChecked(true);
     }
 }

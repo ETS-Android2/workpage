@@ -22,20 +22,38 @@
             <RadioButton android:id="@+id/view_open"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/open"
-                android:onClick="onViewRadioButtonClicked" />
+                android:text="@string/open" />
+
+            <TextView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
+                android:text="@string/open_description"
+                android:clickable="true"
+                android:onClick="onOpenDescriptionTextViewClicked" />
 
             <RadioButton android:id="@+id/view_doableToday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/doable_today"
-                android:onClick="onViewRadioButtonClicked" />
+                android:text="@string/doable_today" />
+
+            <TextView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
+                android:text="@string/doable_today_description"
+                android:clickable="true"
+                android:onClick="onDoableTodayDescriptionTextViewClicked" />
 
             <RadioButton android:id="@+id/view_closed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/closed"
-                android:onClick="onViewRadioButtonClicked" />
+                android:text="@string/closed" />
+
+            <TextView android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
+                android:text="@string/closed_description"
+                android:clickable="true"
+                android:onClick="onClosedDescriptionTextViewClicked" />
         </RadioGroup>
 
         <TextView android:layout_width="match_parent"
