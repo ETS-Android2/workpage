@@ -19,7 +19,7 @@ import jajimenez.workpage.data.model.TaskTag;
 
 public class ViewActivity extends Activity {
     private RadioButton viewOpenRadioButton;
-    private RadioButton viewNowRadioButton;
+    private RadioButton viewDoableTodayRadioButton;
     private RadioButton viewClosedRadioButton;
     private LinearLayout tagsLinearLayout;
     private TextView noTagsTextView;
@@ -36,7 +36,7 @@ public class ViewActivity extends Activity {
         setContentView(R.layout.view);
 
         viewOpenRadioButton = (RadioButton) findViewById(R.id.view_open);
-        viewNowRadioButton = (RadioButton) findViewById(R.id.view_now);
+        viewDoableTodayRadioButton = (RadioButton) findViewById(R.id.view_doableToday);
         viewClosedRadioButton = (RadioButton) findViewById(R.id.view_closed);
         tagsLinearLayout = (LinearLayout) findViewById(R.id.view_tags);
         noTagsTextView = (TextView) findViewById(R.id.view_noTags);
@@ -54,7 +54,7 @@ public class ViewActivity extends Activity {
 
     private void updateInterface() {
         if (currentView.equals("open")) viewOpenRadioButton.setChecked(true);
-        else if (currentView.equals("now")) viewNowRadioButton.setChecked(true);
+        else if (currentView.equals("doable_today")) viewDoableTodayRadioButton.setChecked(true);
         else if (currentView.equals("closed")) viewClosedRadioButton.setChecked(true);
 
         List<TaskTag> tags = applicationLogic.getAllTaskTags(currentTaskContext);
@@ -87,7 +87,7 @@ public class ViewActivity extends Activity {
 
     public void onViewRadioButtonClicked(View view) {
         if (viewOpenRadioButton.isChecked()) applicationLogic.setCurrentView("open"); 
-        else if (viewNowRadioButton.isChecked()) applicationLogic.setCurrentView("now"); 
+        else if (viewDoableTodayRadioButton.isChecked()) applicationLogic.setCurrentView("doable_today"); 
         else if (viewClosedRadioButton.isChecked()) applicationLogic.setCurrentView("closed"); 
     }
 }

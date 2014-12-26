@@ -48,7 +48,7 @@
     <string name="view_1">View</string>
     <string name="view_2">View:</string>
     <string name="open">Open</string>
-    <string name="doable_now">Doable Now</string>
+    <string name="doable_today">Doable Today</string>
     <string name="closed">Closed</string>
     <string name="filter_by_tags">Filter by tags:</string>
     <string name="select_tags">Select 1 or more tags to show only the tasks that have any of those tags. Select no tag to show all the tasks.</string>

@@ -359,21 +359,19 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     // Returns all open tasks that belong to a given task context and
-    // that could be done at the current moment (Doable-Now tasks),
-    // given any of its tags. Returns all "doable" tasks of the context
-    // if "filterTags" is null or empty.
+    // that could be done at the current day ("doable-today" tasks)
+    // and have any of the given task tags. Returns all "doable-today"
+    // tasks of the context if "filterTags" is null or empty.
     //
-    // A Doable-Now task means one of the following cases:
-    // 1) It's due for the current day.
-    // 2) It's due for a range of dates that includes the current day.
-    // 3) It doesn't have any date set (that means it could be done
-    //    in the current day or as soon as possible).
-    // 4) It was due for a day or range of days before the current day
-    //    but it's not done yet (it's delayed).
+    // A doable-today task means that the task is not done plus one of
+    // the following cases:
+    //   1) The task has no start date.
+    //   2) The task has a start date and the date is the current day
+    //      or before.
     //
     // Every returned task is incomplete because this method is used
     // to get a list of tasks, without displaying every task's details.
-    public List<Task> getDoableNowTasks(TaskContext context, List<TaskTag> filterTags) {
+    public List<Task> getDoableTodayTasks(TaskContext context, List<TaskTag> filterTags) {
         List<Task> tasks = new LinkedList<Task>();
         long contextId = context.getId();
 

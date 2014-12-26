@@ -40,7 +40,7 @@ public class ApplicationLogic {
 
     public String getCurrentView() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getString(CURRENT_VIEW_PREF_KEY, "now");
+        return preferences.getString(CURRENT_VIEW_PREF_KEY, "doable_today");
     }
 
     // Returning Null or an empty list means that all tasks from the current view must be shown.
@@ -97,8 +97,8 @@ public class ApplicationLogic {
         return dataManager.getAllTaskTags(context);
     }
 
-    public List<Task> getDoableNowTasks(TaskContext context, List<TaskTag> filterTags) {
-        return dataManager.getDoableNowTasks(context, filterTags);
+    public List<Task> getDoableTodayTasks(TaskContext context, List<TaskTag> filterTags) {
+        return dataManager.getDoableTodayTasks(context, filterTags);
     }
 
     public List<Task> getOpenTasks(TaskContext context, List<TaskTag> filterTags) {

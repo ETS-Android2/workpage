@@ -170,7 +170,7 @@ public class MainActivity extends ListActivity {
         currentView = this.applicationLogic.getCurrentView();
         
         if (currentView.equals("open")) viewTextView.setText(R.string.open);
-        else if (currentView.equals("now")) viewTextView.setText(R.string.doable_now);
+        else if (currentView.equals("doable_today")) viewTextView.setText(R.string.doable_today);
         else if (currentView.equals("closed")) viewTextView.setText(R.string.closed);
 
         // Information about the current filter tags.
@@ -204,6 +204,8 @@ public class MainActivity extends ListActivity {
     }
 
     private void updateTaskListInterface(List<Task> tasks) {
+        if (tasks == null) tasks = new LinkedList<Task>();
+
         TaskAdapter adapter = new TaskAdapter(this, R.layout.task_list_item, tasks);
         setListAdapter(adapter);
     }
@@ -372,8 +374,8 @@ public class MainActivity extends ListActivity {
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
-            if (currentView.equals("now")) tasks = MainActivity.this.applicationLogic.getDoableNowTasks(MainActivity.this.currentTaskContext, currentFilterTags);
-            else if (currentView.equals("open")) tasks = MainActivity.this.applicationLogic.getOpenTasks(MainActivity.this.currentTaskContext, currentFilterTags);
+            if (currentView.equals("open")) tasks = MainActivity.this.applicationLogic.getOpenTasks(MainActivity.this.currentTaskContext, currentFilterTags);
+            else if (currentView.equals("doable_today")) tasks = MainActivity.this.applicationLogic.getDoableTodayTasks(MainActivity.this.currentTaskContext, currentFilterTags);
             else if (currentView.equals("closed")) tasks = MainActivity.this.applicationLogic.getClosedTasks(MainActivity.this.currentTaskContext, currentFilterTags);
 
             return tasks;

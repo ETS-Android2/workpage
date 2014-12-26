@@ -25,10 +25,10 @@
                 android:text="@string/open"
                 android:onClick="onViewRadioButtonClicked" />
 
-            <RadioButton android:id="@+id/view_now"
+            <RadioButton android:id="@+id/view_doableToday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/doable_now"
+                android:text="@string/doable_today"
                 android:onClick="onViewRadioButtonClicked" />
 
             <RadioButton android:id="@+id/view_closed"
