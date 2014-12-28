@@ -93,11 +93,12 @@ public class MainActivity extends ListActivity {
             // if the standard "MenuItem" invocation should continue.
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                boolean eventHandled;
+                boolean eventHandled = false;
 
                 switch (item.getItemId()) {
                     case R.id.mainContextualActionBar_menu_status:
-                        // ToDo
+                        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(mode);
+                        statusFragment.show(getFragmentManager(), "change_task_status");
                         eventHandled = true;
                         break;
                         
@@ -116,13 +117,10 @@ public class MainActivity extends ListActivity {
 
                     case R.id.mainContextualActionBar_menu_delete:
                         // Show a deletion confirmation dialog.
-                        DialogFragment fragment = new DeleteTaskDialogFragment(mode);
-                        fragment.show(getFragmentManager(), "delete_task");
+                        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(mode);
+                        deleteFragment.show(getFragmentManager(), "delete_task");
                         eventHandled = true;
                         break;
-
-                    default:
-                        eventHandled = false;
                 }
 
                 return eventHandled;
@@ -210,7 +208,7 @@ public class MainActivity extends ListActivity {
         setListAdapter(adapter);
     }
 
-    private void updateTaskListInterfaceByRemove(List<Task> tasksToRemove) {
+    private void updateTaskListInterfaceByRemoving(List<Task> tasksToRemove) {
         TaskAdapter adapter = (TaskAdapter) getListAdapter();
         for (Task task : tasksToRemove) adapter.remove(task);
     }
@@ -310,7 +308,6 @@ public class MainActivity extends ListActivity {
             String datesText = getTaskDatesText(start, deadline);
 
             if (tags != null && tagCount > 0) {
-                // ToDo: List task's tags on "details2TextView"
                 for (int i = 0; i < tagCount; i++) {
                     String name = (tags.get(i)).getName();
 
@@ -409,14 +406,63 @@ public class MainActivity extends ListActivity {
             builder.setNegativeButton(R.string.cancel, null);
             builder.setSingleChoiceItems(taskContextNames, selectedItem, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    TaskContext newCurrentTaskContext = taskContexts.get(id);
+                public void onClick(DialogInterface dialog, int which) {
+                    // "which" is the index position of the selected item and, in this
+                    // case, it's also the ID of the task context we want to select.
+                    TaskContext newCurrentTaskContext = taskContexts.get(which);
 
                     MainActivity.this.currentTaskContext = newCurrentTaskContext;
                     MainActivity.this.applicationLogic.setCurrentTaskContext(newCurrentTaskContext);
                     MainActivity.this.applicationLogic.setCurrentFilterTags(new LinkedList<TaskTag>());
 
                     dialog.dismiss();
+                    MainActivity.this.updateInterface();
+                }
+            });
+
+            return builder.create();
+        }
+    }
+
+    private class ChangeTaskStatusDialogFragment extends DialogFragment {
+        private ActionMode mode;
+
+        public ChangeTaskStatusDialogFragment(ActionMode mode) {
+            this.mode = mode;
+        }
+
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final List<Task> selectedTasks = MainActivity.this.getSelectedTasks();
+            int selectedTaskCount = selectedTasks.size();
+            Resources resources = MainActivity.this.getResources();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(resources.getQuantityString(R.plurals.task_status, selectedTaskCount, selectedTaskCount));
+            builder.setNegativeButton(R.string.cancel, null);
+
+            String[] items = null;
+            final boolean firstTaskDone = (selectedTasks.get(0)).isDone();
+
+            if (!firstTaskDone) items = new String[] { MainActivity.this.getString(R.string.mark_as_done) };
+            else items = new String[] { MainActivity.this.getString(R.string.mark_as_not_done) };
+
+            builder.setItems(items, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Switch tasks status.
+                    boolean done = !firstTaskDone;
+
+                    for (Task task : selectedTasks) {
+                        task.setDone(done);
+                        MainActivity.this.applicationLogic.saveTask(task);
+                    }
+
+                    // Close the dialog.
+                    dialog.dismiss();
+
+                    // Close the contextual action bar.
+                    ChangeTaskStatusDialogFragment.this.mode.finish();
+
+                    // Update the list view.
                     MainActivity.this.updateInterface();
                 }
             });
@@ -443,7 +489,7 @@ public class MainActivity extends ListActivity {
             builder.setNegativeButton(R.string.cancel, null);
             builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int id) {
+                public void onClick(DialogInterface dialog, int which) {
                     MainActivity.this.applicationLogic.deleteTasks(selectedTasks);
 
                     String text = resources.getQuantityString(R.plurals.task_deleted, selectedTaskCount, selectedTaskCount);
@@ -456,7 +502,7 @@ public class MainActivity extends ListActivity {
                     DeleteTaskDialogFragment.this.mode.finish();
 
                     // Update the list view.
-                    updateTaskListInterfaceByRemove(selectedTasks);
+                    MainActivity.this.updateTaskListInterfaceByRemoving(selectedTasks);
                 }
             });
 

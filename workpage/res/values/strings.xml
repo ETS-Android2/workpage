@@ -17,6 +17,14 @@
     <string name="delete">Delete</string>
     <string name="selected_tasks">%1$d selected</string>
 
+    <plurals name="task_status">
+        <item quantity="one">Task status</item>
+        <item quantity="other">Tasks (%1$d) status</item>
+    </plurals>
+
+    <string name="mark_as_done">Mark as done</string>
+    <string name="mark_as_not_done">Mark as not done</string>
+
     <plurals name="delete_selected_task">
         <item quantity="one">Delete selected task?</item>
         <item quantity="other">Delete the %1$d selected tasks?</item>
