@@ -1,5 +1,8 @@
 package jajimenez.workpage.logic;
 
+import android.content.Context;
+
+import jajimenez.workpage.R;
 import java.util.Calendar;
 import java.text.DateFormat;
 
@@ -45,5 +48,32 @@ public class DateTimeTool {
     public String getInterfaceFormattedDate(Calendar calendar) {
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
         return dateFormat.format(calendar.getTime());
+    }
+
+    public String getTaskDatesText(Context context, Calendar start, Calendar deadline) {
+        String text = null;
+
+        String formattedStart = null;
+        String formattedDeadline = null;
+
+        if (start != null && deadline != null) {
+            formattedStart = getInterfaceFormattedDate(start);
+            formattedDeadline = getInterfaceFormattedDate(deadline);
+
+            text = context.getString(R.string.task_start_deadline, formattedStart, formattedDeadline);
+        }
+        else if (start != null) {
+            formattedStart = getInterfaceFormattedDate(start);
+            text = context.getString(R.string.task_start, formattedStart);
+        }
+        else if (deadline != null) {
+            formattedDeadline = getInterfaceFormattedDate(deadline);
+            text = context.getString(R.string.task_deadline, formattedDeadline);
+        }
+        else {
+            text = "";
+        }
+
+        return text;
     }
 }

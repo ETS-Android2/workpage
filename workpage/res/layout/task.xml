@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/task_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView android:id="@+id/task_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+
+        <TableLayout android:id="@+id/task_dates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:stretchColumns="1">
+
+            <TableRow android:id="@+id/task_start_row">
+                <TextView android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/start" />
+
+                <TextView android:id="@+id/task_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp" />
+            </TableRow>
+            <TableRow android:id="@+id/task_deadline_row">
+                <TextView android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/deadline" />
+
+                <TextView android:id="@+id/task_deadline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp" />
+            </TableRow>
+        </TableLayout>
+
+        <TextView android:id="@+id/task_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:textSize="16sp" />
+    </LinearLayout>
+</ScrollView>

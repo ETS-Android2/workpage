@@ -17,6 +17,8 @@
 
         <RadioGroup android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:orientation="vertical">
 
             <RadioButton android:id="@+id/view_open"
@@ -26,7 +28,7 @@
 
             <TextView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="32dp"
+                android:paddingLeft="27dp"
                 android:text="@string/open_description"
                 android:clickable="true"
                 android:onClick="onOpenDescriptionTextViewClicked" />
@@ -38,7 +40,7 @@
 
             <TextView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="32dp"
+                android:paddingLeft="27dp"
                 android:text="@string/doable_today_description"
                 android:clickable="true"
                 android:onClick="onDoableTodayDescriptionTextViewClicked" />
@@ -50,7 +52,8 @@
 
             <TextView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="32dp"
+                android:paddingLeft="27dp"
+                android:paddingBottom="10dp"
                 android:text="@string/closed_description"
                 android:clickable="true"
                 android:onClick="onClosedDescriptionTextViewClicked" />
@@ -60,7 +63,6 @@
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:paddingTop="10dp"
             android:textSize="18sp"
             android:textStyle="bold"
             android:text="@string/filter_by_tags" />

@@ -103,7 +103,7 @@ public class MainActivity extends ListActivity {
                         break;
                         
                     case R.id.mainContextualActionBar_menu_edit:
-                        // Open the task edition activity:
+                        // Open the task edition activity.
                         long selectedTaskId = ((getSelectedTasks()).get(0)).getId();
 
                         Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
@@ -213,6 +213,16 @@ public class MainActivity extends ListActivity {
         for (Task task : tasksToRemove) adapter.remove(task);
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        Task selectedTask = (Task) l.getItemAtPosition(position);
+
+        Intent intent = new Intent(this, TaskActivity.class);
+        intent.putExtra("task_id", selectedTask.getId());
+
+        startActivity(intent);
+    }
+
     public void onSwitchTaskContextItemSelected(MenuItem item) {
         DialogFragment fragment = new SwitchTaskContextDialogFragment();
         fragment.show(getFragmentManager(), "switch_task_context");
@@ -305,14 +315,12 @@ public class MainActivity extends ListActivity {
             // Show Tags and Dates
             int tagCount = tags.size();
             String tagsText = "";
-            String datesText = getTaskDatesText(start, deadline);
+            String datesText = (new DateTimeTool()).getTaskDatesText(MainActivity.this, start, deadline);
 
             if (tags != null && tagCount > 0) {
                 for (int i = 0; i < tagCount; i++) {
-                    String name = (tags.get(i)).getName();
-
-                    if (i == (tagCount - 1)) tagsText += name;
-                    else tagsText += (name + ", ");
+                    tagsText += (tags.get(i)).getName();
+                    if (i < (tagCount - 1)) tagsText += ", ";
                 }
 
                 details1TextView.setText(tagsText);
@@ -323,34 +331,6 @@ public class MainActivity extends ListActivity {
             }
 
             return itemView;
-        }
-
-        private String getTaskDatesText(Calendar start, Calendar deadline) {
-            String text = null;
-
-            DateTimeTool tool = new DateTimeTool();
-            String formattedStart = null;
-            String formattedDeadline = null;
-
-            if (start != null && deadline != null) {
-                formattedStart = tool.getInterfaceFormattedDate(start);
-                formattedDeadline = tool.getInterfaceFormattedDate(deadline);
-
-                text = MainActivity.this.getString(R.string.task_start_deadline, formattedStart, formattedDeadline);
-            }
-            else if (start != null) {
-                formattedStart = tool.getInterfaceFormattedDate(start);
-                text = MainActivity.this.getString(R.string.task_start, formattedStart);
-            }
-            else if (deadline != null) {
-                formattedDeadline = tool.getInterfaceFormattedDate(deadline);
-                text = MainActivity.this.getString(R.string.task_deadline, formattedDeadline);
-            }
-            else {
-                text = "";
-            }
-
-            return text;
         }
 
         private class TaskItemViewTag {

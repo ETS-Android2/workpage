@@ -25,6 +25,9 @@
             android:name="ViewActivity"
             android:parentActivityName="MainActivity" />
 
+        <activity android:name="TaskActivity"
+            android:parentActivityName="MainActivity" />
+
         <activity android:name="EditTaskActivity"
             android:parentActivityName="MainActivity"
             android:configChanges="orientation|screenSize" />
