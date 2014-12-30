@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/mainContextualActionBar_menu_status"
+    <item android:id="@+id/taskMenu_status"
         android:icon="@drawable/ic_action_settings"
         android:title="@string/set_status"
         android:showAsAction="ifRoom" />
 
-    <item android:id="@+id/mainContextualActionBar_menu_edit"
+    <item android:id="@+id/taskMenu_edit"
         android:icon="@drawable/ic_action_edit"
         android:title="@string/edit"
         android:showAsAction="ifRoom" />
 
-    <item android:id="@+id/mainContextualActionBar_menu_delete"
+    <item android:id="@+id/taskMenu_delete"
         android:icon="@drawable/ic_action_discard"
         android:title="@string/delete"
         android:showAsAction="ifRoom" />

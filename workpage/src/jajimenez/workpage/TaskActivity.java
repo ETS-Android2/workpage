@@ -1,12 +1,16 @@
 package jajimenez.workpage;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Calendar;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -26,6 +30,7 @@ public class TaskActivity extends Activity {
     private TextView deadlineTextView;
     private TextView descriptionTextView;
 
+    private long currentTaskId;
     private Task currentTask;
 
     @Override
@@ -45,13 +50,24 @@ public class TaskActivity extends Activity {
 
         // Load task data.
         Intent intent = getIntent();
-        long taskId = intent.getLongExtra("task_id", -1);
-        currentTask = (new ApplicationLogic(this)).getTask(taskId);
+        currentTaskId = intent.getLongExtra("task_id", -1);
+        currentTask = null;
 
         updateInterface();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.task, menu);
+
+        return true;
+    }
+
     private void updateInterface() {
+        // Update Task object after possible changes.
+        currentTask = (new ApplicationLogic(this)).getTask(currentTaskId);
+
         if (currentTask.isDone()) setTitle(R.string.task_closed);
         else setTitle(R.string.task_open);
 
@@ -92,6 +108,85 @@ public class TaskActivity extends Activity {
 
             if (deadline == null) deadlineTableRow.setVisibility(View.GONE);
             else deadlineTextView.setText(tool.getInterfaceFormattedDate(currentTask.getDeadline()));
+        }
+    }
+
+    // Returns "true" if this callback handled the event.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean eventHandled = false;
+        List<Task> tasks = null;
+
+        switch (item.getItemId()) {
+            case R.id.taskMenu_status:
+                tasks = new LinkedList<Task>();
+                tasks.add(currentTask);
+
+                ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(this, tasks);
+
+                statusFragment.setOnItemClickListener(new ChangeTaskStatusDialogFragment.OnItemClickListener() {
+                    public void onItemClick() {
+                        // Update the activity UI.
+                        TaskActivity.this.updateInterface();
+
+                        // For updating the UI of the MainActivity.
+                        TaskActivity.this.setResult(RESULT_OK);
+                    }
+                });
+
+                statusFragment.show(getFragmentManager(), "change_task_status");
+                eventHandled = true;
+                break;
+                
+            case R.id.taskMenu_edit:
+                // Open the task edition activity.
+                long currentTaskId = currentTask.getId();
+
+                Intent intent = new Intent(this, EditTaskActivity.class);
+                intent.putExtra("action", "edit");
+                intent.putExtra("task_id", currentTaskId);
+
+                startActivityForResult(intent, 0);
+                eventHandled = true;
+                break;
+
+            case R.id.taskMenu_delete:
+                tasks = new LinkedList<Task>();
+                tasks.add(currentTask);
+
+                // Show a deletion confirmation dialog.
+                DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(this, tasks);
+
+                deleteFragment.setOnDeleteListener(new DeleteTaskDialogFragment.OnDeleteListener() {
+                    public void onDelete() {
+                        // For updating the UI of the MainActivity.
+                        TaskActivity.this.setResult(RESULT_OK);
+
+                        // Close the activity.
+                        TaskActivity.this.finish();
+                    }
+                });
+
+                deleteFragment.show(getFragmentManager(), "delete_task");
+                eventHandled = true;
+                break;
+
+            default:
+                eventHandled = super.onOptionsItemSelected(item);
+                break;
+        }
+
+        return eventHandled;
+    }
+
+    // This method will be called when coming back from EditTask activity.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            updateInterface();
+
+            // For updating the UI of the MainActivity.
+            setResult(RESULT_OK);
         }
     }
 }
