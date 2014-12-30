@@ -21,8 +21,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:label="@string/view_1"
-            android:name="ViewActivity"
+        <activity android:name="ViewActivity"
+            android:label="@string/view_1"
+            android:parentActivityName="MainActivity" />
+
+        <activity android:name="EditTaskTagsActivity"
+            android:label="@string/edit_tags"
             android:parentActivityName="MainActivity" />
 
         <activity android:name="TaskActivity"

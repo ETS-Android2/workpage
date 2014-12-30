@@ -253,8 +253,13 @@ public class MainActivity extends ListActivity {
         fragment.show(getFragmentManager(), "switch_task_context");
     }
 
+    public void onEditTaskTagsItemSelected(MenuItem item) {
+        Intent intent = new Intent(this, EditTaskTagsActivity.class);
+        startActivityForResult(intent, 0);
+    }
+
     public void onViewItemSelected(MenuItem item) {
-        Intent intent = new Intent(MainActivity.this, ViewActivity.class);
+        Intent intent = new Intent(this, ViewActivity.class);
         startActivityForResult(intent, 0);
     }
 
