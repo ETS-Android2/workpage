@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import android.util.SparseBooleanArray;
 import android.app.ListActivity;
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.view.View;
@@ -27,6 +28,7 @@ public class MainActivity extends ListActivity {
     private TextView viewTextView;
     private TextView filterTagsTitleTextView;
     private TextView filterTagsValueTextView;
+    private ActionBar actionBar;
     private ListView listView;
 
     private ApplicationLogic applicationLogic;
@@ -43,11 +45,12 @@ public class MainActivity extends ListActivity {
         filterTagsTitleTextView = (TextView) findViewById(R.id.main_filterTags_title);
         filterTagsValueTextView = (TextView) findViewById(R.id.main_filterTags_value);
         listView = getListView();
+        actionBar = getActionBar();
 
         createContextualActionBar();
 
         applicationLogic = new ApplicationLogic(this);
-        currentTaskContext = this.applicationLogic.getCurrentTaskContext();
+        currentTaskContext = applicationLogic.getCurrentTaskContext();
         currentView = "";
         currentFilterTags = new LinkedList<TaskTag>();
 
@@ -141,7 +144,7 @@ public class MainActivity extends ListActivity {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
-                mode.setTitle(MainActivity.this.getString(R.string.selected_tasks, selectedTaskCount));
+                mode.setTitle(MainActivity.this.getString(R.string.selected, selectedTaskCount));
 
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.taskMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();
@@ -174,7 +177,7 @@ public class MainActivity extends ListActivity {
 
     private void updateInterface() {
         // Information about the current task context.
-        (getActionBar()).setSubtitle(currentTaskContext.getName());
+        actionBar.setSubtitle(currentTaskContext.getName());
 
         // Information about the current view.
         currentView = this.applicationLogic.getCurrentView();
@@ -210,7 +213,7 @@ public class MainActivity extends ListActivity {
         }
 
         // Show tasks.
-        (new LoadAllCurrentOpenTasksDBTask()).execute();
+        (new LoadTasksDBTask()).execute();
     }
 
     private void updateTaskListInterface(List<Task> tasks) {
@@ -223,6 +226,24 @@ public class MainActivity extends ListActivity {
     private void updateTaskListInterfaceByRemoving(List<Task> tasksToRemove) {
         TaskAdapter adapter = (TaskAdapter) getListAdapter();
         for (Task task : tasksToRemove) adapter.remove(task);
+    }
+
+    private List<Task> getSelectedTasks() {
+        List<Task> selectedTasks = new LinkedList<Task>();
+        
+        TaskAdapter adapter = (TaskAdapter) getListAdapter();
+        SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
+        int itemCount = listView.getCount();
+
+        for (int i = 0; i < itemCount; i++) {
+            if (itemSelectedStates.get(i)) {
+                // The task with position "i" is selected.
+                Task task = adapter.getItem(i);
+                selectedTasks.add(task);
+            }
+        }
+
+        return selectedTasks;
     }
 
     @Override
@@ -276,25 +297,7 @@ public class MainActivity extends ListActivity {
         startActivity(intent);
     }
 
-    private List<Task> getSelectedTasks() {
-        List<Task> selectedTasks = new LinkedList<Task>();
-        
-        TaskAdapter adapter = (TaskAdapter) getListAdapter();
-        SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
-        int itemCount = listView.getCount();
-
-        for (int i = 0; i < itemCount; i++) {
-            if (itemSelectedStates.get(i)) {
-                // The task with position "i" is selected.
-                Task task = adapter.getItem(i);
-                selectedTasks.add(task);
-            }
-        }
-
-        return selectedTasks;
-    }
-
-    private class LoadAllCurrentOpenTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+    private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
         @Override
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;

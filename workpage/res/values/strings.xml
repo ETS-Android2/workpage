@@ -15,7 +15,7 @@
     <string name="set_status">Set status</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="selected_tasks">%1$d selected</string>
+    <string name="selected">%1$d selected</string>
 
     <plurals name="task_status">
         <item quantity="one">Task status</item>
@@ -35,6 +35,18 @@
     </plurals>
 
     <string name="edit_tags">Edit tags</string>
+    <string name="open_task_count">On %1$d open tasks</string>
+    <string name="closed_task_count">On %1$d closed tasks</string>
+    <string name="new_tag">New tag</string>
+
+    <plurals name="delete_selected_tag">
+        <item quantity="one">Delete selected tag?</item>
+        <item quantity="other">Delete the %1$d selected tags?</item>
+    </plurals>
+    <plurals name="tag_deleted">
+        <item quantity="one">Tag deleted.</item>
+        <item quantity="other">Tags deleted.</item>
+    </plurals>
 
     <string name="task_open">Task (open)</string>
     <string name="task_closed">Task (closed)</string>

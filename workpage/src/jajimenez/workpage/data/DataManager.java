@@ -484,6 +484,34 @@ public class DataManager extends SQLiteOpenHelper {
         return tasks;
     }
 
+    public long getTaskCount(boolean done, TaskTag tag) {
+        long count = 0;
+
+        if (tag != null) {
+            SQLiteDatabase db = null;
+
+            try {
+                db = getReadableDatabase();
+                String query = "SELECT count(DISTINCT tasks.id) " +
+                    "FROM tasks, task_tag_relationships, task_tags " +
+                    "WHERE tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id ";
+
+                if (done) query += "AND tasks.done = 1 ";
+                else query += "AND tasks.done = 0 ";
+
+                query += String.format("AND task_tags.name = ?;");
+                Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(tag.getName()) });
+
+                if (cursor.moveToFirst()) count = cursor.getLong(0);
+            }
+            finally {
+                db.close();
+            }
+        }
+
+        return count;
+    }
+
     public Task getTask(long id) {
         Task task = null;
 

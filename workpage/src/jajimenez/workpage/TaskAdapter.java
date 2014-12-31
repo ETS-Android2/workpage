@@ -20,6 +20,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
     public TaskAdapter(Activity activity, int resource, List<Task> items) {
         super(activity, resource, items);
+
         this.activity = activity;
         this.resource = resource;
     }
@@ -61,10 +62,10 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         Calendar deadline = task.getDeadline();
         List<TaskTag> tags = task.getTags();
 
-        // Show title
+        // Show title.
         titleTextView.setText(title);
 
-        // Show Tags and Dates
+        // Show Tags and Dates.
         int tagCount = tags.size();
         String tagsText = "";
         String datesText = (new DateTimeTool()).getTaskDatesText(activity, start, deadline);
