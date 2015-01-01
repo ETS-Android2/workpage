@@ -103,11 +103,23 @@ public class TaskActivity extends Activity {
             datesTableLayout.setVisibility(View.GONE);
         }
         else {
-            if (start == null) startTableRow.setVisibility(View.GONE);
-            else startTextView.setText(tool.getInterfaceFormattedDate(currentTask.getStart()));
+            if (start == null) {
+                startTableRow.setVisibility(View.GONE);
+                startTextView.setText("");
+            }
+            else {
+                startTextView.setText(tool.getInterfaceFormattedDate(currentTask.getStart()));
+                startTableRow.setVisibility(View.VISIBLE);
+            }
 
-            if (deadline == null) deadlineTableRow.setVisibility(View.GONE);
-            else deadlineTextView.setText(tool.getInterfaceFormattedDate(currentTask.getDeadline()));
+            if (deadline == null) {
+                deadlineTableRow.setVisibility(View.GONE);
+                deadlineTextView.setText("");
+            }
+            else {
+                deadlineTextView.setText(tool.getInterfaceFormattedDate(currentTask.getDeadline()));
+                deadlineTableRow.setVisibility(View.VISIBLE);
+            }
         }
     }
 
