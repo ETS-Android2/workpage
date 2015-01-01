@@ -98,7 +98,7 @@ public class ApplicationLogic {
     }
 
     public void deleteTaskTags(List<TaskTag> tags) {
-        // ToDo
+        dataManager.deleteTaskTags(tags);
     }
 
     public List<Task> getDoableTodayTasks(TaskContext context, List<TaskTag> filterTags) {

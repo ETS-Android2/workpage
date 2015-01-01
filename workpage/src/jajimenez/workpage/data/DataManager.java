@@ -331,6 +331,18 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteTaskTags(List<TaskTag> tags) {
+        SQLiteDatabase db = null;
+        
+        try {
+            db = getWritableDatabase();
+            for (TaskTag t : tags) db.delete("task_tags", "id = ?", new String[] { String.valueOf(t.getId()) });
+        }
+        finally {
+            db.close();
+        }
+    }
+
     // Returns all open tasks that belong to a given task context and
     // that could be done at the current day ("doable-today" tasks)
     // and have any of the given task tags. Returns all "doable-today"

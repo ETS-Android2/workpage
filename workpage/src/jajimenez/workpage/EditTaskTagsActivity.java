@@ -119,14 +119,7 @@ public class EditTaskTagsActivity extends ListActivity {
 
                 switch (item.getItemId()) {
                     case R.id.editTaskTagsContextualMenu_edit:
-                        // Open the task edition activity.
-                        /*long selectedTagId = (selectedTags.get(0)).getId();
-
-                        Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
-                        intent.putExtra("action", "edit");
-                        intent.putExtra("task_id", selectedTaskId);
-
-                        startActivityForResult(intent, 0);*/
+                        // ToDo
 
                         // Close the context action bar.
                         mode.finish();
@@ -140,6 +133,8 @@ public class EditTaskTagsActivity extends ListActivity {
 
                         deleteFragment.setOnDeleteListener(new DeleteTaskTagDialogFragment.OnDeleteListener() {
                             public void onDelete() {
+                                setResult(RESULT_OK);
+
                                 // Close the contextual action bar.
                                 mode.finish();
 
@@ -148,7 +143,7 @@ public class EditTaskTagsActivity extends ListActivity {
                             }
                         });
 
-                        deleteFragment.show(getFragmentManager(), "delete_tag");
+                        deleteFragment.show(getFragmentManager(), "delete_task_tag");
                         eventHandled = true;
                         break;
                 }
@@ -178,11 +173,6 @@ public class EditTaskTagsActivity extends ListActivity {
 
     public void onNewTaskTagItemSelected(MenuItem item) {
         // ToDo
-        /*Intent intent = new Intent(this, EditTaskActivity.class);
-        intent.putExtra("action", "new");
-        intent.putExtra("task_context_id", currentTaskContext.getId());
-
-        startActivityForResult(intent, 0);*/
     }
 
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {
