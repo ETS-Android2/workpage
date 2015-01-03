@@ -17,12 +17,12 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.CheckBox;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.Toast;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.DatePicker;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -67,12 +67,10 @@ public class EditTaskActivity extends Activity {
         addedTagsLinearLayout = (LinearLayout) findViewById(R.id.editTask_addedTags);
 
         addTagAutoTextView.addTextChangedListener(new TextWatcher() {
-            @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // Nothing to do.
             }
 
-            @Override
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
                 boolean enabled = (text.length() > 0);
@@ -90,7 +88,6 @@ public class EditTaskActivity extends Activity {
                 EditTaskActivity.this.addTagButton.setEnabled(enabled);
             }
 
-            @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Nothing to do.
             }
@@ -223,12 +220,30 @@ public class EditTaskActivity extends Activity {
     }
 
     public void onStartButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerDialogFragment(selectedStartDate);
+        DialogFragment fragment = new DatePickerDialogFragment(selectedStartDate, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                EditTaskActivity.this.selectedStartDate.set(Calendar.YEAR, year);
+                EditTaskActivity.this.selectedStartDate.set(Calendar.MONTH, month);
+                EditTaskActivity.this.selectedStartDate.set(Calendar.DAY_OF_MONTH, day);
+
+                EditTaskActivity.this.updateInterface();
+            }
+        });
+
         fragment.show(getFragmentManager(), "start_date_picker");
     }
 
     public void onDeadlineButtonClicked(View view) {
-        DialogFragment fragment = new DatePickerDialogFragment(selectedDeadlineDate);
+        DialogFragment fragment = new DatePickerDialogFragment(selectedDeadlineDate, new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                EditTaskActivity.this.selectedDeadlineDate.set(Calendar.YEAR, year);
+                EditTaskActivity.this.selectedDeadlineDate.set(Calendar.MONTH, month);
+                EditTaskActivity.this.selectedDeadlineDate.set(Calendar.DAY_OF_MONTH, day);
+
+                EditTaskActivity.this.updateInterface();
+            }
+        });
+
         fragment.show(getFragmentManager(), "deadline_date_picker");
     }
 
@@ -277,31 +292,5 @@ public class EditTaskActivity extends Activity {
 
         // Add the tag view and clear the text box.
         addedTagsLinearLayout.addView(tagView);
-    }
-
-    private class DatePickerDialogFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-        private Calendar calendar;
-
-        public DatePickerDialogFragment(Calendar calendar) {
-            super();
-            this.calendar = calendar;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            return new DatePickerDialog(getActivity(), this, year, month, day);
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.DAY_OF_MONTH, day);
-
-            EditTaskActivity.this.updateInterface();
-        }
     }
 }

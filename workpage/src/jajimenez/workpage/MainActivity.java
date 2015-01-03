@@ -60,7 +60,6 @@ public class MainActivity extends ListActivity {
     private void createContextualActionBar() {
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            @Override   
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.task, menu);
@@ -68,19 +67,16 @@ public class MainActivity extends ListActivity {
                 return true;
             }
 
-            @Override
             public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
                 return false;
             }
 
-            @Override
             public void onDestroyActionMode(ActionMode mode) {
                 // Do nothing
             }
 
             // Returns "true" if this callback handled the event, "false"
             // if the standard "MenuItem" invocation should continue.
-            @Override
             public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
                 boolean eventHandled = false;
                 final List<Task> selectedTasks = MainActivity.this.getSelectedTasks();
@@ -141,7 +137,6 @@ public class MainActivity extends ListActivity {
                 return eventHandled;
             }
 
-            @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
                 mode.setTitle(MainActivity.this.getString(R.string.selected, selectedTaskCount));
@@ -298,7 +293,6 @@ public class MainActivity extends ListActivity {
     }
 
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
-        @Override
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
@@ -309,7 +303,6 @@ public class MainActivity extends ListActivity {
             return tasks;
         }
 
-        @Override
         protected void onPostExecute(List<Task> tasks) {
             MainActivity.this.updateTaskListInterface(tasks);
         }

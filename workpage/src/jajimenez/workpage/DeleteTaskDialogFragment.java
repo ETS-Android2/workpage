@@ -38,7 +38,6 @@ public class DeleteTaskDialogFragment extends DialogFragment {
         builder.setMessage(resources.getQuantityString(R.plurals.delete_selected_task, selectedTaskCount, selectedTaskCount));
         builder.setNegativeButton(R.string.cancel, null);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-            @Override
             public void onClick(DialogInterface dialog, int which) {
                 DeleteTaskDialogFragment.this.applicationLogic.deleteTasks(DeleteTaskDialogFragment.this.tasks);
 

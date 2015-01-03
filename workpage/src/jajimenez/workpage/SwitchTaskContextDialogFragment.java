@@ -49,7 +49,6 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
         builder.setTitle(R.string.switch_task_context);
         builder.setNegativeButton(R.string.cancel, null);
         builder.setSingleChoiceItems(taskContextNames, selectedItem, new DialogInterface.OnClickListener() {
-            @Override
             public void onClick(DialogInterface dialog, int which) {
                 // "which" is the index position of the selected item.
                 TaskContext selectedTaskContext = taskContexts.get(which);

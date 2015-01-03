@@ -53,21 +53,18 @@ public class ViewActivity extends Activity {
         updateInterface();
 
         openRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) applicationLogic.setCurrentView("open");
             }
         });
 
         doableTodayRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) applicationLogic.setCurrentView("doable_today");
             }
         });
 
         closedRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) applicationLogic.setCurrentView("closed");
             }
@@ -88,7 +85,6 @@ public class ViewActivity extends Activity {
                 tagCheckBox.setText(tag.getName());
                 tagCheckBox.setChecked(currentFilterTags.contains(tag));
                 tagCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
                     public void onClick(View v) {
                         CheckBox tagCheckBox = (CheckBox) v;
 

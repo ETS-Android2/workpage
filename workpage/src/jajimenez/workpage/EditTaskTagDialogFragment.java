@@ -61,7 +61,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
         builder.setNegativeButton(R.string.cancel, null);
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
-            @Override
             public void onClick(DialogInterface dialog, int which) {
                 String name = ((EditTaskTagDialogFragment.this.nameEditText.getText()).toString()).trim();
                 EditTaskTagDialogFragment.this.tag.setName(name);
@@ -76,12 +75,10 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         });
 
         nameEditText.addTextChangedListener(new TextWatcher() {
-            @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // Nothing to do.
             }
 
-            @Override
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
                 boolean enabled = (text.length() > 0);
@@ -97,7 +94,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
                 (EditTaskTagDialogFragment.this.dialog.getButton(DialogInterface.BUTTON_POSITIVE)).setEnabled(enabled);
             }
 
-            @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Nothing to do.
             }
