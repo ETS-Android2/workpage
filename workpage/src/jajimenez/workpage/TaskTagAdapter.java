@@ -70,7 +70,7 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         return itemView;
     }
 
-    private class TaskTagItemViewTag {
+    private static class TaskTagItemViewTag {
         public TextView nameTextView;
         public TextView openTaskCountTextView;
         public TextView closedTaskCountTextView;

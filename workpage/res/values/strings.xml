@@ -35,8 +35,8 @@
     </plurals>
 
     <string name="edit_tags">Edit tags</string>
-    <string name="open_task_count">On %1$d open tasks</string>
-    <string name="closed_task_count">On %1$d closed tasks</string>
+    <string name="open_task_count">On %1$d open tasks.</string>
+    <string name="closed_task_count">On %1$d closed tasks.</string>
     <string name="new_tag">New tag</string>
     <string name="edit_tag">Edit tag</string>
     <string name="tag_saved">Tag saved.</string>
@@ -63,6 +63,7 @@
     <string name="task_start">Start: %1$s</string>
     <string name="task_deadline">Deadline: %1$s</string>
     <string name="task_start_deadline">Start: %1$s - Deadline: %2$s</string>
+    <string name="no_values">-</string>
     <string name="tags">Tags:</string>
     <string name="tag_name">Tag name</string>
     <string name="add">Add</string>

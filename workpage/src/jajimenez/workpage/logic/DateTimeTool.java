@@ -71,7 +71,7 @@ public class DateTimeTool {
             text = context.getString(R.string.task_deadline, formattedDeadline);
         }
         else {
-            text = "";
+            text = context.getString(R.string.no_values);
         }
 
         return text;

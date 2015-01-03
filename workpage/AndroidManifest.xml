@@ -27,7 +27,8 @@
 
         <activity android:name="EditTaskTagsActivity"
             android:label="@string/edit_tags"
-            android:parentActivityName="MainActivity" />
+            android:parentActivityName="MainActivity"
+            android:configChanges="orientation|screenSize" />
 
         <activity android:name="TaskActivity"
             android:parentActivityName="MainActivity" />

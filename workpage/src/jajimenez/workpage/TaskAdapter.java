@@ -81,12 +81,13 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         }
         else {
             details1TextView.setText(datesText);
+            details2TextView.setText(R.string.no_values);
         }
 
         return itemView;
     }
 
-    private class TaskItemViewTag {
+    private static class TaskItemViewTag {
         public TextView titleTextView;
         public TextView details1TextView;
         public TextView details2TextView;
