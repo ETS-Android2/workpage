@@ -87,7 +87,7 @@ public class MainActivity extends ListActivity {
 
                 switch (item.getItemId()) {
                     case R.id.taskMenu_status:
-                        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(MainActivity.this, selectedTasks);
+                        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(selectedTasks);
 
                         statusFragment.setOnItemClickListener(new ChangeTaskStatusDialogFragment.OnItemClickListener() {
                             public void onItemClick() {
@@ -121,7 +121,7 @@ public class MainActivity extends ListActivity {
 
                     case R.id.taskMenu_delete:
                         // Show a deletion confirmation dialog.
-                        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(MainActivity.this, selectedTasks);
+                        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(selectedTasks);
 
                         deleteFragment.setOnDeleteListener(new DeleteTaskDialogFragment.OnDeleteListener() {
                             public void onDelete() {
@@ -257,7 +257,7 @@ public class MainActivity extends ListActivity {
     }
 
     public void onSwitchTaskContextItemSelected(MenuItem item) {
-        SwitchTaskContextDialogFragment fragment = new SwitchTaskContextDialogFragment(this);
+        SwitchTaskContextDialogFragment fragment = new SwitchTaskContextDialogFragment();
 
         fragment.setOnNewCurrentTaskContextSetListener(new SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener() {
             public void onNewCurrentTaskContextSet(TaskContext newCurrentTaskContext, String newCurrentView, List<TaskTag> newCurrentFilterTags) {

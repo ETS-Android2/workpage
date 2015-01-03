@@ -3,10 +3,10 @@ package jajimenez.workpage;
 import java.util.List;
 
 import android.os.Bundle;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 
@@ -14,25 +14,25 @@ import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.Task;
 
 public class ChangeTaskStatusDialogFragment extends DialogFragment {
-    private Context context;
+    private Activity activity;
     private OnItemClickListener onItemClickListener;
 
     private ApplicationLogic applicationLogic;
     private List<Task> tasks;
 
-    public ChangeTaskStatusDialogFragment(Context context, List<Task> tasks) {
-        this.context = context;
+    public ChangeTaskStatusDialogFragment(List<Task> tasks) {
         onItemClickListener = null;
-
-        applicationLogic = new ApplicationLogic(context);
         this.tasks = tasks;
     }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Resources resources = context.getResources();
+        activity = getActivity();
+        applicationLogic = new ApplicationLogic(activity);
+
+        Resources resources = activity.getResources();
         int selectedTaskCount = tasks.size();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(resources.getQuantityString(R.plurals.task_status, selectedTaskCount, selectedTaskCount));
         builder.setNegativeButton(R.string.cancel, null);
 
@@ -51,9 +51,6 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
                     task.setDone(done);
                     ChangeTaskStatusDialogFragment.this.applicationLogic.saveTask(task);
                 }
-
-                // Close the dialog.
-                dialog.dismiss();
 
                 if (ChangeTaskStatusDialogFragment.this.onItemClickListener != null) {
                     ChangeTaskStatusDialogFragment.this.onItemClickListener.onItemClick();

@@ -26,6 +26,7 @@ public class EditTaskTagsActivity extends ListActivity {
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
+    private List<TaskTag> contextTags;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class EditTaskTagsActivity extends ListActivity {
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = applicationLogic.getCurrentTaskContext();
+        contextTags = new LinkedList<TaskTag>();
 
         updateInterface();
     }
@@ -62,6 +64,7 @@ public class EditTaskTagsActivity extends ListActivity {
     private void updateTaskTagListInterface(List<TaskTag> tags) {
         if (tags == null) tags = new LinkedList<TaskTag>();
 
+        contextTags = tags;
         TaskTagAdapter adapter = new TaskTagAdapter(this, R.layout.task_tag_list_item, tags);
         setListAdapter(adapter);
     }
@@ -119,21 +122,32 @@ public class EditTaskTagsActivity extends ListActivity {
 
                 switch (item.getItemId()) {
                     case R.id.editTaskTagsContextualMenu_edit:
-                        // ToDo
+                        // Show an edition dialog.
+                        EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment(selectedTags.get(0), EditTaskTagsActivity.this.contextTags);
 
-                        // Close the context action bar.
-                        mode.finish();
+                        editFragment.setOnTaskTagSavedListener(new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
+                            public void onTaskTagSaved() {
+                                EditTaskTagsActivity.this.setResult(RESULT_OK);
 
+                                // Close the contextual action bar.
+                                mode.finish();
+
+                                // Update the list view.
+                                EditTaskTagsActivity.this.updateInterface();
+                            }
+                        });
+
+                        editFragment.show(getFragmentManager(), "edit_task_tag");
                         eventHandled = true;
                         break;
 
                     case R.id.editTaskTagsContextualMenu_delete:
                         // Show a deletion confirmation dialog.
-                        DeleteTaskTagDialogFragment deleteFragment = new DeleteTaskTagDialogFragment(EditTaskTagsActivity.this, selectedTags);
+                        DeleteTaskTagDialogFragment deleteFragment = new DeleteTaskTagDialogFragment(selectedTags);
 
                         deleteFragment.setOnDeleteListener(new DeleteTaskTagDialogFragment.OnDeleteListener() {
                             public void onDelete() {
-                                setResult(RESULT_OK);
+                                EditTaskTagsActivity.this.setResult(RESULT_OK);
 
                                 // Close the contextual action bar.
                                 mode.finish();
@@ -172,7 +186,22 @@ public class EditTaskTagsActivity extends ListActivity {
     }
 
     public void onNewTaskTagItemSelected(MenuItem item) {
-        // ToDo
+        TaskTag newTag = new TaskTag();
+        newTag.setContextId(currentTaskContext.getId());
+
+        // Show an edition dialog.
+        EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment(newTag, EditTaskTagsActivity.this.contextTags);
+
+        editFragment.setOnTaskTagSavedListener(new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
+            public void onTaskTagSaved() {
+                EditTaskTagsActivity.this.setResult(RESULT_OK);
+
+                // Update the list view.
+                EditTaskTagsActivity.this.updateInterface();
+            }
+        });
+
+        editFragment.show(getFragmentManager(), "edit_task_tag");
     }
 
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {

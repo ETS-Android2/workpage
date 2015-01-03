@@ -97,6 +97,10 @@ public class ApplicationLogic {
         return dataManager.getAllTaskTags(context);
     }
 
+    public void saveTaskTag(TaskTag tag) {
+        dataManager.saveTaskTag(tag);
+    }
+
     public void deleteTaskTags(List<TaskTag> tags) {
         dataManager.deleteTaskTags(tags);
     }

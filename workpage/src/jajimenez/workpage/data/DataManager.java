@@ -261,7 +261,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all the task tags related to a given task, using an already open DB connection.
     // This is an auxiliar method intended to be used only inside the "getTask" method.
-    private List<TaskTag> getAllTaskTags(SQLiteDatabase db, long taskId) {
+    private List<TaskTag> getTaskTags(SQLiteDatabase db, long taskId) {
         List<TaskTag> tags = new LinkedList<TaskTag>();
 
         Cursor cursor = db.rawQuery("SELECT t.id, t.task_context_id, t.name, t.list_order FROM task_tags AS t, task_tag_relationships AS r " +
@@ -408,7 +408,7 @@ public class DataManager extends SQLiteOpenHelper {
                     String title = cursor.getString(1);
                     Calendar start = tool.getCalendar(cursor.getString(2));
                     Calendar deadline = tool.getCalendar(cursor.getString(3));
-                    List<TaskTag> tags = getAllTaskTags(db, id);
+                    List<TaskTag> tags = getTaskTags(db, id);
 
                     tasks.add(new Task(id, contextId, title, null, start, deadline, false, tags));
                 }
@@ -482,7 +482,7 @@ public class DataManager extends SQLiteOpenHelper {
                     String title = cursor.getString(1);
                     Calendar start = tool.getCalendar(cursor.getString(2));
                     Calendar deadline = tool.getCalendar(cursor.getString(3));
-                    List<TaskTag> tags = getAllTaskTags(db, id);
+                    List<TaskTag> tags = getTaskTags(db, id);
 
                     tasks.add(new Task(id, contextId, title, null, start, deadline, done, tags));
                 }
@@ -542,7 +542,7 @@ public class DataManager extends SQLiteOpenHelper {
                 Calendar start = tool.getCalendar(cursor.getString(3));
                 Calendar deadline = tool.getCalendar(cursor.getString(4));
                 boolean done = (cursor.getInt(5) != 0);
-                List<TaskTag> tags = getAllTaskTags(db, id);
+                List<TaskTag> tags = getTaskTags(db, id);
 
                 task = new Task(id, contextId, title, description, start, deadline, done, tags);
             }
@@ -600,7 +600,7 @@ public class DataManager extends SQLiteOpenHelper {
         // Delete old tag relationships
         long taskId = task.getId();
 
-        List<TaskTag> oldTags = getAllTaskTags(db, taskId); // Every old tag has a valid ID in the DB, as they come from the DB.
+        List<TaskTag> oldTags = getTaskTags(db, taskId); // Every old tag has a valid ID in the DB, as they come from the DB.
         List<TaskTag> newTags = task.getTags();             // Every new task can have or not a valid ID in the DB, as they come from the application.
 
         // The comparison to know if a task is contained in a list is through the

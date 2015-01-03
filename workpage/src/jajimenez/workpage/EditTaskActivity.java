@@ -24,8 +24,8 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.content.Intent;
-import android.text.TextWatcher;
 import android.text.Editable;
+import android.text.TextWatcher;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
@@ -75,7 +75,19 @@ public class EditTaskActivity extends Activity {
             @Override
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
-                EditTaskActivity.this.addTagButton.setEnabled(text.length() > 0);
+                boolean enabled = (text.length() > 0);
+
+                if (enabled) {
+                    // Auxiliar tag object.
+                    TaskTag tag = new TaskTag();
+                    tag.setName(text);
+
+                    List<TaskTag> taskTags = currentTask.getTags();
+
+                    enabled = !taskTags.contains(tag);
+                }
+
+                EditTaskActivity.this.addTagButton.setEnabled(enabled);
             }
 
             @Override
@@ -225,19 +237,14 @@ public class EditTaskActivity extends Activity {
         TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0);
         List<TaskTag> taskTags = currentTask.getTags();
 
-        if (taskTags.contains(tag)) {
-            (Toast.makeText(this, R.string.tag_already_added, Toast.LENGTH_SHORT)).show();
-        }
-        else {
-            // Add the new tag to the tag list of the current task.
-            taskTags.add(tag);
+        // Add the new tag to the tag list of the current task.
+        taskTags.add(tag);
 
-            // Add a new tag view.
-            addTaskTagView(tag, taskTags);
+        // Add a new tag view.
+        addTaskTagView(tag, taskTags);
 
-            // Clear the text box.
-            addTagAutoTextView.setText("");
-        }
+        // Clear the text box.
+        addTagAutoTextView.setText("");
     }
 
     private void addTaskTagView(final TaskTag tag, final List<TaskTag> taskTags) {
@@ -261,6 +268,10 @@ public class EditTaskActivity extends Activity {
 
                 // Remove the tag view.
                 addedTagsLinearLayout.removeView(tagView);
+
+                if ((((EditTaskActivity.this.addTagAutoTextView.getText()).toString()).trim()).equals(tag.getName())) {
+                    EditTaskActivity.this.addTagButton.setEnabled(true);
+                }
             }
         });
 

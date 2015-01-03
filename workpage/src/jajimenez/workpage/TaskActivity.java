@@ -134,7 +134,7 @@ public class TaskActivity extends Activity {
                 tasks = new LinkedList<Task>();
                 tasks.add(currentTask);
 
-                ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(this, tasks);
+                ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(tasks);
 
                 statusFragment.setOnItemClickListener(new ChangeTaskStatusDialogFragment.OnItemClickListener() {
                     public void onItemClick() {
@@ -167,7 +167,7 @@ public class TaskActivity extends Activity {
                 tasks.add(currentTask);
 
                 // Show a deletion confirmation dialog.
-                DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(this, tasks);
+                DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(tasks);
 
                 deleteFragment.setOnDeleteListener(new DeleteTaskDialogFragment.OnDeleteListener() {
                     public void onDelete() {
