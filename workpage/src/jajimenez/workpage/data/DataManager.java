@@ -447,10 +447,8 @@ public class DataManager extends SQLiteOpenHelper {
                     "FROM tasks " +
                     "WHERE task_context_id = ? ";
 
-                if (done) query += "AND done = 1 ";
-                else query += "AND done = 0 ";
-
-                query += "ORDER BY deadline_datetime;";
+                if (done) query += "AND done = 1 ORDER BY id DESC;";
+                else query += "AND done = 0 ORDER BY deadline_datetime;";
             }
             else {
                 query += "SELECT DISTINCT tasks.id, tasks.title, tasks.start_datetime, tasks.deadline_datetime " +
@@ -470,8 +468,10 @@ public class DataManager extends SQLiteOpenHelper {
                     if (i < (tagCount - 1)) query += "OR ";
                 }
 
-                query += ") " +
-                    "ORDER BY tasks.deadline_datetime;";
+                query += ") ";
+
+                if (done) query += "ORDER BY tasks.id DESC;";
+                else query += "ORDER BY tasks.deadline_datetime;";
             }
 
             Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
