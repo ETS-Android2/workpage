@@ -26,6 +26,7 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class MainActivity extends ListActivity {
+    private Menu menu;
     private TextView viewTextView;
     private TextView filterTagsTitleTextView;
     private TextView filterTagsValueTextView;
@@ -58,8 +59,6 @@ public class MainActivity extends ListActivity {
         currentTaskContext = applicationLogic.getCurrentTaskContext();
         currentView = "";
         currentFilterTags = new LinkedList<TaskTag>();
-
-        updateInterface();
     }
 
     private void createContextualActionBar() {
@@ -165,6 +164,9 @@ public class MainActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+
+        this.menu = menu;
+        updateInterface();
 
         return true;
     }
@@ -310,6 +312,9 @@ public class MainActivity extends ListActivity {
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
         protected void onPreExecute() {
             MainActivity.this.setProgressBarIndeterminateVisibility(true);
+
+            MainActivity.this.menu.setGroupEnabled(0, false);
+            MainActivity.this.listView.setEnabled(false);
         }
 
         protected List<Task> doInBackground(Void... parameters) {
@@ -324,6 +329,10 @@ public class MainActivity extends ListActivity {
 
         protected void onPostExecute(List<Task> tasks) {
             MainActivity.this.updateTaskListInterface(tasks);
+
+            MainActivity.this.menu.setGroupEnabled(0, true);
+            MainActivity.this.listView.setEnabled(true);
+
             MainActivity.this.setProgressBarIndeterminateVisibility(false);
         }
     }

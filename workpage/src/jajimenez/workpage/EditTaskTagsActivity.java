@@ -23,6 +23,7 @@ import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 
 public class EditTaskTagsActivity extends ListActivity {
+    private Menu menu;
     private ListView listView;
     private TextView emptyTextView;
     private ActionBar actionBar;
@@ -42,19 +43,21 @@ public class EditTaskTagsActivity extends ListActivity {
         emptyTextView = (TextView) findViewById(android.R.id.empty);
         actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
         createContextualActionBar();
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = applicationLogic.getCurrentTaskContext();
         contextTags = new LinkedList<TaskTag>();
-
-        updateInterface();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_task_tags, menu);
+
+        this.menu = menu;
+        updateInterface();
 
         return true;
     }
@@ -218,6 +221,9 @@ public class EditTaskTagsActivity extends ListActivity {
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {
         protected void onPreExecute() {
             EditTaskTagsActivity.this.setProgressBarIndeterminateVisibility(true);
+
+            EditTaskTagsActivity.this.menu.setGroupEnabled(0, false);
+            EditTaskTagsActivity.this.listView.setEnabled(false);
         }
 
         protected List<TaskTag> doInBackground(Void... parameters) {
@@ -226,6 +232,10 @@ public class EditTaskTagsActivity extends ListActivity {
 
         protected void onPostExecute(List<TaskTag> tags) {
             EditTaskTagsActivity.this.updateTaskTagListInterface(tags);
+
+            EditTaskTagsActivity.this.menu.setGroupEnabled(0, true);
+            EditTaskTagsActivity.this.listView.setEnabled(true);
+
             EditTaskTagsActivity.this.setProgressBarIndeterminateVisibility(false);
         }
     }
