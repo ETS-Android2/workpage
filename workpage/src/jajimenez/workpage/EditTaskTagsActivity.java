@@ -12,8 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.ActionMode;
+import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -22,6 +24,7 @@ import jajimenez.workpage.data.model.TaskTag;
 
 public class EditTaskTagsActivity extends ListActivity {
     private ListView listView;
+    private TextView emptyTextView;
     private ActionBar actionBar;
 
     private ApplicationLogic applicationLogic;
@@ -31,9 +34,12 @@ public class EditTaskTagsActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.edit_task_tags);
 
         listView = getListView();
+        emptyTextView = (TextView) findViewById(android.R.id.empty);
         actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         createContextualActionBar();
@@ -57,6 +63,8 @@ public class EditTaskTagsActivity extends ListActivity {
         // Information about the current task context.
         actionBar.setSubtitle(currentTaskContext.getName());
 
+        emptyTextView.setText("");
+
         // Show tags.
         (new LoadTaskTagsDBTask()).execute();
     }
@@ -67,11 +75,19 @@ public class EditTaskTagsActivity extends ListActivity {
         contextTags = tags;
         TaskTagAdapter adapter = new TaskTagAdapter(this, R.layout.task_tag_list_item, tags);
         setListAdapter(adapter);
+
+        checkNoDataText(adapter);
     }
 
     private void updateTaskTagListInterfaceByRemoving(List<TaskTag> tagsToRemove) {
         TaskTagAdapter adapter = (TaskTagAdapter) getListAdapter();
         for (TaskTag tag : tagsToRemove) adapter.remove(tag);
+
+        checkNoDataText(adapter);
+    }
+
+    private void checkNoDataText(TaskTagAdapter adapter) {
+        if (adapter.isEmpty()) emptyTextView.setText(R.string.no_tags);
     }
 
     private List<TaskTag> getSelectedTaskTags() {
@@ -200,12 +216,17 @@ public class EditTaskTagsActivity extends ListActivity {
     }
 
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {
+        protected void onPreExecute() {
+            EditTaskTagsActivity.this.setProgressBarIndeterminateVisibility(true);
+        }
+
         protected List<TaskTag> doInBackground(Void... parameters) {
             return EditTaskTagsActivity.this.applicationLogic.getAllTaskTags(EditTaskTagsActivity.this.currentTaskContext);
         }
 
         protected void onPostExecute(List<TaskTag> tags) {
             EditTaskTagsActivity.this.updateTaskTagListInterface(tags);
+            EditTaskTagsActivity.this.setProgressBarIndeterminateVisibility(false);
         }
     }
 }

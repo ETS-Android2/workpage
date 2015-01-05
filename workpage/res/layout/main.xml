@@ -46,6 +46,5 @@
         android:layout_height="wrap_content"
         android:paddingTop="40dp"
         android:gravity="center_horizontal"
-        android:textSize="20sp"
-        android:text="@string/no_tasks" />
+        android:textSize="20sp" />
 </LinearLayout>

@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.ActionMode;
+import android.view.Window;
 import android.content.Intent;
 import android.widget.TextView;
 import android.widget.AbsListView;
@@ -30,6 +31,7 @@ public class MainActivity extends ListActivity {
     private TextView filterTagsValueTextView;
     private ActionBar actionBar;
     private ListView listView;
+    private TextView emptyTextView;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
@@ -39,12 +41,15 @@ public class MainActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main);
 
         viewTextView = (TextView) findViewById(R.id.main_view);
         filterTagsTitleTextView = (TextView) findViewById(R.id.main_filterTags_title);
         filterTagsValueTextView = (TextView) findViewById(R.id.main_filterTags_value);
         listView = getListView();
+        emptyTextView = (TextView) findViewById(android.R.id.empty);
         actionBar = getActionBar();
 
         createContextualActionBar();
@@ -207,6 +212,8 @@ public class MainActivity extends ListActivity {
             filterTagsValueTextView.setText(tagsText);
         }
 
+        emptyTextView.setText("");
+
         // Show tasks.
         (new LoadTasksDBTask()).execute();
     }
@@ -216,11 +223,19 @@ public class MainActivity extends ListActivity {
 
         TaskAdapter adapter = new TaskAdapter(this, R.layout.task_list_item, tasks);
         setListAdapter(adapter);
+
+        checkNoDataText(adapter);
     }
 
     private void updateTaskListInterfaceByRemoving(List<Task> tasksToRemove) {
         TaskAdapter adapter = (TaskAdapter) getListAdapter();
         for (Task task : tasksToRemove) adapter.remove(task);
+
+        checkNoDataText(adapter);
+    }
+
+    private void checkNoDataText(TaskAdapter adapter) {
+        if (adapter.isEmpty()) emptyTextView.setText(R.string.no_tasks);
     }
 
     private List<Task> getSelectedTasks() {
@@ -293,6 +308,10 @@ public class MainActivity extends ListActivity {
     }
 
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+        protected void onPreExecute() {
+            MainActivity.this.setProgressBarIndeterminateVisibility(true);
+        }
+
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
@@ -305,6 +324,7 @@ public class MainActivity extends ListActivity {
 
         protected void onPostExecute(List<Task> tasks) {
             MainActivity.this.updateTaskListInterface(tasks);
+            MainActivity.this.setProgressBarIndeterminateVisibility(false);
         }
     }
 }
