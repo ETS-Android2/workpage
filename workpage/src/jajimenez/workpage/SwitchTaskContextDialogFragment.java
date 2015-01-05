@@ -61,8 +61,6 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentView(newCurrentView);
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentFilterTags(newCurrentFilterTags);
 
-                    // Close the dialog.
-                    SwitchTaskContextDialogFragment.this.dismiss();
 
                     if (SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener != null) {
                         SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener.onNewCurrentTaskContextSet(selectedTaskContext,
@@ -71,6 +69,8 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
                     }
                 }
 
+                // Close the dialog.
+                SwitchTaskContextDialogFragment.this.dismiss();
             }
         });
 
