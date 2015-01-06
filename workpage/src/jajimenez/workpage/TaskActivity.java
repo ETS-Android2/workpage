@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
@@ -60,6 +61,13 @@ public class TaskActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.task, menu);
+
+        // This is necessary because the drawable of the Edit item icon of this activity keeps
+        // the last alpha value set for the Edit item icon of MainActivity. MainActivity has
+        // the same menu with the same drawables for the items.
+        MenuItem editItem = menu.findItem(R.id.taskMenu_edit);
+        Drawable editItemIcon = editItem.getIcon();
+        editItemIcon.setAlpha(255);
 
         return true;
     }
