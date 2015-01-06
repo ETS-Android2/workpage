@@ -117,7 +117,7 @@ public class ApplicationLogic {
         return dataManager.getTasks(context, true, filterTags);
     }
 
-    public long getTaskCount(boolean done, TaskTag tag) {
+    public int getTaskCount(boolean done, TaskTag tag) {
         return dataManager.getTaskCount(done, tag);
     }
 

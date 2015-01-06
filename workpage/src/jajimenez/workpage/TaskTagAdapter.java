@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.content.res.Resources;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskTag;
@@ -56,11 +57,13 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         TaskTag tag = getItem(position);
         String name = tag.getName();
 
-        long openTaskCount = applicationLogic.getTaskCount(false, tag);
-        long closedTaskCount = applicationLogic.getTaskCount(true, tag);
+        int openTaskCount = applicationLogic.getTaskCount(false, tag);
+        int closedTaskCount = applicationLogic.getTaskCount(true, tag);
 
-        String openTaskCountText = activity.getString(R.string.open_task_count, openTaskCount);
-        String closedTaskCountText = activity.getString(R.string.closed_task_count, closedTaskCount);
+        Resources resources = activity.getResources();
+
+        String openTaskCountText = resources.getQuantityString(R.plurals.open_task_count, openTaskCount, openTaskCount);
+        String closedTaskCountText = resources.getQuantityString(R.plurals.closed_task_count, closedTaskCount, closedTaskCount);
 
         // Show name and task counts.
         nameTextView.setText(name);

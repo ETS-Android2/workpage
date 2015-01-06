@@ -496,8 +496,8 @@ public class DataManager extends SQLiteOpenHelper {
         return tasks;
     }
 
-    public long getTaskCount(boolean done, TaskTag tag) {
-        long count = 0;
+    public int getTaskCount(boolean done, TaskTag tag) {
+        int count = 0;
 
         if (tag != null) {
             SQLiteDatabase db = null;
@@ -514,7 +514,7 @@ public class DataManager extends SQLiteOpenHelper {
                 query += String.format("AND task_tags.name = ?;");
                 Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(tag.getName()) });
 
-                if (cursor.moveToFirst()) count = cursor.getLong(0);
+                if (cursor.moveToFirst()) count = cursor.getInt(0);
             }
             finally {
                 db.close();

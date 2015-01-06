@@ -35,8 +35,16 @@
     </plurals>
 
     <string name="edit_tags">Edit tags</string>
-    <string name="open_task_count">On %1$d open tasks.</string>
-    <string name="closed_task_count">On %1$d closed tasks.</string>
+
+    <plurals name="open_task_count">
+        <item quantity="one">On %1$d open task.</item>
+        <item quantity="other">On %1$d open tasks.</item>
+    </plurals>
+    <plurals name="closed_task_count">
+        <item quantity="one">On %1$d closed task.</item>
+        <item quantity="other">On %1$d closed tasks.</item>
+    </plurals>
+
     <string name="new_tag">New tag</string>
     <string name="edit_tag">Edit tag</string>
     <string name="tag_saved">Tag saved.</string>
