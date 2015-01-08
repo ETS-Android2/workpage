@@ -7,6 +7,11 @@
     <uses-sdk android:minSdkVersion="16"
         android:targetSdkVersion="21" />
 
+    <supports-screen android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true" />
+
     <application android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.Holo.Light">
