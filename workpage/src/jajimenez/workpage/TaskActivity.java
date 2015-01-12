@@ -100,6 +100,7 @@ public class TaskActivity extends Activity {
             }
 
             tagsTextView.setText(tagsText);
+            tagsTextView.setVisibility(View.VISIBLE);
         }
 
         // Dates texts.
