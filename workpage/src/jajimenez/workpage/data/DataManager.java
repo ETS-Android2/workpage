@@ -18,7 +18,7 @@ import jajimenez.workpage.data.model.Task;
 
 public class DataManager extends SQLiteOpenHelper {
     public static final String DB_NAME = "workpage.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     private Context context;
 
@@ -29,6 +29,11 @@ public class DataManager extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        createDBVersion1(db);
+        createDBVersion2(db);
+    }
+
+    private void createDBVersion1(SQLiteDatabase db) {
         String taskContextsTableSql = "CREATE TABLE task_contexts (" +
             "id         INTEGER PRIMARY KEY, " +
             "name       TEXT NOT NULL, " +
@@ -80,19 +85,14 @@ public class DataManager extends SQLiteOpenHelper {
         db.execSQL(taskTagsRelationshipsTableSql);
     }
 
+    private void createDBVersion2(SQLiteDatabase db) {
+        String taskTagsTableSql = "ALTER TABLE task_tags ADD COLUMN color TEXT;";
+        db.execSQL(taskTagsTableSql);
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String taskTagsRelationshipsTableSql = "DROP TABLE IF EXISTS task_tag_relationships;";
-        String tasksTableSql                 = "DROP TABLE IF EXISTS tasks;";
-        String taskTagsTableSql              = "DROP TABLE IF EXISTS task_tags;";
-        String taskContextsTableSql          = "DROP TABLE IF EXISTS task_contexts;";
-        
-        db.execSQL(taskTagsRelationshipsTableSql);
-        db.execSQL(tasksTableSql);
-        db.execSQL(taskTagsTableSql);
-        db.execSQL(taskContextsTableSql);
-
-        onCreate(db);
+        createDBVersion2(db);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT id, name, list_order FROM task_tags " +
+            Cursor cursor = db.rawQuery("SELECT id, name, list_order, color FROM task_tags " +
                 "WHERE task_context_id = ? " +
                 "ORDER BY list_order;", new String[] { String.valueOf(contextId) });
 
@@ -198,8 +198,9 @@ public class DataManager extends SQLiteOpenHelper {
                     long id = cursor.getLong(0);
                     String name = cursor.getString(1);
                     long order = cursor.getLong(2);
+                    String color = cursor.getString(3);
 
-                    tags.add(new TaskTag(id, contextId, name, order));
+                    tags.add(new TaskTag(id, contextId, name, order, color));
                 }
                 while (cursor.moveToNext());
             }
@@ -224,7 +225,7 @@ public class DataManager extends SQLiteOpenHelper {
 
             try {
                 db = getReadableDatabase();
-                String query = "SELECT id, name, list_order FROM task_tags " +
+                String query = "SELECT id, name, list_order, color FROM task_tags " +
                     "WHERE task_context_id = ? " +
                     "AND (";
 
@@ -245,8 +246,9 @@ public class DataManager extends SQLiteOpenHelper {
                         long id = cursor.getLong(0);
                         String name = cursor.getString(1);
                         long order = cursor.getLong(2);
+                        String color = cursor.getString(3);
 
-                        tags.add(new TaskTag(id, contextId, name, order));
+                        tags.add(new TaskTag(id, contextId, name, order, color));
                     }
                     while (cursor.moveToNext());
                 }
@@ -264,7 +266,7 @@ public class DataManager extends SQLiteOpenHelper {
     private List<TaskTag> getTaskTags(SQLiteDatabase db, long taskId) {
         List<TaskTag> tags = new LinkedList<TaskTag>();
 
-        Cursor cursor = db.rawQuery("SELECT t.id, t.task_context_id, t.name, t.list_order FROM task_tags AS t, task_tag_relationships AS r " +
+        Cursor cursor = db.rawQuery("SELECT t.id, t.task_context_id, t.name, t.list_order, t.color FROM task_tags AS t, task_tag_relationships AS r " +
             "WHERE t.id = r.task_tag_id AND r.task_id = ? " +
             "ORDER BY t.list_order;", new String[] { String.valueOf(taskId) });
 
@@ -274,8 +276,9 @@ public class DataManager extends SQLiteOpenHelper {
                 long contextId = cursor.getLong(1);
                 String name = cursor.getString(2);
                 long order = cursor.getLong(3);
+                String color = cursor.getString(4);
 
-                tags.add(new TaskTag(id, contextId, name, order));
+                tags.add(new TaskTag(id, contextId, name, order, color));
             }
             while (cursor.moveToNext());
         }
@@ -287,7 +290,7 @@ public class DataManager extends SQLiteOpenHelper {
     private TaskTag getTaskTag(SQLiteDatabase db, String name) {
         TaskTag tag = null;
 
-        Cursor cursor = db.rawQuery("SELECT id, task_context_id, list_order FROM task_tags " +
+        Cursor cursor = db.rawQuery("SELECT id, task_context_id, list_order, color FROM task_tags " +
             "WHERE name = ? " +
             "ORDER BY list_order;", new String[] { name });
 
@@ -295,8 +298,9 @@ public class DataManager extends SQLiteOpenHelper {
             long id = cursor.getLong(0);
             long contextId = cursor.getLong(1);
             long order = cursor.getLong(2);
+            String color = cursor.getString(3);
 
-            tag = new TaskTag(id, contextId, name, order);
+            tag = new TaskTag(id, contextId, name, order, color);
         }
 
         return tag;
@@ -309,6 +313,7 @@ public class DataManager extends SQLiteOpenHelper {
         values.put("task_context_id", tag.getContextId());
         values.put("name", tag.getName());
         values.put("list_order", tag.getOrder());
+        values.put("color", tag.getColor());
 
         if (id < 0) {
             long newId = db.insert("task_tags", null, values);

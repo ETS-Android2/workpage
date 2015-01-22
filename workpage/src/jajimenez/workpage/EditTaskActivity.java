@@ -249,7 +249,7 @@ public class EditTaskActivity extends Activity {
 
     public void onAddTagButtonClicked(View view) {
         String name = ((addTagAutoTextView.getText()).toString()).trim();
-        TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0);
+        TaskTag tag = new TaskTag(currentTask.getContextId(), name, 0, null);
         List<TaskTag> taskTags = currentTask.getTags();
 
         // Add the new tag to the tag list of the current task.
