@@ -4,26 +4,37 @@
     android:layout_height="wrap_content"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:background="@drawable/list_item">
 
-    <TextView android:id="@+id/taskTagListItem_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+    <jajimenez.workpage.ColorView android:id="@+id/taskTagListItem_color"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:paddingRight="5dp"
+        android:visibility="invisible" />
 
-    <TextView android:id="@+id/taskTagListItem_open"
-        android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        android:orientation="vertical">
 
-    <TextView android:id="@+id/taskTagListItem_closed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end" />
+        <TextView android:id="@+id/taskTagListItem_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView android:id="@+id/taskTagListItem_open"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView android:id="@+id/taskTagListItem_closed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
 </LinearLayout>

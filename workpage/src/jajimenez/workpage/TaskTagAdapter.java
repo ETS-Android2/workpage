@@ -26,6 +26,7 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
 
     @Override
     public View getView(int position, View itemView, ViewGroup parentViewGroup) {
+        ColorView colorView = null;
         TextView nameTextView = null;
         TextView openTaskCountTextView = null;
         TextView closedTaskCountTextView = null;
@@ -34,11 +35,13 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
             LayoutInflater inflater = activity.getLayoutInflater();
             itemView = inflater.inflate(resource, null);
 
+            colorView = (ColorView) itemView.findViewById(R.id.taskTagListItem_color);
             nameTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_name);
             openTaskCountTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_open);
             closedTaskCountTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_closed);
 
             TaskTagItemViewTag viewTag = new TaskTagItemViewTag();
+            viewTag.colorView = colorView;
             viewTag.nameTextView = nameTextView;
             viewTag.openTaskCountTextView = openTaskCountTextView;
             viewTag.closedTaskCountTextView = closedTaskCountTextView;
@@ -47,6 +50,7 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         }
         else {
             TaskTagItemViewTag viewTag = (TaskTagItemViewTag) itemView.getTag();
+            colorView = viewTag.colorView;
             nameTextView = viewTag.nameTextView;
             openTaskCountTextView = viewTag.openTaskCountTextView;
             closedTaskCountTextView = viewTag.closedTaskCountTextView;
@@ -55,6 +59,7 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         ApplicationLogic applicationLogic = new ApplicationLogic(activity);
 
         TaskTag tag = getItem(position);
+        String color = tag.getColor();
         String name = tag.getName();
 
         int openTaskCount = applicationLogic.getTaskCount(false, tag);
@@ -65,7 +70,12 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         String openTaskCountText = resources.getQuantityString(R.plurals.open_task_count, openTaskCount, openTaskCount);
         String closedTaskCountText = resources.getQuantityString(R.plurals.closed_task_count, closedTaskCount, closedTaskCount);
 
-        // Show name and task counts.
+        // Show color, name and task counts.
+        if (color != null && !(color.trim()).equals("")) {
+            colorView.setVisibility(View.VISIBLE);
+            colorView.setColor(color);
+        }
+
         nameTextView.setText(name);
         openTaskCountTextView.setText(openTaskCountText);
         closedTaskCountTextView.setText(closedTaskCountText);
@@ -74,11 +84,13 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
     }
 
     private static class TaskTagItemViewTag {
+        public ColorView colorView;
         public TextView nameTextView;
         public TextView openTaskCountTextView;
         public TextView closedTaskCountTextView;
 
         public TaskTagItemViewTag() {
+            colorView = null;
             nameTextView = null;
             openTaskCountTextView = null;
             closedTaskCountTextView = null;
