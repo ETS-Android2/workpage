@@ -92,7 +92,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        createDBVersion2(db);
+        if (oldVersion == 1 && newVersion == 2) createDBVersion2(db);
     }
 
     @Override
