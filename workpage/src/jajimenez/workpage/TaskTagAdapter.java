@@ -73,7 +73,7 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         // Show color, name and task counts.
         if (color != null && !(color.trim()).equals("")) {
             colorView.setVisibility(View.VISIBLE);
-            colorView.setColor(color);
+            colorView.setBackgroundColor(color);
         }
 
         nameTextView.setText(name);
