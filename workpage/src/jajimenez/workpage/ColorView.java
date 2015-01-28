@@ -72,7 +72,9 @@ public class ColorView extends View {
     // Color must have an hexadecimal value, i.e. "#ffffff".
     public void setBorderColor(String color) {
         borderColor = color;
-        borderPaint = setupBorderPaint(color);
+
+        if (color != null) borderPaint = setupBorderPaint(color);
+        else borderPaint = null;
 
         // The following two methods must be called after any change
         // to the view properties that might change its appearance.
@@ -83,7 +85,9 @@ public class ColorView extends View {
     // Color must have an hexadecimal value, i.e. "#ffffff".
     public void setBackgroundColor(String color) {
         backgroundColor = color;
-        backgroundPaint = setupBackgroundPaint(color);
+
+        if (color != null) backgroundPaint = setupBackgroundPaint(color);
+        else backgroundPaint = null;
 
         // The following two methods must be called after any change
         // to the view properties that might change its appearance.
