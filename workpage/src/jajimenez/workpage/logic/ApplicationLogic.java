@@ -129,6 +129,10 @@ public class ApplicationLogic {
         dataManager.saveTask(task);
     }
 
+    public void markTask(long taskId, boolean done) {
+        dataManager.markTask(taskId, done);
+    }
+
     public void deleteTasks(List<Task> tasks) {
         dataManager.deleteTasks(tasks);
     }

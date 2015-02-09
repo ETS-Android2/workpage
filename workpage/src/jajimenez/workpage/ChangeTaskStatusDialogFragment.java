@@ -1,6 +1,7 @@
 package jajimenez.workpage;
 
 import java.util.List;
+import java.util.LinkedList;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -20,12 +21,36 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
     private ApplicationLogic applicationLogic;
     private List<Task> tasks;
 
+    public ChangeTaskStatusDialogFragment() {
+        onItemClickListener = null;
+        tasks = new LinkedList<Task>();
+    }
+
     public ChangeTaskStatusDialogFragment(List<Task> tasks) {
         onItemClickListener = null;
         this.tasks = tasks;
     }
 
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            long[] taskIds = savedInstanceState.getLongArray("task_ids");
+            boolean[] taskDones = savedInstanceState.getBooleanArray("task_dones");
+            
+            if (taskIds != null) {
+                tasks = new LinkedList<Task>();
+                int taskCount = taskIds.length;
+
+                for (int i = 0; i < taskCount; i++) {
+                    Task task = new Task();
+                    task.setId(taskIds[i]);
+                    task.setDone(taskDones[i]);
+
+                    tasks.add(task);
+                }
+            }
+        }
+
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
 
@@ -48,8 +73,7 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
                 boolean done = !firstTaskDone;
 
                 for (Task task : ChangeTaskStatusDialogFragment.this.tasks) {
-                    task.setDone(done);
-                    ChangeTaskStatusDialogFragment.this.applicationLogic.saveTask(task);
+                    ChangeTaskStatusDialogFragment.this.applicationLogic.markTask(task.getId(), done);
                 }
 
                 if (ChangeTaskStatusDialogFragment.this.onItemClickListener != null) {
@@ -59,6 +83,24 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        int taskCount = tasks.size();
+        long[] taskIds = new long[taskCount];
+        boolean[] taskDones = new boolean[taskCount];
+
+        for (int i = 0; i < taskCount; i++) {
+            Task task = tasks.get(i);
+            taskIds[i] = task.getId();
+            taskDones[i] = task.isDone();
+        }
+
+        outState.putLongArray("task_ids", taskIds);
+        outState.putBooleanArray("task_dones", taskDones);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

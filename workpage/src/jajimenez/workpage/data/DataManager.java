@@ -599,6 +599,22 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
+    public void markTask(long taskId, boolean done) {
+        SQLiteDatabase db = null;
+        ContentValues values = new ContentValues();
+
+        if (done) values.put("done", 1);
+        else values.put("done", 0);
+
+        try {
+            db = getWritableDatabase();
+            db.update("tasks", values, "id = ?", new String[] { String.valueOf(taskId) });
+        }
+        finally {
+            db.close();
+        }
+    }
+
     // This is an auxiliar method intended to be used only inside the "saveTask" method.
     // "db" must represent an already open DB.
     private void updateTaskTagRelationships(SQLiteDatabase db, Task task) {

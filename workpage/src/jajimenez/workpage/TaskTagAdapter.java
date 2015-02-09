@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.content.res.Resources;
+import android.graphics.Color;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskTag;
@@ -31,30 +32,13 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         TextView openTaskCountTextView = null;
         TextView closedTaskCountTextView = null;
 
-        if (itemView == null) {
-            LayoutInflater inflater = activity.getLayoutInflater();
-            itemView = inflater.inflate(resource, null);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        itemView = inflater.inflate(resource, null);
 
-            colorView = (ColorView) itemView.findViewById(R.id.taskTagListItem_color);
-            nameTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_name);
-            openTaskCountTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_open);
-            closedTaskCountTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_closed);
-
-            TaskTagItemViewTag viewTag = new TaskTagItemViewTag();
-            viewTag.colorView = colorView;
-            viewTag.nameTextView = nameTextView;
-            viewTag.openTaskCountTextView = openTaskCountTextView;
-            viewTag.closedTaskCountTextView = closedTaskCountTextView;
-
-            itemView.setTag(viewTag);
-        }
-        else {
-            TaskTagItemViewTag viewTag = (TaskTagItemViewTag) itemView.getTag();
-            colorView = viewTag.colorView;
-            nameTextView = viewTag.nameTextView;
-            openTaskCountTextView = viewTag.openTaskCountTextView;
-            closedTaskCountTextView = viewTag.closedTaskCountTextView;
-        }
+        colorView = (ColorView) itemView.findViewById(R.id.taskTagListItem_color);
+        nameTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_name);
+        openTaskCountTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_open);
+        closedTaskCountTextView = (TextView) itemView.findViewById(R.id.taskTagListItem_closed);
 
         ApplicationLogic applicationLogic = new ApplicationLogic(activity);
 
@@ -73,7 +57,9 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         // Show color, name and task counts.
         if (color != null && !(color.trim()).equals("")) {
             colorView.setVisibility(View.VISIBLE);
-            colorView.setBackgroundColor(color);
+
+            // "Color.parseColor" converts the hexadecimal color to int-color.
+            colorView.setBackgroundColor(Color.parseColor(color));
         }
 
         nameTextView.setText(name);
@@ -81,19 +67,5 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         closedTaskCountTextView.setText(closedTaskCountText);
 
         return itemView;
-    }
-
-    private static class TaskTagItemViewTag {
-        public ColorView colorView;
-        public TextView nameTextView;
-        public TextView openTaskCountTextView;
-        public TextView closedTaskCountTextView;
-
-        public TaskTagItemViewTag() {
-            colorView = null;
-            nameTextView = null;
-            openTaskCountTextView = null;
-            closedTaskCountTextView = null;
-        }
     }
 }

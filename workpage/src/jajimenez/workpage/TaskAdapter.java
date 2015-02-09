@@ -1,6 +1,7 @@
 package jajimenez.workpage;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Calendar;
 
 import android.app.Activity;
@@ -9,6 +10,10 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+//import android.graphics.drawable.ColorDrawable;
+//import android.graphics.drawable.GradientDrawable;
 
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.TaskTag;
@@ -31,29 +36,12 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         TextView details1TextView = null;
         TextView details2TextView = null;
 
-        if (itemView == null) {
-            LayoutInflater inflater = activity.getLayoutInflater();
-            itemView = inflater.inflate(resource, null);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        itemView = inflater.inflate(resource, null);
 
-            titleTextView = (TextView) itemView.findViewById(R.id.taskListItem_title);
-            details1TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_1);
-            details2TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_2);
-
-            TaskItemViewTag viewTag = new TaskItemViewTag();
-
-            viewTag.titleTextView = titleTextView;
-            viewTag.details1TextView = details1TextView;
-            viewTag.details2TextView = details2TextView;
-
-            itemView.setTag(viewTag);
-        }
-        else {
-            TaskItemViewTag viewTag = (TaskItemViewTag) itemView.getTag();
-
-            titleTextView = viewTag.titleTextView;
-            details1TextView = viewTag.details1TextView;
-            details2TextView = viewTag.details2TextView;
-        }
+        titleTextView = (TextView) itemView.findViewById(R.id.taskListItem_title);
+        details1TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_1);
+        details2TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_2);
 
         Task task = getItem(position);
 
@@ -66,35 +54,54 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         titleTextView.setText(title);
 
         // Show Tags and Dates.
-        int tagCount = tags.size();
+        // Set background color based on tag colors.
+        int tagCount;
+        if (tags == null) tagCount = 0;
+        else tagCount = tags.size();
+
         String tagsText = "";
         String datesText = (new DateTimeTool()).getTaskDatesText(activity, start, deadline);
 
-        if (tags != null && tagCount > 0) {
+        if (tagCount > 0) {
+            LinkedList<String> colors = new LinkedList<String>();
+
             for (int i = 0; i < tagCount; i++) {
-                tagsText += (tags.get(i)).getName();
+                // Tag name.
+                TaskTag tag = tags.get(i);
+
+                tagsText += tag.getName();
                 if (i < (tagCount - 1)) tagsText += ", ";
+
+                // Tag color.
+                //String color = tag.getColor();
+                //if (color != null) colors.add(color);
             }
 
+            // Task dates.
             details1TextView.setText(tagsText);
             details2TextView.setText(datesText);
+
+            // Task color.
+            //int colorCount = colors.size();
+            //int[] intColors = new int[colorCount];
+
+            // "Color.parseColor" converts the hexadecimal color to int-color.
+            //for (int i = 0; i < colorCount; i++) intColors[i] = Color.parseColor(colors.get(i));
+
+            /*Drawable drawable = null;
+
+            if (colorCount == 1) drawable = new ColorDrawable(intColors[0]);
+            else if (colorCount >= 2) drawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intColors);
+
+            if (drawable != null) {
+                drawable.setAlpha(64);
+                itemView.setBackground(drawable);
+            }*/
         }
         else {
             details1TextView.setText(datesText);
         }
 
         return itemView;
-    }
-
-    private static class TaskItemViewTag {
-        public TextView titleTextView;
-        public TextView details1TextView;
-        public TextView details2TextView;
-
-        public TaskItemViewTag() {
-            titleTextView = null;
-            details1TextView = null;
-            details2TextView = null;
-        }
     }
 }

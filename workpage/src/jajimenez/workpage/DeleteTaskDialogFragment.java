@@ -1,6 +1,7 @@
 package jajimenez.workpage;
 
 import java.util.List;
+import java.util.LinkedList;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -21,12 +22,33 @@ public class DeleteTaskDialogFragment extends DialogFragment {
     private ApplicationLogic applicationLogic;
     private List<Task> tasks;
 
+    public DeleteTaskDialogFragment() {
+        onDeleteListener = null;
+        tasks = new LinkedList<Task>();
+    }
+
     public DeleteTaskDialogFragment(List<Task> tasks) {
         onDeleteListener = null;
         this.tasks = tasks;
     }
 
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            long[] taskIds = savedInstanceState.getLongArray("tasks");
+            
+            if (taskIds != null) {
+                tasks = new LinkedList<Task>();
+
+                for (long id : taskIds) {
+                    Task task = new Task();
+                    task.setId(id);
+
+                    tasks.add(task);
+                }
+            }
+        }
+
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
 
@@ -52,6 +74,17 @@ public class DeleteTaskDialogFragment extends DialogFragment {
         });
 
         return builder.create();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        int taskCount = tasks.size();
+        long[] taskIds = new long[taskCount];
+        for (int i = 0; i < taskCount; i++) taskIds[i] = (tasks.get(i)).getId();
+
+        outState.putLongArray("tasks", taskIds);
+
+        super.onSaveInstanceState(outState);
     }
 
     public void setOnDeleteListener(OnDeleteListener listener) {

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
@@ -31,6 +32,9 @@ public class TaskActivity extends Activity {
     private TextView deadlineTextView;
     private TextView descriptionTextView;
 
+    private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
+    private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
+
     private long currentTaskId;
     private Task currentTask;
 
@@ -49,12 +53,39 @@ public class TaskActivity extends Activity {
         deadlineTextView = (TextView) findViewById(R.id.task_deadline);
         descriptionTextView = (TextView) findViewById(R.id.task_description);
 
+        taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
+            public void onItemClick() {
+                // Update the list view.
+                TaskActivity.this.updateInterface();
+            }
+        };
+
+        deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
+            public void onDelete() {
+                // Close the activity.
+                TaskActivity.this.finish();
+            }
+        };
+
+        if (savedInstanceState != null) {
+            ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
+            DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
+
+            if (changeTaskStatusFragment != null) {
+                changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
+                savedInstanceState.remove("change_task_status");
+            }
+
+            if (deleteTaskFragment != null) {
+                deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
+                savedInstanceState.remove("delete_task");
+            }
+        }
+
         // Load task data.
         Intent intent = getIntent();
         currentTaskId = intent.getLongExtra("task_id", -1);
         currentTask = null;
-
-        updateInterface();
     }
 
     @Override
@@ -70,6 +101,12 @@ public class TaskActivity extends Activity {
         editItemIcon.setAlpha(255);
 
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateInterface();
     }
 
     private void updateInterface() {
@@ -144,18 +181,9 @@ public class TaskActivity extends Activity {
                 tasks.add(currentTask);
 
                 ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment(tasks);
-
-                statusFragment.setOnItemClickListener(new ChangeTaskStatusDialogFragment.OnItemClickListener() {
-                    public void onItemClick() {
-                        // Update the activity UI.
-                        TaskActivity.this.updateInterface();
-
-                        // For updating the UI of the MainActivity.
-                        TaskActivity.this.setResult(RESULT_OK);
-                    }
-                });
-
+                statusFragment.setOnItemClickListener(TaskActivity.this.taskStatusChangeListener);
                 statusFragment.show(getFragmentManager(), "change_task_status");
+
                 eventHandled = true;
                 break;
                 
@@ -167,7 +195,7 @@ public class TaskActivity extends Activity {
                 intent.putExtra("action", "edit");
                 intent.putExtra("task_id", currentTaskId);
 
-                startActivityForResult(intent, 0);
+                startActivity(intent);
                 eventHandled = true;
                 break;
 
@@ -177,18 +205,9 @@ public class TaskActivity extends Activity {
 
                 // Show a deletion confirmation dialog.
                 DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment(tasks);
-
-                deleteFragment.setOnDeleteListener(new DeleteTaskDialogFragment.OnDeleteListener() {
-                    public void onDelete() {
-                        // For updating the UI of the MainActivity.
-                        TaskActivity.this.setResult(RESULT_OK);
-
-                        // Close the activity.
-                        TaskActivity.this.finish();
-                    }
-                });
-
+                deleteFragment.setOnDeleteListener(TaskActivity.this.deleteTaskListener);
                 deleteFragment.show(getFragmentManager(), "delete_task");
+
                 eventHandled = true;
                 break;
 
@@ -198,16 +217,5 @@ public class TaskActivity extends Activity {
         }
 
         return eventHandled;
-    }
-
-    // This method will be called when coming back from EditTask activity.
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            updateInterface();
-
-            // For updating the UI of the MainActivity.
-            setResult(RESULT_OK);
-        }
     }
 }

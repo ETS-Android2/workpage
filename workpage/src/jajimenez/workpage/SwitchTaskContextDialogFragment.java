@@ -25,6 +25,7 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
         onNewCurrentTaskContextSetListener = null;
     }
 
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);

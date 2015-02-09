@@ -45,8 +45,9 @@ public class EditTaskActivity extends Activity {
     private LinearLayout addedTagsLinearLayout;
 
     private ApplicationLogic applicationLogic;
-    private List<TaskTag> contextTags;
     private Task currentTask;
+
+    private List<TaskTag> contextTags;
     private Calendar selectedStartDate;
     private Calendar selectedDeadlineDate;
 
@@ -99,6 +100,9 @@ public class EditTaskActivity extends Activity {
         Intent intent = getIntent();
         String action = intent.getStringExtra("action");
 
+        boolean startDate = false;
+        boolean deadlineDate = false;
+
         if (action != null && action.equals("edit")) {
             setTitle(R.string.edit_task);
 
@@ -106,46 +110,125 @@ public class EditTaskActivity extends Activity {
             long taskId = intent.getLongExtra("task_id", -1);
             currentTask = applicationLogic.getTask(taskId);
 
-            selectedStartDate = currentTask.getStart();
-            boolean startDate = false;
+            if (savedInstanceState == null) {
+                selectedStartDate = currentTask.getStart();
+                selectedDeadlineDate = currentTask.getDeadline();
 
-            if (selectedStartDate == null) selectedStartDate = Calendar.getInstance();
-            else startDate = true;
+                if (selectedStartDate == null) selectedStartDate = Calendar.getInstance();
+                else startDate = true;
 
-            selectedDeadlineDate = currentTask.getDeadline();
-            boolean deadlineDate = false;
-
-            if (selectedDeadlineDate == null) selectedDeadlineDate = Calendar.getInstance();
-            else deadlineDate = true;
+                if (selectedDeadlineDate == null) selectedDeadlineDate = Calendar.getInstance();
+                else deadlineDate = true;
+            }
 
             // Update interface.
             titleEditText.setText(currentTask.getTitle());
             descriptionEditText.setText(currentTask.getDescription());
-            startCheckBox.setChecked(startDate);
-            startButton.setEnabled(startDate);
-            deadlineCheckBox.setChecked(deadlineDate);
-            deadlineButton.setEnabled(deadlineDate);
         }
         else {
             currentTask = new Task();
             long contextId = intent.getLongExtra("task_context_id", -1);
             currentTask.setContextId(contextId);
 
-            selectedStartDate = Calendar.getInstance();
-            selectedDeadlineDate = Calendar.getInstance();
+            if (savedInstanceState == null) {
+                selectedStartDate = Calendar.getInstance();
+                selectedDeadlineDate = Calendar.getInstance();
+            }
 
             setTitle(R.string.new_task);
-            startButton.setEnabled(false);
-            deadlineButton.setEnabled(false);
         }
+
+        if (savedInstanceState != null) {
+            startDate = savedInstanceState.getBoolean("start_date");
+            deadlineDate = savedInstanceState.getBoolean("deadline_date");
+
+            selectedStartDate = getSavedSelectedStartDate(savedInstanceState);
+            selectedDeadlineDate = getSavedSelectedDeadlineDate(savedInstanceState);
+        }
+
+        // Update interface.
+        startCheckBox.setChecked(startDate);
+        startButton.setEnabled(startDate);
+        deadlineCheckBox.setChecked(deadlineDate);
+        deadlineButton.setEnabled(deadlineDate);
 
         TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
         contextTags = applicationLogic.getAllTaskTags(context);
 
+        if (savedInstanceState != null) currentTask.setTags(getSavedAddedTaskTags(savedInstanceState));
+
         setTagCompletionSuggestions();
-        if (action.equals("edit")) addInitialTaskTagViews();
+        addInitialTaskTagViews();
 
         updateInterface();
+    }
+
+    private Calendar getSavedSelectedStartDate(Bundle savedInstanceState) {
+        return getSavedDate(savedInstanceState, "start");
+    }
+
+    private Calendar getSavedSelectedDeadlineDate(Bundle savedInstanceState) {
+        return getSavedDate(savedInstanceState, "deadline");
+    }
+
+    private Calendar getSavedDate(Bundle savedInstanceState, String dateType) {
+        Calendar date = Calendar.getInstance();
+
+        int year = savedInstanceState.getInt(dateType + "_year");
+        int month = savedInstanceState.getInt(dateType + "_month");
+        int day = savedInstanceState.getInt(dateType + "_day");
+
+        date.set(Calendar.YEAR, year);
+        date.set(Calendar.MONTH, month);
+        date.set(Calendar.DAY_OF_MONTH, day);
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+
+        return date;
+    }
+
+    private List<TaskTag> getSavedAddedTaskTags(Bundle savedInstanceState) {
+        LinkedList<TaskTag> tags = new LinkedList<TaskTag>();
+        String[] tagNames = savedInstanceState.getStringArray("task_tags");
+        
+        if (tagNames != null) {
+            for (String name : tagNames) {
+                TaskTag tag = new TaskTag();
+                tag.setName(name);
+
+                tags.add(tag);
+            }
+        }
+
+        return tags;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Dates checkboxes status.
+        outState.putBoolean("start_date", startCheckBox.isChecked());
+        outState.putBoolean("deadline_date", deadlineCheckBox.isChecked());
+
+        // Selected dates.
+        outState.putInt("start_year", selectedStartDate.get(Calendar.YEAR));
+        outState.putInt("start_month", selectedStartDate.get(Calendar.MONTH));
+        outState.putInt("start_day", selectedStartDate.get(Calendar.DAY_OF_MONTH));
+
+        outState.putInt("deadline_year", selectedDeadlineDate.get(Calendar.YEAR));
+        outState.putInt("deadline_month", selectedDeadlineDate.get(Calendar.MONTH));
+        outState.putInt("deadline_day", selectedDeadlineDate.get(Calendar.DAY_OF_MONTH));
+        
+        // Task tags.
+        List<TaskTag> tags = currentTask.getTags();
+        int tagCount = tags.size();
+        String[] tagNames = new String[tagCount];
+        for (int i = 0; i < tagCount; i++) tagNames[i] = (tags.get(i)).getName();
+
+        outState.putStringArray("task_tags", tagNames);
     }
 
     private void setTagCompletionSuggestions() {
@@ -200,7 +283,6 @@ public class EditTaskActivity extends Activity {
             (Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT)).show();
 
             // Close the activity
-            setResult(RESULT_OK);
             finish();
         }
         else if (!titleValid) {

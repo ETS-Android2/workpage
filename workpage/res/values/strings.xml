@@ -47,7 +47,11 @@
 
     <string name="new_tag">New tag</string>
     <string name="edit_tag">Edit tag</string>
+    <string name="set_color">Set color</string>
+    <string name="select">Select</string>
     <string name="tag_saved">Tag saved.</string>
+    <string name="select_color">Select color</string>
+    <string name="accept">Accept</string>
 
     <plurals name="delete_selected_tag">
         <item quantity="one">Delete selected tag?</item>

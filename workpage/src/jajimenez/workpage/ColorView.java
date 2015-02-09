@@ -10,8 +10,8 @@ import android.content.res.TypedArray;
 
 public class ColorView extends View {
     private float borderWidth;
-    private String borderColor;
-    private String backgroundColor;
+    private int borderColor;
+    private int backgroundColor;
 
     private RectF borderRect;
     private Paint borderPaint;
@@ -23,8 +23,6 @@ public class ColorView extends View {
         super(context, attrs);
 
         borderWidth = 0;
-        borderColor = null;
-        backgroundColor = null;
 
         borderRect = null;
         borderPaint = null;
@@ -37,12 +35,11 @@ public class ColorView extends View {
         try {
             borderWidth = a.getDimension(R.styleable.ColorView_borderWidth, 0);
 
-            borderColor = a.getString(R.styleable.ColorView_borderColor);
-            if (borderColor != null) borderPaint = setupBorderPaint(borderColor);
+            borderColor = a.getColor(R.styleable.ColorView_borderColor, 0xFFFFFFFF);
+            borderPaint = setupBorderPaint(borderColor);
 
-            backgroundColor = a.getString(R.styleable.ColorView_backgroundColor);
-            if (backgroundColor != null) backgroundPaint = setupBackgroundPaint(backgroundColor);
-
+            backgroundColor = a.getColor(R.styleable.ColorView_backgroundColor, 0xFFFFFFFF);
+            backgroundPaint = setupBackgroundPaint(backgroundColor);
         } finally {
             a.recycle();
         }
@@ -52,11 +49,11 @@ public class ColorView extends View {
         return borderWidth;
     }
 
-    public String getBorderColor() {
+    public int getBorderColor() {
         return borderColor;
     }
 
-    public String getBackgroundColor() {
+    public int getBackgroundColor() {
         return backgroundColor;
     }
 
@@ -69,12 +66,9 @@ public class ColorView extends View {
         requestLayout();
     }
 
-    // Color must have an hexadecimal value, i.e. "#ffffff".
-    public void setBorderColor(String color) {
+    public void setBorderColor(int color) {
         borderColor = color;
-
-        if (color != null) borderPaint = setupBorderPaint(color);
-        else borderPaint = null;
+        borderPaint = setupBorderPaint(color);
 
         // The following two methods must be called after any change
         // to the view properties that might change its appearance.
@@ -82,12 +76,9 @@ public class ColorView extends View {
         requestLayout();
     }
 
-    // Color must have an hexadecimal value, i.e. "#ffffff".
-    public void setBackgroundColor(String color) {
+    public void setBackgroundColor(int color) {
         backgroundColor = color;
-
-        if (color != null) backgroundPaint = setupBackgroundPaint(color);
-        else backgroundPaint = null;
+        backgroundPaint = setupBackgroundPaint(color);
 
         // The following two methods must be called after any change
         // to the view properties that might change its appearance.
@@ -95,43 +86,21 @@ public class ColorView extends View {
         requestLayout();
     }
 
-    private Paint setupBorderPaint(String color) {
-        Paint paint = setupPaint(color);
+    private Paint setupBorderPaint(int color) {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(borderWidth);
+        paint.setColor(color);
 
         return paint;
     }
 
-    private Paint setupBackgroundPaint(String color) {
-        Paint paint = setupPaint(color);
-        paint.setStyle(Paint.Style.FILL);
-
-        return paint;
-    }
-
-    private Paint setupPaint(String color) {
-        int[] rgbColor = getRGBColor(color);
-
+    private Paint setupBackgroundPaint(int color) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setARGB(255, rgbColor[0], rgbColor[1], rgbColor[2]);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(color);
 
         return paint;
-    }
-
-    private int[] getRGBColor(String hexColor) {
-        int[] rgbColor = new int[3];
-
-        // Red value.
-        rgbColor[0] = Integer.valueOf(hexColor.substring(1, 3), 16);
-
-        // Green value.
-        rgbColor[1] = Integer.valueOf(hexColor.substring(3, 5), 16);
-
-        // Blue value.
-        rgbColor[2] = Integer.valueOf(hexColor.substring(5, 7), 16);
-
-        return rgbColor;
     }
 
     @Override
@@ -141,11 +110,9 @@ public class ColorView extends View {
         float topPadding = (float) getPaddingTop();
         float bottomPadding = (float) getPaddingBottom();
 
-        if (backgroundColor != null) {
-            backgroundRect = new RectF(leftPadding, topPadding, ((float) w) - rightPadding, ((float) h) - bottomPadding);
-        }
+        backgroundRect = new RectF(leftPadding, topPadding, ((float) w) - rightPadding, ((float) h) - bottomPadding);
 
-        if (borderWidth > 0 && borderColor != null) {
+        if (borderWidth > 0) {
             borderRect = new RectF(leftPadding + (borderWidth/2), topPadding + (borderWidth/2), ((float) w) - rightPadding - (borderWidth/2), ((float) h) - bottomPadding - (borderWidth/2));
         }
     }
