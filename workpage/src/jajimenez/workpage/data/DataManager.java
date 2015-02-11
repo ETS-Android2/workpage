@@ -287,20 +287,20 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     // This is an auxiliar method intended to be used only inside the "getTask" method.
-    private TaskTag getTaskTag(SQLiteDatabase db, String name) {
+    private TaskTag getTaskTag(SQLiteDatabase db, long taskContextId, String name) {
         TaskTag tag = null;
 
-        Cursor cursor = db.rawQuery("SELECT id, task_context_id, list_order, color FROM task_tags " +
-            "WHERE name = ? " +
-            "ORDER BY list_order;", new String[] { name });
+        Cursor cursor = db.rawQuery("SELECT id, list_order, color FROM task_tags " +
+            "WHERE task_context_id = ?" +
+            "AND name = ? " +
+            "ORDER BY list_order;", new String[] { String.valueOf(taskContextId), name });
 
         if (cursor.moveToFirst()) {
             long id = cursor.getLong(0);
-            long contextId = cursor.getLong(1);
-            long order = cursor.getLong(2);
-            String color = cursor.getString(3);
+            long order = cursor.getLong(1);
+            String color = cursor.getString(2);
 
-            tag = new TaskTag(id, contextId, name, order, color);
+            tag = new TaskTag(id, taskContextId, name, order, color);
         }
 
         return tag;
@@ -633,6 +633,8 @@ public class DataManager extends SQLiteOpenHelper {
             }
         }
 
+        long taskContextId = task.getContextId();
+
         // Save new tags and tag relationships
         for (TaskTag tag : newTags) {
             long tagId = -1;
@@ -642,7 +644,7 @@ public class DataManager extends SQLiteOpenHelper {
             // (this is needed before saving the task tag relationship).
             //
             // A tag is considered to exist if there is a tag in the DB that has its same name.
-            TaskTag dbTag = getTaskTag(db, tag.getName());
+            TaskTag dbTag = getTaskTag(db, taskContextId, tag.getName());
 
             // If "dbTag" is null, it means that the tag does not exist in the DB yet. In that case,
             // we save the "tag" object. After saving the "tag" object, it will contain its actual
