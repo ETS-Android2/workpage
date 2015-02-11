@@ -127,8 +127,7 @@ public class TaskActivity extends Activity {
 
         if (tagCount == 0) {
             tagsTextView.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             String tagsText = "";
 
             for (int i = 0; i < tagCount; i++) {
@@ -147,13 +146,13 @@ public class TaskActivity extends Activity {
 
         if (start == null && deadline == null) {
             datesTableLayout.setVisibility(View.GONE);
-        }
-        else {
+        } else {
+            datesTableLayout.setVisibility(View.VISIBLE);
+
             if (start == null) {
                 startTableRow.setVisibility(View.GONE);
                 startTextView.setText("");
-            }
-            else {
+            } else {
                 startTextView.setText(tool.getInterfaceFormattedDate(currentTask.getStart()));
                 startTableRow.setVisibility(View.VISIBLE);
             }
@@ -161,8 +160,7 @@ public class TaskActivity extends Activity {
             if (deadline == null) {
                 deadlineTableRow.setVisibility(View.GONE);
                 deadlineTextView.setText("");
-            }
-            else {
+            } else {
                 deadlineTextView.setText(tool.getInterfaceFormattedDate(currentTask.getDeadline()));
                 deadlineTableRow.setVisibility(View.VISIBLE);
             }
