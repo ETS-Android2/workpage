@@ -8,12 +8,10 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-//import android.graphics.drawable.ColorDrawable;
-//import android.graphics.drawable.GradientDrawable;
 
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.TaskTag;
@@ -32,6 +30,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
     @Override
     public View getView(int position, View itemView, ViewGroup parentViewGroup) {
+        LinearLayout colorsLinearLayout;
         TextView titleTextView = null;
         TextView details1TextView = null;
         TextView details2TextView = null;
@@ -39,6 +38,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         LayoutInflater inflater = activity.getLayoutInflater();
         itemView = inflater.inflate(resource, null);
 
+        colorsLinearLayout = (LinearLayout) itemView.findViewById(R.id.taskListItem_colors);
         titleTextView = (TextView) itemView.findViewById(R.id.taskListItem_title);
         details1TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_1);
         details2TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_2);
@@ -73,32 +73,28 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 if (i < (tagCount - 1)) tagsText += ", ";
 
                 // Tag color.
-                //String color = tag.getColor();
-                //if (color != null) colors.add(color);
+                String color = tag.getColor();
+                if (color != null) colors.add(color);
             }
 
             // Task dates.
             details1TextView.setText(tagsText);
             details2TextView.setText(datesText);
 
-            // Task color.
-            //int colorCount = colors.size();
-            //int[] intColors = new int[colorCount];
+            // Task colors.
+            int colorCount = colors.size();
 
             // "Color.parseColor" converts the hexadecimal color to int-color.
-            //for (int i = 0; i < colorCount; i++) intColors[i] = Color.parseColor(colors.get(i));
+            // We draw every color (one per tag) with a maximum of 10 colors.
+            for (int i = 0; i < colorCount && i < 10; i++) {
+                ColorView colorView = new ColorView(activity);
 
-            /*Drawable drawable = null;
+                colorView.setBackgroundColor(Color.parseColor(colors.get(i)));
+                colorView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
-            if (colorCount == 1) drawable = new ColorDrawable(intColors[0]);
-            else if (colorCount >= 2) drawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, intColors);
-
-            if (drawable != null) {
-                drawable.setAlpha(64);
-                itemView.setBackground(drawable);
-            }*/
-        }
-        else {
+                colorsLinearLayout.addView(colorView);
+            }
+        } else {
             details1TextView.setText(datesText);
         }
 

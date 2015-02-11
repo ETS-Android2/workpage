@@ -19,6 +19,18 @@ public class ColorView extends View {
     private RectF backgroundRect;
     private Paint backgroundPaint;
 
+    public ColorView(Context context) {
+        super(context);
+
+        borderWidth = 0;
+
+        borderRect = null;
+        borderPaint = null;
+
+        backgroundRect = null;
+        backgroundPaint = null;
+    }
+
     public ColorView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
