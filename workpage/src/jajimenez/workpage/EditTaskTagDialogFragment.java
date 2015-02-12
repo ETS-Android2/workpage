@@ -35,6 +35,7 @@ public class EditTaskTagDialogFragment extends DialogFragment {
     private OnTaskTagSavedListener onTaskTagSavedListener;
 
     private boolean saveButtonEnabled;
+    private ColorPickerDialogFragment.OnColorSelectedListener colorSelectedListener;
 
     private ApplicationLogic applicationLogic;
     private TaskTag tag;
@@ -54,6 +55,12 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        colorSelectedListener = new ColorPickerDialogFragment.OnColorSelectedListener() {
+            public void onColorSelected(int color) {
+                EditTaskTagDialogFragment.this.selectedColorView.setBackgroundColor(color);
+            }
+        };
+
         if (savedInstanceState == null) {
             saveButtonEnabled = (tag.getId() >= 0);
         } else {
@@ -82,6 +89,9 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             }
 
             saveButtonEnabled = savedInstanceState.getBoolean("save_button_enabled");
+
+            ColorPickerDialogFragment colorPickerFragment = (ColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("color_picker");
+            if (colorPickerFragment != null) colorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
         }
 
         activity = getActivity();
@@ -186,13 +196,7 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         selectButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ColorPickerDialogFragment fragment = new ColorPickerDialogFragment(EditTaskTagDialogFragment.this.selectedColorView.getBackgroundColor());
-
-                fragment.setOnColorSelectedListener(new ColorPickerDialogFragment.OnColorSelectedListener() {
-                    public void onColorSelected(int color) {
-                       EditTaskTagDialogFragment.this.selectedColorView.setBackgroundColor(color);
-                    }
-                });
-
+                fragment.setOnColorSelectedListener(EditTaskTagDialogFragment.this.colorSelectedListener);
                 fragment.show(getFragmentManager(), "color_picker");
             }
         });

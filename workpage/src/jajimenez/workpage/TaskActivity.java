@@ -69,17 +69,10 @@ public class TaskActivity extends Activity {
 
         if (savedInstanceState != null) {
             ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
+            if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
+
             DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
-
-            if (changeTaskStatusFragment != null) {
-                changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
-                savedInstanceState.remove("change_task_status");
-            }
-
-            if (deleteTaskFragment != null) {
-                deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
-                savedInstanceState.remove("delete_task");
-            }
+            if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
         }
 
         // Load task data.

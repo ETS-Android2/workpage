@@ -79,17 +79,10 @@ public class EditTaskTagsActivity extends ListActivity {
 
         if (savedInstanceState != null) {
             EditTaskTagDialogFragment editTaskTagFragment = (EditTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("edit_task_tag");
-            DeleteTaskTagDialogFragment deleteFragment = (DeleteTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task_tag");
-            
-            if (editTaskTagFragment != null) {
-                editTaskTagFragment.setOnTaskTagSavedListener(saveTaskTagListener);
-                savedInstanceState.remove("edit_task_tag");
-            }
+            if (editTaskTagFragment != null) editTaskTagFragment.setOnTaskTagSavedListener(saveTaskTagListener);
 
-            if (deleteFragment != null) {
-                deleteFragment.setOnDeleteListener(deleteTaskTagListener);
-                savedInstanceState.remove("delete_task_tag");
-            }
+            DeleteTaskTagDialogFragment deleteFragment = (DeleteTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task_tag");
+            if (deleteFragment != null) deleteFragment.setOnDeleteListener(deleteTaskTagListener);
         }
 
         applicationLogic = new ApplicationLogic(this);

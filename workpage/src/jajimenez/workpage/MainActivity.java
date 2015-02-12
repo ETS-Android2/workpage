@@ -102,23 +102,13 @@ public class MainActivity extends ListActivity {
 
         if (savedInstanceState != null) {
             SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
+            if (switchTaskContextFragment != null) switchTaskContextFragment.setOnNewCurrentTaskContextSetListener(switchTaskContextListener);
+
             ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
+            if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
+
             DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
-
-            if (switchTaskContextFragment != null) {
-                switchTaskContextFragment.setOnNewCurrentTaskContextSetListener(switchTaskContextListener);
-                savedInstanceState.remove("switch_task_context");
-            }
-
-            if (changeTaskStatusFragment != null) {
-                changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
-                savedInstanceState.remove("change_task_status");
-            }
-
-            if (deleteTaskFragment != null) {
-                deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
-                savedInstanceState.remove("delete_task");
-            }
+            if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
         }
 
         applicationLogic = new ApplicationLogic(this);
