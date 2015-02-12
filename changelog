@@ -1,3 +1,10 @@
+0.2.0
+-----
+* Feature added: color selection for tags.
+* UI performance issue fix.
+* Data management bug fix.
+* Application Spanish translation added.
+
 0.1.1
 -----
 * User interface bug fix.
