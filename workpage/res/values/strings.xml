@@ -22,8 +22,8 @@
         <item quantity="other">Tasks (%1$d) status</item>
     </plurals>
 
-    <string name="mark_as_done">Mark as done</string>
-    <string name="mark_as_not_done">Mark as not done</string>
+    <string name="mark_as_open">Mark as open</string>
+    <string name="mark_as_closed">Mark as closed</string>
 
     <plurals name="delete_selected_task">
         <item quantity="one">Delete selected task?</item>
@@ -37,11 +37,11 @@
     <string name="edit_tags">Edit tags</string>
 
     <plurals name="open_task_count">
-        <item quantity="one">On %1$d open task.</item>
+        <item quantity="one">On 1 open task.</item>
         <item quantity="other">On %1$d open tasks.</item>
     </plurals>
     <plurals name="closed_task_count">
-        <item quantity="one">On %1$d closed task.</item>
+        <item quantity="one">On 1 closed task.</item>
         <item quantity="other">On %1$d closed tasks.</item>
     </plurals>
 
@@ -87,11 +87,11 @@
     <string name="view_1">View</string>
     <string name="view_2">View:</string>
     <string name="open">Open</string>
-    <string name="open_description">All the open (not done) tasks.</string>
+    <string name="open_description">All the open tasks.</string>
     <string name="doable_today">Doable Today</string>
-    <string name="doable_today_description">The open (not done) tasks that could be done today.</string>
+    <string name="doable_today_description">The open tasks that could be done today.</string>
     <string name="closed">Closed</string>
-    <string name="closed_description">All the closed (done) tasks.</string>
+    <string name="closed_description">All the closed tasks.</string>
     <string name="filter_by_tags">Filter by tags:</string>
     <string name="select_tags">Select 1 or more tags to show only the tasks that have any of those tags. Select no tag to show all the tasks.</string>
     <string name="no_tags">There are no tags.</string>

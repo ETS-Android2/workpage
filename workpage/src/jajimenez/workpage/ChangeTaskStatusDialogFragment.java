@@ -64,8 +64,8 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
         String[] items = null;
         final boolean firstTaskDone = (tasks.get(0)).isDone();
 
-        if (firstTaskDone) items = new String[] { getString(R.string.mark_as_not_done) };
-        else items = new String[] { getString(R.string.mark_as_done) };
+        if (firstTaskDone) items = new String[] { getString(R.string.mark_as_open) };
+        else items = new String[] { getString(R.string.mark_as_closed) };
 
         builder.setItems(items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
