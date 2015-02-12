@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Workpage</string>
+    <string name="app_description">Gestor de productividad.</string>
+    <string name="app_version">0.2.0</string>
+    <string name="app_author">Jose A. Jimenez</string>
+    <string name="app_license">GPL 3.0</string>
+
+    <string name="initial_task_context_personal">Personal</string>
+    <string name="initial_task_context_work">Trabajo</string>
+
+    <string name="switch_task_context">Cambiar contexto</string>
+    <string name="cancel">Cancelar</string>
+    <string name="no_tasks">No hay tareas.</string>
+    <string name="set_status">Establecer estado</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Borrar</string>
+    <string name="selected">%1$d seleccionadas</string>
+
+    <plurals name="task_status">
+        <item quantity="one">Estado de la tarea</item>
+        <item quantity="other">Estado de las tareas (%1$d)</item>
+    </plurals>
+
+    <string name="mark_as_open">Marcar como pendiente</string>
+    <string name="mark_as_closed">Marcar como completa</string>
+
+    <plurals name="delete_selected_task">
+        <item quantity="one">¿Borrar la tarea seleccionada?</item>
+        <item quantity="other">¿Borrar las %1$d tareas seleccionadas?</item>
+    </plurals>
+    <plurals name="task_deleted">
+        <item quantity="one">Tarea borrada.</item>
+        <item quantity="other">Tareas borradas.</item>
+    </plurals>
+
+    <string name="edit_tags">Editar etiquetas</string>
+
+    <plurals name="open_task_count">
+        <item quantity="one">En 1 tarea pendiente.</item>
+        <item quantity="other">En %1$d tareas pendientes.</item>
+    </plurals>
+    <plurals name="closed_task_count">
+        <item quantity="one">En 1 tarea completa.</item>
+        <item quantity="other">En %1$d tareas completas.</item>
+    </plurals>
+
+    <string name="new_tag">Nueva etiqueta</string>
+    <string name="edit_tag">Editar etiqueta</string>
+    <string name="set_color">Establecer color</string>
+    <string name="select">Seleccionar</string>
+    <string name="tag_saved">Etiqueta guardada.</string>
+    <string name="select_color">Seleccionar color</string>
+    <string name="accept">Aceptar</string>
+
+    <plurals name="delete_selected_tag">
+        <item quantity="one">¿Borrar la etiqueta seleccionada?</item>
+        <item quantity="other">¿Borrar las %1$d etiquetas seleccionadas?</item>
+    </plurals>
+    <plurals name="tag_deleted">
+        <item quantity="one">Etiqueta borrada.</item>
+        <item quantity="other">Etiquetas borradas.</item>
+    </plurals>
+
+    <string name="task_open">Tarea (pendiente)</string>
+    <string name="task_closed">Tarea (completa)</string>
+
+    <string name="new_task">Nueva tarea</string>
+    <string name="edit_task">Editar tarea</string>
+    <string name="title">Título</string>
+    <string name="description">Descripción</string>
+    <string name="dates">Fechas:</string>
+    <string name="start">Comienzo:</string>
+    <string name="deadline">Final:</string>
+    <string name="task_start">Comienzo: %1$s</string>
+    <string name="task_deadline">Final: %1$s</string>
+    <string name="task_start_deadline">Comienzo: %1$s - Final: %2$s</string>
+    <string name="tags">Etiquetas:</string>
+    <string name="tag_name">Nombre de la etiqueta</string>
+    <string name="add">Añadir</string>
+    <string name="tag_already_added">Etiqueta ya añadida.</string>
+    <string name="save">Guardar</string>
+    <string name="title_error">Por favor, introduzca el título.</string>
+    <string name="dates_error">Por favor, introduzca fechas válidas.</string>
+    <string name="task_saved">Tarea guardada.</string>
+
+    <string name="view_1">Vista</string>
+    <string name="view_2">Vista:</string>
+    <string name="open">Pendiente</string>
+    <string name="open_description">Todas las tareas pendientes.</string>
+    <string name="doable_today">Realizable Hoy</string>
+    <string name="doable_today_description">Las tareas pendientes que podrían hacerse hoy.</string>
+    <string name="closed">Completo</string>
+    <string name="closed_description">Todas las tareas completas.</string>
+    <string name="filter_by_tags">Filtrar por etiquetas:</string>
+    <string name="select_tags">Seleccione 1 ó más etiquetas para mostrar sólo las tareas que tienen cualquiera de esas etiquetas. No seleccione ninguna etiqueta para mostrar todas las tareas.</string>
+    <string name="no_tags">No hay etiquetas.</string>
+
+    <string name="about">Acerca De</string>
+    <string name="version">Versión:</string>
+    <string name="author">Autor:</string>
+    <string name="license">Licencia:</string>
+</resources>
