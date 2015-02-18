@@ -180,6 +180,18 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteTaskContexts(List<TaskContext> contexts) {
+        SQLiteDatabase db = null;
+        
+        try {
+            db = getWritableDatabase();
+            for (TaskContext c : contexts) db.delete("task_contexts", "id = ?", new String[] { String.valueOf(c.getId()) });
+        }
+        finally {
+            db.close();
+        }
+    }
+
     // Returns all the task tags that belong to a task context.
     public List<TaskTag> getAllTaskTags(TaskContext context) {
         List<TaskTag> tags = new LinkedList<TaskTag>();
