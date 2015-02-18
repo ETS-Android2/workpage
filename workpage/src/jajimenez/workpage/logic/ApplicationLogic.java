@@ -27,10 +27,6 @@ public class ApplicationLogic {
         this.dataManager = new DataManager(appContext);
     }
 
-    public List<TaskContext> getAllTaskContexts() {
-        return dataManager.getAllTaskContexts();
-    }
-
     public TaskContext getCurrentTaskContext() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         long currentTaskContextId = preferences.getLong(CURRENT_TASK_CONTEXT_ID_PREF_KEY, 1);
@@ -87,6 +83,10 @@ public class ApplicationLogic {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putStringSet(CURRENT_FILTER_TAGS_PREF_KEY, prefFilterTagNames);
         editor.commit();
+    }
+
+    public List<TaskContext> getAllTaskContexts() {
+        return dataManager.getAllTaskContexts();
     }
 
     public TaskContext getTaskContext(long id) {
