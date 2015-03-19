@@ -76,9 +76,10 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             tag.setContextId(tagContextId);
             tag.setOrder(tagOrder);
             
-            int contextTagCount = contextTagIds.length;
+            int contextTagCount = 0;
+            if (contextTagIds != null) contextTagCount = contextTagIds.length;
 
-            if (contextTagIds != null) {
+            if (contextTagCount > 0) {
                 for (int i = 0; i < contextTagCount; i++) {
                     TaskTag tag = new TaskTag();
                     tag.setId(contextTagIds[i]);
