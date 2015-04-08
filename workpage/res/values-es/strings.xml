@@ -17,6 +17,31 @@
     <string name="delete">Borrar</string>
     <string name="selected">%1$d seleccionadas</string>
 
+    <string name="edit_contexts">Editar contextos</string>
+
+    <string name="new_context">Nuevo contexto</string>
+    <string name="edit_context">Editar contexto</string>
+    <string name="context_name">Nombre del contexto</string>
+    <string name="context_saved">Contexto guardado.</string>
+
+    <plurals name="open_task_count">
+        <item quantity="one">1 open task.</item>
+        <item quantity="other">%1$d open tasks.</item>
+    </plurals>
+    <plurals name="closed_task_count">
+        <item quantity="one">1 closed task.</item>
+        <item quantity="other">%1$d closed tasks.</item>
+    </plurals>
+
+    <plurals name="delete_selected_context">
+        <item quantity="one">¿Borrar el contexto seleccionado?</item>
+        <item quantity="other">¿Borrar los %1$d contextos seleccionados?</item>
+    </plurals>
+    <plurals name="context_deleted">
+        <item quantity="one">Contexto borrado.</item>
+        <item quantity="other">Contextos borrados.</item>
+    </plurals>
+
     <plurals name="task_status">
         <item quantity="one">Estado de la tarea</item>
         <item quantity="other">Estado de las tareas (%1$d)</item>
@@ -36,11 +61,11 @@
 
     <string name="edit_tags">Editar etiquetas</string>
 
-    <plurals name="open_task_count">
+    <plurals name="on_open_task_count">
         <item quantity="one">En 1 tarea pendiente.</item>
         <item quantity="other">En %1$d tareas pendientes.</item>
     </plurals>
-    <plurals name="closed_task_count">
+    <plurals name="on_closed_task_count">
         <item quantity="one">En 1 tarea completa.</item>
         <item quantity="other">En %1$d tareas completas.</item>
     </plurals>

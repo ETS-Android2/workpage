@@ -17,6 +17,31 @@
     <string name="delete">Delete</string>
     <string name="selected">%1$d selected</string>
 
+    <string name="edit_contexts">Edit contexts</string>
+
+    <string name="new_context">New context</string>
+    <string name="edit_context">Edit context</string>
+    <string name="context_name">Context name</string>
+    <string name="context_saved">Context saved.</string>
+
+    <plurals name="open_task_count">
+        <item quantity="one">1 open task.</item>
+        <item quantity="other">%1$d open tasks.</item>
+    </plurals>
+    <plurals name="closed_task_count">
+        <item quantity="one">1 closed task.</item>
+        <item quantity="other">%1$d closed tasks.</item>
+    </plurals>
+
+    <plurals name="delete_selected_context">
+        <item quantity="one">Delete selected context?</item>
+        <item quantity="other">Delete the %1$d selected contexts?</item>
+    </plurals>
+    <plurals name="context_deleted">
+        <item quantity="one">Context deleted.</item>
+        <item quantity="other">Contexts deleted.</item>
+    </plurals>
+
     <plurals name="task_status">
         <item quantity="one">Task status</item>
         <item quantity="other">Tasks (%1$d) status</item>
@@ -36,11 +61,11 @@
 
     <string name="edit_tags">Edit tags</string>
 
-    <plurals name="open_task_count">
+    <plurals name="on_open_task_count">
         <item quantity="one">On 1 open task.</item>
         <item quantity="other">On %1$d open tasks.</item>
     </plurals>
-    <plurals name="closed_task_count">
+    <plurals name="on_closed_task_count">
         <item quantity="one">On 1 closed task.</item>
         <item quantity="other">On %1$d closed tasks.</item>
     </plurals>
