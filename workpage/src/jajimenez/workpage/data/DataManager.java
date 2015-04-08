@@ -154,8 +154,8 @@ public class DataManager extends SQLiteOpenHelper {
     // If the ID of the task context is less than 0, it
     // inserts a new row in the "task_contexts" table
     // ignoring that ID and updates the ID attribute of
-    // the TaskContext given object. Otherwise, it updates the row
-    // of the given ID.
+    // the TaskContext given object. Otherwise, it updates
+    // the row of the given ID.
     public void saveTaskContext(TaskContext context) {
         SQLiteDatabase db = null;
         long id = context.getId();
@@ -511,6 +511,33 @@ public class DataManager extends SQLiteOpenHelper {
         }
 
         return tasks;
+    }
+
+    public int getTaskCount(boolean done, TaskContext context) {
+        int count = 0;
+
+        if (context != null) {
+            SQLiteDatabase db = null;
+
+            try {
+                db = getReadableDatabase();
+                String query = "SELECT count(*) " +
+                    "FROM tasks " +
+                    "WHERE task_context_id = ? ";
+
+                if (done) query += "AND done = 1;";
+                else query += "AND done = 0;";
+
+                Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(context.getId()) });
+
+                if (cursor.moveToFirst()) count = cursor.getInt(0);
+            }
+            finally {
+                db.close();
+            }
+        }
+
+        return count;
     }
 
     public int getTaskCount(boolean done, TaskTag tag) {
