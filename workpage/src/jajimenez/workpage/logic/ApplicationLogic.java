@@ -93,6 +93,14 @@ public class ApplicationLogic {
         return dataManager.getTaskContext(id);
     }
 
+    public void saveTaskContext(TaskContext context) {
+        dataManager.saveTaskContext(context);
+    }
+
+    public void deleteTaskContexts(List<TaskContext> contexts) {
+        dataManager.deleteTaskContexts(contexts);
+    }
+
     public List<TaskTag> getAllTaskTags(TaskContext context) {
         return dataManager.getAllTaskTags(context);
     }
@@ -115,6 +123,10 @@ public class ApplicationLogic {
 
     public List<Task> getClosedTasks(TaskContext context, List<TaskTag> filterTags) {
         return dataManager.getTasks(context, true, filterTags);
+    }
+
+    public int getTaskCount(boolean done, TaskContext context) {
+        return dataManager.getTaskCount(done, context);
     }
 
     public int getTaskCount(boolean done, TaskTag tag) {
