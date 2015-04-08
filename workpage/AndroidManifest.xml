@@ -30,6 +30,10 @@
             android:label="@string/view_1"
             android:parentActivityName="MainActivity" />
 
+        <activity android:name="EditTaskContextsActivity"
+            android:label="@string/edit_contexts"
+            android:parentActivityName="MainActivity" />
+
         <activity android:name="EditTaskTagsActivity"
             android:label="@string/edit_tags"
             android:parentActivityName="MainActivity" />

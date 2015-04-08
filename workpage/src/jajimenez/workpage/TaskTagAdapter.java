@@ -51,8 +51,8 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
 
         Resources resources = activity.getResources();
 
-        String openTaskCountText = resources.getQuantityString(R.plurals.open_task_count, openTaskCount, openTaskCount);
-        String closedTaskCountText = resources.getQuantityString(R.plurals.closed_task_count, closedTaskCount, closedTaskCount);
+        String openTaskCountText = resources.getQuantityString(R.plurals.on_open_task_count, openTaskCount, openTaskCount);
+        String closedTaskCountText = resources.getQuantityString(R.plurals.on_closed_task_count, closedTaskCount, closedTaskCount);
 
         // Show color, name and task counts.
         if (color != null && !(color.trim()).equals("")) {

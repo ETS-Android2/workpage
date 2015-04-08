@@ -3,6 +3,9 @@
     <item android:title="@string/switch_task_context"
         android:onClick="onSwitchTaskContextItemSelected" />
 
+    <item android:title="@string/edit_contexts"
+        android:onClick="onEditTaskContextsItemSelected" />
+
     <item android:title="@string/edit_tags"
         android:onClick="onEditTaskTagsItemSelected" />
 
