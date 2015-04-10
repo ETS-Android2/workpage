@@ -98,6 +98,18 @@ public class EditTaskContextsActivity extends ListActivity {
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.edit_task_contexts_contextual, menu);
 
+                MenuItem deleteItem = menu.findItem(R.id.editTaskContextsContextualMenu_delete);
+                Drawable deleteItemIcon = deleteItem.getIcon();
+                int itemCount = EditTaskContextsActivity.this.listView.getCount();
+
+                if (itemCount > 1) {
+                    deleteItem.setEnabled(true);
+                    deleteItemIcon.setAlpha(255);
+                } else {
+                    deleteItem.setEnabled(false);
+                    deleteItemIcon.setAlpha(127);
+                }
+
                 return true;
             }
 
@@ -145,6 +157,11 @@ public class EditTaskContextsActivity extends ListActivity {
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.editTaskContextsContextualMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();
 
+                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.editTaskContextsContextualMenu_delete);
+                Drawable deleteItemIcon = deleteItem.getIcon();
+
+                int itemCount = EditTaskContextsActivity.this.listView.getCount();
+
                 if (selectedContextCount == 1) {
                     editItem.setEnabled(true);
                     editItemIcon.setAlpha(255);
@@ -152,6 +169,15 @@ public class EditTaskContextsActivity extends ListActivity {
                 else {
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
+                }
+
+                if (selectedContextCount < itemCount) {
+                    deleteItem.setEnabled(true);
+                    deleteItemIcon.setAlpha(255);
+                }
+                else {
+                    deleteItem.setEnabled(false);
+                    deleteItemIcon.setAlpha(127);
                 }
             }
         });
