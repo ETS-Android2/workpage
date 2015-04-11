@@ -268,7 +268,6 @@ public class EditTaskContextsActivity extends ListActivity {
         if (!interfaceReady) return;
 
         TaskContext newContext = new TaskContext();
-        //newTag.setContextId(currentTaskContext.getId());
 
         // Show an edition dialog.
         EditTaskContextDialogFragment editFragment = new EditTaskContextDialogFragment(newContext, EditTaskContextsActivity.this.contexts);
