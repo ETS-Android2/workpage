@@ -61,7 +61,19 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
         builder.setNegativeButton(R.string.cancel, null);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                TaskContext currentContext = DeleteTaskContextDialogFragment.this.applicationLogic.getCurrentTaskContext();
                 DeleteTaskContextDialogFragment.this.applicationLogic.deleteTaskContexts(DeleteTaskContextDialogFragment.this.contexts);
+
+                // If the current context was one of the contexts that have been
+                // deleted, then we need to set a new current context in the DB.
+                if (DeleteTaskContextDialogFragment.this.contexts.contains(currentContext)) {
+                    List<TaskContext> remainingContexts = DeleteTaskContextDialogFragment.this.applicationLogic.getAllTaskContexts();
+
+                    // It is assumed that there will be always 1 context at least.
+                    TaskContext newCurrentContext = remainingContexts.get(0);
+
+                    DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(newCurrentContext);
+                }
 
                 String text = resources.getQuantityString(R.plurals.context_deleted, selectedContextCount, selectedContextCount);
                 Toast.makeText(DeleteTaskContextDialogFragment.this.activity, text, Toast.LENGTH_SHORT).show();
