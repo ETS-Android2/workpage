@@ -112,7 +112,6 @@ public class MainActivity extends ListActivity {
         }
 
         applicationLogic = new ApplicationLogic(this);
-        currentTaskContext = applicationLogic.getCurrentTaskContext();
         currentView = "";
         currentFilterTags = new LinkedList<TaskTag>();
     }
@@ -231,6 +230,8 @@ public class MainActivity extends ListActivity {
     }
 
     private void updateInterface() {
+        currentTaskContext = applicationLogic.getCurrentTaskContext();
+
         // Information about the current task context.
         actionBar.setSubtitle(currentTaskContext.getName());
 
