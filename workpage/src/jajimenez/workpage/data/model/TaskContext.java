@@ -1,6 +1,8 @@
 package jajimenez.workpage.data.model;
 
-public class TaskContext extends Entity {
+import java.lang.Comparable;
+
+public class TaskContext extends Entity implements Comparable<TaskContext> {
     private String name;
     private long order;
 
@@ -39,5 +41,17 @@ public class TaskContext extends Entity {
 
     public void setOrder(long order) {
         this.order = order;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof TaskContext && compareTo((TaskContext) other) == 0);
+    }
+
+    public int compareTo(TaskContext other) {
+        int result = 1;
+        if (other != null) result = this.name.compareTo(other.name);
+
+        return result;
     }
 }
