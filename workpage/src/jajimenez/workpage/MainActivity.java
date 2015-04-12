@@ -340,13 +340,6 @@ public class MainActivity extends ListActivity {
         fragment.show(getFragmentManager(), "switch_task_context");
     }
 
-    public void onEditTaskContextsItemSelected(MenuItem item) {
-        if (!interfaceReady) return;
-
-        Intent intent = new Intent(this, EditTaskContextsActivity.class);
-        startActivity(intent);
-    }
-
     public void onEditTaskTagsItemSelected(MenuItem item) {
         if (!interfaceReady) return;
 

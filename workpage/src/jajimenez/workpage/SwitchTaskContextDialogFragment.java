@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
@@ -48,6 +49,13 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.switch_task_context);
+        builder.setNeutralButton(R.string.edit_contexts, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(SwitchTaskContextDialogFragment.this.activity, EditTaskContextsActivity.class);
+                SwitchTaskContextDialogFragment.this.activity.startActivity(intent);
+            }
+        });
+
         builder.setNegativeButton(R.string.cancel, null);
         builder.setSingleChoiceItems(taskContextNames, selectedItem, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
