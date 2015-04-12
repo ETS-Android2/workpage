@@ -34,8 +34,8 @@
     </plurals>
 
     <plurals name="delete_selected_context">
-        <item quantity="one">Delete selected context?</item>
-        <item quantity="other">Delete the %1$d selected contexts?</item>
+        <item quantity="one">Delete selected context? All associated tasks and tags will be deleted.</item>
+        <item quantity="other">Delete the %1$d selected contexts? All associated tasks and tags will be deleted.</item>
     </plurals>
     <plurals name="context_deleted">
         <item quantity="one">Context deleted.</item>

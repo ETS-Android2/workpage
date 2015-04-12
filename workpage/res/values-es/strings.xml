@@ -34,8 +34,8 @@
     </plurals>
 
     <plurals name="delete_selected_context">
-        <item quantity="one">¿Borrar el contexto seleccionado?</item>
-        <item quantity="other">¿Borrar los %1$d contextos seleccionados?</item>
+        <item quantity="one">¿Borrar el contexto seleccionado? Todas las tareas y etiquetas asociadas serán borradas.</item>
+        <item quantity="other">¿Borrar los %1$d contextos seleccionados? Todas las tareas y etiquetas asociadas serán borradas.</item>
     </plurals>
     <plurals name="context_deleted">
         <item quantity="one">Contexto borrado.</item>
