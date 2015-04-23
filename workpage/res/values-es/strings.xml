@@ -121,6 +121,9 @@
     <string name="select_tags">Seleccione 1 ó más etiquetas para mostrar sólo las tareas que tienen cualquiera de esas etiquetas. No seleccione ninguna etiqueta para mostrar todas las tareas.</string>
     <string name="no_tags">No hay etiquetas.</string>
 
+    <string name="export_data">Exportar datos</string>
+    <string name="import_data">Importar datos</string>
+
     <string name="about">Acerca De</string>
     <string name="version">Versión:</string>
     <string name="author">Autor:</string>

@@ -121,6 +121,9 @@
     <string name="select_tags">Select 1 or more tags to show only the tasks that have any of those tags. Select no tag to show all the tasks.</string>
     <string name="no_tags">There are no tags.</string>
 
+    <string name="export_data">Export data</string>
+    <string name="import_data">Import data</string>
+
     <string name="about">About</string>
     <string name="version">Version:</string>
     <string name="author">Author:</string>

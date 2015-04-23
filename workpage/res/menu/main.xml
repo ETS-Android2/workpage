@@ -16,6 +16,12 @@
         android:showAsAction="always"
         android:onClick="onViewItemSelected" />
 
+    <item android:title="@string/export_data"
+        android:onClick="onExportDataItemSelected" />
+
+    <item android:title="@string/import_data"
+        android:onClick="onImportDataItemSelected" />
+
     <item android:title="@string/about"
         android:onClick="onAboutItemSelected" />
 </menu>

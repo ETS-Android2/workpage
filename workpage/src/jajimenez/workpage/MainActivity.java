@@ -364,6 +364,16 @@ public class MainActivity extends ListActivity {
         startActivity(intent);
     }
 
+    // TODO
+    public void onExportDataItemSelected(MenuItem item) {
+        if (!interfaceReady) return;
+    }
+
+    // TODO
+    public void onImportDataItemSelected(MenuItem item) {
+        if (!interfaceReady) return;
+    }
+
     public void onAboutItemSelected(MenuItem item) {
         if (!interfaceReady) return;
 
