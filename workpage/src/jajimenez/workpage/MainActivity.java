@@ -157,7 +157,7 @@ public class MainActivity extends ListActivity {
                         long selectedTaskId = (selectedTasks.get(0)).getId();
 
                         Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
-                        intent.putExtra("action", "edit");
+                        intent.putExtra("mode", "edit");
                         intent.putExtra("task_id", selectedTaskId);
 
                         startActivity(intent);
@@ -358,20 +358,26 @@ public class MainActivity extends ListActivity {
         if (!interfaceReady) return;
 
         Intent intent = new Intent(this, EditTaskActivity.class);
-        intent.putExtra("action", "new");
+        intent.putExtra("mode", "new");
         intent.putExtra("task_context_id", currentTaskContext.getId());
 
         startActivity(intent);
     }
 
-    // TODO
     public void onExportDataItemSelected(MenuItem item) {
         if (!interfaceReady) return;
+
+        Intent intent = new Intent(this, FileBrowserActivity.class);
+        intent.putExtra("mode", "export");
+        startActivity(intent);
     }
 
-    // TODO
     public void onImportDataItemSelected(MenuItem item) {
         if (!interfaceReady) return;
+
+        Intent intent = new Intent(this, FileBrowserActivity.class);
+        intent.putExtra("mode", "import");
+        startActivity(intent);
     }
 
     public void onAboutItemSelected(MenuItem item) {

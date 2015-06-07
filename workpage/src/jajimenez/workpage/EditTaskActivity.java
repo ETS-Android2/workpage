@@ -98,12 +98,12 @@ public class EditTaskActivity extends Activity {
 
         applicationLogic = new ApplicationLogic(this);
         Intent intent = getIntent();
-        String action = intent.getStringExtra("action");
+        String mode = intent.getStringExtra("mode");
 
         boolean startDate = false;
         boolean deadlineDate = false;
 
-        if (action != null && action.equals("edit")) {
+        if (mode != null && mode.equals("edit")) {
             setTitle(R.string.edit_task);
 
             // Get task data.
