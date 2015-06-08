@@ -183,7 +183,7 @@ public class TaskActivity extends Activity {
                 long currentTaskId = currentTask.getId();
 
                 Intent intent = new Intent(this, EditTaskActivity.class);
-                intent.putExtra("action", "edit");
+                intent.putExtra("mode", "edit");
                 intent.putExtra("task_id", currentTaskId);
 
                 startActivity(intent);
