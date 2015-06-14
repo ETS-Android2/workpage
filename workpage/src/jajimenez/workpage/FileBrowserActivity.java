@@ -8,6 +8,8 @@ import android.app.ListActivity;
 import android.app.ActionBar;
 import android.os.Bundle;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
@@ -15,7 +17,12 @@ import android.view.Window;
 import android.content.Intent;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.EditText;
+import android.widget.Button;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.graphics.drawable.Drawable;
 import java.io.File;
 
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -23,13 +30,17 @@ import jajimenez.workpage.logic.ApplicationLogic;
 public class FileBrowserActivity extends ListActivity {
     private Menu menu;
     private ListView listView;
-    private TextView emptyTextView;
-    private ActionBar actionBar;
+    private LinearLayout fileLinearLayout;
+    private EditText fileNameEditText;
+    private Button saveButton;
+    private MenuItem goUpMenuItem;
 
     private ApplicationLogic applicationLogic;
+    private File initialFile;
     private File currentFile;
 
     private boolean interfaceReady;
+    private String mode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,20 +50,62 @@ public class FileBrowserActivity extends ListActivity {
         setContentView(R.layout.file_browser);
 
         listView = getListView();
-        emptyTextView = (TextView) findViewById(android.R.id.empty);
-        actionBar = getActionBar();
+        fileLinearLayout = (LinearLayout) findViewById(R.id.fileBrowser_file);
+        fileNameEditText = (EditText) findViewById(R.id.fileBrowser_file_name);
+        saveButton = (Button) findViewById(R.id.fileBrowser_save);
+        goUpMenuItem = null;
+
+        ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
+        mode = intent.getStringExtra("mode");
 
-        if (mode != null && mode.equals("export")) setTitle(R.string.export_data);
-        else if (mode != null && mode.equals("import")) setTitle(R.string.import_data);
+        if (mode != null && mode.equals("export")) {
+            setTitle(R.string.export_data);
+            fileLinearLayout.setVisibility(View.VISIBLE);
+        }
+        else if (mode != null && mode.equals("import")) {
+            setTitle(R.string.import_data);
+        }
 
+        fileNameEditText.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Nothing to do.
+            }
+
+            public void afterTextChanged(Editable s) {
+                String text = (s.toString()).trim();
+                boolean enabled = (text.length() > 0);
+
+                FileBrowserActivity.this.saveButton.setEnabled(enabled);
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Nothing to do.
+            }
+        });
+
+        saveButton.setEnabled(false);
         interfaceReady = false;
 
         applicationLogic = new ApplicationLogic(this);
-        currentFile = new File("/");
+        initialFile = Environment.getExternalStorageDirectory();
+        currentFile = initialFile;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.file_browser, menu);
+
+        goUpMenuItem = menu.findItem(R.id.fileBrowserMenu_goUp);
+        goUpMenuItem.setEnabled(false);
+        
+        Drawable goUpItemIcon = goUpMenuItem.getIcon();
+        goUpItemIcon.setAlpha(127);
+
+        return true;
     }
 
     @Override
@@ -71,6 +124,56 @@ public class FileBrowserActivity extends ListActivity {
 
         FileAdapter adapter = new FileAdapter(this, R.layout.file_list_item, subfiles);
         setListAdapter(adapter);
+
+        if (goUpMenuItem != null) {
+            Drawable goUpItemIcon = goUpMenuItem.getIcon();
+
+            if (currentFile.equals(initialFile)) {
+                goUpMenuItem.setEnabled(false);
+                goUpItemIcon.setAlpha(127);
+            }
+            else {
+                goUpMenuItem.setEnabled(true);
+                goUpItemIcon.setAlpha(255);
+            }
+        }
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        File selectedFile = (File) l.getItemAtPosition(position);
+
+        if (selectedFile.isDirectory()) {
+            currentFile = selectedFile;
+            updateInterface();
+        }
+        else {
+            if (mode != null && mode.equals("export")) {
+                fileNameEditText.setText(selectedFile.getName());
+
+                // ToDo: Export data.
+            }
+            else if (mode != null && mode.equals("import")) {
+                // ToDo: Import data.
+            }
+        }
+    }
+
+    public void onGoUpItemSelected(MenuItem item) {
+        if (!interfaceReady) return;
+
+        if (currentFile != null) {
+            File parent = currentFile.getParentFile();
+
+            if (parent != null) {
+                currentFile = parent;
+                updateInterface();
+            }
+        }
+    }
+
+    public void onSaveButtonClicked(View view) {
+        // ToDo
     }
 
     private class LoadFilesTask extends AsyncTask<Void, Void, List<File>> {
@@ -85,7 +188,12 @@ public class FileBrowserActivity extends ListActivity {
             List<File> subfiles = new LinkedList<File>();
 
             File[] sf = FileBrowserActivity.this.currentFile.listFiles();
-            for (File f : sf) subfiles.add(f);
+
+            if (sf != null) {
+                for (File f : sf) {
+                    if (f.canRead()) subfiles.add(f);
+                }
+            }
 
             return subfiles;
         }

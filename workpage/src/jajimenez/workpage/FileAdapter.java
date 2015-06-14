@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.io.File;
 
@@ -26,9 +27,14 @@ public class FileAdapter extends ArrayAdapter<File> {
         LayoutInflater inflater = activity.getLayoutInflater();
         itemView = inflater.inflate(resource, null);
 
+        ImageView fileIconImageView = (ImageView) itemView.findViewById(R.id.fileListItem_icon); 
         TextView fileNameTextView = (TextView) itemView.findViewById(R.id.fileListItem_name);
 
         File file = getItem(position);
+
+        if (file.isDirectory()) fileIconImageView.setImageResource(R.drawable.folder);
+        else fileIconImageView.setImageResource(R.drawable.file);
+
         String fileName = file.getName();
 
         // Show file name.

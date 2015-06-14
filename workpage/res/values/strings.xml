@@ -122,6 +122,9 @@
     <string name="no_tags">There are no tags.</string>
 
     <string name="export_data">Export data</string>
+    <string name="go_up">Go up</string>
+    <string name="file_name">File name</string>
+
     <string name="import_data">Import data</string>
 
     <string name="about">About</string>
