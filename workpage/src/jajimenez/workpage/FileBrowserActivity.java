@@ -2,6 +2,8 @@ package jajimenez.workpage;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import android.util.SparseBooleanArray;
 import android.app.ListActivity;
@@ -18,6 +20,7 @@ import android.content.Intent;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
 import android.text.Editable;
@@ -33,6 +36,7 @@ public class FileBrowserActivity extends ListActivity {
     private LinearLayout fileLinearLayout;
     private EditText fileNameEditText;
     private Button saveButton;
+    private TextView errorTextView;
     private MenuItem goUpMenuItem;
 
     private ApplicationLogic applicationLogic;
@@ -41,6 +45,7 @@ public class FileBrowserActivity extends ListActivity {
 
     private boolean interfaceReady;
     private String mode;
+    private boolean storageAvailable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,7 @@ public class FileBrowserActivity extends ListActivity {
         fileLinearLayout = (LinearLayout) findViewById(R.id.fileBrowser_file);
         fileNameEditText = (EditText) findViewById(R.id.fileBrowser_file_name);
         saveButton = (Button) findViewById(R.id.fileBrowser_save);
+        errorTextView = (TextView) findViewById(R.id.fileBrowser_error);
         goUpMenuItem = null;
 
         ActionBar actionBar = getActionBar();
@@ -88,6 +94,7 @@ public class FileBrowserActivity extends ListActivity {
 
         saveButton.setEnabled(false);
         interfaceReady = false;
+        storageAvailable = false;
 
         applicationLogic = new ApplicationLogic(this);
         initialFile = Environment.getExternalStorageDirectory();
@@ -105,6 +112,8 @@ public class FileBrowserActivity extends ListActivity {
         Drawable goUpItemIcon = goUpMenuItem.getIcon();
         goUpItemIcon.setAlpha(127);
 
+        goUpMenuItem.setVisible(storageAvailable);
+
         return true;
     }
 
@@ -115,8 +124,31 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     private void updateInterface() {
-        // Show files.
-        (new LoadFilesTask()).execute();
+        String storageState = Environment.getExternalStorageState();
+
+        boolean storageForExportingReady = storageState.equals(Environment.MEDIA_MOUNTED);
+        boolean storageForImportingReady = (storageState.equals(Environment.MEDIA_MOUNTED) || storageState.equals(Environment.MEDIA_MOUNTED_READ_ONLY));
+
+        if (mode != null && ( (mode.equals("export") && storageForExportingReady) || (mode.equals("import") && storageForImportingReady) )) {
+            // Show files.
+            storageAvailable = true;
+
+            listView.setVisibility(View.VISIBLE);
+            if (mode.equals("export")) fileLinearLayout.setVisibility(View.VISIBLE);
+            errorTextView.setVisibility(View.GONE);
+
+            (new LoadFilesTask()).execute();
+        }
+        else {
+            // Show error message.
+            storageAvailable = false;
+
+            listView.setVisibility(View.GONE);
+            if (mode.equals("export")) fileLinearLayout.setVisibility(View.GONE);
+            errorTextView.setVisibility(View.VISIBLE);
+        }
+
+        if (goUpMenuItem != null) goUpMenuItem.setVisible(storageAvailable);
     }
 
     private void updateFileListInterface(List<File> subfiles) {
@@ -187,13 +219,27 @@ public class FileBrowserActivity extends ListActivity {
         protected List<File> doInBackground(Void... parameters) {
             List<File> subfiles = new LinkedList<File>();
 
+            SortedSet<File> subfileFolders = new TreeSet<File>(new FileComparator());
+            SortedSet<File> subfileFiles = new TreeSet<File>(new FileComparator());
+
             File[] sf = FileBrowserActivity.this.currentFile.listFiles();
 
             if (sf != null) {
                 for (File f : sf) {
-                    if (f.canRead()) subfiles.add(f);
+                    if (!f.isHidden()) {
+                        if (f.isDirectory()) {
+                            subfileFolders.add(f);
+                        }
+                        else {
+                            String name = f.getName();
+                            if (name != null && name.endsWith(".workpage")) subfileFiles.add(f);
+                        }
+                    }
                 }
             }
+
+            subfiles.addAll(subfileFolders);
+            subfiles.addAll(subfileFiles);
 
             return subfiles;
         }

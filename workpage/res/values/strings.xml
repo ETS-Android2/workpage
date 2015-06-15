@@ -124,6 +124,7 @@
     <string name="export_data">Export data</string>
     <string name="go_up">Go up</string>
     <string name="file_name">File name</string>
+    <string name="storage_not_available">Storage not available.</string>
 
     <string name="import_data">Import data</string>
 

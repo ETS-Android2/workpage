@@ -28,4 +28,13 @@
             android:text="@string/save"
             android:onClick="onSaveButtonClicked" />
     </LinearLayout>
+
+    <TextView android:id="@+id/fileBrowser_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="40dp"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:text="@string/storage_not_available" />
 </LinearLayout>
