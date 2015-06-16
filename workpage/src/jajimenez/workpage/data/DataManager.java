@@ -3,6 +3,7 @@ package jajimenez.workpage.data;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
+import java.io.File;
 
 import android.content.Context;
 import android.content.ContentValues;
@@ -722,5 +723,9 @@ public class DataManager extends SQLiteOpenHelper {
         finally {
             db.close();
         }
+    }
+
+    public File getDatabaseFile() {
+        return context.getDatabasePath(DB_NAME);
     }
 }

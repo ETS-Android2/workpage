@@ -4,6 +4,12 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -147,5 +153,29 @@ public class ApplicationLogic {
 
     public void deleteTasks(List<Task> tasks) {
         dataManager.deleteTasks(tasks);
+    }
+    
+    public void exportData(File to) throws IOException {
+        if (to != null) {
+            File databaseFile = dataManager.getDatabaseFile();
+            copyFile(databaseFile, to);
+        }
+    }
+
+    public void importData(File from) {
+        // ToDo
+    }
+
+    private void copyFile(File from, File to) throws IOException {
+        InputStream in = new FileInputStream(from);
+        OutputStream out = new FileOutputStream(to);
+
+        byte[] buffer = new byte[1024];
+        int bytesRead = 0;
+
+        while ((bytesRead = in.read(buffer)) > 0) out.write(buffer, 0, bytesRead);
+
+        in.close();
+        out.close();
     }
 }
