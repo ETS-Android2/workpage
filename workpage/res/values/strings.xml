@@ -125,6 +125,9 @@
     <string name="go_up">Go up</string>
     <string name="file_name">File name</string>
     <string name="storage_not_available">Storage not available.</string>
+    <string name="database_file_extension">.workpage</string>
+    <string name="export_success">Data exported successfully.</string>
+    <string name="export_error">Error trying to export the data.</string>
 
     <string name="import_data">Import data</string>
 

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.io.File;
+import java.io.IOException;
 
 import android.util.SparseBooleanArray;
 import android.app.ListActivity;
@@ -23,10 +25,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.Toast;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.graphics.drawable.Drawable;
-import java.io.File;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 
@@ -181,9 +183,11 @@ public class FileBrowserActivity extends ListActivity {
         }
         else {
             if (mode != null && mode.equals("export")) {
-                fileNameEditText.setText(selectedFile.getName());
+                String selectedFileName = selectedFile.getName();
+                int extensionPosition = selectedFileName.lastIndexOf(".workpage");
 
-                // ToDo: Export data.
+                String nameNoExtension = selectedFileName.substring(0, extensionPosition); 
+                fileNameEditText.setText(nameNoExtension);
             }
             else if (mode != null && mode.equals("import")) {
                 // ToDo: Import data.
@@ -205,13 +209,12 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     public void onSaveButtonClicked(View view) {
-        // ToDo
+        (new ExportDataTask()).execute();
     }
 
     private class LoadFilesTask extends AsyncTask<Void, Void, List<File>> {
         protected void onPreExecute() {
             FileBrowserActivity.this.interfaceReady = false;
-
             FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
             FileBrowserActivity.this.listView.setEnabled(false);
         }
@@ -249,8 +252,48 @@ public class FileBrowserActivity extends ListActivity {
 
             FileBrowserActivity.this.listView.setEnabled(true);
             FileBrowserActivity.this.setProgressBarIndeterminateVisibility(false);
-
             FileBrowserActivity.this.interfaceReady = true;
+        }
+    }
+
+    private class ExportDataTask extends AsyncTask<Void, Void, Boolean> {
+        protected void onPreExecute() {
+            FileBrowserActivity.this.interfaceReady = false;
+            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
+            FileBrowserActivity.this.listView.setEnabled(false);
+        }
+
+        protected Boolean doInBackground(Void... parameters) {
+            boolean error = false;            
+            String fileName = ((FileBrowserActivity.this.fileNameEditText.getText()).toString()).trim() + ".workpage";
+
+            try {
+                // "currentFile" is a directory.
+                File to = new File(currentFile, fileName);
+                FileBrowserActivity.this.applicationLogic.exportData(to);
+            }
+            catch (IOException e) {
+                error = true;
+            }
+
+            return error;
+        }
+
+        protected void onPostExecute(Boolean error) {
+            FileBrowserActivity.this.listView.setEnabled(true);
+            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(false);
+            FileBrowserActivity.this.interfaceReady = true;
+
+            if (error) {
+                (Toast.makeText(FileBrowserActivity.this, R.string.export_error, Toast.LENGTH_SHORT)).show();
+                FileBrowserActivity.this.fileNameEditText.setText("");
+            }
+            else {
+                (Toast.makeText(FileBrowserActivity.this, R.string.export_success, Toast.LENGTH_SHORT)).show();
+
+                // Close activity.
+                FileBrowserActivity.this.finish();
+            }
         }
     }
 }

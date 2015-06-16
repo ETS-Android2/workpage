@@ -1,6 +1,7 @@
 package jajimenez.workpage;
 
 import java.util.List;
+import java.io.File;
 
 import android.app.Activity;
 import android.view.View;
@@ -9,7 +10,6 @@ import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.io.File;
 
 public class FileAdapter extends ArrayAdapter<File> {
     private Activity activity;
