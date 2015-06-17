@@ -108,16 +108,22 @@ public class FileBrowserActivity extends ListActivity {
             }
         };
 
+        initialFile = Environment.getExternalStorageDirectory();
+
         this.savedInstanceState = savedInstanceState;
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
+            currentFile = initialFile;
+        }
+        else {
+            String currentFileAbsolutePath = savedInstanceState.getString("current_file");
+            currentFile = new File(currentFileAbsolutePath);
+
             OverwriteFileDialogFragment overwriteFragment = (OverwriteFileDialogFragment) (getFragmentManager()).findFragmentByTag("overwrite_confirmation");
             if (overwriteFragment != null) overwriteFragment.setOnOverwriteConfirmationListener(onOverwriteConfirmationListener);
         }
 
         applicationLogic = new ApplicationLogic(this);
-        initialFile = Environment.getExternalStorageDirectory();
-        currentFile = initialFile;
     }
 
     @Override
@@ -126,12 +132,15 @@ public class FileBrowserActivity extends ListActivity {
         inflater.inflate(R.menu.file_browser, menu);
 
         goUpMenuItem = menu.findItem(R.id.fileBrowserMenu_goUp);
-        goUpMenuItem.setEnabled(false);
-        
-        Drawable goUpItemIcon = goUpMenuItem.getIcon();
-        goUpItemIcon.setAlpha(127);
 
-        goUpMenuItem.setVisible(storageAvailable);
+        if (currentFile.equals(initialFile)) {
+            goUpMenuItem.setEnabled(false);
+            
+            Drawable goUpItemIcon = goUpMenuItem.getIcon();
+            goUpItemIcon.setAlpha(127);
+
+            goUpMenuItem.setVisible(storageAvailable);
+        }
 
         return true;
     }
@@ -140,6 +149,12 @@ public class FileBrowserActivity extends ListActivity {
     public void onResume() {
         super.onResume();
         updateInterface();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("current_file", currentFile.getAbsolutePath());
+        super.onSaveInstanceState(outState);
     }
 
     private void updateInterface() {
