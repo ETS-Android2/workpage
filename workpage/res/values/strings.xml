@@ -128,6 +128,8 @@
     <string name="database_file_extension">.workpage</string>
     <string name="export_success">Data exported successfully.</string>
     <string name="export_error">Error trying to export the data.</string>
+    <string name="file_overwrite_confirmation">File \"%1$s\" already exists. Do you want to overwrite it?</string>
+    <string name="overwrite">Overwrite</string>
 
     <string name="import_data">Import data</string>
 

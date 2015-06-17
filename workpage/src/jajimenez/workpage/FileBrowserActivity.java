@@ -41,9 +41,13 @@ public class FileBrowserActivity extends ListActivity {
     private TextView errorTextView;
     private MenuItem goUpMenuItem;
 
+    private OverwriteFileDialogFragment.OnOverwriteConfirmationListener onOverwriteConfirmationListener;
+
     private ApplicationLogic applicationLogic;
     private File initialFile;
     private File currentFile;
+
+    private Bundle savedInstanceState;
 
     private boolean interfaceReady;
     private String mode;
@@ -97,6 +101,19 @@ public class FileBrowserActivity extends ListActivity {
         saveButton.setEnabled(false);
         interfaceReady = false;
         storageAvailable = false;
+
+        onOverwriteConfirmationListener = new OverwriteFileDialogFragment.OnOverwriteConfirmationListener() {
+            public void onConfirmation() {
+                FileBrowserActivity.this.startDataExport();
+            }
+        };
+
+        this.savedInstanceState = savedInstanceState;
+
+        if (savedInstanceState != null) {
+            OverwriteFileDialogFragment overwriteFragment = (OverwriteFileDialogFragment) (getFragmentManager()).findFragmentByTag("overwrite_confirmation");
+            if (overwriteFragment != null) overwriteFragment.setOnOverwriteConfirmationListener(onOverwriteConfirmationListener);
+        }
 
         applicationLogic = new ApplicationLogic(this);
         initialFile = Environment.getExternalStorageDirectory();
@@ -209,7 +226,28 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     public void onSaveButtonClicked(View view) {
+        File to = getToFile();
+
+        if (to.exists()) {
+            OverwriteFileDialogFragment overwriteFragment = new OverwriteFileDialogFragment(to.getName());
+            overwriteFragment.setOnOverwriteConfirmationListener(onOverwriteConfirmationListener);
+
+            overwriteFragment.show(getFragmentManager(), "overwrite_confirmation");
+        }
+        else {
+            startDataExport();
+        }
+    }
+
+    private void startDataExport() {
         (new ExportDataTask()).execute();
+    }
+
+    private File getToFile() {
+        String fileName = ((FileBrowserActivity.this.fileNameEditText.getText()).toString()).trim() + ".workpage";
+
+        // "currentFile" is a directory.
+        return new File(currentFile, fileName);
     }
 
     private class LoadFilesTask extends AsyncTask<Void, Void, List<File>> {
@@ -265,11 +303,9 @@ public class FileBrowserActivity extends ListActivity {
 
         protected Boolean doInBackground(Void... parameters) {
             boolean error = false;            
-            String fileName = ((FileBrowserActivity.this.fileNameEditText.getText()).toString()).trim() + ".workpage";
+            File to = getToFile();
 
             try {
-                // "currentFile" is a directory.
-                File to = new File(currentFile, fileName);
                 FileBrowserActivity.this.applicationLogic.exportData(to);
             }
             catch (IOException e) {
