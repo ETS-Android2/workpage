@@ -21,6 +21,12 @@ public class DataManager extends SQLiteOpenHelper {
     public static final String DB_NAME = "workpage.db";
     public static final int DB_VERSION = 2;
 
+    // Constants for the "isDatabaseCompatible" function.
+    public static final int COMPATIBLE = 0;
+    public static final int ERROR_OPENING_DB = 1;
+    public static final int ERROR_DB_NOT_COMPATIBLE = 2;
+    public static final int ERROR_DATA_NOT_VALID = 3;
+
     private Context context;
 
     public DataManager(Context context) {
@@ -68,7 +74,7 @@ public class DataManager extends SQLiteOpenHelper {
             "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE" +
             ");";
 
-        String taskTagsRelationshipsTableSql = "CREATE TABLE task_tag_relationships (" +
+        String taskTagRelationshipsTableSql = "CREATE TABLE task_tag_relationships (" +
             "id          INTEGER PRIMARY KEY, " +
             "task_id     INTEGER, " +
             "task_tag_id INTEGER, " +
@@ -83,7 +89,7 @@ public class DataManager extends SQLiteOpenHelper {
         db.execSQL(initialTaskContextWorkSql);
         db.execSQL(taskTagsTableSql);
         db.execSQL(tasksTableSql);
-        db.execSQL(taskTagsRelationshipsTableSql);
+        db.execSQL(taskTagRelationshipsTableSql);
     }
 
     private void createDBVersion2(SQLiteDatabase db) {
@@ -727,5 +733,44 @@ public class DataManager extends SQLiteOpenHelper {
 
     public File getDatabaseFile() {
         return context.getDatabasePath(DB_NAME);
+    }
+
+    public static int isDatabaseCompatible(File dbFile) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+        }
+        catch (Exception e) {
+            return ERROR_OPENING_DB;
+        }
+
+        // Check DB version.
+        if (db.getVersion() > DB_VERSION) return ERROR_DB_NOT_COMPATIBLE;
+
+        // Check that tables are the expected ones.
+        Cursor cursor = null;
+
+        String taskContextsTableSql = "select id, name, list_order from task_contexts limit 1;";
+        String taskTagsTableSql = "select id, task_context_id, name, list_order from task_tags limit 1;";
+        String tasksTableSql = "select id, task_context_id, title, description, start_datetime, deadline_datetime, done from tasks limit 1;";
+        String taskTagRelationshipsTableSql = "select id, task_id, task_tag_id from task_tag_relationships limit 1;";
+
+        try {
+            cursor = db.rawQuery(taskContextsTableSql, null);
+            cursor = db.rawQuery(taskTagsTableSql, null);
+            cursor = db.rawQuery(tasksTableSql, null);
+            cursor = db.rawQuery(taskTagRelationshipsTableSql, null);
+        }
+        catch (Exception e) {
+            return ERROR_DB_NOT_COMPATIBLE;
+        }
+
+        // Check DB integrity.
+        if (!db.isDatabaseIntegrityOk()) return ERROR_DATA_NOT_VALID;
+
+        db.close();
+
+        return COMPATIBLE;
     }
 }

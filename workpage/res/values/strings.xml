@@ -126,12 +126,18 @@
     <string name="file_name">File name</string>
     <string name="storage_not_available">Storage not available.</string>
     <string name="database_file_extension">.workpage</string>
-    <string name="export_success">Data exported successfully.</string>
+    <string name="export_success">Data exported.</string>
     <string name="export_error">Error trying to export the data.</string>
     <string name="file_overwrite_confirmation">File \"%1$s\" already exists. Do you want to overwrite it?</string>
     <string name="overwrite">Overwrite</string>
 
     <string name="import_data">Import data</string>
+    <string name="import_success">Data imported.</string>
+    <string name="import_error_opening_file">Error trying to open the file.</string>
+    <string name="import_error_importing_data">Error trying to import the data.</string>
+    <string name="import_error_file_not_compatible">Error: The file is not compatible.</string>
+    <string name="import_error_data_not_valid">Error: Data is not valid.</string>
+    <string name="data_import_confirmation">The current data will be overwritten. Do you want to continue?</string>
 
     <string name="about">About</string>
     <string name="version">Version:</string>

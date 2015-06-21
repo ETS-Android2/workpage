@@ -28,6 +28,13 @@ public class ApplicationLogic {
     private Context appContext;
     private DataManager dataManager;
 
+    // Constants for the "importData" function.
+    public static final int IMPORT_SUCCESS = 0;
+    public static final int IMPORT_ERROR_OPENING_FILE = 1;
+    public static final int IMPORT_ERROR_FILE_NOT_COMPATIBLE = 2;
+    public static final int IMPORT_ERROR_DATA_NOT_VALID = 3;
+    public static final int IMPORT_ERROR_IMPORTING_DATA = 4;
+
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
         this.dataManager = new DataManager(appContext);
@@ -162,8 +169,37 @@ public class ApplicationLogic {
         }
     }
 
-    public void importData(File from) {
-        // ToDo
+    public int importData(File from) {
+        int importResult;
+
+        int compatible = DataManager.isDatabaseCompatible(from);
+
+        switch (compatible) {
+            case DataManager.COMPATIBLE:
+                try {
+                    File dbFile = dataManager.getDatabaseFile();
+                    copyFile(from, dbFile);
+                    importResult = IMPORT_SUCCESS;
+                }
+                catch (Exception e) {
+                    importResult = IMPORT_ERROR_IMPORTING_DATA;
+                }
+
+                break;
+
+            case DataManager.ERROR_OPENING_DB:
+                importResult = IMPORT_ERROR_OPENING_FILE;
+                break;
+
+            case DataManager.ERROR_DB_NOT_COMPATIBLE:
+                importResult = IMPORT_ERROR_FILE_NOT_COMPATIBLE;
+                break;
+
+            default:
+                importResult = IMPORT_ERROR_DATA_NOT_VALID;
+        }
+
+        return importResult;
     }
 
     private void copyFile(File from, File to) throws IOException {

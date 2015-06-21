@@ -8,16 +8,16 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 
-public class OverwriteFileDialogFragment extends DialogFragment {
+public class OverwriteFileConfirmationDialogFragment extends DialogFragment {
     private String fileName;
     private OnOverwriteConfirmationListener onConfirmationListener;
 
-    public OverwriteFileDialogFragment() {
+    public OverwriteFileConfirmationDialogFragment() {
         fileName = "";
         onConfirmationListener = null;
     }
 
-    public OverwriteFileDialogFragment(String fileName) {
+    public OverwriteFileConfirmationDialogFragment(String fileName) {
         this.fileName = fileName;
         onConfirmationListener = null;
     }
@@ -35,8 +35,8 @@ public class OverwriteFileDialogFragment extends DialogFragment {
         builder.setNegativeButton(R.string.cancel, null);
         builder.setPositiveButton(R.string.overwrite, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                if (OverwriteFileDialogFragment.this.onConfirmationListener != null) {
-                    OverwriteFileDialogFragment.this.onConfirmationListener.onConfirmation();
+                if (OverwriteFileConfirmationDialogFragment.this.onConfirmationListener != null) {
+                    OverwriteFileConfirmationDialogFragment.this.onConfirmationListener.onConfirmation();
                 }
             }
         });

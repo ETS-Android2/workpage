@@ -126,12 +126,18 @@
     <string name="file_name">Nombre del archivo</string>
     <string name="storage_not_available">Almacenamiento no disponible.</string>
     <string name="database_file_extension">.workpage</string>
-    <string name="export_success">Datos exportados con éxito.</string>
+    <string name="export_success">Datos exportados.</string>
     <string name="export_error">Error al intentar exportar los datos.</string>
     <string name="file_overwrite_confirmation">El archivo \"%1$s\" ya existe. ¿Quiere sobrescribirlo?</string>
     <string name="overwrite">Sobrescribir</string>
 
     <string name="import_data">Importar datos</string>
+    <string name="import_success">Datos importados.</string>
+    <string name="import_error_opening_file">Error al intentar abrir el archivo.</string>
+    <string name="import_error_importing_data">Error al intentar importar los datos.</string>
+    <string name="import_error_file_not_compatible">Error: El archivo no es compatible.</string>
+    <string name="import_error_data_not_valid">Error: Los datos no son válidos.</string>
+    <string name="data_import_confirmation">Los datos actuales serán sobrescritos. ¿Quiere continuar?</string>
 
     <string name="about">Acerca De</string>
     <string name="version">Versión:</string>

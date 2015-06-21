@@ -41,7 +41,8 @@ public class FileBrowserActivity extends ListActivity {
     private TextView errorTextView;
     private MenuItem goUpMenuItem;
 
-    private OverwriteFileDialogFragment.OnOverwriteConfirmationListener onOverwriteConfirmationListener;
+    private OverwriteFileConfirmationDialogFragment.OnOverwriteConfirmationListener onOverwriteConfirmationListener;
+    private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
 
     private ApplicationLogic applicationLogic;
     private File initialFile;
@@ -102,9 +103,15 @@ public class FileBrowserActivity extends ListActivity {
         interfaceReady = false;
         storageAvailable = false;
 
-        onOverwriteConfirmationListener = new OverwriteFileDialogFragment.OnOverwriteConfirmationListener() {
+        onOverwriteConfirmationListener = new OverwriteFileConfirmationDialogFragment.OnOverwriteConfirmationListener() {
             public void onConfirmation() {
                 FileBrowserActivity.this.startDataExport();
+            }
+        };
+
+        onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
+            public void onConfirmation(File from) {
+                FileBrowserActivity.this.startDataImport(from);
             }
         };
 
@@ -119,8 +126,11 @@ public class FileBrowserActivity extends ListActivity {
             String currentFileAbsolutePath = savedInstanceState.getString("current_file");
             currentFile = new File(currentFileAbsolutePath);
 
-            OverwriteFileDialogFragment overwriteFragment = (OverwriteFileDialogFragment) (getFragmentManager()).findFragmentByTag("overwrite_confirmation");
+            OverwriteFileConfirmationDialogFragment overwriteFragment = (OverwriteFileConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("overwrite_file_confirmation");
             if (overwriteFragment != null) overwriteFragment.setOnOverwriteConfirmationListener(onOverwriteConfirmationListener);
+
+            DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
+            if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
         }
 
         applicationLogic = new ApplicationLogic(this);
@@ -222,7 +232,10 @@ public class FileBrowserActivity extends ListActivity {
                 fileNameEditText.setText(nameNoExtension);
             }
             else if (mode != null && mode.equals("import")) {
-                // ToDo: Import data.
+                DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment(selectedFile);
+                importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
+
+                importFragment.show(getFragmentManager(), "data_import_confirmation");
             }
         }
     }
@@ -244,10 +257,10 @@ public class FileBrowserActivity extends ListActivity {
         File to = getToFile();
 
         if (to.exists()) {
-            OverwriteFileDialogFragment overwriteFragment = new OverwriteFileDialogFragment(to.getName());
+            OverwriteFileConfirmationDialogFragment overwriteFragment = new OverwriteFileConfirmationDialogFragment(to.getName());
             overwriteFragment.setOnOverwriteConfirmationListener(onOverwriteConfirmationListener);
 
-            overwriteFragment.show(getFragmentManager(), "overwrite_confirmation");
+            overwriteFragment.show(getFragmentManager(), "overwrite_file_confirmation");
         }
         else {
             startDataExport();
@@ -256,6 +269,10 @@ public class FileBrowserActivity extends ListActivity {
 
     private void startDataExport() {
         (new ExportDataTask()).execute();
+    }
+
+    private void startDataImport(File from) {
+        (new ImportDataTask()).execute(from);
     }
 
     private File getToFile() {
@@ -344,6 +361,60 @@ public class FileBrowserActivity extends ListActivity {
 
                 // Close activity.
                 FileBrowserActivity.this.finish();
+            }
+        }
+    }
+
+    private class ImportDataTask extends AsyncTask<File, Void, Integer> {
+        protected void onPreExecute() {
+            FileBrowserActivity.this.interfaceReady = false;
+            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
+            FileBrowserActivity.this.listView.setEnabled(false);
+        }
+
+        protected Integer doInBackground(File... fromFiles) {
+            int result = -1;
+            File from = fromFiles[0];
+
+            try {
+                result = FileBrowserActivity.this.applicationLogic.importData(from);
+            }
+            catch (Exception e) {
+                // Nothing to do.
+            }
+
+            return result;
+        }
+
+        protected void onPostExecute(Integer result) {
+            FileBrowserActivity.this.listView.setEnabled(true);
+            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(false);
+            FileBrowserActivity.this.interfaceReady = true;
+
+            switch (result) {
+                case ApplicationLogic.IMPORT_SUCCESS:
+                    (Toast.makeText(FileBrowserActivity.this, R.string.import_success, Toast.LENGTH_SHORT)).show();
+
+                    // Close activity.
+                    FileBrowserActivity.this.finish();
+
+                    break;
+                case ApplicationLogic.IMPORT_ERROR_OPENING_FILE:
+                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_opening_file, Toast.LENGTH_SHORT)).show();
+                    break;
+
+                case ApplicationLogic.IMPORT_ERROR_FILE_NOT_COMPATIBLE:
+                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_file_not_compatible, Toast.LENGTH_SHORT)).show();
+                    break;
+
+                case ApplicationLogic.IMPORT_ERROR_DATA_NOT_VALID:
+                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_data_not_valid, Toast.LENGTH_SHORT)).show();
+                    break;
+
+                default:
+                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_importing_data, Toast.LENGTH_SHORT)).show();
+                    break;
+                    
             }
         }
     }
