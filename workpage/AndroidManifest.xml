@@ -19,6 +19,12 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.Holo.Light">
 
+        <service android:name="ExportDataService"
+            android:exported="false" />
+
+        <service android:name="ImportDataService"
+            android:exported="false" />
+
         <activity android:name="MainActivity"
             android:label="@string/app_name">
 

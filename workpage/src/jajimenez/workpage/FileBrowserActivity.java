@@ -268,11 +268,17 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     private void startDataExport() {
-        (new ExportDataTask()).execute();
+        Intent intent = new Intent(this, ExportDataService.class);
+        intent.putExtra("file_path", (getToFile()).getAbsolutePath());
+
+        startService(intent);
     }
 
     private void startDataImport(File from) {
-        (new ImportDataTask()).execute(from);
+        Intent intent = new Intent(this, ImportDataService.class);
+        intent.putExtra("file_path", from.getAbsolutePath());
+
+        startService(intent);
     }
 
     private File getToFile() {
@@ -326,7 +332,7 @@ public class FileBrowserActivity extends ListActivity {
         }
     }
 
-    private class ExportDataTask extends AsyncTask<Void, Void, Boolean> {
+    /*private class ExportDataTask extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
             FileBrowserActivity.this.interfaceReady = false;
             FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
@@ -363,9 +369,9 @@ public class FileBrowserActivity extends ListActivity {
                 FileBrowserActivity.this.finish();
             }
         }
-    }
+    }*/
 
-    private class ImportDataTask extends AsyncTask<File, Void, Integer> {
+    /*private class ImportDataTask extends AsyncTask<File, Void, Integer> {
         protected void onPreExecute() {
             FileBrowserActivity.this.interfaceReady = false;
             FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
@@ -417,5 +423,5 @@ public class FileBrowserActivity extends ListActivity {
                     
             }
         }
-    }
+    }*/
 }
