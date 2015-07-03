@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.Window;
 import android.view.ActionMode;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.TextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -26,7 +27,7 @@ import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ListActivity implements DataChangeReceiverActivity {
     private Menu menu;
     private TextView viewTextView;
     private TextView filterTagsTitleTextView;
@@ -38,6 +39,7 @@ public class MainActivity extends ListActivity {
 
     private Bundle savedInstanceState;
     private boolean interfaceReady;
+    private boolean inFront;
 
     private SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener switchTaskContextListener;
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
@@ -47,6 +49,7 @@ public class MainActivity extends ListActivity {
     private TaskContext currentTaskContext;
     private String currentView;
     private List<TaskTag> currentFilterTags;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class MainActivity extends ListActivity {
 
         createContextualActionBar();
         interfaceReady = false;
+        inFront = false;
 
         switchTaskContextListener = new SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener() {
             public void onNewCurrentTaskContextSet(TaskContext newCurrentTaskContext, String newCurrentView, List<TaskTag> newCurrentFilterTags) {
@@ -110,6 +114,14 @@ public class MainActivity extends ListActivity {
             DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
             if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
         }
+
+        DataExportBroadcastReceiver exportReceiver = new DataExportBroadcastReceiver(this);
+        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
+        registerReceiver(exportReceiver, exportFilter);
+
+        DataImportBroadcastReceiver importReceiver = new DataImportBroadcastReceiver(this);
+        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
+        registerReceiver(importReceiver, importFilter);
 
         applicationLogic = new ApplicationLogic(this);
         currentView = "";
@@ -212,7 +224,37 @@ public class MainActivity extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        updateInterface();
+
+        if (ImportDataService.getStatus() == ImportDataService.STATUS_NOT_RUNNING && ExportDataService.getStatus() == ExportDataService.STATUS_NOT_RUNNING) {
+            updateInterface();
+        }
+        else {
+            disableInterface();
+        }
+
+        inFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        inFront = false;
+    }
+
+    public boolean isInFront() {
+        return inFront;
+    }
+
+    public void enableInterface() {
+        listView.setEnabled(true);
+        setProgressBarIndeterminateVisibility(false);
+        interfaceReady = true;
+    }
+
+    public void disableInterface() {
+        interfaceReady = false;
+        setProgressBarIndeterminateVisibility(true);
+        listView.setEnabled(false);
     }
 
     @Override
@@ -229,7 +271,7 @@ public class MainActivity extends ListActivity {
         super.onSaveInstanceState(outState);
     }
 
-    private void updateInterface() {
+    public void updateInterface() {
         currentTaskContext = applicationLogic.getCurrentTaskContext();
 
         // Information about the current task context.
@@ -389,10 +431,7 @@ public class MainActivity extends ListActivity {
 
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
         protected void onPreExecute() {
-            MainActivity.this.interfaceReady = false;
-
-            MainActivity.this.setProgressBarIndeterminateVisibility(true);
-            MainActivity.this.listView.setEnabled(false);
+            MainActivity.this.disableInterface();
         }
 
         protected List<Task> doInBackground(Void... parameters) {
@@ -407,11 +446,7 @@ public class MainActivity extends ListActivity {
 
         protected void onPostExecute(List<Task> tasks) {
             MainActivity.this.updateTaskListInterface(tasks);
-
-            MainActivity.this.listView.setEnabled(true);
-            MainActivity.this.setProgressBarIndeterminateVisibility(false);
-
-            MainActivity.this.interfaceReady = true;
+            MainActivity.this.enableInterface();;
         }
     }
 }

@@ -19,20 +19,20 @@ import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.Window;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
-import android.widget.Toast;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 
-public class FileBrowserActivity extends ListActivity {
+public class FileBrowserActivity extends ListActivity implements DataChangeReceiverActivity {
     private Menu menu;
     private ListView listView;
     private LinearLayout fileLinearLayout;
@@ -133,6 +133,14 @@ public class FileBrowserActivity extends ListActivity {
             if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
         }
 
+        DataExportBroadcastReceiver exportReceiver = new DataExportBroadcastReceiver(this);
+        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
+        registerReceiver(exportReceiver, exportFilter);
+
+        DataImportBroadcastReceiver importReceiver = new DataImportBroadcastReceiver(this);
+        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
+        registerReceiver(importReceiver, importFilter);
+
         applicationLogic = new ApplicationLogic(this);
     }
 
@@ -158,7 +166,25 @@ public class FileBrowserActivity extends ListActivity {
     @Override
     public void onResume() {
         super.onResume();
-        updateInterface();
+
+        if (ImportDataService.getStatus() == ImportDataService.STATUS_NOT_RUNNING && ExportDataService.getStatus() == ExportDataService.STATUS_NOT_RUNNING) {
+            updateInterface();
+        }
+        else {
+            disableInterface();
+        }
+    }
+
+    public void enableInterface() {
+        listView.setEnabled(true);
+        setProgressBarIndeterminateVisibility(false);
+        interfaceReady = true;
+    }
+
+    public void disableInterface() {
+        interfaceReady = false;
+        setProgressBarIndeterminateVisibility(true);
+        listView.setEnabled(false);
     }
 
     @Override
@@ -167,7 +193,11 @@ public class FileBrowserActivity extends ListActivity {
         super.onSaveInstanceState(outState);
     }
 
-    private void updateInterface() {
+    public EditText getFileNameEditText() {
+        return fileNameEditText;
+    }
+
+    public void updateInterface() {
         String storageState = Environment.getExternalStorageState();
 
         boolean storageForExportingReady = storageState.equals(Environment.MEDIA_MOUNTED);
@@ -275,6 +305,8 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     private void startDataImport(File from) {
+        disableInterface();
+
         Intent intent = new Intent(this, ImportDataService.class);
         intent.putExtra("file_path", from.getAbsolutePath());
 
@@ -290,9 +322,7 @@ public class FileBrowserActivity extends ListActivity {
 
     private class LoadFilesTask extends AsyncTask<Void, Void, List<File>> {
         protected void onPreExecute() {
-            FileBrowserActivity.this.interfaceReady = false;
-            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
-            FileBrowserActivity.this.listView.setEnabled(false);
+            FileBrowserActivity.this.disableInterface();
         }
 
         protected List<File> doInBackground(Void... parameters) {
@@ -325,103 +355,7 @@ public class FileBrowserActivity extends ListActivity {
 
         protected void onPostExecute(List<File> subfiles) {
             FileBrowserActivity.this.updateFileListInterface(subfiles);
-
-            FileBrowserActivity.this.listView.setEnabled(true);
-            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(false);
-            FileBrowserActivity.this.interfaceReady = true;
+            FileBrowserActivity.this.enableInterface();
         }
     }
-
-    /*private class ExportDataTask extends AsyncTask<Void, Void, Boolean> {
-        protected void onPreExecute() {
-            FileBrowserActivity.this.interfaceReady = false;
-            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
-            FileBrowserActivity.this.listView.setEnabled(false);
-        }
-
-        protected Boolean doInBackground(Void... parameters) {
-            boolean error = false;            
-            File to = getToFile();
-
-            try {
-                FileBrowserActivity.this.applicationLogic.exportData(to);
-            }
-            catch (IOException e) {
-                error = true;
-            }
-
-            return error;
-        }
-
-        protected void onPostExecute(Boolean error) {
-            FileBrowserActivity.this.listView.setEnabled(true);
-            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(false);
-            FileBrowserActivity.this.interfaceReady = true;
-
-            if (error) {
-                (Toast.makeText(FileBrowserActivity.this, R.string.export_error, Toast.LENGTH_SHORT)).show();
-                FileBrowserActivity.this.fileNameEditText.setText("");
-            }
-            else {
-                (Toast.makeText(FileBrowserActivity.this, R.string.export_success, Toast.LENGTH_SHORT)).show();
-
-                // Close activity.
-                FileBrowserActivity.this.finish();
-            }
-        }
-    }*/
-
-    /*private class ImportDataTask extends AsyncTask<File, Void, Integer> {
-        protected void onPreExecute() {
-            FileBrowserActivity.this.interfaceReady = false;
-            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(true);
-            FileBrowserActivity.this.listView.setEnabled(false);
-        }
-
-        protected Integer doInBackground(File... fromFiles) {
-            int result = -1;
-            File from = fromFiles[0];
-
-            try {
-                result = FileBrowserActivity.this.applicationLogic.importData(from);
-            }
-            catch (Exception e) {
-                // Nothing to do.
-            }
-
-            return result;
-        }
-
-        protected void onPostExecute(Integer result) {
-            FileBrowserActivity.this.listView.setEnabled(true);
-            FileBrowserActivity.this.setProgressBarIndeterminateVisibility(false);
-            FileBrowserActivity.this.interfaceReady = true;
-
-            switch (result) {
-                case ApplicationLogic.IMPORT_SUCCESS:
-                    (Toast.makeText(FileBrowserActivity.this, R.string.import_success, Toast.LENGTH_SHORT)).show();
-
-                    // Close activity.
-                    FileBrowserActivity.this.finish();
-
-                    break;
-                case ApplicationLogic.IMPORT_ERROR_OPENING_FILE:
-                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_opening_file, Toast.LENGTH_SHORT)).show();
-                    break;
-
-                case ApplicationLogic.IMPORT_ERROR_FILE_NOT_COMPATIBLE:
-                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_file_not_compatible, Toast.LENGTH_SHORT)).show();
-                    break;
-
-                case ApplicationLogic.IMPORT_ERROR_DATA_NOT_VALID:
-                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_data_not_valid, Toast.LENGTH_SHORT)).show();
-                    break;
-
-                default:
-                    (Toast.makeText(FileBrowserActivity.this, R.string.import_error_importing_data, Toast.LENGTH_SHORT)).show();
-                    break;
-                    
-            }
-        }
-    }*/
 }

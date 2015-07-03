@@ -162,11 +162,22 @@ public class ApplicationLogic {
         dataManager.deleteTasks(tasks);
     }
     
-    public void exportData(File to) throws IOException {
+    // Returns "false" if the operation was successful
+    // or "true" if there was any error.
+    public boolean exportData(File to) {
+        boolean error = false;
+
         if (to != null) {
-            File databaseFile = dataManager.getDatabaseFile();
-            copyFile(databaseFile, to);
+            try {
+                File databaseFile = dataManager.getDatabaseFile();
+                copyFile(databaseFile, to);
+            }
+            catch (Exception e) {
+                error = true;
+            }
         }
+
+        return error;
     }
 
     public int importData(File from) {
