@@ -78,8 +78,8 @@ public class EditTaskTagsActivity extends ListActivity {
         this.savedInstanceState = savedInstanceState;
 
         if (savedInstanceState != null) {
-            EditTaskTagDialogFragment editTaskTagFragment = (EditTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("edit_task_tag");
-            if (editTaskTagFragment != null) editTaskTagFragment.setOnTaskTagSavedListener(saveTaskTagListener);
+            EditTaskTagDialogFragment editFragment = (EditTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("edit_task_tag");
+            if (editFragment != null) editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
 
             DeleteTaskTagDialogFragment deleteFragment = (DeleteTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task_tag");
             if (deleteFragment != null) deleteFragment.setOnDeleteListener(deleteTaskTagListener);
