@@ -5,63 +5,106 @@
 
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:orientation="vertical">
 
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="30dp"
-            android:paddingBottom="5dp"
-            android:gravity="center_horizontal"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:text="@string/app_name" />
-
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:text="@string/app_description" />
-
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="@string/version" />
-
-        <TextView android:layout_width="match_parent"
+        <RelativeLayout android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:text="@string/app_version" />
+            android:layout_gravity="center_horizontal">
 
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="@string/author" />
+            <ImageView android:id="@+id/about_logo"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_launcher" />
 
-        <TextView android:layout_width="match_parent"
+            <TextView android:id="@+id/about_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/about_logo"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:text="@string/app_name" />
+
+            <TextView android:id="@+id/about_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_title"
+                android:layout_toRightOf="@id/about_logo"
+                android:textSize="18sp"
+                android:text="@string/app_description" />
+        </RelativeLayout>
+
+        <TableLayout android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:text="@string/app_author" />
+            android:layout_gravity="center_horizontal">
 
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="@string/license" />
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="@string/version" />
 
-        <TextView android:layout_width="match_parent"
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="@string/app_version" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="@string/author" />
+
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="@string/app_author" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10dp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="@string/license" />
+
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="@string/app_license" />
+            </TableRow>
+        </TableLayout>
+
+        <TableLayout android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textSize="18sp"
-            android:text="@string/app_license" />
+            android:layout_gravity="center_horizontal">
+
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:text="@string/web_site" />
+            </TableRow>
+
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:text="@string/app_web_site" />
+            </TableRow>
+        </TableLayout>
     </LinearLayout>
 </ScrollView>

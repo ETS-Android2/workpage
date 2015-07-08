@@ -5,6 +5,7 @@
     <string name="app_version">0.4.0</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
+    <string name="app_web_site">https://github.com/jajimenez/workpage</string>
 
     <string name="initial_task_context_personal">Personal</string>
     <string name="initial_task_context_work">Work</string>
@@ -143,4 +144,5 @@
     <string name="version">Version:</string>
     <string name="author">Author:</string>
     <string name="license">License:</string>
+    <string name="web_site">Web site:</string>
 </resources>
