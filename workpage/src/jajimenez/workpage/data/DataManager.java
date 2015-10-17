@@ -210,7 +210,7 @@ public class DataManager extends SQLiteOpenHelper {
             db = getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT id, name, list_order, color FROM task_tags " +
                 "WHERE task_context_id = ? " +
-                "ORDER BY list_order;", new String[] { String.valueOf(contextId) });
+                "ORDER BY name;", new String[] { String.valueOf(contextId) });
 
             if (cursor.moveToFirst()) {
                 do {
@@ -256,7 +256,7 @@ public class DataManager extends SQLiteOpenHelper {
                 }
 
                 query += ") " +
-                    "ORDER BY list_order;";
+                    "ORDER BY name;";
 
                 Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
 
@@ -287,7 +287,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery("SELECT t.id, t.task_context_id, t.name, t.list_order, t.color FROM task_tags AS t, task_tag_relationships AS r " +
             "WHERE t.id = r.task_tag_id AND r.task_id = ? " +
-            "ORDER BY t.list_order;", new String[] { String.valueOf(taskId) });
+            "ORDER BY t.name;", new String[] { String.valueOf(taskId) });
 
         if (cursor.moveToFirst()) {
             do {
@@ -311,8 +311,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery("SELECT id, list_order, color FROM task_tags " +
             "WHERE task_context_id = ?" +
-            "AND name = ? " +
-            "ORDER BY list_order;", new String[] { String.valueOf(taskContextId), name });
+            "AND name = ?;", new String[] { String.valueOf(taskContextId), name });
 
         if (cursor.moveToFirst()) {
             long id = cursor.getLong(0);
