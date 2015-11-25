@@ -175,13 +175,18 @@ public class DataManager extends SQLiteOpenHelper {
 
                 if (start != null && deadline != null && start.equals(deadline)) {
                     tasksValues.put("when_datetime", (tool.getCalendar(start)).getTimeInMillis());
+                    tasksValues.put("ignore_when_time", 1);
                 }
                 else {
-                    if (start != null) tasksValues.put("start_datetime", (tool.getCalendar(start)).getTimeInMillis());
-                    else tasksValues.putNull("start_datetime");
+                    if (start != null) {
+                        tasksValues.put("start_datetime", (tool.getCalendar(start)).getTimeInMillis());
+                        tasksValues.put("ignore_start_time", 1);
+                    }
 
-                    if (deadline != null) tasksValues.put("deadline_datetime", (tool.getCalendar(deadline)).getTimeInMillis());
-                    else tasksValues.putNull("deadline_datetime");
+                    if (deadline != null) {
+                        tasksValues.put("deadline_datetime", (tool.getCalendar(deadline)).getTimeInMillis());
+                        tasksValues.put("ignore_deadline_time", 1);
+                    }
                 }
 
                 tasksValues.put("done", tasksCursor.getLong(6));
