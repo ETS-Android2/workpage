@@ -25,11 +25,17 @@ import jajimenez.workpage.data.model.TaskTag;
 public class TaskActivity extends Activity {
     private TextView titleTextView;
     private TextView tagsTextView;
+    private TextView whenValueTextView;
     private TableLayout datesTableLayout;
-    private TableRow startTableRow;
-    private TextView startTextView;
-    private TableRow deadlineTableRow;
-    private TextView deadlineTextView;
+
+    private TableRow date1TableRow;
+    private TextView date1TitleTextView;
+    private TextView date1ValueTextView;
+
+    private TableRow date2TableRow;
+    private TextView date2TitleTextView;
+    private TextView date2ValueTextView;
+
     private TextView descriptionTextView;
 
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
@@ -46,11 +52,17 @@ public class TaskActivity extends Activity {
         
         titleTextView = (TextView) findViewById(R.id.task_title);
         tagsTextView = (TextView) findViewById(R.id.task_tags);
+        whenValueTextView = (TextView) findViewById(R.id.task_when_value);
         datesTableLayout = (TableLayout) findViewById(R.id.task_dates);
-        startTableRow = (TableRow) findViewById(R.id.task_start_row);
-        startTextView = (TextView) findViewById(R.id.task_start);
-        deadlineTableRow = (TableRow) findViewById(R.id.task_deadline_row);
-        deadlineTextView = (TextView) findViewById(R.id.task_deadline);
+
+        date1TableRow = (TableRow) findViewById(R.id.task_date1_row);
+        date1TitleTextView = (TextView) findViewById(R.id.task_date1_title);
+        date1ValueTextView = (TextView) findViewById(R.id.task_date1_value);
+
+        date2TableRow = (TableRow) findViewById(R.id.task_date2_row);
+        date2TitleTextView = (TextView) findViewById(R.id.task_date2_title);
+        date2ValueTextView = (TextView) findViewById(R.id.task_date2_value);
+
         descriptionTextView = (TextView) findViewById(R.id.task_description);
 
         taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
@@ -134,29 +146,50 @@ public class TaskActivity extends Activity {
 
         // Dates texts.
         DateTimeTool tool = new DateTimeTool();
+
+        Calendar when = currentTask.getWhen();
         Calendar start = currentTask.getStart();
         Calendar deadline = currentTask.getDeadline();
 
-        if (start == null && deadline == null) {
+        // When is defined.
+        if (when != null) {
+            whenValueTextView.setVisibility(View.VISIBLE);
             datesTableLayout.setVisibility(View.GONE);
-        } else {
+
+            whenValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.WHEN));
+        }
+        // Any of Start and Deadline is defined.
+        else if (start != null || deadline != null) {
+            whenValueTextView.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.VISIBLE);
 
-            if (start == null) {
-                startTableRow.setVisibility(View.GONE);
-                startTextView.setText("");
-            } else {
-                startTextView.setText(tool.getInterfaceFormattedDate(currentTask.getStart()));
-                startTableRow.setVisibility(View.VISIBLE);
-            }
+            // Both are defined.
+            if (start != null && deadline != null) {
+                date2TableRow.setVisibility(View.VISIBLE);
 
-            if (deadline == null) {
-                deadlineTableRow.setVisibility(View.GONE);
-                deadlineTextView.setText("");
-            } else {
-                deadlineTextView.setText(tool.getInterfaceFormattedDate(currentTask.getDeadline()));
-                deadlineTableRow.setVisibility(View.VISIBLE);
+                date1TitleTextView.setText(getString(R.string.start));
+                date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.START));
+
+                date2TitleTextView.setText(getString(R.string.deadline));
+                date2ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.DEADLINE));
             }
+            // Only one is defined.
+            else {
+                date2TableRow.setVisibility(View.GONE);
+
+                if (start != null) {
+                    date1TitleTextView.setText(getString(R.string.start));
+                    date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.START));
+                }
+                else { // deadline != null
+                    date1TitleTextView.setText(getString(R.string.deadline));
+                    date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.DEADLINE));
+                }
+            }
+        }
+        else { // No date is defined.
+            whenValueTextView.setVisibility(View.GONE);
+            datesTableLayout.setVisibility(View.GONE);
         }
     }
 

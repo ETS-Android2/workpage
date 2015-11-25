@@ -50,6 +50,11 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
     private String currentView;
     private List<TaskTag> currentFilterTags;
 
+    private DataExportBroadcastReceiver exportReceiver = null;
+    private IntentFilter exportFilter = null;
+
+    private DataImportBroadcastReceiver importReceiver = null;
+    private IntentFilter importFilter = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,14 +119,6 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
             DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
             if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
         }
-
-        DataExportBroadcastReceiver exportReceiver = new DataExportBroadcastReceiver(this);
-        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
-        registerReceiver(exportReceiver, exportFilter);
-
-        DataImportBroadcastReceiver importReceiver = new DataImportBroadcastReceiver(this);
-        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
-        registerReceiver(importReceiver, importFilter);
 
         applicationLogic = new ApplicationLogic(this);
         currentView = "";
@@ -233,12 +230,24 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         }
 
         inFront = true;
+
+        exportReceiver = new DataExportBroadcastReceiver(this);
+        exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
+        registerReceiver(exportReceiver, exportFilter);
+
+        importReceiver = new DataImportBroadcastReceiver(this);
+        importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
+        registerReceiver(importReceiver, importFilter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         inFront = false;
+
+        unregisterReceiver(exportReceiver);
+        unregisterReceiver(importReceiver);
     }
 
     public boolean isInFront() {

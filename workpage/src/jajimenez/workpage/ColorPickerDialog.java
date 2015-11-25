@@ -25,9 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class ColorPickerDialog extends AlertDialog implements
-        ColorPickerView.OnColorChangedListener {
-
+public class ColorPickerDialog extends AlertDialog implements ColorPickerView.OnColorChangedListener {
     private ColorPickerView mColorPicker;
 
     private ColorPanelView mOldColor;

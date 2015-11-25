@@ -11,7 +11,7 @@ import android.widget.DatePicker;
 public class DatePickerDialogFragment extends DialogFragment {
     private DatePickerDialog dialog;
     private Calendar calendar;
-    private DatePickerDialog.OnDateSetListener onDateSetListener;
+    private OnDateSetListener onDateSetListener;
 
     public DatePickerDialogFragment() {
         dialog = null;
@@ -19,10 +19,10 @@ public class DatePickerDialogFragment extends DialogFragment {
         onDateSetListener = null;
     }
 
-    public DatePickerDialogFragment(Calendar calendar, DatePickerDialog.OnDateSetListener onDateSetListener) {
-        dialog = null;
+    public DatePickerDialogFragment(Calendar calendar) {
+        this.dialog = null;
         this.calendar = calendar;
-        this.onDateSetListener = onDateSetListener;
+        this.onDateSetListener = null;
     }
 
     @Override
@@ -41,7 +41,19 @@ public class DatePickerDialogFragment extends DialogFragment {
             day = savedInstanceState.getInt("day");
         }
 
-        dialog = new DatePickerDialog(getActivity(), onDateSetListener, year, month, day);
+        dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                // There is a bug in DatePickerDialog and TimePickerDialog
+                // that makes always onDateSet/onTimeSet methods be
+                // called twice (when the "Done" button is clicked and
+                // when the dialog is dismissed). A workaround is to
+                // check if the view is visible.
+                if (view.isShown() && DatePickerDialogFragment.this.onDateSetListener != null) {
+                    DatePickerDialogFragment.this.onDateSetListener.onDateSet(year, month, day);
+                }
+            }
+
+        }, year, month, day);
 
         return dialog;
     }
@@ -55,5 +67,13 @@ public class DatePickerDialogFragment extends DialogFragment {
         outState.putInt("year", picker.getYear());
         outState.putInt("month", picker.getYear());
         outState.putInt("day", picker.getDayOfMonth());
+    }
+
+    public void setOnDateSetListener(OnDateSetListener listener) {
+        onDateSetListener = listener;
+    }
+
+    public static interface OnDateSetListener {
+        void onDateSet(int year, int month, int day);
     }
 }

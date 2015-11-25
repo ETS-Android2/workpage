@@ -42,15 +42,15 @@ public class EditTaskTagDialogFragment extends DialogFragment {
     private List<TaskTag> contextTags;
 
     public EditTaskTagDialogFragment() {
-        onTaskTagSavedListener = null;
         tag = null;
         contextTags = new LinkedList<TaskTag>();
+        onTaskTagSavedListener = null;
     }
 
     public EditTaskTagDialogFragment(TaskTag tag, List<TaskTag> contextTags) {
-        onTaskTagSavedListener = null;
         this.tag = tag;
         this.contextTags = contextTags;
+        this.onTaskTagSavedListener = null;
     }
 
     @Override
@@ -66,7 +66,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         } else {
             long tagId = savedInstanceState.getLong("tag_id");
             long tagContextId = savedInstanceState.getLong("tag_context_id");
-            long tagOrder = savedInstanceState.getLong("tag_order");
 
             long[] contextTagIds = savedInstanceState.getLongArray("context_task_tag_ids");
             String[] contextTagNames = savedInstanceState.getStringArray("context_task_tag_names");
@@ -74,7 +73,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             tag = new TaskTag();
             tag.setId(tagId);
             tag.setContextId(tagContextId);
-            tag.setOrder(tagOrder);
             
             int contextTagCount = 0;
             if (contextTagIds != null) contextTagCount = contextTagIds.length;
@@ -224,7 +222,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
         outState.putLong("tag_id", tag.getId());
         outState.putLong("tag_context_id", tag.getContextId());
-        outState.putLong("tag_order", tag.getOrder());
 
         outState.putLongArray("context_task_tag_ids", contextTagIds);
         outState.putStringArray("context_task_tag_names", contextTagNames);

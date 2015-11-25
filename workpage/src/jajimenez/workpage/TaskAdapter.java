@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.graphics.Color;
 
 import jajimenez.workpage.logic.DateTimeTool;
@@ -18,49 +20,84 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class TaskAdapter extends ArrayAdapter<Task> {
+    private LinearLayout colorsLinearLayout;
+    private TextView titleTextView;
+    private TextView tagsTextView;
+    private TextView whenValueTextView;
+    private TableLayout datesTableLayout;
+
+    private TableRow date1TableRow;
+    private TextView date1TitleTextView;
+    private TextView date1ValueTextView;
+
+    private TableRow date2TableRow;
+    private TextView date2TitleTextView;
+    private TextView date2ValueTextView;
+
+    private TextView space1TextView;
+    private TextView space2TextView;
+    private TextView space3TextView;
+
     private Activity activity;
     private int resource;
+
+    private Task task;
 
     public TaskAdapter(Activity activity, int resource, List<Task> items) {
         super(activity, resource, items);
 
         this.activity = activity;
         this.resource = resource;
+        this.task = null;
     }
 
     @Override
     public View getView(int position, View itemView, ViewGroup parentViewGroup) {
-        LinearLayout colorsLinearLayout;
-        TextView titleTextView = null;
-        TextView details1TextView = null;
-        TextView details2TextView = null;
-
         LayoutInflater inflater = activity.getLayoutInflater();
         itemView = inflater.inflate(resource, null);
 
         colorsLinearLayout = (LinearLayout) itemView.findViewById(R.id.taskListItem_colors);
         titleTextView = (TextView) itemView.findViewById(R.id.taskListItem_title);
-        details1TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_1);
-        details2TextView = (TextView) itemView.findViewById(R.id.taskListItem_details_2);
+        tagsTextView = (TextView) itemView.findViewById(R.id.taskListItem_tags);
+        whenValueTextView = (TextView) itemView.findViewById(R.id.taskListItem_when_value);
+        datesTableLayout = (TableLayout) itemView.findViewById(R.id.taskListItem_dates);
 
-        Task task = getItem(position);
+        date1TableRow = (TableRow) itemView.findViewById(R.id.taskListItem_date1_row);
+        date1TitleTextView = (TextView) itemView.findViewById(R.id.taskListItem_date1_title);
+        date1ValueTextView = (TextView) itemView.findViewById(R.id.taskListItem_date1_value);
 
-        String title = task.getTitle();
-        Calendar start = task.getStart();
-        Calendar deadline = task.getDeadline();
-        List<TaskTag> tags = task.getTags();
+        date2TableRow = (TableRow) itemView.findViewById(R.id.taskListItem_date2_row);
+        date2TitleTextView = (TextView) itemView.findViewById(R.id.taskListItem_date2_title);
+        date2ValueTextView = (TextView) itemView.findViewById(R.id.taskListItem_date2_value);
+
+        space1TextView = (TextView) itemView.findViewById(R.id.taskListItem_space1);
+        space2TextView = (TextView) itemView.findViewById(R.id.taskListItem_space2);
+        space3TextView = (TextView) itemView.findViewById(R.id.taskListItem_space3);
+
+        task = getItem(position);
 
         // Show title.
+        String title = task.getTitle();
         titleTextView.setText(title);
 
-        // Show Tags and Dates.
+        // Show tags.
+        showTags();
+
+        // Show dates.
+        showDates();
+
+        return itemView;
+    }
+
+    private void showTags() {
+        List<TaskTag> tags = task.getTags();
+
         // Set background color based on tag colors.
         int tagCount;
         if (tags == null) tagCount = 0;
         else tagCount = tags.size();
 
         String tagsText = "";
-        String datesText = (new DateTimeTool()).getTaskDatesText(activity, start, deadline);
 
         if (tagCount > 0) {
             LinkedList<String> colors = new LinkedList<String>();
@@ -78,8 +115,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             }
 
             // Task dates.
-            details1TextView.setText(tagsText);
-            details2TextView.setText(datesText);
+            tagsTextView.setText(tagsText);
 
             // Task colors.
             int colorCount = colors.size();
@@ -95,9 +131,58 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 colorsLinearLayout.addView(colorView);
             }
         } else {
-            details1TextView.setText(datesText);
+            tagsTextView.setVisibility(View.GONE);
+            space1TextView.setVisibility(View.VISIBLE);
         }
+    }
 
-        return itemView;
+    private void showDates() {
+        DateTimeTool tool = new DateTimeTool();
+
+        Calendar when = task.getWhen();
+        Calendar start = task.getStart();
+        Calendar deadline = task.getDeadline();
+
+        // When is defined.
+        if (when != null) {
+            datesTableLayout.setVisibility(View.GONE);
+            space2TextView.setVisibility(View.VISIBLE);
+
+            whenValueTextView.setText(tool.getTaskDateText(activity, task, false, DateTimeTool.WHEN));
+        }
+        // Any of Start and Deadline is defined.
+        else if (start != null || deadline != null) {
+            whenValueTextView.setVisibility(View.GONE);
+
+            // Both are defined.
+            if (start != null && deadline != null) {
+                date1TitleTextView.setText(activity.getString(R.string.start));
+                date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, DateTimeTool.START));
+
+                date2TitleTextView.setText(activity.getString(R.string.deadline));
+                date2ValueTextView.setText(tool.getTaskDateText(activity, task, false, DateTimeTool.DEADLINE));
+            }
+            // Only one is defined.
+            else {
+                date2TableRow.setVisibility(View.GONE);
+                space2TextView.setVisibility(View.VISIBLE);
+
+                if (start != null) {
+                    date1TitleTextView.setText(activity.getString(R.string.start));
+                    date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, DateTimeTool.START));
+                }
+                else { // deadline != null
+                    date1TitleTextView.setText(activity.getString(R.string.deadline));
+                    date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, DateTimeTool.DEADLINE));
+                }
+            }
+        }
+        else { // No date is defined.
+            whenValueTextView.setVisibility(View.GONE);
+            datesTableLayout.setVisibility(View.GONE);
+
+            space2TextView.setVisibility(View.VISIBLE);
+            space3TextView.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -20,34 +20,40 @@
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
+        <TextView android:id="@+id/task_when_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
         <TableLayout android:id="@+id/task_dates"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
             android:stretchColumns="1">
 
-            <TableRow android:id="@+id/task_start_row">
-                <TextView android:layout_width="match_parent"
+            <TableRow android:id="@+id/task_date1_row">
+                <TextView android:id="@+id/task_date1_title"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dp"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:text="@string/start" />
+                    android:textStyle="bold" />
 
-                <TextView android:id="@+id/task_start"
+                <TextView android:id="@+id/task_date1_value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp" />
             </TableRow>
-            <TableRow android:id="@+id/task_deadline_row">
-                <TextView android:layout_width="match_parent"
+            <TableRow android:id="@+id/task_date2_row">
+                <TextView android:id="@+id/task_date2_title"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dp"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:text="@string/deadline" />
+                    android:textStyle="bold" />
 
-                <TextView android:id="@+id/task_deadline"
+                <TextView android:id="@+id/task_date2_value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp" />

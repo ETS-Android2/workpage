@@ -3,31 +3,23 @@ package jajimenez.workpage.logic;
 import android.content.Context;
 
 import jajimenez.workpage.R;
+import jajimenez.workpage.data.model.Task;
+
 import java.util.Calendar;
 import java.text.DateFormat;
 
 public class DateTimeTool {
-    // This function only considers the date of "calendar" (year, month and day),
-    // ignoring its time (hour, minute, second, millisecond).
-    public String getIso8601DateTime(Calendar calendar) {
-        String date = null;
+    public final static int WHEN = 0;
+    public final static int START = 1;
+    public final static int DEADLINE = 2;
 
-        if (calendar != null) {
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            date = String.format("%d-%02d-%02d 00:00:00.000", year, month, day);
-        }
-
-        return date; 
-    }
-
+    // Used only for upgrading the database.
     public Calendar getCalendar(String iso8601DateTime) {
         Calendar calendar = null;
         
         if (iso8601DateTime != null && !iso8601DateTime.equals("")) {
             calendar = Calendar.getInstance();
+            calendar.clear(); // Clear all the time fields, setting them to 0.
 
             int year = Integer.valueOf(iso8601DateTime.substring(0, 4));
             int month = Integer.valueOf(iso8601DateTime.substring(5, 7));
@@ -36,44 +28,101 @@ public class DateTimeTool {
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.DAY_OF_MONTH, day);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
         }
 
         return calendar;
     }
 
-    public String getInterfaceFormattedDate(Calendar calendar) {
+    public String getFormattedDate(Calendar calendar) {
+        String date = "";
+
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        return dateFormat.format(calendar.getTime());
+        if (calendar != null) date = dateFormat.format(calendar.getTime());
+
+        return date;
     }
 
-    public String getTaskDatesText(Context context, Calendar start, Calendar deadline) {
-        String text = null;
+    public String getFormattedTime(Calendar calendar) {
+        String time = "";
 
-        String formattedStart = null;
-        String formattedDeadline = null;
+        DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+        if (calendar != null) time = dateFormat.format(calendar.getTime());
 
-        if (start != null && deadline != null) {
-            formattedStart = getInterfaceFormattedDate(start);
-            formattedDeadline = getInterfaceFormattedDate(deadline);
+        return time;
+    }
 
-            text = context.getString(R.string.task_start_deadline, formattedStart, formattedDeadline);
-        }
-        else if (start != null) {
-            formattedStart = getInterfaceFormattedDate(start);
-            text = context.getString(R.string.task_start, formattedStart);
-        }
-        else if (deadline != null) {
-            formattedDeadline = getInterfaceFormattedDate(deadline);
-            text = context.getString(R.string.task_deadline, formattedDeadline);
-        }
-        else {
-            text = "";
+    public String getTaskDateText(Context context, Task task, boolean withTitle, int dateType) {
+        String text = "";
+
+        String date = null;
+        String time = null;
+
+        switch (dateType) {
+            case WHEN:
+                Calendar when = task.getWhen();
+
+                if (when != null) {
+                    // In this case, we ignore "withTitle", as "When" is always shown without any title.
+                    date = getFormattedDate(when);
+
+                    if (task.getIgnoreWhenTime()) {
+                        text = context.getString(R.string.task_date, date);
+                    }
+                    else {
+                        time = getFormattedTime(when);
+                        text = context.getString(R.string.task_datetime, date, time);
+                    }
+                }
+
+                break;
+            case START:
+                Calendar start = task.getStart();
+
+                if (start != null) {
+                    date = getFormattedDate(start);
+
+                    if (task.getIgnoreStartTime()) {
+                        if (withTitle) text = context.getString(R.string.task_start_notime, date);
+                        else text = context.getString(R.string.task_date, date);
+                    }
+                    else {
+                        time = getFormattedTime(start);
+
+                        if (withTitle) text = context.getString(R.string.task_start, date, time);
+                        else text = context.getString(R.string.task_datetime, date, time);
+                    }
+                }
+
+                break;
+            case DEADLINE:
+                Calendar deadline = task.getDeadline();
+
+                if (deadline != null) {
+                    date = getFormattedDate(deadline);
+
+                    if (task.getIgnoreDeadlineTime()) {
+                        if (withTitle) text = context.getString(R.string.task_deadline_notime, date);
+                        else text = context.getString(R.string.task_date, date);
+                    }
+                    else {
+                        time = getFormattedTime(deadline);
+
+                        if (withTitle) text = context.getString(R.string.task_deadline, date, time);
+                        else text = context.getString(R.string.task_datetime, date, time);
+                    }
+                }
+                
+                break;
         }
 
         return text;
+    }
+
+    // Sets to zero all the time fields (hour, minute, second and millisecond).
+    public void clearTimeFields(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
     }
 }
