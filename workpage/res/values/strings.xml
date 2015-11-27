@@ -125,7 +125,7 @@
     <string name="open">Open</string>
     <string name="open_description">All the open tasks.</string>
     <string name="doable_today">Doable Today</string>
-    <string name="doable_today_description">The open tasks that could be done today.</string>
+    <string name="doable_today_description">The open tasks that can be done today.</string>
     <string name="closed">Closed</string>
     <string name="closed_description">All the closed tasks.</string>
     <string name="filter_by_tags">Filter by tags:</string>

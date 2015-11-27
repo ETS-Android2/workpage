@@ -125,7 +125,7 @@
     <string name="open">Pendiente</string>
     <string name="open_description">Todas las tareas pendientes.</string>
     <string name="doable_today">Realizable Hoy</string>
-    <string name="doable_today_description">Las tareas pendientes que podrían hacerse hoy.</string>
+    <string name="doable_today_description">Las tareas pendientes que pueden hacerse hoy.</string>
     <string name="closed">Completo</string>
     <string name="closed_description">Todas las tareas completas.</string>
     <string name="filter_by_tags">Filtrar por etiquetas:</string>
