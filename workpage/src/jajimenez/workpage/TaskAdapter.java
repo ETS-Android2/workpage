@@ -132,7 +132,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             }
         } else {
             tagsTextView.setVisibility(View.GONE);
-            space1TextView.setVisibility(View.VISIBLE);
+            space1TextView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -146,7 +146,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         // When is defined.
         if (when != null) {
             datesTableLayout.setVisibility(View.GONE);
-            space2TextView.setVisibility(View.VISIBLE);
+            space2TextView.setVisibility(View.INVISIBLE);
 
             whenValueTextView.setText(tool.getTaskDateText(activity, task, false, DateTimeTool.WHEN));
         }
@@ -165,7 +165,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             // Only one is defined.
             else {
                 date2TableRow.setVisibility(View.GONE);
-                space2TextView.setVisibility(View.VISIBLE);
+                space2TextView.setVisibility(View.INVISIBLE);
 
                 if (start != null) {
                     date1TitleTextView.setText(activity.getString(R.string.start));
@@ -181,8 +181,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             whenValueTextView.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.GONE);
 
-            space2TextView.setVisibility(View.VISIBLE);
-            space3TextView.setVisibility(View.VISIBLE);
+            space2TextView.setVisibility(View.INVISIBLE);
+            space3TextView.setVisibility(View.INVISIBLE);
         }
     }
 }
