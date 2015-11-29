@@ -687,7 +687,7 @@ public class EditTaskActivity extends Activity {
         fragment.show(getFragmentManager(), "deadline_time_picker");
     }
 
-    public void onDeadlineRemindersCheckboxClicked(View view) {
+    public void onDeadlineRemindersCheckBoxClicked(View view) {
         deadlineRemindersButton.setEnabled(deadlineRemindersCheckBox.isChecked());
     }
 
