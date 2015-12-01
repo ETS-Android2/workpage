@@ -92,18 +92,46 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     private void createDBVersion2(SQLiteDatabase db) {
+        // Update TaskTags table: Add a new column for color.
         db.execSQL("ALTER TABLE task_tags ADD COLUMN color TEXT;");
     }
 
     private void createDBVersion3(SQLiteDatabase db) {
-        DateTimeTool tool = new DateTimeTool();
+        // 1. Update TaskTags table: Remove "list_order" and set foreign key column as Not Null.
+        //
+        // Note: It's assumed that the old foreign-key columns don't contain null values,
+        // as the application didn't allowed it.
+        updateTaskTagsTableDBVersion3(db);
 
-        // 1. Update TaskTags table: Remove "list_order".
+        // 2. Update Tasks table: Add a new column for a single
+        // time (Unix Date/Time format) to Tasks, convert Start
+        // and Deadline to Unix Date/Time format and add fields to
+        // set if the time part (hour, minute...) of the date/time
+        // fields should be ignored or not. Also, set foreign key
+        // column as Not Null.
+        //
+        // Note: It's assumed that the old foreign-key columns
+        // don't contain null values, as the application didn't
+        // allowed it.
+        updateTasksTableDBVersion3(db);
+
+        // 3. Update TaskTagRelationships: Set foreign key columns as Not Null.
+        //
+        // Note: It's assumed that the old foreign-key columns don't
+        // contain null values, as the application didn't allowed it.
+        updateTaskTagRelationshipsTableDBVersion3(db);
+
+        // 4. Create new tables for reminders.
+        createReminderTimesTableDBVersion3(db);
+        createRemindersTableDBVersion3(db);
+    }
+
+    private void updateTaskTagsTableDBVersion3(SQLiteDatabase db) {
         db.beginTransaction();
 
         db.execSQL("CREATE TEMPORARY TABLE task_tags_temp (" +
             "id              INTEGER PRIMARY KEY, " +
-            "task_context_id INTEGER, " +
+            "task_context_id INTEGER NOT NULL, " +
             "name            TEXT NOT NULL, " +
             "color           TEXT, " +
 
@@ -115,7 +143,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE task_tags (" +
             "id              INTEGER PRIMARY KEY, " +
-            "task_context_id INTEGER, " +
+            "task_context_id INTEGER NOT NULL, " +
             "name            TEXT NOT NULL, " +
             "color           TEXT, " +
 
@@ -127,17 +155,15 @@ public class DataManager extends SQLiteOpenHelper {
 
         db.setTransactionSuccessful();
         db.endTransaction();
+    }
 
-        // 2. Update Tasks table: Add a new column for a single
-        // time (Unix Date/Time format) to Tasks, convert Start
-        // and Deadline to Unix Date/Time format and add fields to
-        // set if the time part (hour, minute...) of the date/time
-        // fields should be ignored or not.
+    private void updateTasksTableDBVersion3(SQLiteDatabase db) {
+        DateTimeTool tool = new DateTimeTool();
         db.beginTransaction();
 
         db.execSQL("CREATE TEMPORARY TABLE tasks_temp (" +
             "id                   INTEGER PRIMARY KEY, " +
-            "task_context_id      INTEGER, " +
+            "task_context_id      INTEGER NOT NULL, " +
             "title                TEXT NOT NULL, " +
             "description          TEXT, " +
             "when_datetime        INTEGER, " +
@@ -200,7 +226,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         db.execSQL("CREATE TABLE tasks (" +
             "id                   INTEGER PRIMARY KEY, " +
-            "task_context_id      INTEGER, " +
+            "task_context_id      INTEGER NOT NULL, " +
             "title                TEXT NOT NULL, " +
             "description          TEXT, " +
             "when_datetime        INTEGER, " +
@@ -219,6 +245,120 @@ public class DataManager extends SQLiteOpenHelper {
 
         db.setTransactionSuccessful();
         db.endTransaction();
+    }
+
+    private void updateTaskTagRelationshipsTableDBVersion3(SQLiteDatabase db) {
+        db.beginTransaction();
+
+        db.execSQL("CREATE TEMPORARY TABLE task_tag_relationships_temp (" +
+            "id          INTEGER PRIMARY KEY, " +
+            "task_id     INTEGER NOT NULL, " +
+            "task_tag_id INTEGER NOT NULL, " +
+
+            "UNIQUE (task_id, task_tag_id), " +
+            "FOREIGN KEY (task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
+            "FOREIGN KEY (task_tag_id) REFERENCES task_tags(id) ON UPDATE CASCADE ON DELETE CASCADE" +
+            ");");
+
+        db.execSQL("INSERT INTO task_tag_relationships_temp SELECT id, task_id, task_tag_id FROM task_tag_relationships;");
+        db.execSQL("DROP TABLE task_tag_relationships;");
+
+        db.execSQL("CREATE TABLE task_tag_relationships (" +
+            "id          INTEGER PRIMARY KEY, " +
+            "task_id     INTEGER NOT NULL, " +
+            "task_tag_id INTEGER NOT NULL, " +
+
+            "UNIQUE (task_id, task_tag_id), " +
+            "FOREIGN KEY (task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
+            "FOREIGN KEY (task_tag_id) REFERENCES task_tags(id) ON UPDATE CASCADE ON DELETE CASCADE" +
+            ");");
+
+        db.execSQL("INSERT INTO task_tag_relationships SELECT id, task_id, task_tag_id FROM task_tag_relationships_temp;");
+        db.execSQL("DROP TABLE task_tag_relationships_temp;");
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    private void createReminderTimesTableDBVersion3(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE reminder_times (" +
+            "id      INTEGER PRIMARY KEY, " +
+            "minutes INTEGER NOT NULL" +
+            ");");
+
+        ContentValues[] reminderTimeValues = new ContentValues[13];
+
+        // 0 minutes (on time).
+        reminderTimeValues[0] = new ContentValues();
+        reminderTimeValues[0].put("minutes", 0);
+
+        // 5 minutes.
+        reminderTimeValues[1] = new ContentValues();
+        reminderTimeValues[1].put("minutes", 5);
+
+        // 10 minutes.
+        reminderTimeValues[2] = new ContentValues();
+        reminderTimeValues[2].put("minutes", 10);
+
+        // 15 minutes.
+        reminderTimeValues[3] = new ContentValues();
+        reminderTimeValues[3].put("minutes", 15);
+
+        // 30 minutes. 
+        reminderTimeValues[4] = new ContentValues();
+        reminderTimeValues[4].put("minutes", 30);
+
+        // 1 hour (60 minutes).
+        reminderTimeValues[5] = new ContentValues();
+        reminderTimeValues[5].put("minutes", 60);
+
+        // 2 hours (120 minutes).
+        reminderTimeValues[6] = new ContentValues();
+        reminderTimeValues[6].put("minutes", 120);
+
+        // 4 hours (240 minutes).
+        reminderTimeValues[7] = new ContentValues();
+        reminderTimeValues[7].put("minutes", 240);
+
+        // 8 hours (480 minutes).
+        reminderTimeValues[8] = new ContentValues();
+        reminderTimeValues[8].put("minutes", 480);
+
+        // 1 day (1440 minutes).
+        reminderTimeValues[9] = new ContentValues();
+        reminderTimeValues[9].put("minutes", 1440);
+
+        // 2 days (2880 minutes).
+        reminderTimeValues[10] = new ContentValues();
+        reminderTimeValues[10].put("minutes", 2880);
+
+        // 1 week (10080 minutes).
+        reminderTimeValues[11] = new ContentValues();
+        reminderTimeValues[11].put("minutes", 10080);
+
+        // 2 weeks (20160 minutes).
+        reminderTimeValues[12] = new ContentValues();
+        reminderTimeValues[12].put("minutes", 20160);
+
+        for (int i = 0; i < reminderTimeValues.length; i++) {
+            db.insert("reminder_times", null, reminderTimeValues[i]);
+        }
+    }
+
+    private void createRemindersTableDBVersion3(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE reminders (" +
+            "id                        INTEGER PRIMARY KEY, " +
+            "task_id                   INTEGER NOT NULL, " +
+            "when_reminder_time_id     INTEGER, " +
+            "start_reminder_time_id    INTEGER, " +
+            "deadline_reminder_time_id INTEGER, " +
+
+            "UNIQUE (task_id), " +
+            "FOREIGN KEY (task_id) REFERENCES tasks(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
+            "FOREIGN KEY (when_reminder_time_id) REFERENCES reminder_times(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
+            "FOREIGN KEY (start_reminder_time_id) REFERENCES reminder_times(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
+            "FOREIGN KEY (deadline_reminder_time_id) REFERENCES reminder_times(id) ON UPDATE CASCADE ON DELETE SET NULL" +
+            ");");
     }
 
     @Override
