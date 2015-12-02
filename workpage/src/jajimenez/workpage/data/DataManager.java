@@ -283,7 +283,9 @@ public class DataManager extends SQLiteOpenHelper {
     private void createReminderTimesTableDBVersion3(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE reminder_times (" +
             "id      INTEGER PRIMARY KEY, " +
-            "minutes INTEGER NOT NULL" +
+            "minutes INTEGER NOT NULL, " +
+
+            "UNIQUE (minutes)" +
             ");");
 
         ContentValues[] reminderTimeValues = new ContentValues[13];
