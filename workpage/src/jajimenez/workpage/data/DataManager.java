@@ -551,6 +551,22 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
+    // This is an auxiliar method intended to be used only inside the "getTask" method.
+    private TaskReminder getTaskReminder(SQLiteDatabase db, long id) {
+        TaskReminder reminder = null;
+
+        Cursor cursor = db.rawQuery("SELECT minutes FROM task_reminders " +
+            "WHERE id = ?", new String[] { String.valueOf(id) });
+
+        if (cursor.moveToFirst()) {
+            long minutes = cursor.getLong(0);
+
+            reminder = new TaskReminder(id, minutes);
+        }
+
+        return reminder;
+    }
+
     // Returns all the task tags that belong to a task context.
     public List<TaskTag> getAllTaskTags(TaskContext context) {
         List<TaskTag> tags = new LinkedList<TaskTag>();
@@ -714,22 +730,6 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
-    // This is an auxiliar method intended to be used only inside the "getTask" method.
-    private TaskReminder getTaskReminder(SQLiteDatabase db, long id) {
-        TaskReminder reminder = null;
-
-        Cursor cursor = db.rawQuery("SELECT minutes FROM task_reminders " +
-            "WHERE id = ?", new String[] { String.valueOf(id) });
-
-        if (cursor.moveToFirst()) {
-            long minutes = cursor.getLong(0);
-
-            reminder = new TaskReminder(id, minutes);
-        }
-
-        return reminder;
-    }
-
     // Returns all open tasks that belong to a given task context and
     // that could be done at the current day ("doable-today" tasks)
     // and have any of the given task tags. Returns all "doable-today"
@@ -816,7 +816,7 @@ public class DataManager extends SQLiteOpenHelper {
                     }
 
                     boolean ignoreWhenTime = false;
-                    if (!cursor.isNull(3)) ignoreWhenTime = (cursor.getInt(3) != 0);
+                    if (!cursor.isNull(3)) ignoreWhenTime = (cursor.getLong(3) != 0);
 
                     TaskReminder whenReminder = null;
                     if (!cursor.isNull(4)) {
@@ -831,7 +831,7 @@ public class DataManager extends SQLiteOpenHelper {
                     }
 
                     boolean ignoreStartTime = false;
-                    if (!cursor.isNull(6)) ignoreStartTime = (cursor.getInt(6) != 0);
+                    if (!cursor.isNull(6)) ignoreStartTime = (cursor.getLong(6) != 0);
 
                     TaskReminder startReminder = null;
                     if (!cursor.isNull(7)) {
@@ -846,7 +846,7 @@ public class DataManager extends SQLiteOpenHelper {
                     }
 
                     boolean ignoreDeadlineTime = false;
-                    if (!cursor.isNull(9)) ignoreDeadlineTime = (cursor.getInt(9) != 0);
+                    if (!cursor.isNull(9)) ignoreDeadlineTime = (cursor.getLong(9) != 0);
 
                     TaskReminder deadlineReminder = null;
                     if (!cursor.isNull(10)) {
@@ -900,7 +900,7 @@ public class DataManager extends SQLiteOpenHelper {
                     "FROM tasks " +
                     "WHERE task_context_id = ? ";
 
-                if (done) query += "AND done = 1 ORDER BY id DESC;";
+                if (done) query += "AND done != 0 ORDER BY id DESC;";
                 else query += "AND done = 0 ORDER BY id;";
             }
             else {
@@ -912,7 +912,7 @@ public class DataManager extends SQLiteOpenHelper {
                     "WHERE tasks.task_context_id = ? " +
                     "AND tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id ";
 
-                if (done) query += "AND tasks.done = 1 ";
+                if (done) query += "AND tasks.done != 0 ";
                 else query += "AND tasks.done = 0 ";
 
                 query += "AND (";
@@ -944,7 +944,7 @@ public class DataManager extends SQLiteOpenHelper {
                     }
 
                     boolean ignoreWhenTime = false;
-                    if (!cursor.isNull(3)) ignoreWhenTime = (cursor.getInt(3) != 0);
+                    if (!cursor.isNull(3)) ignoreWhenTime = (cursor.getLong(3) != 0);
 
                     TaskReminder whenReminder = null;
                     if (!cursor.isNull(4)) {
@@ -959,7 +959,7 @@ public class DataManager extends SQLiteOpenHelper {
                     }
 
                     boolean ignoreStartTime = false;
-                    if (!cursor.isNull(6)) ignoreStartTime = (cursor.getInt(6) != 0);
+                    if (!cursor.isNull(6)) ignoreStartTime = (cursor.getLong(6) != 0);
 
                     TaskReminder startReminder = null;
                     if (!cursor.isNull(7)) {
@@ -974,7 +974,7 @@ public class DataManager extends SQLiteOpenHelper {
                     }
 
                     boolean ignoreDeadlineTime = false;
-                    if (!cursor.isNull(9)) ignoreDeadlineTime = (cursor.getInt(9) != 0);
+                    if (!cursor.isNull(9)) ignoreDeadlineTime = (cursor.getLong(9) != 0);
 
                     TaskReminder deadlineReminder = null;
                     if (!cursor.isNull(10)) {
@@ -1064,7 +1064,7 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, when_reminder_id " +
+                "when_datetime, ignore_when_time, when_reminder_id, " +
                 "start_datetime, ignore_start_time, start_reminder_id, " +
                 "deadline_datetime, ignore_deadline_time, deadline_reminder_id, " +
                 "done " +
@@ -1082,7 +1082,7 @@ public class DataManager extends SQLiteOpenHelper {
                 }
 
                 boolean ignoreWhenTime = false;
-                if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getInt(4) != 0);
+                if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
 
                 TaskReminder whenReminder = null;
                 if (!cursor.isNull(5)) {
@@ -1097,7 +1097,7 @@ public class DataManager extends SQLiteOpenHelper {
                 }
 
                 boolean ignoreStartTime = false;
-                if (!cursor.isNull(7)) ignoreStartTime = (cursor.getInt(7) != 0);
+                if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
 
                 TaskReminder startReminder = null;
                 if (!cursor.isNull(8)) {
@@ -1112,7 +1112,7 @@ public class DataManager extends SQLiteOpenHelper {
                 }
 
                 boolean ignoreDeadlineTime = false;
-                if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getInt(10) != 0);
+                if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
 
                 TaskReminder deadlineReminder = null;
                 if (!cursor.isNull(11)) {
@@ -1120,7 +1120,7 @@ public class DataManager extends SQLiteOpenHelper {
                     deadlineReminder = getTaskReminder(db, deadlineReminderId);
                 }
 
-                boolean done = (cursor.getInt(12) == 1);
+                boolean done = (cursor.getLong(12) != 0);
                 List<TaskTag> tags = getTaskTags(db, id);
 
                 task = new Task(id, contextId, title, description,
