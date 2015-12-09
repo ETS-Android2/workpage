@@ -169,7 +169,7 @@ public class DataManager extends SQLiteOpenHelper {
             "UNIQUE (minutes)" +
             ");");
 
-        ContentValues[] values = new ContentValues[13];
+        ContentValues[] values = new ContentValues[14];
 
         // On time.
         values[0] = new ContentValues();
@@ -191,37 +191,41 @@ public class DataManager extends SQLiteOpenHelper {
         values[4] = new ContentValues();
         values[4].put("minutes", 30);
 
-        // 1 hour (60 minutes).
+        // 45 minutes.
         values[5] = new ContentValues();
-        values[5].put("minutes", 60);
+        values[5].put("minutes", 45);
+
+        // 1 hour (60 minutes).
+        values[6] = new ContentValues();
+        values[6].put("minutes", 60);
 
         // 2 hours (120 minutes).
-        values[6] = new ContentValues();
-        values[6].put("minutes", 120);
+        values[7] = new ContentValues();
+        values[7].put("minutes", 120);
 
         // 4 hours (240 minutes).
-        values[7] = new ContentValues();
-        values[7].put("minutes", 240);
+        values[8] = new ContentValues();
+        values[8].put("minutes", 240);
 
         // 8 hours (480 minutes).
-        values[8] = new ContentValues();
-        values[8].put("minutes", 480);
+        values[9] = new ContentValues();
+        values[9].put("minutes", 480);
 
         // 1 day (1440 minutes).
-        values[9] = new ContentValues();
-        values[9].put("minutes", 1440);
+        values[10] = new ContentValues();
+        values[10].put("minutes", 1440);
 
         // 2 days (2880 minutes).
-        values[10] = new ContentValues();
-        values[10].put("minutes", 2880);
+        values[11] = new ContentValues();
+        values[11].put("minutes", 2880);
 
         // 1 week (10080 minutes).
-        values[11] = new ContentValues();
-        values[11].put("minutes", 10080);
+        values[12] = new ContentValues();
+        values[12].put("minutes", 10080);
 
         // 2 weeks (20160 minutes).
-        values[12] = new ContentValues();
-        values[12].put("minutes", 20160);
+        values[13] = new ContentValues();
+        values[13].put("minutes", 20160);
 
         for (int i = 0; i < values.length; i++) {
             db.insert("task_reminders", null, values[i]);
