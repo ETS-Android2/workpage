@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import jajimenez.workpage.R;
-import jajimenez.workpage.logic.DateTimeTool;
+import jajimenez.workpage.logic.TextTool;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskReminder;
 import jajimenez.workpage.data.model.TaskTag;
@@ -171,7 +171,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         ContentValues[] values = new ContentValues[13];
 
-        // 0 minutes (on time).
+        // On time.
         values[0] = new ContentValues();
         values[0].put("minutes", 0);
 
@@ -229,7 +229,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     private void updateTasksTableDBVersion3(SQLiteDatabase db) {
-        DateTimeTool tool = new DateTimeTool();
+        TextTool tool = new TextTool();
         db.beginTransaction();
 
         db.execSQL("CREATE TEMPORARY TABLE tasks_temp (" +
@@ -551,7 +551,49 @@ public class DataManager extends SQLiteOpenHelper {
         }
     }
 
-    // This is an auxiliar method intended to be used only inside the "getTask" method.
+    // Returns all task reminders.
+    public List<TaskReminder> getAllTaskReminders() {
+        List<TaskReminder> reminders = new LinkedList<TaskReminder>();
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT id, minutes FROM task_reminders ORDER BY id", null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    long id = cursor.getLong(0);
+                    long minutes = cursor.getLong(1);
+
+                    reminders.add(new TaskReminder(id, minutes));
+                }
+                while (cursor.moveToNext());
+            }
+        }
+        finally {
+            if (db != null) db.close();
+        }
+
+        return reminders;
+    }
+
+    public TaskReminder getTaskReminder(long id) {
+        TaskReminder reminder = null;
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+            reminder = getTaskReminder(db, id);
+        }
+        finally {
+            if (db != null) db.close();
+        }
+
+        return reminder;
+    }
+
+    // This is an auxiliar method intended to be used only inside
+    // the "getTaskReminder(id) and "getTask" methods.
     private TaskReminder getTaskReminder(SQLiteDatabase db, long id) {
         TaskReminder reminder = null;
 
@@ -750,7 +792,7 @@ public class DataManager extends SQLiteOpenHelper {
         int tagCount = 0;
         if (filterTags != null) tagCount = filterTags.size();
 
-        DateTimeTool tool = new DateTimeTool();
+        TextTool tool = new TextTool();
 
         // Get the next day in Unix Time format.
         Calendar nextDay = Calendar.getInstance(); // At this point, "nextDay" is the current time.
@@ -885,7 +927,7 @@ public class DataManager extends SQLiteOpenHelper {
         int tagCount = 0;
         if (filterTags != null) tagCount = filterTags.size();
 
-        DateTimeTool tool = new DateTimeTool();
+        TextTool tool = new TextTool();
         SQLiteDatabase db = null;
 
         try {
@@ -1058,7 +1100,7 @@ public class DataManager extends SQLiteOpenHelper {
     public Task getTask(long id) {
         Task task = null;
 
-        DateTimeTool tool = new DateTimeTool();
+        TextTool tool = new TextTool();
         SQLiteDatabase db = null;
 
         try {
@@ -1147,7 +1189,7 @@ public class DataManager extends SQLiteOpenHelper {
         SQLiteDatabase db = null;
         long id = task.getId();
 
-        DateTimeTool tool = new DateTimeTool();
+        TextTool tool = new TextTool();
 
         ContentValues values = new ContentValues();
         values.put("task_context_id", task.getContextId());

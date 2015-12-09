@@ -18,6 +18,7 @@ import jajimenez.workpage.data.DataManager;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
     public static final String PREFERENCES_FILE = "workpage_preferences";
@@ -112,6 +113,14 @@ public class ApplicationLogic {
 
     public void deleteTaskContexts(List<TaskContext> contexts) {
         dataManager.deleteTaskContexts(contexts);
+    }
+
+    public List<TaskReminder> getAllTaskReminders() {
+        return dataManager.getAllTaskReminders();
+    }
+
+    public TaskReminder getTaskReminder(long id) {
+        return dataManager.getTaskReminder(id);
     }
 
     public List<TaskTag> getAllTaskTags(TaskContext context) {

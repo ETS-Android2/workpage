@@ -1,14 +1,16 @@
 package jajimenez.workpage.logic;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import jajimenez.workpage.R;
 import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.data.model.TaskReminder;
 
 import java.util.Calendar;
 import java.text.DateFormat;
 
-public class DateTimeTool {
+public class TextTool {
     public final static int WHEN = 0;
     public final static int START = 1;
     public final static int DEADLINE = 2;
@@ -124,5 +126,35 @@ public class DateTimeTool {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
+    }
+
+    public String getTaskReminderText(Context context, TaskReminder reminder) {
+        String text = "";
+
+        if (reminder != null) {
+            Resources resources = context.getResources();
+            long minutes = reminder.getMinutes();
+
+            if (minutes == 0) {
+                text = context.getString(R.string.on_time);
+            }
+            else if (minutes < 60) {
+                text = context.getString(R.string.x_minutes, minutes);
+            }
+            else if (minutes >= 60 && minutes < 1440) {
+                long hours = minutes/60;
+                text = resources.getQuantityString(R.plurals.x_hours, (int) hours, hours);
+            }
+            else if (minutes >= 1440 && minutes < 10080) {
+                long days = minutes/1440;
+                text = resources.getQuantityString(R.plurals.x_days, (int) days, days);
+            }
+            else { // (minutes >= 10080)
+                long weeks = minutes/10080;
+                text = resources.getQuantityString(R.plurals.x_weeks, (int) weeks, weeks);
+            }
+        }
+
+        return text;
     }
 }

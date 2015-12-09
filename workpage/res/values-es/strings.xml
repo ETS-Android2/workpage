@@ -98,16 +98,11 @@
     <string name="no_date">Sin fecha</string>
     <string name="date">Fecha:</string>
     <string name="time">Hora:</string>
-    <string name="reminders">Recordatorios:</string>
+    <string name="reminder_1">Recordatorio:</string>
+    <string name="reminder_2">Recordatorio</string>
     <string name="date_range">Rango de fechas:</string>
     <string name="start">Comienzo:</string>
-    <!--<string name="start_date">Fecha de comienzo:</string>-->
-    <!--<string name="start_time">Hora de comienzo:</string>-->
-    <!--<string name="start_reminders">Recordatorios de comienzo:</string>-->
     <string name="deadline">Límite:</string>
-    <!--<string name="deadline_date">Fecha límite:</string>-->
-    <!--<string name="deadline_time">Hora límite::</string>-->
-    <!--<string name="deadline_reminders">Recordatorios de límite:</string>-->
     <string name="task_datetime">%1$s - %2$s</string>
     <string name="task_date">%1$s</string>
     <string name="task_start">Comienzo: %1$s - %2$s</string>
@@ -122,6 +117,23 @@
     <string name="title_error">Por favor, introduzca el título.</string>
     <string name="dates_error">Por favor, introduzca fechas válidas.</string>
     <string name="task_saved">Tarea guardada.</string>
+    <string name="on_time">Al momento</string>
+    <string name="x_minutes">%1$d minutes</string>
+
+    <plurals name="x_hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+
+    <plurals name="x_days">
+        <item quantity="one">%1$d día</item>
+        <item quantity="other">%1$d días</item>
+    </plurals>
+
+    <plurals name="x_weeks">
+        <item quantity="one">%1$d week</item>
+        <item quantity="other">%1$d weeks</item>
+    </plurals>
 
     <string name="view_1">Vista</string>
     <string name="view_2">Vista:</string>

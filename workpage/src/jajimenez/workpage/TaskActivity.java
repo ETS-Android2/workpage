@@ -18,7 +18,7 @@ import android.widget.TableRow;
 import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
-import jajimenez.workpage.logic.DateTimeTool;
+import jajimenez.workpage.logic.TextTool;
 import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskTag;
 
@@ -145,7 +145,7 @@ public class TaskActivity extends Activity {
         }
 
         // Dates texts.
-        DateTimeTool tool = new DateTimeTool();
+        TextTool tool = new TextTool();
 
         Calendar when = currentTask.getWhen();
         Calendar start = currentTask.getStart();
@@ -156,7 +156,7 @@ public class TaskActivity extends Activity {
             whenValueTextView.setVisibility(View.VISIBLE);
             datesTableLayout.setVisibility(View.GONE);
 
-            whenValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.WHEN));
+            whenValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.WHEN));
         }
         // Any of Start and Deadline is defined.
         else if (start != null || deadline != null) {
@@ -168,10 +168,10 @@ public class TaskActivity extends Activity {
                 date2TableRow.setVisibility(View.VISIBLE);
 
                 date1TitleTextView.setText(getString(R.string.start));
-                date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.START));
+                date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.START));
 
                 date2TitleTextView.setText(getString(R.string.deadline));
-                date2ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.DEADLINE));
+                date2ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.DEADLINE));
             }
             // Only one is defined.
             else {
@@ -179,11 +179,11 @@ public class TaskActivity extends Activity {
 
                 if (start != null) {
                     date1TitleTextView.setText(getString(R.string.start));
-                    date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.START));
+                    date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.START));
                 }
                 else { // deadline != null
                     date1TitleTextView.setText(getString(R.string.deadline));
-                    date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, DateTimeTool.DEADLINE));
+                    date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.DEADLINE));
                 }
             }
         }

@@ -72,18 +72,18 @@
                         android:onClick="onWhenTimeButtonClicked" />
                 </TableRow>
                 <TableRow>
-                    <CheckBox android:id="@+id/editTask_when_reminders_checkBox"
+                    <CheckBox android:id="@+id/editTask_when_reminder_checkBox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:text="@string/reminders"
-                        android:onClick="onWhenRemindersCheckBoxClicked" />
+                        android:text="@string/reminder_1"
+                        android:onClick="onWhenReminderCheckBoxClicked" />
 
-                    <Button android:id="@+id/editTask_when_reminders_button"
+                    <Button android:id="@+id/editTask_when_reminder_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:onClick="onWhenRemindersButtonClicked" />
+                        android:onClick="onWhenReminderButtonClicked" />
                 </TableRow>
             </TableLayout>
 
@@ -134,18 +134,18 @@
                         android:onClick="onStartTimeButtonClicked" />
                 </TableRow>
                 <TableRow>
-                    <CheckBox android:id="@+id/editTask_start_reminders_checkBox"
+                    <CheckBox android:id="@+id/editTask_start_reminder_checkBox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:text="@string/reminders"
-                        android:onClick="onStartRemindersCheckBoxClicked" />
+                        android:text="@string/reminder_1"
+                        android:onClick="onStartReminderCheckBoxClicked" />
 
-                    <Button android:id="@+id/editTask_start_reminders_button"
+                    <Button android:id="@+id/editTask_start_reminder_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:onClick="onStartRemindersButtonClicked" />
+                        android:onClick="onStartReminderButtonClicked" />
                 </TableRow>
                 <TableRow>
                     <TextView android:id="@+id/editTask_deadline_title_textView"
@@ -184,18 +184,18 @@
                         android:onClick="onDeadlineTimeButtonClicked" />
                 </TableRow>
                 <TableRow>
-                    <CheckBox android:id="@+id/editTask_deadline_reminders_checkBox"
+                    <CheckBox android:id="@+id/editTask_deadline_reminder_checkBox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:text="@string/reminders"
-                        android:onClick="onDeadlineRemindersCheckBoxClicked" />
+                        android:text="@string/reminder_1"
+                        android:onClick="onDeadlineReminderCheckBoxClicked" />
 
-                    <Button android:id="@+id/editTask_deadline_reminders_button"
+                    <Button android:id="@+id/editTask_deadline_reminder_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingRight="10dp"
-                        android:onClick="onDeadlineRemindersButtonClicked" />
+                        android:onClick="onDeadlineReminderButtonClicked" />
                 </TableRow>
             </TableLayout>
         </RadioGroup>
