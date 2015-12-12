@@ -50,11 +50,8 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
     private String currentView;
     private List<TaskTag> currentFilterTags;
 
-    private DataExportBroadcastReceiver exportReceiver = null;
-    private IntentFilter exportFilter = null;
-
-    private DataImportBroadcastReceiver importReceiver = null;
-    private IntentFilter importFilter = null;
+    private DataExportBroadcastReceiver exportReceiver;
+    private DataImportBroadcastReceiver importReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -219,10 +216,23 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        exportReceiver = new DataExportBroadcastReceiver(this);
+        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
+        registerReceiver(exportReceiver, exportFilter);
+
+        importReceiver = new DataImportBroadcastReceiver(this);
+        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
+        registerReceiver(importReceiver, importFilter);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        if (ImportDataService.getStatus() == ImportDataService.STATUS_NOT_RUNNING && ExportDataService.getStatus() == ExportDataService.STATUS_NOT_RUNNING) {
+        if (DataImportService.getStatus() == DataImportService.STATUS_NOT_RUNNING && DataExportService.getStatus() == DataExportService.STATUS_NOT_RUNNING) {
             updateInterface();
         }
         else {
@@ -230,14 +240,6 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         }
 
         inFront = true;
-
-        exportReceiver = new DataExportBroadcastReceiver(this);
-        exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
-        registerReceiver(exportReceiver, exportFilter);
-
-        importReceiver = new DataImportBroadcastReceiver(this);
-        importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
-        registerReceiver(importReceiver, importFilter);
     }
 
     @Override
@@ -245,6 +247,11 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         super.onPause();
 
         inFront = false;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
 
         unregisterReceiver(exportReceiver);
         unregisterReceiver(importReceiver);

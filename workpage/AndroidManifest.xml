@@ -19,10 +19,16 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.Holo.Light">
 
-        <service android:name="ExportDataService"
+        <receiver android:name="TaskReminderAlarmReceiver"
             android:exported="false" />
 
-        <service android:name="ImportDataService"
+        <service android:name="TaskReminderNotificationService"
+            android:exported="false" />
+
+        <service android:name="DataExportService"
+            android:exported="false" />
+
+        <service android:name="DataImportService"
             android:exported="false" />
 
         <activity android:name="MainActivity"

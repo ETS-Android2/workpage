@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Calendar;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,9 +12,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
+import jajimenez.workpage.TaskReminderAlarmReceiver;
+import jajimenez.workpage.TaskReminderAlarmReceiver;
+import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
@@ -35,6 +43,10 @@ public class ApplicationLogic {
     public static final int IMPORT_ERROR_FILE_NOT_COMPATIBLE = 2;
     public static final int IMPORT_ERROR_DATA_NOT_VALID = 3;
     public static final int IMPORT_ERROR_IMPORTING_DATA = 4;
+
+    private static final int WHEN = 0;
+    private static final int START = 1;
+    private static final int DEADLINE = 2;
 
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
@@ -160,14 +172,159 @@ public class ApplicationLogic {
     }
 
     public void saveTask(Task task) {
+        if (task.isDone()) {
+            task.setWhenReminder(null);
+            task.setStartReminder(null);
+            task.setDeadlineReminder(null);
+        }
+
+        long taskId = task.getId();
+
+        if (taskId < 1) {
+            // It is a new task.
+            updateAllReminderAlarms(task, false);
+        }
+        else {
+            // The task already exists.
+
+            // We get the current task on the database.
+            Task oldTask = getTask(taskId);
+
+            // We update each reminder alarm only if there is any
+            // change on is date/time or or in the reminder.
+            if (reminderDifference(oldTask, task, WHEN)) updateReminderAlarm(task, WHEN, false);
+            if (reminderDifference(oldTask, task, START)) updateReminderAlarm(task, START, false);
+            if (reminderDifference(oldTask, task, DEADLINE)) updateReminderAlarm(task, DEADLINE, false);
+        }
+
         dataManager.saveTask(task);
     }
 
-    public void markTask(long taskId, boolean done) {
-        dataManager.markTask(taskId, done);
+    // Returns "true" if there is some difference in a reminder
+    // for 2 given tasks (with the same ID) and a given reminder
+    // type.
+    private boolean reminderDifference(Task oldTask, Task newTask, int reminderType) {
+        Calendar oldCalendar = null;
+        TaskReminder oldReminder = null;
+
+        Calendar newCalendar = null;
+        TaskReminder newReminder = null;
+
+        switch (reminderType) {
+            case WHEN:
+                oldCalendar = oldTask.getWhen();
+                oldReminder = oldTask.getWhenReminder();
+                
+                newCalendar = newTask.getWhen();
+                newReminder = newTask.getWhenReminder();
+
+                break;
+            case START:
+                oldCalendar = oldTask.getStart();
+                oldReminder = oldTask.getStartReminder();
+                
+                newCalendar = newTask.getStart();
+                newReminder = newTask.getStartReminder();
+
+                break;
+            default: // DEADLINE
+                oldCalendar = oldTask.getDeadline();
+                oldReminder = oldTask.getDeadlineReminder();
+                
+                newCalendar = newTask.getDeadline();
+                newReminder = newTask.getDeadlineReminder();
+
+                break;
+        }
+
+        boolean calendarChange = ((oldCalendar == null && newCalendar != null)
+            || (oldCalendar != null && newCalendar == null)
+            || (oldCalendar != null && newCalendar != null && oldCalendar.getTimeInMillis() != newCalendar.getTimeInMillis()));
+        
+        boolean reminderChange = ((oldReminder == null && newReminder != null)
+            || (oldReminder != null && newReminder == null)
+            || (oldReminder != null && newReminder != null && oldReminder.getId() != newReminder.getId()));
+
+        return (calendarChange || reminderChange);
+    }
+
+    // Updates all the alarms of a given task.
+    private void updateAllReminderAlarms(Task task, boolean removeAllAlarms) {
+        updateReminderAlarm(task, WHEN, removeAllAlarms);
+        updateReminderAlarm(task, START, removeAllAlarms);
+        updateReminderAlarm(task, DEADLINE, removeAllAlarms);
+    }
+
+    // Updates all the alarms of all open tasks.
+    public void updateAllOpenTaskReminderAlarms(boolean removeAllAlarms) {
+        List<TaskContext> contexts = getAllTaskContexts();
+        List<Task> tasks = null;
+
+        for (TaskContext c : contexts) {
+            tasks = getOpenTasks(c, null);
+            for (Task t : tasks) updateAllReminderAlarms(t, removeAllAlarms);
+        }
+    }
+
+    private void updateReminderAlarm(Task task, int reminderType, boolean removeAlarm) {
+        AlarmManager alarmManager = (AlarmManager) appContext.getSystemService(Context.ALARM_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        long taskId = task.getId();
+        boolean done = task.isDone();
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(taskId);
+        builder.append(reminderType);
+        int reminderId = Integer.parseInt(builder.toString());
+
+        Intent intent = new Intent(appContext, TaskReminderAlarmReceiver.class);
+        intent.putExtra("reminder_id", reminderId);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(appContext, reminderId, intent, 0);
+
+        Calendar calendar = null;
+        TaskReminder reminder = null;
+
+        switch (reminderType){
+            case WHEN:
+                calendar = task.getWhen();
+                reminder = task.getWhenReminder();
+                break;
+
+            case START:
+                calendar = task.getStart();
+                reminder = task.getStartReminder();
+                break;
+
+            default: // DEADLINE
+                calendar = task.getDeadline();
+                reminder = task.getDeadlineReminder();
+                break;
+        }
+
+        if (!done && calendar != null && reminder != null && !removeAlarm) {
+            Calendar reminderTime = Calendar.getInstance();
+            reminderTime.setTimeInMillis(calendar.getTimeInMillis());
+            reminderTime.add(Calendar.MINUTE, (((int) reminder.getMinutes())*(-1)));
+
+            int interval = 300000; // 5 minutes in milliseconds (5 * 60 * 1000 = 300000).
+
+            // It will replace any existing alarm for the same PendingIntent object.
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, reminderTime.getTimeInMillis(), interval, alarmIntent);
+        }
+        else {
+            alarmManager.cancel(alarmIntent);
+
+            // Remove any existing notification (notification ID is the same as the task ID).
+            notificationManager.cancel(reminderId);
+        }
     }
 
     public void deleteTasks(List<Task> tasks) {
+        // Remove all reminder alarms from all input tasks.
+        for (Task task : tasks) updateAllReminderAlarms(task, true);
+
+        // Delete all input tasks.
         dataManager.deleteTasks(tasks);
     }
     
@@ -197,8 +354,11 @@ public class ApplicationLogic {
         switch (compatible) {
             case DataManager.COMPATIBLE:
                 try {
+                    updateAllOpenTaskReminderAlarms(true);
                     File dbFile = dataManager.getDatabaseFile();
                     copyFile(from, dbFile);
+                    updateAllOpenTaskReminderAlarms(false);
+
                     importResult = IMPORT_SUCCESS;
                 }
                 catch (Exception e) {
@@ -218,6 +378,7 @@ public class ApplicationLogic {
             default:
                 importResult = IMPORT_ERROR_DATA_NOT_VALID;
         }
+
 
         return importResult;
     }

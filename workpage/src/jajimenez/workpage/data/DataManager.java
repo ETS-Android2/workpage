@@ -786,9 +786,6 @@ public class DataManager extends SQLiteOpenHelper {
     //   1) The task has no start date.
     //   2) The task has a start date and the date is the current day
     //      or before.
-    //
-    // Every returned task is incomplete because this method is used
-    // to get a list of tasks, without displaying every task's detail.
     public List<Task> getDoableTodayTasks(TaskContext context, List<TaskTag> filterTags) {
         List<Task> tasks = new LinkedList<Task>();
         long contextId = context.getId();
@@ -810,7 +807,7 @@ public class DataManager extends SQLiteOpenHelper {
             String query = "";
 
             if (tagCount == 0) {
-                query += "SELECT id, title, " +
+                query += "SELECT id, title, description, " +
                     "when_datetime, ignore_when_time, when_reminder_id, " +
                     "start_datetime, ignore_start_time, start_reminder_id, " +
                     "deadline_datetime, ignore_deadline_time, deadline_reminder_id " +
@@ -823,7 +820,7 @@ public class DataManager extends SQLiteOpenHelper {
                     "ORDER BY id";
             }
             else {
-                query += "SELECT DISTINCT tasks.id, tasks.title, " +
+                query += "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
                     "tasks.when_datetime, tasks.ignore_when_time, tasks.when_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_reminder_id, " +
                     "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id " +
@@ -854,55 +851,56 @@ public class DataManager extends SQLiteOpenHelper {
                 do {
                     long id = cursor.getLong(0);
                     String title = cursor.getString(1);
+                    String description = cursor.getString(2);
 
                     Calendar when = null;
-                    if (!cursor.isNull(2)) {
+                    if (!cursor.isNull(3)) {
                         when = Calendar.getInstance();
-                        when.setTimeInMillis(cursor.getLong(2));
+                        when.setTimeInMillis(cursor.getLong(3));
                     }
 
                     boolean ignoreWhenTime = false;
-                    if (!cursor.isNull(3)) ignoreWhenTime = (cursor.getLong(3) != 0);
+                    if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
 
                     TaskReminder whenReminder = null;
-                    if (!cursor.isNull(4)) {
-                        long whenReminderId = cursor.getLong(4);
+                    if (!cursor.isNull(5)) {
+                        long whenReminderId = cursor.getLong(5);
                         whenReminder = getTaskReminder(db, whenReminderId);
                     }
 
                     Calendar start = null;
-                    if (!cursor.isNull(5)) {
+                    if (!cursor.isNull(6)) {
                         start = Calendar.getInstance();
-                        start.setTimeInMillis(cursor.getLong(5));
+                        start.setTimeInMillis(cursor.getLong(6));
                     }
 
                     boolean ignoreStartTime = false;
-                    if (!cursor.isNull(6)) ignoreStartTime = (cursor.getLong(6) != 0);
+                    if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
 
                     TaskReminder startReminder = null;
-                    if (!cursor.isNull(7)) {
-                        long startReminderId = cursor.getLong(7);
+                    if (!cursor.isNull(8)) {
+                        long startReminderId = cursor.getLong(8);
                         startReminder = getTaskReminder(db, startReminderId);
                     }
 
                     Calendar deadline = null;
-                    if (!cursor.isNull(8)) {
+                    if (!cursor.isNull(9)) {
                         deadline = Calendar.getInstance();
-                        deadline.setTimeInMillis(cursor.getLong(8));
+                        deadline.setTimeInMillis(cursor.getLong(9));
                     }
 
                     boolean ignoreDeadlineTime = false;
-                    if (!cursor.isNull(9)) ignoreDeadlineTime = (cursor.getLong(9) != 0);
+                    if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
 
                     TaskReminder deadlineReminder = null;
-                    if (!cursor.isNull(10)) {
-                        long deadlineReminderId = cursor.getLong(10);
+                    if (!cursor.isNull(11)) {
+                        long deadlineReminderId = cursor.getLong(11);
                         deadlineReminder = getTaskReminder(db, deadlineReminderId);
                     }
 
                     List<TaskTag> tags = getTaskTags(db, id);
 
-                    tasks.add(new Task(id, contextId, title, null,
+                    tasks.add(new Task(id, contextId, title, description,
                         when, ignoreWhenTime, whenReminder,
                         start, ignoreStartTime, startReminder,
                         deadline, ignoreDeadlineTime, deadlineReminder,
@@ -921,9 +919,6 @@ public class DataManager extends SQLiteOpenHelper {
     // Returns all tasks that belong to a given context, given its state and any of its tags.
     // It returns all tasks of the context with the given state if "filterTags" is null or
     // empty.
-    //
-    // Every returned task is incomplete because this method is used
-    // to get a list of tasks, without displaying every task's detail.
     public List<Task> getTasks(TaskContext context, boolean done, List<TaskTag> filterTags) {
         List<Task> tasks = new LinkedList<Task>();
         long contextId = context.getId();
@@ -939,7 +934,7 @@ public class DataManager extends SQLiteOpenHelper {
             String query = "";
 
             if (tagCount == 0) {
-                query += "SELECT id, title, " +
+                query += "SELECT id, title, description, " +
                     "when_datetime, ignore_when_time, when_reminder_id, " +
                     "start_datetime, ignore_start_time, start_reminder_id, " +
                     "deadline_datetime, ignore_deadline_time, deadline_reminder_id " +
@@ -950,7 +945,7 @@ public class DataManager extends SQLiteOpenHelper {
                 else query += "AND done = 0 ORDER BY id;";
             }
             else {
-                query += "SELECT DISTINCT tasks.id, tasks.title, " +
+                query += "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
                     "tasks.when_datetime, tasks.ignore_when_time, tasks.when_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_reminder_id, " +
                     "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id " +
@@ -982,55 +977,56 @@ public class DataManager extends SQLiteOpenHelper {
                 do {
                     long id = cursor.getLong(0);
                     String title = cursor.getString(1);
+                    String description = cursor.getString(2);
 
                     Calendar when = null;
-                    if (!cursor.isNull(2)) {
+                    if (!cursor.isNull(3)) {
                         when = Calendar.getInstance();
-                        when.setTimeInMillis(cursor.getLong(2));
+                        when.setTimeInMillis(cursor.getLong(3));
                     }
 
                     boolean ignoreWhenTime = false;
-                    if (!cursor.isNull(3)) ignoreWhenTime = (cursor.getLong(3) != 0);
+                    if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
 
                     TaskReminder whenReminder = null;
-                    if (!cursor.isNull(4)) {
-                        long whenReminderId = cursor.getLong(4);
+                    if (!cursor.isNull(5)) {
+                        long whenReminderId = cursor.getLong(5);
                         whenReminder = getTaskReminder(db, whenReminderId);
                     }
 
                     Calendar start = null;
-                    if (!cursor.isNull(5)) {
+                    if (!cursor.isNull(6)) {
                         start = Calendar.getInstance();
-                        start.setTimeInMillis(cursor.getLong(5));
+                        start.setTimeInMillis(cursor.getLong(6));
                     }
 
                     boolean ignoreStartTime = false;
-                    if (!cursor.isNull(6)) ignoreStartTime = (cursor.getLong(6) != 0);
+                    if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
 
                     TaskReminder startReminder = null;
-                    if (!cursor.isNull(7)) {
-                        long startReminderId = cursor.getLong(7);
+                    if (!cursor.isNull(8)) {
+                        long startReminderId = cursor.getLong(8);
                         startReminder = getTaskReminder(db, startReminderId);
                     }
 
                     Calendar deadline = null;
-                    if (!cursor.isNull(8)) {
+                    if (!cursor.isNull(9)) {
                         deadline = Calendar.getInstance();
-                        deadline.setTimeInMillis(cursor.getLong(8));
+                        deadline.setTimeInMillis(cursor.getLong(9));
                     }
 
                     boolean ignoreDeadlineTime = false;
-                    if (!cursor.isNull(9)) ignoreDeadlineTime = (cursor.getLong(9) != 0);
+                    if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
 
                     TaskReminder deadlineReminder = null;
-                    if (!cursor.isNull(10)) {
-                        long deadlineReminderId = cursor.getLong(10);
+                    if (!cursor.isNull(11)) {
+                        long deadlineReminderId = cursor.getLong(11);
                         deadlineReminder = getTaskReminder(db, deadlineReminderId);
                     }
 
                     List<TaskTag> tags = getTaskTags(db, id);
 
-                    tasks.add(new Task(id, contextId, title, null,
+                    tasks.add(new Task(id, contextId, title, description,
                         when, ignoreWhenTime, whenReminder,
                         start, ignoreStartTime, startReminder,
                         deadline, ignoreDeadlineTime, deadlineReminder,
@@ -1252,22 +1248,6 @@ public class DataManager extends SQLiteOpenHelper {
             }
 
             updateTaskTagRelationships(db, task);
-        }
-        finally {
-            if (db != null) db.close();
-        }
-    }
-
-    public void markTask(long taskId, boolean done) {
-        SQLiteDatabase db = null;
-        ContentValues values = new ContentValues();
-
-        if (done) values.put("done", 1);
-        else values.put("done", 0);
-
-        try {
-            db = getWritableDatabase();
-            db.update("tasks", values, "id = ?", new String[] { String.valueOf(taskId) });
         }
         finally {
             if (db != null) db.close();

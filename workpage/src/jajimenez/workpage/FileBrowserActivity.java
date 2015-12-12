@@ -44,6 +44,9 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     private OverwriteFileConfirmationDialogFragment.OnOverwriteConfirmationListener onOverwriteConfirmationListener;
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
 
+    private DataExportBroadcastReceiver exportReceiver;
+    private DataImportBroadcastReceiver importReceiver;
+
     private ApplicationLogic applicationLogic;
     private File initialFile;
     private File currentFile;
@@ -133,14 +136,6 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
             if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
         }
 
-        DataExportBroadcastReceiver exportReceiver = new DataExportBroadcastReceiver(this);
-        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
-        registerReceiver(exportReceiver, exportFilter);
-
-        DataImportBroadcastReceiver importReceiver = new DataImportBroadcastReceiver(this);
-        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
-        registerReceiver(importReceiver, importFilter);
-
         applicationLogic = new ApplicationLogic(this);
     }
 
@@ -164,15 +159,36 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        exportReceiver = new DataExportBroadcastReceiver(this);
+        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
+        registerReceiver(exportReceiver, exportFilter);
+
+        importReceiver = new DataImportBroadcastReceiver(this);
+        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
+        registerReceiver(importReceiver, importFilter);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
-        if (ImportDataService.getStatus() == ImportDataService.STATUS_NOT_RUNNING && ExportDataService.getStatus() == ExportDataService.STATUS_NOT_RUNNING) {
+        if (DataImportService.getStatus() == DataImportService.STATUS_NOT_RUNNING && DataExportService.getStatus() == DataExportService.STATUS_NOT_RUNNING) {
             updateInterface();
         }
         else {
             disableInterface();
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        unregisterReceiver(exportReceiver);
+        unregisterReceiver(importReceiver);
     }
 
     public void enableInterface() {
@@ -298,7 +314,7 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     }
 
     private void startDataExport() {
-        Intent intent = new Intent(this, ExportDataService.class);
+        Intent intent = new Intent(this, DataExportService.class);
         intent.putExtra("file_path", (getToFile()).getAbsolutePath());
 
         startService(intent);
@@ -307,7 +323,7 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     private void startDataImport(File from) {
         disableInterface();
 
-        Intent intent = new Intent(this, ImportDataService.class);
+        Intent intent = new Intent(this, DataImportService.class);
         intent.putExtra("file_path", from.getAbsolutePath());
 
         startService(intent);

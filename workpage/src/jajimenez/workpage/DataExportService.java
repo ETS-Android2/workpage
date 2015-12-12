@@ -8,14 +8,14 @@ import android.content.Intent;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 
-public class ImportDataService extends IntentService {
+public class DataExportService extends IntentService {
     public static final int STATUS_NOT_RUNNING = 0;
     public static final int STATUS_RUNNING = 1;
 
     private static int status = STATUS_NOT_RUNNING;
 
-    public ImportDataService() {
-        super("import_data_service");
+    public DataExportService() {
+        super("data_export_service");
         status = STATUS_RUNNING;
     }
 
@@ -31,11 +31,14 @@ public class ImportDataService extends IntentService {
         Context context = getApplicationContext();
         ApplicationLogic applicationLogic = new ApplicationLogic(context);
 
-        int result = applicationLogic.importData(file);
+        // "result" will be "false" if the operation was
+        // successful or "true" if there was any error.
+        boolean result = applicationLogic.exportData(file);
+
         status = STATUS_NOT_RUNNING;
 
-        Intent resultIntent = new Intent(ApplicationConstants.DATA_IMPORT_ACTION);
-        resultIntent.putExtra(ApplicationConstants.DATA_IMPORT_RESULT, result);
+        Intent resultIntent = new Intent(ApplicationConstants.DATA_EXPORT_ACTION);
+        resultIntent.putExtra(ApplicationConstants.DATA_EXPORT_RESULT, result);
 
         context.sendBroadcast(resultIntent);
     }

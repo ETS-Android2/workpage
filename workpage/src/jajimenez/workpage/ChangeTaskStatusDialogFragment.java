@@ -33,28 +33,24 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        activity = getActivity();
+        applicationLogic = new ApplicationLogic(activity);
+        Resources resources = activity.getResources();
+
         if (savedInstanceState != null) {
             long[] taskIds = savedInstanceState.getLongArray("task_ids");
-            boolean[] taskDones = savedInstanceState.getBooleanArray("task_dones");
             
             if (taskIds != null) {
-                tasks = new LinkedList<Task>();
                 int taskCount = taskIds.length;
+                tasks = new LinkedList<Task>();
 
                 for (int i = 0; i < taskCount; i++) {
-                    Task task = new Task();
-                    task.setId(taskIds[i]);
-                    task.setDone(taskDones[i]);
-
+                    Task task = applicationLogic.getTask(taskIds[i]);
                     tasks.add(task);
                 }
             }
         }
 
-        activity = getActivity();
-        applicationLogic = new ApplicationLogic(activity);
-
-        Resources resources = activity.getResources();
         int selectedTaskCount = tasks.size();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -73,7 +69,8 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
                 boolean done = !firstTaskDone;
 
                 for (Task task : ChangeTaskStatusDialogFragment.this.tasks) {
-                    ChangeTaskStatusDialogFragment.this.applicationLogic.markTask(task.getId(), done);
+                    task.setDone(done);
+                    ChangeTaskStatusDialogFragment.this.applicationLogic.saveTask(task);
                 }
 
                 if (ChangeTaskStatusDialogFragment.this.onItemClickListener != null) {
@@ -91,16 +88,12 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
         
         int taskCount = tasks.size();
         long[] taskIds = new long[taskCount];
-        boolean[] taskDones = new boolean[taskCount];
 
         for (int i = 0; i < taskCount; i++) {
-            Task task = tasks.get(i);
-            taskIds[i] = task.getId();
-            taskDones[i] = task.isDone();
+            taskIds[i] = (tasks.get(i)).getId();
         }
 
         outState.putLongArray("task_ids", taskIds);
-        outState.putBooleanArray("task_dones", taskDones);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

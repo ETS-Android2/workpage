@@ -135,6 +135,38 @@
         <item quantity="other">%1$d weeks</item>
     </plurals>
 
+    <string name="now">Now</string>
+
+    <plurals name="due_in_x_minutes">
+        <item quantity="one">Due in %1$d minute</item>
+        <item quantity="other">Due in %1$d minutes</item>
+    </plurals>
+    <plurals name="x_minutes_ago">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
+
+    <plurals name="due_in_x_hours">
+        <item quantity="one">Due in %1$d hour</item>
+        <item quantity="other">Due in %1$d hours</item>
+    </plurals>
+    <plurals name="x_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+
+    <plurals name="due_in_x_days">
+        <item quantity="one">Due in %1$d day</item>
+        <item quantity="other">Due in %1$d days</item>
+    </plurals>
+    <plurals name="x_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
+
     <string name="view_1">View</string>
     <string name="view_2">View:</string>
     <string name="open">Open</string>
