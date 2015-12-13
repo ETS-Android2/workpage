@@ -1,9 +1,9 @@
 package jajimenez.workpage;
 
-import java.io.File;
+import java.util.Calendar;
 
-import android.app.PendingIntent;
 import android.app.IntentService;
+import android.app.PendingIntent;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -25,6 +25,7 @@ public class TaskReminderNotificationService extends IntentService {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // The Reminder ID contains the task ID and the reminder type.
         int reminderId = intent.getIntExtra("reminder_id", -1);
         String reminderIdStr = String.valueOf(reminderId);
         int length = reminderIdStr.length();
@@ -37,10 +38,11 @@ public class TaskReminderNotificationService extends IntentService {
 
         Intent recIntent = new Intent(context, TaskReminderAlarmReceiver.class);
         recIntent.putExtra("reminder_id", reminderId);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, reminderId, recIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, reminderId, recIntent, 0);
+        String action = intent.getAction();
 
-        if (intent.getAction() == ApplicationConstants.TASK_REMINDER_DISMISS_ACTION) {
+        if (action.equals(ApplicationConstants.TASK_REMINDER_DISMISS_ACTION)) {
             alarmManager.cancel(alarmIntent);
 
             if (reminderType.equals("0")) {
@@ -57,6 +59,12 @@ public class TaskReminderNotificationService extends IntentService {
             }
 
             applicationLogic.saveTask(task);
+        }
+        else if (action.equals(ApplicationConstants.TASK_REMINDER_SNOOZE_ACTION)) {
+            Calendar nextTime = Calendar.getInstance();
+            nextTime.add(Calendar.MINUTE, 5); // 5 minutes from now.
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, nextTime.getTimeInMillis(), alarmIntent);
         }
 
         notificationManager.cancel(reminderId);

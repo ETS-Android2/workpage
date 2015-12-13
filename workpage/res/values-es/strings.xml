@@ -118,11 +118,11 @@
     <string name="dates_error">Por favor, introduzca fechas válidas.</string>
     <string name="task_saved">Tarea guardada.</string>
     <string name="on_time">Al momento</string>
-    <string name="x_minutes">%1$d minutes</string>
+    <string name="x_minutes">%1$d minutos</string>
 
     <plurals name="x_hours">
-        <item quantity="one">%1$d hour</item>
-        <item quantity="other">%1$d hours</item>
+        <item quantity="one">%1$d hora</item>
+        <item quantity="other">%1$d horas</item>
     </plurals>
 
     <plurals name="x_days">
@@ -131,41 +131,12 @@
     </plurals>
 
     <plurals name="x_weeks">
-        <item quantity="one">%1$d week</item>
-        <item quantity="other">%1$d weeks</item>
-    </plurals>
-
-    <string name="now">Ahora</string>
-
-    <plurals name="due_in_x_minutes">
-        <item quantity="one">En %1$d minuto</item>
-        <item quantity="other">En %1$d minutos</item>
-    </plurals>
-    <plurals name="x_minutes_ago">
-        <item quantity="one">Hace %1$d minuto</item>
-        <item quantity="other">Hace %1$d minutos</item>
-    </plurals>
-
-    <plurals name="due_in_x_hours">
-        <item quantity="one">En %1$d hora</item>
-        <item quantity="other">En %1$d horas</item>
-    </plurals>
-    <plurals name="x_hours_ago">
-        <item quantity="one">Hace %1$d hora</item>
-        <item quantity="other">Hace %1$d horas</item>
-    </plurals>
-
-    <plurals name="due_in_x_days">
-        <item quantity="one">En %1$d día</item>
-        <item quantity="other">En %1$d días</item>
-    </plurals>
-    <plurals name="x_days_ago">
-        <item quantity="one">Hace %1$d día</item>
-        <item quantity="other">Hace %1$d días</item>
+        <item quantity="one">%1$d semana</item>
+        <item quantity="other">%1$d semanas</item>
     </plurals>
 
     <string name="dismiss">Descartar</string>
-    <string name="snooze">Repetir</string>
+    <string name="snooze">Posponer</string>
 
     <string name="view_1">Vista</string>
     <string name="view_2">Vista:</string>
@@ -196,6 +167,12 @@
     <string name="import_error_file_not_compatible">Error: El archivo no es compatible.</string>
     <string name="import_error_data_not_valid">Error: Los datos no son válidos.</string>
     <string name="data_import_confirmation">Los datos actuales serán sobrescritos. ¿Quiere continuar?</string>
+
+    <string name="settings">Configuración</string>
+    <string name="reminders_notifications">Recordatorios (notificaciones)</string>
+    <string name="play_sound">Reproducir sonido</string>
+    <string name="vibrate">Vibrar</string>
+    <string name="light">Luz</string>
 
     <string name="about">Acerca De</string>
     <string name="version">Versión:</string>

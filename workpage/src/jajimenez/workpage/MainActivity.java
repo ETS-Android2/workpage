@@ -438,6 +438,13 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         startActivity(intent);
     }
 
+    public void onSettingsItemSelected(MenuItem item) {
+        if (!interfaceReady) return;
+
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     public void onAboutItemSelected(MenuItem item) {
         if (!interfaceReady) return;
 

@@ -203,6 +203,9 @@ public class ApplicationLogic {
     // Returns "true" if there is some difference in a reminder
     // for 2 given tasks (with the same ID) and a given reminder
     // type.
+    //
+    // Note: If the value of "reminderType" is not valid,
+    //       it always returns "false".
     private boolean reminderDifference(Task oldTask, Task newTask, int reminderType) {
         Calendar oldCalendar = null;
         TaskReminder oldReminder = null;
@@ -227,7 +230,7 @@ public class ApplicationLogic {
                 newReminder = newTask.getStartReminder();
 
                 break;
-            default: // DEADLINE
+            case DEADLINE:
                 oldCalendar = oldTask.getDeadline();
                 oldReminder = oldTask.getDeadlineReminder();
                 
@@ -249,7 +252,7 @@ public class ApplicationLogic {
     }
 
     // Updates all the alarms of a given task.
-    private void updateAllReminderAlarms(Task task, boolean removeAllAlarms) {
+    public void updateAllReminderAlarms(Task task, boolean removeAllAlarms) {
         updateReminderAlarm(task, WHEN, removeAllAlarms);
         updateReminderAlarm(task, START, removeAllAlarms);
         updateReminderAlarm(task, DEADLINE, removeAllAlarms);
@@ -280,12 +283,12 @@ public class ApplicationLogic {
 
         Intent intent = new Intent(appContext, TaskReminderAlarmReceiver.class);
         intent.putExtra("reminder_id", reminderId);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(appContext, reminderId, intent, 0);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(appContext, reminderId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar calendar = null;
         TaskReminder reminder = null;
 
-        switch (reminderType){
+        switch (reminderType) {
             case WHEN:
                 calendar = task.getWhen();
                 reminder = task.getWhenReminder();
@@ -307,10 +310,7 @@ public class ApplicationLogic {
             reminderTime.setTimeInMillis(calendar.getTimeInMillis());
             reminderTime.add(Calendar.MINUTE, (((int) reminder.getMinutes())*(-1)));
 
-            int interval = 300000; // 5 minutes in milliseconds (5 * 60 * 1000 = 300000).
-
-            // It will replace any existing alarm for the same PendingIntent object.
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, reminderTime.getTimeInMillis(), interval, alarmIntent);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, reminderTime.getTimeInMillis(), alarmIntent);
         }
         else {
             alarmManager.cancel(alarmIntent);
@@ -348,7 +348,6 @@ public class ApplicationLogic {
 
     public int importData(File from) {
         int importResult;
-
         int compatible = DataManager.isDatabaseCompatible(from);
 
         switch (compatible) {
