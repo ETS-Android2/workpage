@@ -97,9 +97,11 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
         Builder builder = new Builder(context);
         builder.setSmallIcon(R.drawable.notification_workpage);
         builder.setContentTitle(title);
+        builder.setTicker(title);
         builder.setContentText(text);
         builder.setContentIntent(taskPendingIntent);
         builder.setDefaults(notificationFlags);
+        builder.setOngoing(true);
         builder.addAction(R.drawable.notification_dismiss, context.getString(R.string.dismiss), dismissPendingIntent);
         builder.addAction(R.drawable.notification_snooze, context.getString(R.string.snooze), snoozePendingIntent);
 
