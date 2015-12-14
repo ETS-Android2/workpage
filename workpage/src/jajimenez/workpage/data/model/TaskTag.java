@@ -61,7 +61,7 @@ public class TaskTag extends Entity implements Comparable<TaskTag> {
     }
 
     public int compareTo(TaskTag other) {
-        int result = 1;
+        int result = -1;
         if (other != null) result = this.name.compareTo(other.name);
 
         return result;
