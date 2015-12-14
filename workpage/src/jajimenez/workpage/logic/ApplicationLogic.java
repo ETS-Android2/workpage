@@ -148,6 +148,10 @@ public class ApplicationLogic {
         return dataManager.getTaskReminder(id);
     }
 
+    public int getTaskTagCount(TaskContext context) {
+        return dataManager.getTaskTagCount(context);
+    }
+
     public List<TaskTag> getAllTaskTags(TaskContext context) {
         return dataManager.getAllTaskTags(context);
     }

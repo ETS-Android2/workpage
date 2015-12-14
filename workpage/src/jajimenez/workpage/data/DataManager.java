@@ -613,6 +613,27 @@ public class DataManager extends SQLiteOpenHelper {
         return reminder;
     }
 
+    public int getTaskTagCount(TaskContext context) {
+        int count = 0;
+
+        if (context != null) {
+            SQLiteDatabase db = null;
+
+            try {
+                db = getReadableDatabase();
+                String query = "SELECT count(id) FROM task_tags WHERE task_context_id = ?";
+                Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(context.getId()) });
+
+                if (cursor.moveToFirst()) count = cursor.getInt(0);
+            }
+            finally {
+                if (db != null) db.close();
+            }
+        }
+
+        return count;
+    }
+
     // Returns all the task tags that belong to a task context.
     public List<TaskTag> getAllTaskTags(TaskContext context) {
         List<TaskTag> tags = new LinkedList<TaskTag>();
@@ -1042,7 +1063,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (done) query += "AND tasks.done = 1 ";
                 else query += "AND tasks.done = 0 ";
 
-                query += String.format("AND task_tags.name = ?");
+                query += "AND task_tags.name = ?";
                 Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(tag.getName()) });
 
                 if (cursor.moveToFirst()) count = cursor.getInt(0);
