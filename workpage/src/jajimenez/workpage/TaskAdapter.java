@@ -90,34 +90,27 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     }
 
     private void showTags() {
+        TextTool textTool = new TextTool();
         List<TaskTag> tags = task.getTags();
 
         // Set background color based on tag colors.
-        int tagCount;
-        if (tags == null) tagCount = 0;
-        else tagCount = tags.size();
-
-        String tagsText = "";
+        int tagCount = 0;
+        if (tags != null) tagCount = tags.size();
 
         if (tagCount > 0) {
+            // Tag names.
+            tagsTextView.setText(textTool.getTagsText(activity, task));
+
+            // Tag colors.
             LinkedList<String> colors = new LinkedList<String>();
 
             for (int i = 0; i < tagCount; i++) {
-                // Tag name.
-                TaskTag tag = tags.get(i);
+                TaskTag t = tags.get(i);
 
-                tagsText += tag.getName();
-                if (i < (tagCount - 1)) tagsText += ", ";
-
-                // Tag color.
-                String color = tag.getColor();
+                String color = t.getColor();
                 if (color != null) colors.add(color);
             }
 
-            // Task dates.
-            tagsTextView.setText(tagsText);
-
-            // Task colors.
             int colorCount = colors.size();
 
             // "Color.parseColor" converts the hexadecimal color to int-color.

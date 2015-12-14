@@ -110,6 +110,7 @@
     <string name="task_deadline">Límite: %1$s - %2$s</string>
     <string name="task_deadline_notime">Límite: %1$s</string>
     <string name="tags">Etiquetas:</string>
+    <string name="tag_filter">Filtro de etiquetas:</string>
     <string name="tag_name">Nombre de la etiqueta</string>
     <string name="add">Añadir</string>
     <string name="tag_already_added">Etiqueta ya añadida.</string>
@@ -146,9 +147,9 @@
     <string name="doable_today_description">Las tareas pendientes que pueden hacerse hoy.</string>
     <string name="closed">Completo</string>
     <string name="closed_description">Todas las tareas completas.</string>
-    <string name="filter_by_tags">Filtrar por etiquetas:</string>
     <string name="all">(Todo)</string>
     <string name="no_tag">(Sin etiquetas)</string>
+    <string name="none">(Ninguno)</string>
     <string name="no_tags">No hay etiquetas.</string>
 
     <string name="export_data">Exportar datos</string>
@@ -180,4 +181,6 @@
     <string name="author">Autor:</string>
     <string name="license">Licencia:</string>
     <string name="web_site">Sitio web:</string>
+
+    <string name="separator">,&#160;</string>
 </resources>

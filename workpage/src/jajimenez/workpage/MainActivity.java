@@ -30,7 +30,6 @@ import jajimenez.workpage.data.model.Task;
 public class MainActivity extends ListActivity implements DataChangeReceiverActivity {
     private Menu menu;
     private TextView viewTextView;
-    private TextView filterTagsTitleTextView;
     private TextView filterTagsValueTextView;
     private ActionBar actionBar;
     private ActionMode actionMode;
@@ -62,7 +61,6 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         setContentView(R.layout.main);
 
         viewTextView = (TextView) findViewById(R.id.main_view);
-        filterTagsTitleTextView = (TextView) findViewById(R.id.main_filterTags_title);
         filterTagsValueTextView = (TextView) findViewById(R.id.main_filterTags_value);
         listView = getListView();
         emptyTextView = (TextView) findViewById(android.R.id.empty);
@@ -302,21 +300,23 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         int filterTagCount = 0;
         if (currentFilterTags != null) filterTagCount = currentFilterTags.size();
 
-        if (filterTagCount == 0) {
-            filterTagsTitleTextView.setVisibility(View.GONE);
-            filterTagsValueTextView.setVisibility(View.GONE);
-
-            filterTagsValueTextView.setText("");
+        if (!includeTasksWithNoTag && filterTagCount == 0) {
+            filterTagsValueTextView.setText(R.string.none);
+        }
+        else if (includeTasksWithNoTag && filterTagCount == applicationLogic.getTaskTagCount(currentTaskContext)) {
+            filterTagsValueTextView.setText(R.string.all);
         }
         else {
-            filterTagsTitleTextView.setVisibility(View.VISIBLE);
-            filterTagsValueTextView.setVisibility(View.VISIBLE);
-
             String tagsText = "";
+
+            if (includeTasksWithNoTag) {
+                tagsText += getString(R.string.no_tag); 
+                if (filterTagCount > 0) tagsText += getString(R.string.separator);
+            }
 
             for (int i = 0; i < filterTagCount; i++) {
                 tagsText += (currentFilterTags.get(i)).getName();
-                if (i < (filterTagCount - 1)) tagsText += ", ";
+                if (i < (filterTagCount - 1)) tagsText += getString(R.string.separator);
             }
 
             filterTagsValueTextView.setText(tagsText);

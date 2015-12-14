@@ -110,6 +110,7 @@
     <string name="task_deadline">Deadline: %1$s - %2$s</string>
     <string name="task_deadline_notime">Deadline: %1$s</string>
     <string name="tags">Tags:</string>
+    <string name="tag_filter">Tag filter:</string>
     <string name="tag_name">Tag name</string>
     <string name="add">Add</string>
     <string name="tag_already_added">Tag already added.</string>
@@ -146,9 +147,9 @@
     <string name="doable_today_description">The open tasks that can be done today.</string>
     <string name="closed">Closed</string>
     <string name="closed_description">All the closed tasks.</string>
-    <string name="filter_by_tags">Filter by tags:</string>
     <string name="all">(All)</string>
     <string name="no_tag">(No tag)</string>
+    <string name="none">(None)</string>
     <string name="no_tags">There are no tags.</string>
 
     <string name="export_data">Export data</string>
@@ -180,4 +181,6 @@
     <string name="author">Author:</string>
     <string name="license">License:</string>
     <string name="web_site">Web site:</string>
+
+    <string name="separator">,&#160;</string>
 </resources>

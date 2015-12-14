@@ -1,14 +1,16 @@
 package jajimenez.workpage.logic;
 
+import java.util.Calendar;
+import java.util.List;
+import java.text.DateFormat;
+
 import android.content.Context;
 import android.content.res.Resources;
 
 import jajimenez.workpage.R;
-import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
-
-import java.util.Calendar;
-import java.text.DateFormat;
+import jajimenez.workpage.data.model.TaskTag;
+import jajimenez.workpage.data.model.Task;
 
 public class TextTool {
     public final static int WHEN = 0;
@@ -153,6 +155,22 @@ public class TextTool {
                 long weeks = minutes/10080;
                 text = resources.getQuantityString(R.plurals.x_weeks, (int) weeks, weeks);
             }
+        }
+
+        return text;
+    }
+
+    public String getTagsText(Context context, Task task) {
+        String text = "";
+
+        List<TaskTag> tags = task.getTags();
+
+        int tagCount = 0;
+        if (tags != null) tagCount = tags.size();
+
+        for (int i = 0; i < tagCount; i++) {
+            text += (tags.get(i)).getName();
+            if (i < (tagCount - 1)) text += context.getString(R.string.separator);
         }
 
         return text;

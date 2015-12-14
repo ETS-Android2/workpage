@@ -6,6 +6,7 @@ import java.util.Calendar;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
+import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskTag;
 
@@ -37,6 +39,8 @@ public class TaskActivity extends Activity {
     private TextView date2ValueTextView;
 
     private TextView descriptionTextView;
+
+    private ActionBar actionBar;
 
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
     private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
@@ -64,6 +68,8 @@ public class TaskActivity extends Activity {
         date2ValueTextView = (TextView) findViewById(R.id.task_date2_value);
 
         descriptionTextView = (TextView) findViewById(R.id.task_description);
+
+        actionBar = getActionBar();
 
         taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
             public void onItemClick() {
@@ -115,11 +121,17 @@ public class TaskActivity extends Activity {
     }
 
     private void updateInterface() {
+        ApplicationLogic applicationLogic = new ApplicationLogic(this);
+        TextTool textTool = new TextTool();
+
         // Update Task object after possible changes.
-        currentTask = (new ApplicationLogic(this)).getTask(currentTaskId);
+        currentTask = applicationLogic.getTask(currentTaskId);
 
         if (currentTask.isDone()) setTitle(R.string.task_closed);
         else setTitle(R.string.task_open);
+
+        TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
+        actionBar.setSubtitle(context.getName());
 
         titleTextView.setText(currentTask.getTitle());
         descriptionTextView.setText(currentTask.getDescription());
@@ -131,16 +143,10 @@ public class TaskActivity extends Activity {
         if (tags != null) tagCount = tags.size();
 
         if (tagCount == 0) {
+            tagsTextView.setText("");
             tagsTextView.setVisibility(View.GONE);
         } else {
-            String tagsText = "";
-
-            for (int i = 0; i < tagCount; i++) {
-                tagsText += (tags.get(i)).getName();
-                if (i < (tagCount - 1)) tagsText += ", ";
-            }
-
-            tagsTextView.setText(tagsText);
+            tagsTextView.setText(textTool.getTagsText(this, currentTask));
             tagsTextView.setVisibility(View.VISIBLE);
         }
 

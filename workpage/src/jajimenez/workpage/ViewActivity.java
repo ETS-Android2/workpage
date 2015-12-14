@@ -26,7 +26,6 @@ public class ViewActivity extends Activity {
     private LinearLayout tagsLinearLayout;
     private CheckBox allCheckBox;
     private CheckBox noTagCheckBox;
-    private TextView noTagsTextView;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
@@ -48,7 +47,6 @@ public class ViewActivity extends Activity {
         allCheckBox = (CheckBox) findViewById(R.id.view_all);
         noTagCheckBox = (CheckBox) findViewById(R.id.view_noTag);
         tagsLinearLayout = (LinearLayout) findViewById(R.id.view_tags);
-        noTagsTextView = (TextView) findViewById(R.id.view_noTags);
 
         (getActionBar()).setDisplayHomeAsUpEnabled(true);
         setResult(RESULT_OK);
@@ -111,9 +109,6 @@ public class ViewActivity extends Activity {
 
                 tagsLinearLayout.addView(tagCheckBox);
             }
-        }
-        else {
-            noTagsTextView.setVisibility(View.VISIBLE);
         }
 
         allCheckBox.setChecked(includeTasksWithNoTag && currentFilterTags.size() == tagCount);

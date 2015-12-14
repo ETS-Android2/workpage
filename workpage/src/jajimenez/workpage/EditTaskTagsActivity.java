@@ -206,7 +206,8 @@ public class EditTaskTagsActivity extends ListActivity {
 
         if (adapter.isEmpty()) {
             emptyTextView.setText(R.string.no_tags);
-        } else if (savedInstanceState != null) {
+        }
+        else if (savedInstanceState != null) {
             int[] selectedItems = savedInstanceState.getIntArray("selected_items");
 
             if (selectedItems != null) {
