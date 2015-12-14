@@ -64,17 +64,16 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
 
                 if (selectedTaskContext.getId() != SwitchTaskContextDialogFragment.this.currentTaskContext.getId()) { 
                     String newCurrentView = "open";
-                    List<TaskTag> newCurrentFilterTags = new LinkedList<TaskTag>();
+                    boolean newIncludeTasksWithNoTag = true;
+                    List<TaskTag> newCurrentFilterTags = SwitchTaskContextDialogFragment.this.applicationLogic.getAllTaskTags(selectedTaskContext);
 
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(selectedTaskContext);
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentView(newCurrentView);
+                    SwitchTaskContextDialogFragment.this.applicationLogic.setIncludeTasksWithNoTag(newIncludeTasksWithNoTag);
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentFilterTags(newCurrentFilterTags);
 
-
                     if (SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener != null) {
-                        SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener.onNewCurrentTaskContextSet(selectedTaskContext,
-                            newCurrentView,
-                            newCurrentFilterTags);
+                        SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener.onNewCurrentTaskContextSet();
                     }
                 }
 
@@ -91,6 +90,6 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
     }
 
     public static interface OnNewCurrentTaskContextSetListener {
-        void onNewCurrentTaskContextSet(TaskContext newCurrentTaskContext, String newCurrentView, List<TaskTag> newCurrentFilterTags);
+        void onNewCurrentTaskContextSet();
     }
 }

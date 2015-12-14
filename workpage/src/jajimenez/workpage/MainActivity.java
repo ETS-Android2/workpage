@@ -48,6 +48,7 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
     private String currentView;
+    private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
 
     private DataExportBroadcastReceiver exportReceiver;
@@ -73,14 +74,8 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         inFront = false;
 
         switchTaskContextListener = new SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener() {
-            public void onNewCurrentTaskContextSet(TaskContext newCurrentTaskContext, String newCurrentView, List<TaskTag> newCurrentFilterTags) {
-                if (newCurrentTaskContext != null) {
-                    MainActivity.this.currentTaskContext = newCurrentTaskContext;
-                    MainActivity.this.currentView = newCurrentView;
-                    MainActivity.this.currentFilterTags = newCurrentFilterTags;
-
-                    MainActivity.this.updateInterface();
-                }
+            public void onNewCurrentTaskContextSet() {
+                MainActivity.this.updateInterface();
             }
         };
 
@@ -119,6 +114,7 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
 
         applicationLogic = new ApplicationLogic(this);
         currentView = "";
+        includeTasksWithNoTag = true;
         currentFilterTags = new LinkedList<TaskTag>();
     }
 
@@ -288,9 +284,8 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
     }
 
     public void updateInterface() {
-        currentTaskContext = applicationLogic.getCurrentTaskContext();
-
         // Information about the current task context.
+        currentTaskContext = applicationLogic.getCurrentTaskContext();
         actionBar.setSubtitle(currentTaskContext.getName());
 
         // Information about the current view.
@@ -301,6 +296,7 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         else if (currentView.equals("closed")) viewTextView.setText(R.string.closed);
 
         // Information about the current filter tags.
+        includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
         currentFilterTags = this.applicationLogic.getCurrentFilterTags();
 
         int filterTagCount = 0;
@@ -460,9 +456,21 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
-            if (currentView.equals("open")) tasks = MainActivity.this.applicationLogic.getOpenTasks(MainActivity.this.currentTaskContext, currentFilterTags);
-            else if (currentView.equals("doable_today")) tasks = MainActivity.this.applicationLogic.getDoableTodayTasks(MainActivity.this.currentTaskContext, currentFilterTags);
-            else if (currentView.equals("closed")) tasks = MainActivity.this.applicationLogic.getClosedTasks(MainActivity.this.currentTaskContext, currentFilterTags);
+            if (currentView.equals("open")) {
+                tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
+                    MainActivity.this.includeTasksWithNoTag,
+                    MainActivity.this.currentFilterTags);
+            }
+            else if (currentView.equals("doable_today")) {
+                tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
+                    MainActivity.this.includeTasksWithNoTag,
+                    MainActivity.this.currentFilterTags);
+            }
+            else if (currentView.equals("closed")) {
+                tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
+                    MainActivity.this.includeTasksWithNoTag,
+                    MainActivity.this.currentFilterTags);
+            }
 
             return tasks;
         }

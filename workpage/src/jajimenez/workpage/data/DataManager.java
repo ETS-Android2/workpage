@@ -778,55 +778,64 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all open tasks that belong to a given task context and
     // that could be done at the current day ("doable-today" tasks)
-    // and have any of the given task tags. Returns all "doable-today"
-    // tasks of the context if "filterTags" is null or empty.
+    // and have any of the given task tags or have no tag if
+    // "includeTasksWithNoTag" is "true".
     //
     // A doable-today task means that the task is not done plus one of
     // the following cases:
     //   1) The task has no start date.
     //   2) The task has a start date and the date is the current day
     //      or before.
-    public List<Task> getDoableTodayTasks(TaskContext context, List<TaskTag> filterTags) {
+    public List<Task> getDoableTodayTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
         List<Task> tasks = new LinkedList<Task>();
-        long contextId = context.getId();
 
         int tagCount = 0;
-        if (filterTags != null) tagCount = filterTags.size();
+        if (tags != null) tagCount = tags.size();
 
         TextTool tool = new TextTool();
+        long contextId = context.getId();
 
         // Get the next day in Unix Time format.
         Calendar nextDay = Calendar.getInstance(); // At this point, "nextDay" is the current time.
         tool.clearTimeFields(nextDay);             // Clear all the time fields, setting them to 0.
         nextDay.add(Calendar.DAY_OF_MONTH, 1);     // Now, "nextDay" is actually the next day.
 
+        String nextDayTime = String.valueOf(nextDay.getTimeInMillis());
         SQLiteDatabase db = null;
 
         try {
             db = getReadableDatabase();
             String query = "";
+            Cursor cursor = null;
 
-            if (tagCount == 0) {
-                query += "SELECT id, title, description, " +
-                    "when_datetime, ignore_when_time, when_reminder_id, " +
-                    "start_datetime, ignore_start_time, start_reminder_id, " +
-                    "deadline_datetime, ignore_deadline_time, deadline_reminder_id " +
-                    "FROM tasks " +
-                    "WHERE task_context_id = ? " +
-                    "AND ((when_datetime IS NOT NULL AND when_datetime < ?) " +
-                        "OR (when_datetime IS NULL AND start_datetime IS NULL) " +
-                        "OR (when_datetime IS NULL AND start_datetime IS NOT NULL AND start_datetime < ?)) " +
-                    "AND done = 0 " +
-                    "ORDER BY id";
-            }
-            else {
-                query += "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
+            if (includeTasksWithNoTag) {
+                query = "SELECT tasks.id, tasks.title, tasks.description, " +
                     "tasks.when_datetime, tasks.ignore_when_time, tasks.when_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_reminder_id, " +
-                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id " +
+                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id, " +
+                    "tasks.done " +
+                    "FROM tasks LEFT JOIN task_tag_relationships ON tasks.id = task_tag_relationships.task_id " +
+                    "WHERE task_tag_relationships.task_id IS NULL " +
+                    "AND tasks.task_context_id = ? " +
+                    "AND ((tasks.when_datetime IS NOT NULL AND tasks.when_datetime < ?) " +
+                        "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NULL) " +
+                        "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NOT NULL AND tasks.start_datetime < ?)) " +
+                    "AND tasks.done = 0 " +
+                    "ORDER BY tasks.id";
+
+                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), nextDayTime, nextDayTime });
+                tasks.addAll(getTasksFromCursor(db, cursor, contextId));
+            }
+
+            if (tagCount > 0) {
+                query = "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
+                    "tasks.when_datetime, tasks.ignore_when_time, tasks.when_reminder_id, " +
+                    "tasks.start_datetime, tasks.ignore_start_time, tasks.start_reminder_id, " +
+                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id, " +
+                    "tasks.done " +
                     "FROM tasks, task_tag_relationships, task_tags " +
-                    "WHERE tasks.task_context_id = ? " +
-                    "AND tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id " +
+                    "WHERE tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id " +
+                    "AND tasks.task_context_id = ? " +
                     "AND ((tasks.when_datetime IS NOT NULL AND tasks.when_datetime < ?) " +
                         "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NULL) " +
                         "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NOT NULL AND tasks.start_datetime < ?)) " +
@@ -834,79 +843,16 @@ public class DataManager extends SQLiteOpenHelper {
                     "AND (";
 
                     for (int i = 0; i < tagCount; i++) {
-                        TaskTag tag = filterTags.get(i);
+                        TaskTag tag = tags.get(i);
                         query += String.format("task_tags.name = '%s' ", tag.getName());
 
                         if (i < (tagCount - 1)) query += "OR ";
                     }
 
-                    query += ") " +
-                        "ORDER BY tasks.id";
-            }
+                    query += ") ORDER BY tasks.id";
 
-            String nextDayTime = String.valueOf(nextDay.getTimeInMillis());
-            Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), nextDayTime, nextDayTime });
-
-            if (cursor.moveToFirst()) {
-                do {
-                    long id = cursor.getLong(0);
-                    String title = cursor.getString(1);
-                    String description = cursor.getString(2);
-
-                    Calendar when = null;
-                    if (!cursor.isNull(3)) {
-                        when = Calendar.getInstance();
-                        when.setTimeInMillis(cursor.getLong(3));
-                    }
-
-                    boolean ignoreWhenTime = false;
-                    if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
-
-                    TaskReminder whenReminder = null;
-                    if (!cursor.isNull(5)) {
-                        long whenReminderId = cursor.getLong(5);
-                        whenReminder = getTaskReminder(db, whenReminderId);
-                    }
-
-                    Calendar start = null;
-                    if (!cursor.isNull(6)) {
-                        start = Calendar.getInstance();
-                        start.setTimeInMillis(cursor.getLong(6));
-                    }
-
-                    boolean ignoreStartTime = false;
-                    if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
-
-                    TaskReminder startReminder = null;
-                    if (!cursor.isNull(8)) {
-                        long startReminderId = cursor.getLong(8);
-                        startReminder = getTaskReminder(db, startReminderId);
-                    }
-
-                    Calendar deadline = null;
-                    if (!cursor.isNull(9)) {
-                        deadline = Calendar.getInstance();
-                        deadline.setTimeInMillis(cursor.getLong(9));
-                    }
-
-                    boolean ignoreDeadlineTime = false;
-                    if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
-
-                    TaskReminder deadlineReminder = null;
-                    if (!cursor.isNull(11)) {
-                        long deadlineReminderId = cursor.getLong(11);
-                        deadlineReminder = getTaskReminder(db, deadlineReminderId);
-                    }
-
-                    List<TaskTag> tags = getTaskTags(db, id);
-
-                    tasks.add(new Task(id, contextId, title, description,
-                        when, ignoreWhenTime, whenReminder,
-                        start, ignoreStartTime, startReminder,
-                        deadline, ignoreDeadlineTime, deadlineReminder,
-                        false, tags));
-                }
-                while (cursor.moveToNext());
+                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), nextDayTime, nextDayTime });
+                tasks.addAll(getTasksFromCursor(db, cursor, contextId));
             }
         }
         finally {
@@ -916,50 +862,123 @@ public class DataManager extends SQLiteOpenHelper {
         return tasks;
     }
 
-    // Returns all tasks that belong to a given context, given its state and any of its tags.
-    // It returns all tasks of the context with the given state if "filterTags" is null or
-    // empty.
-    public List<Task> getTasks(TaskContext context, boolean done, List<TaskTag> filterTags) {
+    private List<Task> getTasksFromCursor(SQLiteDatabase db, Cursor cursor, long contextId) {
         List<Task> tasks = new LinkedList<Task>();
-        long contextId = context.getId();
+
+        if (cursor.moveToFirst()) {
+            do {
+                long id = cursor.getLong(0);
+                String title = cursor.getString(1);
+                String description = cursor.getString(2);
+
+                Calendar when = null;
+                if (!cursor.isNull(3)) {
+                    when = Calendar.getInstance();
+                    when.setTimeInMillis(cursor.getLong(3));
+                }
+
+                boolean ignoreWhenTime = false;
+                if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
+
+                TaskReminder whenReminder = null;
+                if (!cursor.isNull(5)) {
+                    long whenReminderId = cursor.getLong(5);
+                    whenReminder = getTaskReminder(db, whenReminderId);
+                }
+
+                Calendar start = null;
+                if (!cursor.isNull(6)) {
+                    start = Calendar.getInstance();
+                    start.setTimeInMillis(cursor.getLong(6));
+                }
+
+                boolean ignoreStartTime = false;
+                if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
+
+                TaskReminder startReminder = null;
+                if (!cursor.isNull(8)) {
+                    long startReminderId = cursor.getLong(8);
+                    startReminder = getTaskReminder(db, startReminderId);
+                }
+
+                Calendar deadline = null;
+                if (!cursor.isNull(9)) {
+                    deadline = Calendar.getInstance();
+                    deadline.setTimeInMillis(cursor.getLong(9));
+                }
+
+                boolean ignoreDeadlineTime = false;
+                if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
+
+                TaskReminder deadlineReminder = null;
+                if (!cursor.isNull(11)) {
+                    long deadlineReminderId = cursor.getLong(11);
+                    deadlineReminder = getTaskReminder(db, deadlineReminderId);
+                }
+
+                boolean done = (cursor.getLong(12) != 0);
+                List<TaskTag> tags = getTaskTags(db, id);
+
+                tasks.add(new Task(id, contextId, title, description,
+                    when, ignoreWhenTime, whenReminder,
+                    start, ignoreStartTime, startReminder,
+                    deadline, ignoreDeadlineTime, deadlineReminder,
+                    done, tags));
+            }
+            while (cursor.moveToNext());
+        }
+
+        return tasks;
+    }
+
+    // Returns all tasks that belong to a given context, given its state and any of its
+    // tags. It includes the tasks that have no tag if "includeTasksWithNoTag" is "true".
+    public List<Task> getTasksByTags(TaskContext context, boolean done, boolean includeTasksWithNoTag , List<TaskTag> tags) {
+        List<Task> tasks = new LinkedList<Task>();
 
         int tagCount = 0;
-        if (filterTags != null) tagCount = filterTags.size();
+        if (tags != null) tagCount = tags.size();
 
         TextTool tool = new TextTool();
+        long contextId = context.getId();
+
         SQLiteDatabase db = null;
 
         try {
             db = getReadableDatabase();
             String query = "";
+            Cursor cursor = null;
 
-            if (tagCount == 0) {
-                query += "SELECT id, title, description, " +
-                    "when_datetime, ignore_when_time, when_reminder_id, " +
-                    "start_datetime, ignore_start_time, start_reminder_id, " +
-                    "deadline_datetime, ignore_deadline_time, deadline_reminder_id " +
-                    "FROM tasks " +
-                    "WHERE task_context_id = ? ";
-
-                if (done) query += "AND done != 0 ORDER BY id DESC;";
-                else query += "AND done = 0 ORDER BY id;";
-            }
-            else {
-                query += "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
+            if (includeTasksWithNoTag) {
+                query = "SELECT tasks.id, tasks.title, tasks.description, " +
                     "tasks.when_datetime, tasks.ignore_when_time, tasks.when_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_reminder_id, " +
-                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id " +
+                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id, " +
+                    "tasks.done " +
+                    "FROM tasks LEFT JOIN task_tag_relationships ON tasks.id = task_tag_relationships.task_id " +
+                    "WHERE task_tag_relationships.task_id IS NULL " +
+                    "AND tasks.task_context_id = ? ";
+
+                if (done) query += "AND tasks.done != 0 ORDER BY tasks.id DESC";
+                else query += "AND tasks.done = 0 ORDER BY tasks.id";
+
+                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
+                tasks.addAll(getTasksFromCursor(db, cursor, contextId));
+            }
+
+            if (tagCount > 0) {
+                query = "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
+                    "tasks.when_datetime, tasks.ignore_when_time, tasks.when_reminder_id, " +
+                    "tasks.start_datetime, tasks.ignore_start_time, tasks.start_reminder_id, " +
+                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_reminder_id, " +
+                    "tasks.done " +
                     "FROM tasks, task_tag_relationships, task_tags " +
-                    "WHERE tasks.task_context_id = ? " +
-                    "AND tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id ";
-
-                if (done) query += "AND tasks.done != 0 ";
-                else query += "AND tasks.done = 0 ";
-
-                query += "AND (";
+                    "WHERE tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id " +
+                    "AND tasks.task_context_id = ? " +
+                    "AND (";
 
                 for (int i = 0; i < tagCount; i++) {
-                    TaskTag tag = filterTags.get(i);
+                    TaskTag tag = tags.get(i);
                     query += String.format("task_tags.name = '%s' ", tag.getName());
 
                     if (i < (tagCount - 1)) query += "OR ";
@@ -967,72 +986,11 @@ public class DataManager extends SQLiteOpenHelper {
 
                 query += ") ";
 
-                if (done) query += "ORDER BY tasks.id DESC";
-                else query += "ORDER BY tasks.id";
-            }
+                if (done) query += "AND tasks.done != 0 ORDER BY tasks.id DESC";
+                else query += "AND tasks.done = 0 ORDER BY tasks.id";
 
-            Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
-
-            if (cursor.moveToFirst()) {
-                do {
-                    long id = cursor.getLong(0);
-                    String title = cursor.getString(1);
-                    String description = cursor.getString(2);
-
-                    Calendar when = null;
-                    if (!cursor.isNull(3)) {
-                        when = Calendar.getInstance();
-                        when.setTimeInMillis(cursor.getLong(3));
-                    }
-
-                    boolean ignoreWhenTime = false;
-                    if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
-
-                    TaskReminder whenReminder = null;
-                    if (!cursor.isNull(5)) {
-                        long whenReminderId = cursor.getLong(5);
-                        whenReminder = getTaskReminder(db, whenReminderId);
-                    }
-
-                    Calendar start = null;
-                    if (!cursor.isNull(6)) {
-                        start = Calendar.getInstance();
-                        start.setTimeInMillis(cursor.getLong(6));
-                    }
-
-                    boolean ignoreStartTime = false;
-                    if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
-
-                    TaskReminder startReminder = null;
-                    if (!cursor.isNull(8)) {
-                        long startReminderId = cursor.getLong(8);
-                        startReminder = getTaskReminder(db, startReminderId);
-                    }
-
-                    Calendar deadline = null;
-                    if (!cursor.isNull(9)) {
-                        deadline = Calendar.getInstance();
-                        deadline.setTimeInMillis(cursor.getLong(9));
-                    }
-
-                    boolean ignoreDeadlineTime = false;
-                    if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
-
-                    TaskReminder deadlineReminder = null;
-                    if (!cursor.isNull(11)) {
-                        long deadlineReminderId = cursor.getLong(11);
-                        deadlineReminder = getTaskReminder(db, deadlineReminderId);
-                    }
-
-                    List<TaskTag> tags = getTaskTags(db, id);
-
-                    tasks.add(new Task(id, contextId, title, description,
-                        when, ignoreWhenTime, whenReminder,
-                        start, ignoreStartTime, startReminder,
-                        deadline, ignoreDeadlineTime, deadlineReminder,
-                        done, tags));
-                }
-                while (cursor.moveToNext());
+                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
+                tasks.addAll(getTasksFromCursor(db, cursor, contextId));
             }
         }
         finally {
@@ -1261,7 +1219,7 @@ public class DataManager extends SQLiteOpenHelper {
         long taskId = task.getId();
 
         List<TaskTag> oldTags = getTaskTags(db, taskId); // Every old tag has a valid ID in the DB, as they come from the DB.
-        List<TaskTag> newTags = task.getTags();             // Every new task can have or not a valid ID in the DB, as they come from the application.
+        List<TaskTag> newTags = task.getTags();          // Every new task can have or not a valid ID in the DB, as they come from the application.
 
         // The comparison to know if a task is contained in a list is through the
         // name of the task, not the ID (see method "equals" in TaskTag class. 

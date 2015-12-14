@@ -147,7 +147,8 @@
     <string name="closed">Completo</string>
     <string name="closed_description">Todas las tareas completas.</string>
     <string name="filter_by_tags">Filtrar por etiquetas:</string>
-    <string name="select_tags">Seleccione 1 ó más etiquetas para mostrar sólo las tareas que tienen cualquiera de esas etiquetas. No seleccione ninguna etiqueta para mostrar todas las tareas.</string>
+    <string name="all">(Todo)</string>
+    <string name="no_tag">(Sin etiquetas)</string>
     <string name="no_tags">No hay etiquetas.</string>
 
     <string name="export_data">Exportar datos</string>

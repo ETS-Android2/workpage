@@ -1,6 +1,7 @@
 package jajimenez.workpage;
 
 import java.util.List;
+import java.util.LinkedList;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -23,12 +24,17 @@ public class ViewActivity extends Activity {
     private RadioButton doableTodayRadioButton;
     private RadioButton closedRadioButton;
     private LinearLayout tagsLinearLayout;
+    private CheckBox allCheckBox;
+    private CheckBox noTagCheckBox;
     private TextView noTagsTextView;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
 
+    private List<TaskTag> contextTags;
+
     private String currentView;
+    private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
 
     @Override
@@ -39,6 +45,8 @@ public class ViewActivity extends Activity {
         openRadioButton = (RadioButton) findViewById(R.id.view_open);
         doableTodayRadioButton = (RadioButton) findViewById(R.id.view_doableToday);
         closedRadioButton = (RadioButton) findViewById(R.id.view_closed);
+        allCheckBox = (CheckBox) findViewById(R.id.view_all);
+        noTagCheckBox = (CheckBox) findViewById(R.id.view_noTag);
         tagsLinearLayout = (LinearLayout) findViewById(R.id.view_tags);
         noTagsTextView = (TextView) findViewById(R.id.view_noTags);
 
@@ -48,6 +56,7 @@ public class ViewActivity extends Activity {
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = applicationLogic.getCurrentTaskContext();
         currentView = applicationLogic.getCurrentView();
+        includeTasksWithNoTag = applicationLogic.getIncludeTasksWithNoTag();
         currentFilterTags = applicationLogic.getCurrentFilterTags();
 
         updateInterface();
@@ -76,11 +85,12 @@ public class ViewActivity extends Activity {
         else if (currentView.equals("doable_today")) doableTodayRadioButton.setChecked(true);
         else if (currentView.equals("closed")) closedRadioButton.setChecked(true);
 
-        List<TaskTag> tags = applicationLogic.getAllTaskTags(currentTaskContext);
-        CheckBox tagCheckBox;
+        contextTags = applicationLogic.getAllTaskTags(currentTaskContext);
+        CheckBox tagCheckBox = null;
+        final int tagCount = contextTags.size();
 
-        if (tags.size() > 0) {
-            for (final TaskTag tag : tags) {
+        if (tagCount > 0) {
+            for (final TaskTag tag : contextTags) {
                 tagCheckBox = new CheckBox(this);
                 tagCheckBox.setText(tag.getName());
                 tagCheckBox.setChecked(currentFilterTags.contains(tag));
@@ -91,6 +101,10 @@ public class ViewActivity extends Activity {
                         if (tagCheckBox.isChecked()) ViewActivity.this.currentFilterTags.add(tag);
                         else ViewActivity.this.currentFilterTags.remove(tag);
 
+                        ViewActivity.this.allCheckBox.setChecked(ViewActivity.this.includeTasksWithNoTag &&
+                            ViewActivity.this.currentFilterTags.size() == tagCount);
+
+                        // Save settings.
                         ViewActivity.this.applicationLogic.setCurrentFilterTags(ViewActivity.this.currentFilterTags);
                     }
                 });
@@ -101,6 +115,9 @@ public class ViewActivity extends Activity {
         else {
             noTagsTextView.setVisibility(View.VISIBLE);
         }
+
+        allCheckBox.setChecked(includeTasksWithNoTag && currentFilterTags.size() == tagCount);
+        noTagCheckBox.setChecked(includeTasksWithNoTag);
     }
 
     public void onOpenDescriptionTextViewClicked(View view) {
@@ -113,5 +130,36 @@ public class ViewActivity extends Activity {
 
     public void onClosedDescriptionTextViewClicked(View view) {
         closedRadioButton.setChecked(true);
+    }
+
+    public void onAllCheckBoxClicked(View view) {
+        boolean all = allCheckBox.isChecked();
+        int count = tagsLinearLayout.getChildCount();
+
+        for (int i = 1; i < count; i++) {
+            CheckBox c = (CheckBox) tagsLinearLayout.getChildAt(i);
+            c.setChecked(all);
+        }
+
+        if (all) {
+            includeTasksWithNoTag = true;
+            currentFilterTags = contextTags;
+        }
+        else {
+            includeTasksWithNoTag = false;
+            currentFilterTags = new LinkedList<TaskTag>();
+        }
+
+        // Save settings.
+        applicationLogic.setIncludeTasksWithNoTag(includeTasksWithNoTag);
+        applicationLogic.setCurrentFilterTags(currentFilterTags);
+    }
+
+    public void onNoTagCheckBoxClicked(View view) {
+        includeTasksWithNoTag = noTagCheckBox.isChecked();
+        allCheckBox.setChecked(includeTasksWithNoTag && currentFilterTags.size() == contextTags.size());
+
+        // Save settings.
+        applicationLogic.setIncludeTasksWithNoTag(includeTasksWithNoTag);
     }
 }

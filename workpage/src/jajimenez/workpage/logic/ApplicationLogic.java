@@ -32,6 +32,7 @@ public class ApplicationLogic {
     public static final String PREFERENCES_FILE = "workpage_preferences";
     public static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
     public static final String CURRENT_VIEW_PREF_KEY = "current_view";
+    public static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
     public static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
 
     private Context appContext;
@@ -65,14 +66,23 @@ public class ApplicationLogic {
         return preferences.getString(CURRENT_VIEW_PREF_KEY, "open");
     }
 
-    // Returning Null or an empty list means that all tasks from the current view must be shown.
-    // Otherwise, only the tasks from the current view that have any of the given task tags must be shown.
+    public boolean getIncludeTasksWithNoTag() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(INCLUDE_TASKS_WITH_NO_TAG, true);
+    }
+
     public List<TaskTag> getCurrentFilterTags() {
         TaskContext currentContext = getCurrentTaskContext();
 
+        // Default tag names: all.
+        List<TaskTag> allTags = getAllTaskTags(currentContext);
+        TreeSet<String> allTagNames = new TreeSet<String>();
+        for (TaskTag tag : allTags) allTagNames.add(tag.getName());
+
+        // Get current settings.
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         // The Set object returned by "getStringSet" must not be mofified.
-        Set<String> prefFilterTagNames = preferences.getStringSet(CURRENT_FILTER_TAGS_PREF_KEY, new TreeSet<String>());
+        Set<String> prefFilterTagNames = preferences.getStringSet(CURRENT_FILTER_TAGS_PREF_KEY, allTagNames);
 
         LinkedList<String> filterTagNames = new LinkedList<String>(prefFilterTagNames);
         List<TaskTag> filterTags = dataManager.getTaskTagsByNames(currentContext, filterTagNames);
@@ -94,20 +104,23 @@ public class ApplicationLogic {
         editor.commit();
     }
 
-    // Setting "filterTags" to Null or to an empty list means that all tasks from the current view must be shown.
-    // Otherwise, only the tasks from the current view that have any of the given task tags must be shown.
+    public void setIncludeTasksWithNoTag(boolean include) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(INCLUDE_TASKS_WITH_NO_TAG, include);
+        editor.commit();
+    }
+
     public void setCurrentFilterTags(List<TaskTag> filterTags) {
-        LinkedList<String> filterTagNames = new LinkedList<String>();
+        TreeSet<String> filterTagNames = new TreeSet<String>();
         
         if (filterTags != null) {
             for (TaskTag tag : filterTags) filterTagNames.add(tag.getName());
         }
 
-        TreeSet<String> prefFilterTagNames = new TreeSet<String>(filterTagNames);
-
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putStringSet(CURRENT_FILTER_TAGS_PREF_KEY, prefFilterTagNames);
+        editor.putStringSet(CURRENT_FILTER_TAGS_PREF_KEY, filterTagNames);
         editor.commit();
     }
 
@@ -140,23 +153,42 @@ public class ApplicationLogic {
     }
 
     public void saveTaskTag(TaskTag tag) {
+        // If the tag is new, it must be added to the tag filtering of the current view.
+        TaskContext context = getTaskContext(tag.getContextId());
+        List<String> tagNames = new LinkedList<String>();
+        tagNames.add(tag.getName());
+
+        List<TaskTag> dbTags = dataManager.getTaskTagsByNames(context, tagNames);
+
+        if (dbTags == null || dbTags.size() == 0) {
+            // The tag is new.
+            List<TaskTag> filterTags = getCurrentFilterTags();
+            filterTags.add(tag);
+            setCurrentFilterTags(filterTags);
+        }
+
         dataManager.saveTaskTag(tag);
     }
 
     public void deleteTaskTags(List<TaskTag> tags) {
+        // The tags must be removed from the tag filtering of the current view.
+        List<TaskTag> filterTags = getCurrentFilterTags();
+        filterTags.removeAll(tags);
+        setCurrentFilterTags(filterTags);
+
         dataManager.deleteTaskTags(tags);
     }
 
-    public List<Task> getDoableTodayTasks(TaskContext context, List<TaskTag> filterTags) {
-        return dataManager.getDoableTodayTasks(context, filterTags);
+    public List<Task> getDoableTodayTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
+        return dataManager.getDoableTodayTasksByTags(context, includeTasksWithNoTag, tags);
     }
 
-    public List<Task> getOpenTasks(TaskContext context, List<TaskTag> filterTags) {
-        return dataManager.getTasks(context, false, filterTags);
+    public List<Task> getOpenTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
+        return dataManager.getTasksByTags(context, false, includeTasksWithNoTag, tags);
     }
 
-    public List<Task> getClosedTasks(TaskContext context, List<TaskTag> filterTags) {
-        return dataManager.getTasks(context, true, filterTags);
+    public List<Task> getClosedTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
+        return dataManager.getTasksByTags(context, true, includeTasksWithNoTag, tags);
     }
 
     public int getTaskCount(boolean done, TaskContext context) {
@@ -178,6 +210,28 @@ public class ApplicationLogic {
             task.setDeadlineReminder(null);
         }
 
+        // If any tag is new, it must be added to the tag filtering of the current view.
+        List<TaskTag> filterTags = getCurrentFilterTags();
+
+        TaskContext context = getTaskContext(task.getContextId());
+        List<TaskTag> taskTags = task.getTags();
+        List<String> tagNames = null;
+
+        for (TaskTag tag : taskTags) {
+            tagNames = new LinkedList<String>();
+            tagNames.add(tag.getName());
+
+            List<TaskTag> dbTags = dataManager.getTaskTagsByNames(context, tagNames);
+
+            if (dbTags == null || dbTags.size() == 0) {
+                // The tag is new.
+                filterTags.add(tag);
+            }
+        }
+
+        setCurrentFilterTags(filterTags);
+
+        // Reminders.
         long taskId = task.getId();
 
         if (taskId < 1) {
@@ -261,10 +315,15 @@ public class ApplicationLogic {
     // Updates all the alarms of all open tasks.
     public void updateAllOpenTaskReminderAlarms(boolean removeAllAlarms) {
         List<TaskContext> contexts = getAllTaskContexts();
+
+        boolean includeTasksWithNoTag = true;
+        List<TaskTag> tags = null;
         List<Task> tasks = null;
 
         for (TaskContext c : contexts) {
-            tasks = getOpenTasks(c, null);
+            tags = getAllTaskTags(c); // All context tags.
+            tasks = getOpenTasksByTags(c, includeTasksWithNoTag, tags); // All context open tasks.
+
             for (Task t : tasks) updateAllReminderAlarms(t, removeAllAlarms);
         }
     }
