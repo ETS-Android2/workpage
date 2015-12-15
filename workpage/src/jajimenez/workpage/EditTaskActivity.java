@@ -31,6 +31,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 
 import jajimenez.workpage.logic.ApplicationLogic;
+import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.logic.TextTool;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskReminder;
@@ -288,7 +289,7 @@ public class EditTaskActivity extends Activity {
         }
 
         if (savedInstanceState == null) {
-            TextTool tool = new TextTool();
+            DateTimeTool tool = new DateTimeTool();
             TaskReminder defaultReminder = applicationLogic.getTaskReminder(4); // 15 minutes.
 
             selectedWhen = Calendar.getInstance();
@@ -568,7 +569,7 @@ public class EditTaskActivity extends Activity {
             boolean ignoreDeadlineTime = false;
             TaskReminder deadlineReminder = null;
 
-            TextTool tool = new TextTool();
+            DateTimeTool tool = new DateTimeTool();
 
             if (whenRadioButton.isChecked()) {
                 when = Calendar.getInstance();
@@ -632,7 +633,7 @@ public class EditTaskActivity extends Activity {
         int result = 0;
 
         if (a != null && b != null) {
-            TextTool tool = new TextTool();
+            DateTimeTool tool = new DateTimeTool();
 
             Calendar a2 = Calendar.getInstance();
             a2.setTimeInMillis(a.getTimeInMillis());

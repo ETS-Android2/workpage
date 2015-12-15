@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import jajimenez.workpage.R;
-import jajimenez.workpage.logic.TextTool;
+import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskReminder;
 import jajimenez.workpage.data.model.TaskTag;
@@ -233,7 +233,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     private void updateTasksTableDBVersion3(SQLiteDatabase db) {
-        TextTool tool = new TextTool();
+        DateTimeTool tool = new DateTimeTool();
         db.beginTransaction();
 
         db.execSQL("CREATE TEMPORARY TABLE tasks_temp (" +
@@ -813,15 +813,15 @@ public class DataManager extends SQLiteOpenHelper {
         int tagCount = 0;
         if (tags != null) tagCount = tags.size();
 
-        TextTool tool = new TextTool();
+        DateTimeTool tool = new DateTimeTool();
         long contextId = context.getId();
 
         // Get the next day in Unix Time format.
-        Calendar nextDay = Calendar.getInstance(); // At this point, "nextDay" is the current time.
-        tool.clearTimeFields(nextDay);             // Clear all the time fields, setting them to 0.
-        nextDay.add(Calendar.DAY_OF_MONTH, 1);     // Now, "nextDay" is actually the next day.
+        Calendar tomorrow = Calendar.getInstance(); // At this point, "tomorrow" is the current time.
+        tool.clearTimeFields(tomorrow);             // Clear all the time fields, setting them to 0.
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);     // Now, "tomorrow" is actually tomorrow's time.
 
-        String nextDayTime = String.valueOf(nextDay.getTimeInMillis());
+        String tomorrowTime = String.valueOf(tomorrow.getTimeInMillis());
         SQLiteDatabase db = null;
 
         try {
@@ -844,7 +844,7 @@ public class DataManager extends SQLiteOpenHelper {
                     "AND tasks.done = 0 " +
                     "ORDER BY tasks.id";
 
-                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), nextDayTime, nextDayTime });
+                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), tomorrowTime, tomorrowTime });
                 tasks.addAll(getTasksFromCursor(db, cursor, contextId));
             }
 
@@ -872,7 +872,7 @@ public class DataManager extends SQLiteOpenHelper {
 
                     query += ") ORDER BY tasks.id";
 
-                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), nextDayTime, nextDayTime });
+                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), tomorrowTime, tomorrowTime });
                 tasks.addAll(getTasksFromCursor(db, cursor, contextId));
             }
         }
@@ -960,9 +960,7 @@ public class DataManager extends SQLiteOpenHelper {
         int tagCount = 0;
         if (tags != null) tagCount = tags.size();
 
-        TextTool tool = new TextTool();
         long contextId = context.getId();
-
         SQLiteDatabase db = null;
 
         try {
@@ -1078,8 +1076,6 @@ public class DataManager extends SQLiteOpenHelper {
 
     public Task getTask(long id) {
         Task task = null;
-
-        TextTool tool = new TextTool();
         SQLiteDatabase db = null;
 
         try {
@@ -1167,8 +1163,6 @@ public class DataManager extends SQLiteOpenHelper {
     public void saveTask(Task task) {
         SQLiteDatabase db = null;
         long id = task.getId();
-
-        TextTool tool = new TextTool();
 
         ContentValues values = new ContentValues();
         values.put("task_context_id", task.getContextId());
