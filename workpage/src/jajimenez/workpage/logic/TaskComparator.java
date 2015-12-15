@@ -44,7 +44,7 @@ public class TaskComparator implements Comparator<Task> {
                 else if (aStart != null) aCal = aStart;
                 else aCal = aDeadline;
 
-                if (aCal.getTimeInMillis() <= tomorrow.getTimeInMillis()) result = -1;
+                if (aCal.getTimeInMillis() < tomorrow.getTimeInMillis()) result = -1;
                 else result = 1;
             }
             // Cases 6, 11, 16 and 21.
@@ -53,7 +53,7 @@ public class TaskComparator implements Comparator<Task> {
                 else if (bStart != null) bCal = bStart;
                 else bCal = bDeadline;
 
-                if (bCal.getTimeInMillis() <= tomorrow.getTimeInMillis()) result = 1;
+                if (bCal.getTimeInMillis() < tomorrow.getTimeInMillis()) result = 1;
                 else result = -1;
             }
             // Cases 7-10, 12-15, 17-20 and 22-25.
