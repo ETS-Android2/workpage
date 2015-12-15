@@ -1,32 +1,36 @@
 0.5.0
 -----
-* Time concept changed.
+* Time concept improved:
+  - Single date added.
+  - Time added to dates.
+  - Dates/times are shown in the local timezone.
 * Feature added: reminders.
+* Task sorting improved.
 * Tags sorted alphabetically.
 * Tag filtering improved.
 * User interface bug fixes.
 * Internal settings bug fix.
 * Spanish translation bug fix.
 
-0.4.0
------
+0.4.0 (08 Jul 2015)
+-------------------
 * Feature added: data export and import.
 
-0.3.0
------
+0.3.0 (15 Apr 2015)
+-------------------
 * Feature added: context edition.
 
-0.2.0
------
+0.2.0 (12 Feb 2015)
+-------------------
 * Feature added: color selection for tags.
 * UI performance issue fix.
 * Data management bug fix.
 * Application Spanish translation added.
 
-0.1.1
------
+0.1.1 (12 Jan 2015)
+-------------------
 * User interface bug fix.
 
-0.1.0
------
+0.1.0 (08 Jan 2015)
+-------------------
 * Initial version.
