@@ -225,13 +225,29 @@ public class ApplicationLogic {
     }
 
     public void saveTask(Task task) {
+        // 1. Update reminder fields of the task object.
         if (task.isDone()) {
             task.setWhenReminder(null);
             task.setStartReminder(null);
             task.setDeadlineReminder(null);
         }
 
-        // If any tag is new, it must be added to the tag filtering of the current view.
+        // 2. Before saving the task, figure out if
+        //    it is a new task or an existing one.
+        Task oldTask = null;
+
+        long taskId = task.getId();
+        boolean isNew = (taskId < 1);
+
+        if (!isNew) {
+            // Task already exists. We get the
+            // current task on the database.
+            oldTask = getTask(taskId);
+        }
+
+        // 3. Before saving the task, we figure out which
+        //    tags are new. If any tag is new, it must be
+        //    added to the tag filtering of the current view.
         List<TaskTag> filterTags = getCurrentFilterTags();
 
         TaskContext context = getTaskContext(task.getContextId());
@@ -250,20 +266,21 @@ public class ApplicationLogic {
             }
         }
 
+        // 4. Save the task. The ID attribute of the task
+        //    object will be updated with the new value
+        //    if the task is a new one.
+        dataManager.saveTask(task);
+
+        // 5. Update tag filtering.
         setCurrentFilterTags(filterTags);
 
-        // Reminders.
-        long taskId = task.getId();
-
-        if (taskId < 1) {
+        // 6. Update reminder alarms.
+        if (isNew) {
             // It is a new task.
             updateAllReminderAlarms(task, false);
         }
         else {
-            // The task already exists.
-
-            // We get the current task on the database.
-            Task oldTask = getTask(taskId);
+            // Task already exists.
 
             // We update each reminder alarm only if there is any
             // change on is date/time or or in the reminder.
@@ -271,8 +288,6 @@ public class ApplicationLogic {
             if (reminderDifference(oldTask, task, START)) updateReminderAlarm(task, START, false);
             if (reminderDifference(oldTask, task, DEADLINE)) updateReminderAlarm(task, DEADLINE, false);
         }
-
-        dataManager.saveTask(task);
     }
 
     // Returns "true" if there is some difference in a reminder
