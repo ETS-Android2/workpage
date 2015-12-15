@@ -7,9 +7,11 @@ import jajimenez.workpage.data.model.Task;
 
 public class TaskComparator implements Comparator<Task> {
     public int compare(Task a, Task b) {
-        long result = -1;
+        int result = -1;
 
         if (a != null && b != null) {
+            DateTimeTool tool = new DateTimeTool();
+
             long aId = a.getId();
             Calendar aWhen = a.getWhen();
             Calendar aStart = a.getStart();
@@ -20,46 +22,67 @@ public class TaskComparator implements Comparator<Task> {
             Calendar bStart = b.getStart();
             Calendar bDeadline = b.getDeadline();
 
-            Calendar now = Calendar.getInstance();
-            Calendar c1 = null;
-            Calendar c2 = null;
+            // Get the next day in Unix Time format.
+            Calendar tomorrow = Calendar.getInstance(); // At this point, "tomorrow" is the current time.
+            tool.clearTimeFields(tomorrow);             // Clear all the time fields, setting them to 0.
+            tomorrow.add(Calendar.DAY_OF_MONTH, 1);     // Now, "tomorrow" is actually tomorrow's time.
+
+            Calendar aCal = null;
+            Calendar bCal = null;
 
             // See "task_comparator.ods" file in the project documentation.
 
             // Case 1.
             if (aWhen == null && aStart == null && aDeadline == null && bWhen == null && bStart == null && bDeadline == null) {
-                result = aId - bId;
+                if (aId == bId) result = 0;
+                else if (aId < bId) result = -1;
+                else result = 1;
             }
             // Cases 2-5.
             else if ((aWhen != null || aStart != null || aDeadline != null) && bWhen == null && bStart == null && bDeadline == null) {
-                if (aWhen != null) c1 = aWhen;
-                else if (aStart != null) c1 = aStart;
-                else c1 = aDeadline;
+                if (aWhen != null) aCal = aWhen;
+                else if (aStart != null) aCal = aStart;
+                else aCal = aDeadline;
 
-                result = c1.getTimeInMillis() - (now.getTimeInMillis() + 1);
+                if (aCal.getTimeInMillis() <= tomorrow.getTimeInMillis()) result = -1;
+                else result = 1;
             }
             // Cases 6, 11, 16 and 21.
             else if (aWhen == null && aStart == null && aDeadline == null && (bWhen != null || bStart != null || bDeadline != null)) {
-                if (bWhen != null) c1 = bWhen;
-                else if (bStart != null) c1 = bStart;
-                else c1 = bDeadline;
+                if (bWhen != null) bCal = bWhen;
+                else if (bStart != null) bCal = bStart;
+                else bCal = bDeadline;
 
-                result = (now.getTimeInMillis() + 1) - c1.getTimeInMillis();
+                if (bCal.getTimeInMillis() <= tomorrow.getTimeInMillis()) result = 1;
+                else result = -1;
             }
             // Cases 7-10, 12-15, 17-20 and 22-25.
-            else if ((aWhen != null || aStart != null || aDeadline != null) && (bWhen != null && bStart != null || bDeadline != null)) {
-                if (aWhen != null) c1 = aWhen;
-                else if (aStart != null) c1 = aStart;
-                else c1 = aDeadline;
+            else if ((aWhen != null || aStart != null || aDeadline != null) && (bWhen != null || bStart != null || bDeadline != null)) {
+                if (aWhen != null) aCal = aWhen;
+                else if (aStart != null) aCal = aStart;
+                else aCal = aDeadline;
 
-                if (bWhen != null) c2 = bWhen;
-                else if (bStart != null) c2 = bStart;
-                else c2 = bDeadline;
+                if (bWhen != null) bCal = bWhen;
+                else if (bStart != null) bCal = bStart;
+                else bCal = bDeadline;
 
-                result = c1.getTimeInMillis() - c2.getTimeInMillis();
+                long aTime = aCal.getTimeInMillis();
+                long bTime = bCal.getTimeInMillis();
+
+                if (aTime == bTime) {
+                    if (aId == bId) result = 0;
+                    else if (aId < bId) result = -1;
+                    else result = 1;
+                }
+                else if (aTime < bTime) {
+                    result = -1;
+                }
+                else {
+                    result = 1;
+                }
             }
         }
 
-        return ((int) result);
+        return result;
     }
 }
