@@ -417,13 +417,16 @@ public class DataManager extends SQLiteOpenHelper {
         int dbVersion = db.getVersion();
         if (dbVersion < 1 || dbVersion > DB_VERSION) return ERROR_DB_NOT_COMPATIBLE;
 
-        // Check that the tables are the expected ones. Only TaskTags
-        // and Tasks are not the same in the 3 database versions.
+        // Check that the tables are the expected ones:
+        //     * Only TaskTags and Tasks are not the same in the 3 database versions.
+        //     * TaskReminders is new in version 3.
         Cursor cursor = null;
 
         String taskContextsTableSql = "SELECT id, name, list_order FROM task_contexts LIMIT 1";
+        String taskRemindersTableSql = "";
         String taskTagsTableSql = null;
         String tasksTableSql = null;
+        String taskTagRelationshipsTableSql = "SELECT id, task_id, task_tag_id FROM task_tag_relationships LIMIT 1";
 
         if (dbVersion == 1) { 
             taskTagsTableSql = "SELECT id, task_context_id, name, list_order FROM task_tags LIMIT 1";
@@ -433,6 +436,7 @@ public class DataManager extends SQLiteOpenHelper {
         }
         else { // dbVersion = 3
             taskTagsTableSql = "SELECT id, task_context_id, name, color FROM task_tags LIMIT 1";
+            taskRemindersTableSql = "SELECT id, minutes FROM task_reminders LIMIT 1";
         }
 
         if (dbVersion == 1 || dbVersion == 2) { 
@@ -440,14 +444,18 @@ public class DataManager extends SQLiteOpenHelper {
         }
         else { // dbVersion = 3
             tasksTableSql = "SELECT id, task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, start_datetime, ignore_start_time, deadline_datetime, ignore_deadline_time " +
-                "done FROM tasks LIMIT 1";
+                "when_datetime, ignore_when_time, when_reminder_id, " +
+                "start_datetime, ignore_start_time, start_reminder_id, " +
+                "deadline_datetime, ignore_deadline_time, deadline_reminder_id, " +
+                "done " +
+                "FROM tasks LIMIT 1";
         }
-
-        String taskTagRelationshipsTableSql = "SELECT id, task_id, task_tag_id FROM task_tag_relationships LIMIT 1";
 
         try {
             cursor = db.rawQuery(taskContextsTableSql, null);
+
+            if (dbVersion == 3) cursor = db.rawQuery(taskRemindersTableSql, null);
+
             cursor = db.rawQuery(taskTagsTableSql, null);
             cursor = db.rawQuery(tasksTableSql, null);
             cursor = db.rawQuery(taskTagRelationshipsTableSql, null);
