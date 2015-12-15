@@ -182,5 +182,5 @@
     <string name="license">License:</string>
     <string name="web_site">Web site:</string>
 
-    <string name="separator">,&#160;</string>
+    <string name="separator">", "</string>
 </resources>
