@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Collections;
 import java.util.Calendar;
 import java.io.File;
 import java.io.InputStream;
@@ -184,15 +185,31 @@ public class ApplicationLogic {
     }
 
     public List<Task> getDoableTodayTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
-        return dataManager.getDoableTodayTasksByTags(context, includeTasksWithNoTag, tags);
+        List<Task> tasks = dataManager.getDoableTodayTasksByTags(context, includeTasksWithNoTag, tags);
+
+        // We sort the tasks.
+        Collections.sort(tasks, new TaskComparator()); 
+
+        return tasks;
     }
 
     public List<Task> getOpenTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
-        return dataManager.getTasksByTags(context, false, includeTasksWithNoTag, tags);
+        List<Task> tasks = dataManager.getTasksByTags(context, false, includeTasksWithNoTag, tags);
+
+        // We sort the tasks.
+        Collections.sort(tasks, new TaskComparator()); 
+
+        return tasks;
     }
 
     public List<Task> getClosedTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
-        return dataManager.getTasksByTags(context, true, includeTasksWithNoTag, tags);
+        List<Task> tasks = dataManager.getTasksByTags(context, true, includeTasksWithNoTag, tags);
+
+        // We sort the tasks inversely.
+        Collections.sort(tasks, new TaskComparator()); 
+        Collections.reverse(tasks);
+
+        return tasks;
     }
 
     public int getTaskCount(boolean done, TaskContext context) {
