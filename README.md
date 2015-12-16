@@ -4,6 +4,9 @@ Workpage is a simple productivity manager for Android.
 
 Workpage allows you to note any task that you have to do or any idea, helping you to free your mind.
 
+Available in Google Play:
+https://play.google.com/store/apps/details?id=jajimenez.workpage
+
 Features
 --------
 1. **Contexts.** Tasks are groupped by "contexts", helping you to focus on one context (e.g. "Personal", "Work"...).
@@ -19,7 +22,7 @@ Project data
 ------------
 * **Development version:** 0.6.0
 * **Release version:** 0.5.0
-* **Author:** Jose A. Jimenez <jajimenezcarm@gmail.com>
+* **Author:** Jose A. Jimenez (jajimenezcarm@gmail.com)
 * **License:** GPL 3.0
 
 Requirements
