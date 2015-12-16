@@ -17,10 +17,10 @@ Features
 
 Project data
 ------------
-**Development version:** 0.6.0
-**Release version:**     0.5.0
-**Author:**              Jose A. Jimenez <jajimenezcarm@gmail.com>
-**License:**             GPL 3.0
+* **Development version:** 0.6.0
+* **Release version:** 0.5.0
+* **Author:** Jose A. Jimenez <jajimenezcarm@gmail.com>
+* **License:** GPL 3.0
 
 Requirements
 ------------
