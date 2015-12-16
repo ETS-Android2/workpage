@@ -30,6 +30,8 @@ import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
+    private static boolean applicationFirstExecution = true;
+
     public static final String PREFERENCES_FILE = "workpage_preferences";
     public static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
     public static final String CURRENT_VIEW_PREF_KEY = "current_view";
@@ -53,6 +55,14 @@ public class ApplicationLogic {
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
         this.dataManager = new DataManager(appContext);
+    }
+
+    public static boolean getApplicationFirstExecution() {
+        return applicationFirstExecution;
+    }
+
+    public static void setApplicationFirstExecution(boolean first) {
+        applicationFirstExecution = first;
     }
 
     public TaskContext getCurrentTaskContext() {

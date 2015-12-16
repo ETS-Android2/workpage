@@ -114,6 +114,14 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         currentView = "";
         includeTasksWithNoTag = true;
         currentFilterTags = new LinkedList<TaskTag>();
+
+        // We check if it is the first time that the application runs after updating or closing
+        // it. If it is the first time, we need to set all the reminder alarms of the open tasks.
+        // When the application is forcibly stopped, all the alarms set are deleted.
+        if (ApplicationLogic.getApplicationFirstExecution()) {
+            ApplicationLogic.setApplicationFirstExecution(false);
+            applicationLogic.updateAllOpenTaskReminderAlarms(false);
+        }
     }
 
     private void createContextualActionBar() {
