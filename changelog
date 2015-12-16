@@ -1,8 +1,8 @@
 0.5.0 (16 Dec 2015):
 --------------------
-* Time concept improved:
+* Date concept improved:
   - Single date added.
-  - Time added to dates.
+  - Time can optionally be added to dates.
   - Dates/times are shown in the device local timezone.
 * Feature added: reminders.
 * Task sorting improved.
