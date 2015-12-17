@@ -156,7 +156,7 @@
     <string name="go_up">Ir arriba</string>
     <string name="file_name">Nombre del archivo</string>
     <string name="storage_not_available">Almacenamiento no disponible.</string>
-    <string name="database_file_extension">.workpage</string>
+    <string name="workpage_file_extension">.workpage</string>
     <string name="export_success">Datos exportados.</string>
     <string name="export_error">Error al intentar exportar los datos.</string>
     <string name="file_overwrite_confirmation">El archivo \"%1$s\" ya existe. ¿Quiere sobrescribirlo?</string>

@@ -24,7 +24,7 @@
 
         <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/database_file_extension" />
+            android:text="@string/workpage_file_extension" />
 
         <Button android:id="@+id/fileBrowser_save"
             android:layout_width="wrap_content"
