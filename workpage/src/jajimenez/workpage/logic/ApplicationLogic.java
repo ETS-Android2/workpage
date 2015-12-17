@@ -291,12 +291,47 @@ public class ApplicationLogic {
         }
         else {
             // Task already exists.
+            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            StringBuilder builder = null;
+            int reminderId = -1;
 
             // We update each reminder alarm only if there is any
             // change on is date/time or or in the reminder.
-            if (reminderDifference(oldTask, task, WHEN)) updateReminderAlarm(task, WHEN, false);
-            if (reminderDifference(oldTask, task, START)) updateReminderAlarm(task, START, false);
-            if (reminderDifference(oldTask, task, DEADLINE)) updateReminderAlarm(task, DEADLINE, false);
+            if (reminderDifference(oldTask, task, WHEN)) {
+                // In case there is currently a previous notification visible
+                // for the same task and date type (for the same Reminder ID,
+                // we need to cancel it. Otherwise, user could cancel or
+                // postpone the alarm via the notification buttons, doing it
+                // therefore for the new alarm we want to set.
+                builder = new StringBuilder();
+                builder.append(taskId);
+                builder.append(WHEN);
+                reminderId = Integer.parseInt(builder.toString());
+
+                notificationManager.cancel(reminderId);
+                updateReminderAlarm(task, WHEN, false);
+            }
+
+            if (reminderDifference(oldTask, task, START)) {
+                builder = new StringBuilder();
+                builder.append(taskId);
+                builder.append(START);
+                reminderId = Integer.parseInt(builder.toString());
+
+                notificationManager.cancel(reminderId);
+                updateReminderAlarm(task, START, false);
+            }
+
+            if (reminderDifference(oldTask, task, DEADLINE)) {
+                builder = new StringBuilder();
+                builder.append(taskId);
+                builder.append(DEADLINE);
+                reminderId = Integer.parseInt(builder.toString());
+
+                notificationManager.cancel(reminderId);
+                updateReminderAlarm(task, DEADLINE, false);
+            }
         }
     }
 
