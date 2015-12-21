@@ -17,13 +17,13 @@ public class DataExportBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        receiverActivity.enableInterface();
-
         // "result" will be "false" if the operation was successful
         // or "true" if there was any error.
         boolean result = intent.getBooleanExtra(ApplicationConstants.DATA_EXPORT_RESULT, false);
 
         if (receiverActivity instanceof MainActivity) {
+            receiverActivity.enableInterface();
+
             MainActivity mainActivity = (MainActivity) receiverActivity;
             if (mainActivity.isInFront()) mainActivity.updateInterface();
         }
@@ -31,6 +31,8 @@ public class DataExportBroadcastReceiver extends BroadcastReceiver {
             Activity activity = (Activity) receiverActivity;
 
             if (result) {
+                receiverActivity.enableInterface();
+
                 (Toast.makeText(activity, R.string.export_error, Toast.LENGTH_SHORT)).show();
                 (((FileBrowserActivity) activity).getFileNameEditText()).setText("");
             }

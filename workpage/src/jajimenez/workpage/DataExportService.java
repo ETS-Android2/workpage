@@ -26,6 +26,8 @@ public class DataExportService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String filePath = intent.getStringExtra("file_path");
+        int fileFormat = intent.getIntExtra("file_format", ApplicationLogic.WORKPAGE_DATA);
+
         File file = new File(filePath);
 
         Context context = getApplicationContext();
@@ -33,7 +35,7 @@ public class DataExportService extends IntentService {
 
         // "result" will be "false" if the operation was
         // successful or "true" if there was any error.
-        boolean result = applicationLogic.exportData(file);
+        boolean result = applicationLogic.exportData(file, fileFormat);
 
         status = STATUS_NOT_RUNNING;
 

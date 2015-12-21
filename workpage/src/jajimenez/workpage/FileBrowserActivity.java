@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.graphics.drawable.Drawable;
@@ -34,12 +35,18 @@ import jajimenez.workpage.logic.ApplicationLogic;
 
 public class FileBrowserActivity extends ListActivity implements DataChangeReceiverActivity {
     private Menu menu;
+    private LinearLayout exportingOptionsLinearLayout;
+    private Button formatButton;
+    private ImageButton formatOptionsImageButton;
     private ListView listView;
     private LinearLayout fileLinearLayout;
     private EditText fileNameEditText;
+    private TextView fileExtensionTextView;
     private Button saveButton;
     private TextView errorTextView;
     private MenuItem goUpMenuItem;
+
+    private SelectFormatDialogFragment.OnNewFormatSelectedListener onNewFormatSelectedListener;
 
     private OverwriteFileConfirmationDialogFragment.OnOverwriteConfirmationListener onOverwriteConfirmationListener;
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
@@ -51,11 +58,11 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     private File initialFile;
     private File currentFile;
 
-    private Bundle savedInstanceState;
-
     private boolean interfaceReady;
     private String mode;
     private boolean storageAvailable;
+
+    private int selectedExportingFormat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,25 +72,18 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
         setContentView(R.layout.file_browser);
 
         listView = getListView();
+        exportingOptionsLinearLayout = (LinearLayout) findViewById(R.id.fileBrowser_exporting_options);
+        formatButton = (Button) findViewById(R.id.fileBrowser_format);
+        formatOptionsImageButton = (ImageButton) findViewById(R.id.fileBrowser_format_options);
         fileLinearLayout = (LinearLayout) findViewById(R.id.fileBrowser_file);
         fileNameEditText = (EditText) findViewById(R.id.fileBrowser_file_name);
+        fileExtensionTextView = (TextView) findViewById(R.id.fileBrowser_file_extension);
         saveButton = (Button) findViewById(R.id.fileBrowser_save);
         errorTextView = (TextView) findViewById(R.id.fileBrowser_error);
         goUpMenuItem = null;
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        Intent intent = getIntent();
-        mode = intent.getStringExtra("mode");
-
-        if (mode != null && mode.equals("export")) {
-            setTitle(R.string.export_data);
-            fileLinearLayout.setVisibility(View.VISIBLE);
-        }
-        else if (mode != null && mode.equals("import")) {
-            setTitle(R.string.import_data);
-        }
 
         fileNameEditText.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -102,9 +102,12 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
             }
         });
 
-        saveButton.setEnabled(false);
-        interfaceReady = false;
-        storageAvailable = false;
+        onNewFormatSelectedListener = new SelectFormatDialogFragment.OnNewFormatSelectedListener() {
+            public void onNewFormatSelected(int format) {
+                FileBrowserActivity.this.selectedExportingFormat = format;
+                updateInterface();
+            }
+        };
 
         onOverwriteConfirmationListener = new OverwriteFileConfirmationDialogFragment.OnOverwriteConfirmationListener() {
             public void onConfirmation() {
@@ -120,14 +123,21 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
 
         initialFile = Environment.getExternalStorageDirectory();
 
-        this.savedInstanceState = savedInstanceState;
+        Intent intent = getIntent();
+        mode = intent.getStringExtra("mode");
 
         if (savedInstanceState == null) {
+            selectedExportingFormat = ApplicationLogic.WORKPAGE_DATA;
             currentFile = initialFile;
         }
         else {
+            selectedExportingFormat = savedInstanceState.getInt("selected_exporting_format");
             String currentFileAbsolutePath = savedInstanceState.getString("current_file");
+
             currentFile = new File(currentFileAbsolutePath);
+
+            SelectFormatDialogFragment formatFragment = (SelectFormatDialogFragment) (getFragmentManager()).findFragmentByTag("select_format");
+            if (formatFragment != null) formatFragment.setOnNewFormatSelectedListener(onNewFormatSelectedListener);
 
             OverwriteFileConfirmationDialogFragment overwriteFragment = (OverwriteFileConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("overwrite_file_confirmation");
             if (overwriteFragment != null) overwriteFragment.setOnOverwriteConfirmationListener(onOverwriteConfirmationListener);
@@ -135,6 +145,13 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
             DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
             if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
         }
+
+        if (mode != null && mode.equals("export")) setTitle(R.string.export_data);
+        else setTitle(R.string.import_data);
+
+        saveButton.setEnabled(false);
+        interfaceReady = false;
+        storageAvailable = false;
 
         applicationLogic = new ApplicationLogic(this);
     }
@@ -192,20 +209,34 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     }
 
     public void enableInterface() {
+        if (mode.equals("export")) {
+            formatButton.setEnabled(true);
+            formatOptionsImageButton.setEnabled(selectedExportingFormat == ApplicationLogic.CSV);
+        }
+
         listView.setEnabled(true);
         setProgressBarIndeterminateVisibility(false);
+
         interfaceReady = true;
     }
 
     public void disableInterface() {
         interfaceReady = false;
-        setProgressBarIndeterminateVisibility(true);
+
+        if (mode.equals("export")) {
+            formatButton.setEnabled(false);
+            formatOptionsImageButton.setEnabled(false);
+        }
+
         listView.setEnabled(false);
+        setProgressBarIndeterminateVisibility(true);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("selected_exporting_format", selectedExportingFormat);
         outState.putString("current_file", currentFile.getAbsolutePath());
+
         super.onSaveInstanceState(outState);
     }
 
@@ -222,19 +253,37 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
         if (mode != null && ( (mode.equals("export") && storageForExportingReady) || (mode.equals("import") && storageForImportingReady) )) {
             // Show files.
             storageAvailable = true;
-
             listView.setVisibility(View.VISIBLE);
-            if (mode.equals("export")) fileLinearLayout.setVisibility(View.VISIBLE);
-            errorTextView.setVisibility(View.GONE);
 
+            if (mode.equals("export")) {
+                if (selectedExportingFormat == ApplicationLogic.WORKPAGE_DATA) {
+                    formatButton.setText(R.string.workpage_data);
+                    fileExtensionTextView.setText(R.string.workpage_data_extension);
+                }
+                else {
+                    formatButton.setText(R.string.csv);
+                    fileExtensionTextView.setText(R.string.csv_extension);
+                }
+
+                formatOptionsImageButton.setEnabled(selectedExportingFormat == ApplicationLogic.CSV);
+
+                exportingOptionsLinearLayout.setVisibility(View.VISIBLE);
+                fileLinearLayout.setVisibility(View.VISIBLE);
+            }
+
+            errorTextView.setVisibility(View.GONE);
             (new LoadFilesTask()).execute();
         }
         else {
             // Show error message.
             storageAvailable = false;
-
             listView.setVisibility(View.GONE);
-            if (mode.equals("export")) fileLinearLayout.setVisibility(View.GONE);
+
+            if (mode.equals("export")) {
+                exportingOptionsLinearLayout.setVisibility(View.GONE);
+                fileLinearLayout.setVisibility(View.GONE);
+            }
+
             errorTextView.setVisibility(View.VISIBLE);
         }
 
@@ -259,6 +308,31 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
                 goUpItemIcon.setAlpha(255);
             }
         }
+    }
+
+    public void onGoUpItemSelected(MenuItem item) {
+        if (!interfaceReady) return;
+
+        if (currentFile != null) {
+            File parent = currentFile.getParentFile();
+
+            if (parent != null) {
+                currentFile = parent;
+                updateInterface();
+            }
+        }
+    }
+
+    public void onFormatButtonClicked(View view) {
+        SelectFormatDialogFragment formatFragment = new SelectFormatDialogFragment(selectedExportingFormat);
+        formatFragment.setOnNewFormatSelectedListener(onNewFormatSelectedListener);
+
+        formatFragment.show(getFragmentManager(), "select_format");
+    }
+
+    public void onFormatOptionsImageButtonClicked(View view) {
+        Intent intent = new Intent(this, CsvSettingsActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -286,19 +360,6 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
         }
     }
 
-    public void onGoUpItemSelected(MenuItem item) {
-        if (!interfaceReady) return;
-
-        if (currentFile != null) {
-            File parent = currentFile.getParentFile();
-
-            if (parent != null) {
-                currentFile = parent;
-                updateInterface();
-            }
-        }
-    }
-
     public void onSaveButtonClicked(View view) {
         File to = getToFile();
 
@@ -314,8 +375,11 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     }
 
     private void startDataExport() {
+        disableInterface();
+
         Intent intent = new Intent(this, DataExportService.class);
         intent.putExtra("file_path", (getToFile()).getAbsolutePath());
+        intent.putExtra("file_format", selectedExportingFormat);
 
         startService(intent);
     }

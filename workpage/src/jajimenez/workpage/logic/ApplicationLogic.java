@@ -32,11 +32,11 @@ import jajimenez.workpage.data.model.TaskReminder;
 public class ApplicationLogic {
     private static boolean applicationFirstExecution = true;
 
-    public static final String PREFERENCES_FILE = "workpage_preferences";
-    public static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
-    public static final String CURRENT_VIEW_PREF_KEY = "current_view";
-    public static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
-    public static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
+    private static final String PREFERENCES_FILE = "workpage_preferences";
+    private static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
+    private static final String CURRENT_VIEW_PREF_KEY = "current_view";
+    private static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
+    private static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
 
     private Context appContext;
     private DataManager dataManager;
@@ -51,6 +51,9 @@ public class ApplicationLogic {
     private static final int WHEN = 0;
     private static final int START = 1;
     private static final int DEADLINE = 2;
+
+    public static final int WORKPAGE_DATA = 0;
+    public static final int CSV = 1;
 
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
@@ -470,13 +473,21 @@ public class ApplicationLogic {
     
     // Returns "false" if the operation was successful
     // or "true" if there was any error.
-    public boolean exportData(File to) {
+    public boolean exportData(File to, int format) {
         boolean error = false;
 
         if (to != null) {
             try {
                 File databaseFile = dataManager.getDatabaseFile();
-                copyFile(databaseFile, to);
+
+                switch (format) {
+                    case WORKPAGE_DATA:
+                        copyFile(databaseFile, to);
+                        break;
+                    case CSV:
+                        // ToDo
+                        break;
+                }
             }
             catch (Exception e) {
                 error = true;
@@ -486,6 +497,7 @@ public class ApplicationLogic {
         return error;
     }
 
+    // Format is always Workpage Data.
     public int importData(File from) {
         int importResult;
         int compatible = DataManager.isDatabaseCompatible(from);

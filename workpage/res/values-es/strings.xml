@@ -156,11 +156,20 @@
     <string name="go_up">Ir arriba</string>
     <string name="file_name">Nombre del archivo</string>
     <string name="storage_not_available">Almacenamiento no disponible.</string>
-    <string name="workpage_file_extension">.workpage</string>
     <string name="export_success">Datos exportados.</string>
     <string name="export_error">Error al intentar exportar los datos.</string>
     <string name="file_overwrite_confirmation">El archivo \"%1$s\" ya existe. ¿Quiere sobrescribirlo?</string>
     <string name="overwrite">Sobrescribir</string>
+    <string name="as">Como:</string>
+    <string name="select_format">Seleccionar formato</string>
+    <string name="workpage_data">Datos de Workpage</string>
+    <string name="csv">CSV</string>
+    <string name="format_options">Opciones de formato</string>
+    <string name="csv_settings">Opciones de CSV</string>
+    <string name="field_names">Nombres de los campos</string>
+    <string name="unix_time">Tiempo Unix</string>
+    <string name="workpage_data_extension">.workpage</string>
+    <string name="csv_extension">.csv</string>
 
     <string name="import_data">Importar datos</string>
     <string name="import_success">Datos importados.</string>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:key="csv_settings"
+        android:title="@string/csv_settings">
+
+        <CheckBoxPreference android:key="csv_field_names"
+            android:title="@string/field_names"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference android:key="csv_unix_time"
+            android:title="@string/unix_time"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>
