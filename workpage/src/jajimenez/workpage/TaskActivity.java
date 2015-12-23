@@ -97,25 +97,6 @@ public class TaskActivity extends Activity {
         Intent intent = getIntent();
         currentTaskId = intent.getLongExtra("task_id", -1);
         currentTask = null;
-
-        // This activity can be opened from two places: MainActivity or a
-        // reminder notification. In both cases, MainActivity was opened
-        // at least once, creating then the reminder alarms. This is
-        // because, in this application, the notification are created
-        // by alarm receivers, the receivers are called by alarms, and
-        // the alarms are always created by MainActivity or EditTask
-        // (and EditTask is opened by MainActivity).
-        //
-        // If this activity has been opened, it means that all the reminder
-        // alarms already exist in the system Alarm Service, so we need to
-        // call the "setApplicationFirstExecution" method to avoid MainActivity
-        // (the parent activity) to create again the alarms when pressing
-        // Back or Go Up. "getApplicationFirstExecution" returns "true"
-        // only when the application is closed and this activity is
-        // opened by a notification.
-        if (ApplicationLogic.getApplicationFirstExecution()) {
-            ApplicationLogic.setApplicationFirstExecution(false);
-        }
     }
 
     @Override

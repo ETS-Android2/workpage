@@ -168,6 +168,8 @@
     <string name="csv_settings">CSV Settings</string>
     <string name="field_names">Field names</string>
     <string name="unix_time">Unix Time</string>
+    <string name="context_to_export">Context to export:</string>
+    <string name="file_properties">File properties:</string>
     <string name="workpage_data_extension">.workpage</string>
     <string name="csv_extension">.csv</string>
 

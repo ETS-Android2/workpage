@@ -30,13 +30,15 @@ import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
-    private static boolean applicationFirstExecution = true;
-
     private static final String PREFERENCES_FILE = "workpage_preferences";
     private static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
     private static final String CURRENT_VIEW_PREF_KEY = "current_view";
     private static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
     private static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
+
+    private static final String CSV_TASK_CONTEXT_TO_SAVE_PREF_KEY = "csv_task_context_to_save";
+    private static final String CSV_FIELD_NAMES_PREF_KEY = "csv_field_names";
+    private static final String CSV_UNIX_TIME_PREF_KEY = "csv_unix_time";
 
     private Context appContext;
     private DataManager dataManager;
@@ -58,14 +60,6 @@ public class ApplicationLogic {
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
         this.dataManager = new DataManager(appContext);
-    }
-
-    public static boolean getApplicationFirstExecution() {
-        return applicationFirstExecution;
-    }
-
-    public static void setApplicationFirstExecution(boolean first) {
-        applicationFirstExecution = first;
     }
 
     public TaskContext getCurrentTaskContext() {
@@ -104,6 +98,21 @@ public class ApplicationLogic {
         return filterTags;
     }
 
+    public long getCsvTaskContextToSave() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getLong(CSV_TASK_CONTEXT_TO_SAVE_PREF_KEY, 1);
+    }
+
+    public boolean getCsvFieldNames() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(CSV_FIELD_NAMES_PREF_KEY, true);
+    }
+
+    public boolean getCsvUnixTime() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(CSV_UNIX_TIME_PREF_KEY, false);
+    }
+
     public void setCurrentTaskContext(TaskContext context) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -138,6 +147,27 @@ public class ApplicationLogic {
         editor.commit();
     }
 
+    public void setCsvTaskContextToSave(long taskContextId) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(CSV_TASK_CONTEXT_TO_SAVE_PREF_KEY, taskContextId);
+        editor.commit();
+    }
+
+    public void setCsvFieldNames(boolean csvFieldNames) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(CSV_FIELD_NAMES_PREF_KEY, csvFieldNames);
+        editor.commit();
+    }
+
+    public void setCsvUnixTime(boolean csvUnixTime) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(CSV_UNIX_TIME_PREF_KEY, csvUnixTime);
+        editor.commit();
+    }
+
     public List<TaskContext> getAllTaskContexts() {
         return dataManager.getAllTaskContexts();
     }
@@ -151,6 +181,10 @@ public class ApplicationLogic {
     }
 
     public void deleteTaskContexts(List<TaskContext> contexts) {
+        // Cancel reminder alarms.
+        for (TaskContext c : contexts) updateAllOpenTaskReminderAlarms(c, true);
+
+        // Delete contexts.
         dataManager.deleteTaskContexts(contexts);
     }
 
@@ -245,20 +279,7 @@ public class ApplicationLogic {
             task.setDeadlineReminder(null);
         }
 
-        // 2. Before saving the task, figure out if
-        //    it is a new task or an existing one.
-        Task oldTask = null;
-
-        long taskId = task.getId();
-        boolean isNew = (taskId < 1);
-
-        if (!isNew) {
-            // Task already exists. We get the
-            // current task on the database.
-            oldTask = getTask(taskId);
-        }
-
-        // 3. Before saving the task, we figure out which
+        // 2. Before saving the task, we figure out which
         //    tags are new. If any tag is new, it must be
         //    added to the tag filtering of the current view.
         List<TaskTag> filterTags = getCurrentFilterTags();
@@ -279,142 +300,44 @@ public class ApplicationLogic {
             }
         }
 
-        // 4. Save the task. The ID attribute of the task
+        // 3. Save the task. The ID attribute of the task
         //    object will be updated with the new value
         //    if the task is a new one.
         dataManager.saveTask(task);
 
-        // 5. Update tag filtering.
+        // 4. Update tag filtering.
         setCurrentFilterTags(filterTags);
 
-        // 6. Update reminder alarms.
-        if (isNew) {
-            // It is a new task.
-            updateAllReminderAlarms(task, false);
-        }
-        else {
-            // Task already exists.
-            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            StringBuilder builder = null;
-            int reminderId = -1;
-
-            // We update each reminder alarm only if there is any
-            // change on is date/time or or in the reminder.
-            if (reminderDifference(oldTask, task, WHEN)) {
-                // In case there is currently a previous notification visible
-                // for the same task and date type (for the same Reminder ID,
-                // we need to cancel it. Otherwise, user could cancel or
-                // postpone the alarm via the notification buttons, doing it
-                // therefore for the new alarm we want to set.
-                builder = new StringBuilder();
-                builder.append(taskId);
-                builder.append(WHEN);
-                reminderId = Integer.parseInt(builder.toString());
-
-                notificationManager.cancel(reminderId);
-                updateReminderAlarm(task, WHEN, false);
-            }
-
-            if (reminderDifference(oldTask, task, START)) {
-                builder = new StringBuilder();
-                builder.append(taskId);
-                builder.append(START);
-                reminderId = Integer.parseInt(builder.toString());
-
-                notificationManager.cancel(reminderId);
-                updateReminderAlarm(task, START, false);
-            }
-
-            if (reminderDifference(oldTask, task, DEADLINE)) {
-                builder = new StringBuilder();
-                builder.append(taskId);
-                builder.append(DEADLINE);
-                reminderId = Integer.parseInt(builder.toString());
-
-                notificationManager.cancel(reminderId);
-                updateReminderAlarm(task, DEADLINE, false);
-            }
-        }
+        // 5. Update reminder alarms.
+        updateAllReminderAlarms(task, false);
     }
 
-    // Returns "true" if there is some difference in a reminder
-    // for 2 given tasks (with the same ID) and a given reminder
-    // type.
-    //
-    // Note: If the value of "reminderType" is not valid,
-    //       it always returns "false".
-    private boolean reminderDifference(Task oldTask, Task newTask, int reminderType) {
-        Calendar oldCalendar = null;
-        TaskReminder oldReminder = null;
+    // Updates all the alarms of all open tasks of all contexts.
+    public void updateAllOpenTaskReminderAlarms(boolean tasksDeleted) {
+        List<TaskContext> contexts = getAllTaskContexts();
 
-        Calendar newCalendar = null;
-        TaskReminder newReminder = null;
+        for (TaskContext c : contexts) updateAllOpenTaskReminderAlarms(c, tasksDeleted);
+    }
 
-        switch (reminderType) {
-            case WHEN:
-                oldCalendar = oldTask.getWhen();
-                oldReminder = oldTask.getWhenReminder();
-                
-                newCalendar = newTask.getWhen();
-                newReminder = newTask.getWhenReminder();
+    // Updates all the alarms of all open tasks of a given context.
+    private void updateAllOpenTaskReminderAlarms(TaskContext context, boolean tasksDeleted) {
+        boolean includeTasksWithNoTag = true;
 
-                break;
-            case START:
-                oldCalendar = oldTask.getStart();
-                oldReminder = oldTask.getStartReminder();
-                
-                newCalendar = newTask.getStart();
-                newReminder = newTask.getStartReminder();
+        List<TaskTag> tags = getAllTaskTags(context); // All context tags.
+        List<Task> tasks = getOpenTasksByTags(context, includeTasksWithNoTag, tags); // All context open tasks.
 
-                break;
-            case DEADLINE:
-                oldCalendar = oldTask.getDeadline();
-                oldReminder = oldTask.getDeadlineReminder();
-                
-                newCalendar = newTask.getDeadline();
-                newReminder = newTask.getDeadlineReminder();
-
-                break;
-        }
-
-        boolean calendarChange = ((oldCalendar == null && newCalendar != null)
-            || (oldCalendar != null && newCalendar == null)
-            || (oldCalendar != null && newCalendar != null && oldCalendar.getTimeInMillis() != newCalendar.getTimeInMillis()));
-        
-        boolean reminderChange = ((oldReminder == null && newReminder != null)
-            || (oldReminder != null && newReminder == null)
-            || (oldReminder != null && newReminder != null && oldReminder.getId() != newReminder.getId()));
-
-        return (calendarChange || reminderChange);
+        for (Task t : tasks) updateAllReminderAlarms(t, tasksDeleted);
     }
 
     // Updates all the alarms of a given task.
-    public void updateAllReminderAlarms(Task task, boolean removeAllAlarms) {
-        updateReminderAlarm(task, WHEN, removeAllAlarms);
-        updateReminderAlarm(task, START, removeAllAlarms);
-        updateReminderAlarm(task, DEADLINE, removeAllAlarms);
+    private void updateAllReminderAlarms(Task task, boolean taskDeleted) {
+        updateReminderAlarm(task, WHEN, taskDeleted);
+        updateReminderAlarm(task, START, taskDeleted);
+        updateReminderAlarm(task, DEADLINE, taskDeleted);
     }
 
-    // Updates all the alarms of all open tasks.
-    public void updateAllOpenTaskReminderAlarms(boolean removeAllAlarms) {
-        List<TaskContext> contexts = getAllTaskContexts();
-
-        boolean includeTasksWithNoTag = true;
-        List<TaskTag> tags = null;
-        List<Task> tasks = null;
-
-        for (TaskContext c : contexts) {
-            tags = getAllTaskTags(c); // All context tags.
-            tasks = getOpenTasksByTags(c, includeTasksWithNoTag, tags); // All context open tasks.
-
-            for (Task t : tasks) updateAllReminderAlarms(t, removeAllAlarms);
-        }
-    }
-
-    private void updateReminderAlarm(Task task, int reminderType, boolean removeAlarm) {
+    private void updateReminderAlarm(Task task, int reminderType, boolean taskDeleted) {
         AlarmManager alarmManager = (AlarmManager) appContext.getSystemService(Context.ALARM_SERVICE);
-        NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
         long taskId = task.getId();
         boolean done = task.isDone();
@@ -423,10 +346,6 @@ public class ApplicationLogic {
         builder.append(taskId);
         builder.append(reminderType);
         int reminderId = Integer.parseInt(builder.toString());
-
-        Intent intent = new Intent(appContext, TaskReminderAlarmReceiver.class);
-        intent.putExtra("reminder_id", reminderId);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(appContext, reminderId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar calendar = null;
         TaskReminder reminder = null;
@@ -448,7 +367,11 @@ public class ApplicationLogic {
                 break;
         }
 
-        if (!done && calendar != null && reminder != null && !removeAlarm) {
+        Intent intent = new Intent(appContext, TaskReminderAlarmReceiver.class);
+        intent.putExtra("task_reminder_id", reminderId);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(appContext, reminderId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        if (!done && calendar != null && reminder != null && !taskDeleted) {
             Calendar reminderTime = Calendar.getInstance();
             reminderTime.setTimeInMillis(calendar.getTimeInMillis());
             reminderTime.add(Calendar.MINUTE, (((int) reminder.getMinutes())*(-1)));
@@ -457,17 +380,19 @@ public class ApplicationLogic {
         }
         else {
             alarmManager.cancel(alarmIntent);
+        }
 
-            // Remove any existing notification (notification ID is the same as the task ID).
+        if (taskDeleted) {
+            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(reminderId);
         }
     }
 
     public void deleteTasks(List<Task> tasks) {
-        // Remove all reminder alarms from all input tasks.
+        // Cancel reminder alarms.
         for (Task task : tasks) updateAllReminderAlarms(task, true);
 
-        // Delete all input tasks.
+        // Delete tasks.
         dataManager.deleteTasks(tasks);
     }
     
@@ -486,6 +411,7 @@ public class ApplicationLogic {
                         break;
                     case CSV:
                         // ToDo
+
                         break;
                 }
             }
@@ -505,9 +431,13 @@ public class ApplicationLogic {
         switch (compatible) {
             case DataManager.COMPATIBLE:
                 try {
+                    // Cancel reminder alarms of old tasks.
                     updateAllOpenTaskReminderAlarms(true);
+
                     File dbFile = dataManager.getDatabaseFile();
                     copyFile(from, dbFile);
+
+                    // Set reminder alarms for new tasks.
                     updateAllOpenTaskReminderAlarms(false);
 
                     importResult = IMPORT_SUCCESS;

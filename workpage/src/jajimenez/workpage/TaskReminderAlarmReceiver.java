@@ -10,7 +10,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -23,12 +22,11 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         PreferenceManager.setDefaultValues(context, R.xml.preferences, false);
 
-        Resources resources = context.getResources();
         ApplicationLogic applicationLogic = new ApplicationLogic(context);
         TextTool textTool = new TextTool();
 
         // The Reminder ID contains the task ID and the reminder type.
-        int reminderId = intent.getIntExtra("reminder_id", -1);
+        int reminderId = intent.getIntExtra("task_reminder_id", -1);
         String reminderIdStr = String.valueOf(reminderId);
         int length = reminderIdStr.length();
 
@@ -36,25 +34,32 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
         Task task = applicationLogic.getTask(taskId);
         if (task == null) return;
 
+        String reminderType = reminderIdStr.substring(length - 1);
+
         // Text for the notification.
         String title = task.getTitle();
         String text = null;
 
-        String reminderType = reminderIdStr.substring(length - 1);
         Calendar calendar = null;
 
         if (reminderType.equals("0")) {
             // Type is "When".
+            task.setWhenReminder(null);
+
             calendar = task.getWhen();
             text = textTool.getTaskDateText(context, task, false, TextTool.WHEN);
         }
         else if (reminderType.equals("1")) {
             // Type is "Start".
+            task.setStartReminder(null);
+
             calendar = task.getStart();
             text = textTool.getTaskDateText(context, task, true, TextTool.START);
         }
         else if (reminderType.equals("2")) {
             // Type is "Deadline".
+            task.setDeadlineReminder(null);
+
             calendar = task.getDeadline();
             text = textTool.getTaskDateText(context, task, true, TextTool.DEADLINE);
         }
@@ -64,16 +69,18 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
 
         if (calendar == null) return;
 
+        applicationLogic.saveTask(task);
+
         Intent taskIntent = new Intent(context, TaskActivity.class);
         taskIntent.putExtra("task_id", taskId);
 
         Intent dismissIntent = new Intent(context, TaskReminderNotificationService.class);
-        dismissIntent.putExtra("reminder_id", reminderId);
+        dismissIntent.putExtra("task_reminder_id", reminderId);
         dismissIntent.setAction(ApplicationConstants.TASK_REMINDER_DISMISS_ACTION);
         PendingIntent dismissPendingIntent = PendingIntent.getService(context, reminderId, dismissIntent, 0);
 
         Intent snoozeIntent = new Intent(context, TaskReminderNotificationService.class);
-        snoozeIntent.putExtra("reminder_id", reminderId);
+        snoozeIntent.putExtra("task_reminder_id", reminderId);
         snoozeIntent.setAction(ApplicationConstants.TASK_REMINDER_SNOOZE_ACTION);
         PendingIntent snoozePendingIntent = PendingIntent.getService(context, reminderId, snoozeIntent, 0);
 

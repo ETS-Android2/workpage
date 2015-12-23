@@ -3,7 +3,6 @@ package jajimenez.workpage;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.preference.PreferenceFragment;
 import android.os.Bundle;
 
 public class SettingsActivity extends Activity {

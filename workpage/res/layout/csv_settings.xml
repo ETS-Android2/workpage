@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="@string/context_to_export" />
+
+        <RadioGroup android:id="@+id/csvSettings_contexts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:orientation="vertical" />
+
+        <TextView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="@string/file_properties" />
+
+        <CheckBox android:id="@+id/csvSettings_fieldNames"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/field_names"
+            android:onClick="onFieldNamesCheckBoxClicked" />
+
+        <CheckBox android:id="@+id/csvSettings_unixTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/unix_time"
+            android:onClick="onUnixTimeCheckBoxClicked" />
+    </LinearLayout>
+</ScrollView>
