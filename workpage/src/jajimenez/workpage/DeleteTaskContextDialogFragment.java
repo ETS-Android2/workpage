@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
 
 public class DeleteTaskContextDialogFragment extends DialogFragment {
     private Activity activity;
@@ -72,7 +73,14 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
                     // It is assumed that there will be always 1 context at least.
                     TaskContext newCurrentContext = remainingContexts.get(0);
 
+                    String newCurrentView = "open";
+                    boolean newIncludeTasksWithNoTag = true;
+                    List<TaskTag> newCurrentFilterTags = DeleteTaskContextDialogFragment.this.applicationLogic.getAllTaskTags(newCurrentContext);
+
                     DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(newCurrentContext);
+                    DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentView(newCurrentView);
+                    DeleteTaskContextDialogFragment.this.applicationLogic.setIncludeTasksWithNoTag(newIncludeTasksWithNoTag);
+                    DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentFilterTags(newCurrentFilterTags);
                 }
 
                 String text = resources.getQuantityString(R.plurals.context_deleted, selectedContextCount, selectedContextCount);
