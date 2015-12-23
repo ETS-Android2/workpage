@@ -1,6 +1,8 @@
 0.6.0
 -----
+* CSV format added for data exporting.
 * Reminders bug fixes.
+* Tag filtering bug fix.
 
 0.5.0 (16 Dec 2015):
 --------------------
