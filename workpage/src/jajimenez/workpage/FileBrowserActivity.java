@@ -105,6 +105,8 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
         onNewFormatSelectedListener = new SelectFormatDialogFragment.OnNewFormatSelectedListener() {
             public void onNewFormatSelected(int format) {
                 FileBrowserActivity.this.selectedExportingFormat = format;
+                FileBrowserActivity.this.fileNameEditText.setText("");
+
                 updateInterface();
             }
         };
@@ -346,7 +348,11 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
         else {
             if (mode != null && mode.equals("export")) {
                 String selectedFileName = selectedFile.getName();
-                int extensionPosition = selectedFileName.lastIndexOf(".workpage");
+
+                int extensionPosition = -1;
+
+                if (selectedExportingFormat == ApplicationLogic.WORKPAGE_DATA) extensionPosition = selectedFileName.lastIndexOf(".workpage");
+                else extensionPosition = selectedFileName.lastIndexOf(".csv");
 
                 String nameNoExtension = selectedFileName.substring(0, extensionPosition); 
                 fileNameEditText.setText(nameNoExtension);
@@ -394,7 +400,10 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
     }
 
     private File getToFile() {
-        String fileName = ((FileBrowserActivity.this.fileNameEditText.getText()).toString()).trim() + ".workpage";
+        String fileName = ((FileBrowserActivity.this.fileNameEditText.getText()).toString()).trim();
+        
+        if (selectedExportingFormat == ApplicationLogic.WORKPAGE_DATA) fileName += ".workpage";
+        else fileName += ".csv";
 
         // "currentFile" is a directory.
         return new File(currentFile, fileName);
@@ -421,7 +430,14 @@ public class FileBrowserActivity extends ListActivity implements DataChangeRecei
                         }
                         else {
                             String name = f.getName();
-                            if (name != null && name.endsWith(".workpage")) subfileFiles.add(f);
+
+                            if (name != null) {
+                                if ( (selectedExportingFormat == ApplicationLogic.WORKPAGE_DATA && name.endsWith(".workpage"))
+                                    || (selectedExportingFormat == ApplicationLogic.CSV && name.endsWith(".csv")) ) {
+
+                                    subfileFiles.add(f);
+                                }
+                            }
                         }
                     }
                 }

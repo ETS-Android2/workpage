@@ -36,12 +36,17 @@ public class ApplicationLogic {
     private static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
     private static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
 
-    private static final String CSV_TASK_CONTEXT_TO_SAVE_PREF_KEY = "csv_task_context_to_save";
+    private static final String CSV_TASK_CONTEXT_TO_EXPORT_PREF_KEY = "csv_task_context_to_export";
+    private static final String CSV_TASKS_TO_EXPORT_PREF_KEY = "csv_tasks_to_export";
     private static final String CSV_FIELD_NAMES_PREF_KEY = "csv_field_names";
     private static final String CSV_UNIX_TIME_PREF_KEY = "csv_unix_time";
+    private static final String CSV_ID_PREF_KEY = "csv_id";
+    private static final String CSV_DESCRIPTION_PREF_KEY = "csv_description";
+    private static final String CSV_TAGS_PREF_KEY = "csv_tags";
 
-    private Context appContext;
-    private DataManager dataManager;
+    public static final int ONLY_OPEN_TASKS = 0;
+    public static final int ONLY_CLOSED_TASKS = 1;
+    public static final int ALL_TASKS = 2;
 
     // Constants for the "importData" function.
     public static final int IMPORT_SUCCESS = 0;
@@ -56,6 +61,9 @@ public class ApplicationLogic {
 
     public static final int WORKPAGE_DATA = 0;
     public static final int CSV = 1;
+
+    private Context appContext;
+    private DataManager dataManager;
 
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
@@ -98,9 +106,14 @@ public class ApplicationLogic {
         return filterTags;
     }
 
-    public long getCsvTaskContextToSave() {
+    public long getCsvTaskContextToExport() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getLong(CSV_TASK_CONTEXT_TO_SAVE_PREF_KEY, 1);
+        return preferences.getLong(CSV_TASK_CONTEXT_TO_EXPORT_PREF_KEY, 1);
+    }
+
+    public int getCsvTasksToExport() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getInt(CSV_TASKS_TO_EXPORT_PREF_KEY, ALL_TASKS);
     }
 
     public boolean getCsvFieldNames() {
@@ -111,6 +124,21 @@ public class ApplicationLogic {
     public boolean getCsvUnixTime() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         return preferences.getBoolean(CSV_UNIX_TIME_PREF_KEY, false);
+    }
+
+    public boolean getCsvId() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(CSV_ID_PREF_KEY, false);
+    }
+
+    public boolean getCsvDescription() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(CSV_DESCRIPTION_PREF_KEY, false);
+    }
+
+    public boolean getCsvTags() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        return preferences.getBoolean(CSV_TAGS_PREF_KEY, false);
     }
 
     public void setCurrentTaskContext(TaskContext context) {
@@ -147,10 +175,19 @@ public class ApplicationLogic {
         editor.commit();
     }
 
-    public void setCsvTaskContextToSave(long taskContextId) {
+    public void setCsvTaskContextToExport(long taskContextId) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(CSV_TASK_CONTEXT_TO_SAVE_PREF_KEY, taskContextId);
+        editor.putLong(CSV_TASK_CONTEXT_TO_EXPORT_PREF_KEY, taskContextId);
+        editor.commit();
+    }
+
+    public void setCsvTasksToExport(int tasksToExport) {
+        if (tasksToExport < 0 || tasksToExport > 2) tasksToExport = ALL_TASKS;
+
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(CSV_TASKS_TO_EXPORT_PREF_KEY, tasksToExport);
         editor.commit();
     }
 
@@ -165,6 +202,27 @@ public class ApplicationLogic {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(CSV_UNIX_TIME_PREF_KEY, csvUnixTime);
+        editor.commit();
+    }
+
+    public void setCsvId(boolean csvId) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(CSV_ID_PREF_KEY, csvId);
+        editor.commit();
+    }
+
+    public void setCsvDescription(boolean csvDescription) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(CSV_DESCRIPTION_PREF_KEY, csvDescription);
+        editor.commit();
+    }
+
+    public void setCsvTags(boolean csvTags) {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(CSV_TAGS_PREF_KEY, csvTags);
         editor.commit();
     }
 
@@ -410,7 +468,33 @@ public class ApplicationLogic {
                         copyFile(databaseFile, to);
                         break;
                     case CSV:
-                        // ToDo
+                        TaskContext contextToExport = getTaskContext(getCsvTaskContextToExport());
+                        int tasksToExport = getCsvTasksToExport();
+                        boolean fieldNames = getCsvFieldNames();
+                        boolean unixTime = getCsvUnixTime();
+                        boolean id = getCsvId();
+                        boolean description = getCsvDescription();
+                        boolean tags = getCsvTags();
+
+                        List<Task> tasks = null;
+                        List<TaskTag> contextTags = getAllTaskTags(contextToExport);
+
+                        if (tasksToExport == ONLY_OPEN_TASKS) {
+                            tasks = getOpenTasksByTags(contextToExport, true, contextTags);
+                        }
+                        else if (tasksToExport == ONLY_CLOSED_TASKS) {
+                            tasks = getClosedTasksByTags(contextToExport, true, contextTags);
+                        }
+                        else { // ALL_TASKS
+                            tasks = getOpenTasksByTags(contextToExport, true, contextTags);
+                            tasks.addAll(getClosedTasksByTags(contextToExport, true, contextTags));
+
+                            // We sort the tasks.
+                            Collections.sort(tasks, new TaskComparator()); 
+                        }
+
+                        CsvExporter exporter = new CsvExporter(appContext);
+                        exporter.export(contextToExport, tasks, fieldNames, unixTime, id, description, tags, to);
 
                         break;
                 }
