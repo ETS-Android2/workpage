@@ -10,7 +10,7 @@ Características:
 4. Fechas/horas flexibles: Sin Fecha, Fecha Sencilla y Rango de Fechas.
 5. Las fechas/horas están expresadas en la zona horaria del sistema: Si cambia la zona horaria del sistema, las fechas/horas se adaptarán automáticamente.
 6. Recordatorios. Cada tarea puede tener opcionalmente recordatorios.
-7. Exportación/importación de los datos: Puede hacer una copia de seguridad de sus datos en un archivo e importarla luego en su dispositivo o en otro.
+7. Exportación/importación de los datos: Puede hacer una copia de seguridad de sus datos en un archivo e importarla luego en su dispositivo o en otro. También puede exportar los datos a un archivo CSV.
 8. Idiomas disponibles: Inglés y Español.
 
 El código fuente del proyecto está disponible en GitHub: https://github.com/jajimenez/workpage
