@@ -16,13 +16,13 @@ Features
 4. **Flexible dates/times:** No Date, Single Date or Date Range.
 5. **Dates/times** are shown in the system **timezone**: If you change the system timezone, dates/times will be **automatically adapted**.
 6. **Reminders:** Every task can optionally have reminders.
-7. **Data export/import:** You can make a backup of your data into a file and recover it later, in your device or in another.
+7. **Data export/import:** You can make a backup of your data into a file and recover it later, in your device or in another. You can also export the data to CSV.
 8. **Available languages:** English and Spanish.
 
 Project data
 ------------
 * **Development version:** 0.6.0
-* **Release version:** 0.5.0
+* **Release version:** 0.6.0
 * **Author:** Jose A. Jimenez (jajimenezcarm@gmail.com)
 * **License:** GPL 3.0
 
