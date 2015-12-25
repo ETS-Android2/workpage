@@ -1,11 +1,11 @@
-0.6.0
------
+0.6.0 (25 Dec 2015)
+-------------------
 * CSV format added for data exporting.
 * Reminders bug fixes.
 * Tag filtering bug fix.
 
-0.5.0 (16 Dec 2015):
---------------------
+0.5.0 (16 Dec 2015)
+-------------------
 * Date concept improved:
   - Single date added.
   - Time can optionally be added to dates.
