@@ -41,6 +41,7 @@ import jajimenez.workpage.data.model.Task;
 public class EditTaskActivity extends Activity {
     private EditText titleEditText;
     private EditText descriptionEditText;
+    private Button editDescriptionButton;
 
     private RadioButton noDateRadioButton;
     private RadioButton whenRadioButton;
@@ -73,6 +74,8 @@ public class EditTaskActivity extends Activity {
     private AutoCompleteTextView addTagAutoTextView;
     private Button addTagButton; 
     private LinearLayout addedTagsLinearLayout;
+
+    private EditDescriptionDialogFragment.OnOkButtonClickedListener onOkButtonClickedListener;
 
     private DatePickerDialogFragment.OnDateSetListener onWhenDateSetListener;
     private TimePickerDialogFragment.OnTimeSetListener onWhenTimeSetListener;
@@ -111,6 +114,7 @@ public class EditTaskActivity extends Activity {
 
         titleEditText = (EditText) findViewById(R.id.editTask_title);
         descriptionEditText = (EditText) findViewById(R.id.editTask_description);
+        editDescriptionButton = (Button) findViewById(R.id.editTask_edit_description);
 
         noDateRadioButton = (RadioButton) findViewById(R.id.editTask_noDate_radioButton);
         whenRadioButton = (RadioButton) findViewById(R.id.editTask_when_radioButton);
@@ -170,6 +174,12 @@ public class EditTaskActivity extends Activity {
                 // Nothing to do.
             }
         });
+
+        onOkButtonClickedListener = new EditDescriptionDialogFragment.OnOkButtonClickedListener() {
+            public void onOkButtonClicked(String description) {
+                EditTaskActivity.this.descriptionEditText.setText(description);
+            }
+        };
 
         // When
         onWhenDateSetListener = new DatePickerDialogFragment.OnDateSetListener() {
@@ -275,8 +285,6 @@ public class EditTaskActivity extends Activity {
 
             // Update interface.
             setTitle(R.string.edit_task);
-            titleEditText.setText(currentTask.getTitle());
-            descriptionEditText.setText(currentTask.getDescription());
         }
         else {
             long contextId = intent.getLongExtra("task_context_id", -1);
@@ -289,6 +297,11 @@ public class EditTaskActivity extends Activity {
         }
 
         if (savedInstanceState == null) {
+            if (mode != null && mode.equals("edit")) {
+                titleEditText.setText(currentTask.getTitle());
+                descriptionEditText.setText(currentTask.getDescription());
+            }
+
             DateTimeTool tool = new DateTimeTool();
             TaskReminder defaultReminder = applicationLogic.getTaskReminder(4); // 15 minutes.
 
@@ -353,6 +366,9 @@ public class EditTaskActivity extends Activity {
             }
         }
         else {
+            EditDescriptionDialogFragment descriptionFragment = (EditDescriptionDialogFragment) (getFragmentManager()).findFragmentByTag("edit_description");
+            if (descriptionFragment != null) descriptionFragment.setOnOkButtonClickedListener(onOkButtonClickedListener);
+
             // When
             DatePickerDialogFragment whenDateFragment = (DatePickerDialogFragment) (getFragmentManager()).findFragmentByTag("when_date_picker");
             if (whenDateFragment != null) whenDateFragment.setOnDateSetListener(onWhenDateSetListener);
@@ -647,6 +663,13 @@ public class EditTaskActivity extends Activity {
         }
 
         return result;
+    }
+
+    public void onEditDescriptionButtonClicked(View view) {
+        EditDescriptionDialogFragment fragment = new EditDescriptionDialogFragment((descriptionEditText.getText()).toString());
+
+        fragment.setOnOkButtonClickedListener(EditTaskActivity.this.onOkButtonClickedListener);
+        fragment.show(getFragmentManager(), "edit_description");
     }
 
     public void onNoDateRadioButtonClicked(View view) {
