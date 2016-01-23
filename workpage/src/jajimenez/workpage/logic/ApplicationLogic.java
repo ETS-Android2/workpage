@@ -440,7 +440,7 @@ public class ApplicationLogic {
             alarmManager.cancel(alarmIntent);
         }
 
-        if (taskDeleted) {
+        if (done || taskDeleted) {
             NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(reminderId);
         }
