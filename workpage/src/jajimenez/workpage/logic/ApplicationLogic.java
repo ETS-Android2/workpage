@@ -396,7 +396,6 @@ public class ApplicationLogic {
 
     private void updateReminderAlarm(Task task, int reminderType, boolean taskDeleted) {
         AlarmManager alarmManager = (AlarmManager) appContext.getSystemService(Context.ALARM_SERVICE);
-        NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
         long taskId = task.getId();
         boolean done = task.isDone();
@@ -439,6 +438,10 @@ public class ApplicationLogic {
         }
         else {
             alarmManager.cancel(alarmIntent);
+        }
+
+        if (taskDeleted) {
+            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(reminderId);
         }
     }
