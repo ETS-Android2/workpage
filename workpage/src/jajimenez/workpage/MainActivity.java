@@ -46,7 +46,7 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
-    private String currentView;
+    private String viewStateFilter;
     private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
 
@@ -111,7 +111,7 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         }
 
         applicationLogic = new ApplicationLogic(this);
-        currentView = "";
+        viewStateFilter = "";
         includeTasksWithNoTag = true;
         currentFilterTags = new LinkedList<TaskTag>();
 
@@ -289,11 +289,11 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         actionBar.setSubtitle(currentTaskContext.getName());
 
         // Information about the current view.
-        currentView = this.applicationLogic.getCurrentView();
+        viewStateFilter = this.applicationLogic.getViewStateFilter();
         
-        if (currentView.equals("open")) viewTextView.setText(R.string.open);
-        else if (currentView.equals("doable_today")) viewTextView.setText(R.string.doable_today);
-        else if (currentView.equals("closed")) viewTextView.setText(R.string.closed);
+        if (viewStateFilter.equals("open")) viewTextView.setText(R.string.open);
+        else if (viewStateFilter.equals("doable_today")) viewTextView.setText(R.string.doable_today);
+        else if (viewStateFilter.equals("closed")) viewTextView.setText(R.string.closed);
 
         // Information about the current filter tags.
         includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
@@ -458,17 +458,17 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
-            if (currentView.equals("open")) {
+            if (viewStateFilter.equals("open")) {
                 tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
                     MainActivity.this.includeTasksWithNoTag,
                     MainActivity.this.currentFilterTags);
             }
-            else if (currentView.equals("doable_today")) {
+            else if (viewStateFilter.equals("doable_today")) {
                 tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
                     MainActivity.this.includeTasksWithNoTag,
                     MainActivity.this.currentFilterTags);
             }
-            else if (currentView.equals("closed")) {
+            else if (viewStateFilter.equals("closed")) {
                 tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
                     MainActivity.this.includeTasksWithNoTag,
                     MainActivity.this.currentFilterTags);

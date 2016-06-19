@@ -48,7 +48,7 @@
         </activity>
 
         <activity android:name="ViewActivity"
-            android:label="@string/view_1"
+            android:label="@string/view"
             android:parentActivityName="MainActivity" />
 
         <activity android:name="EditTaskContextsActivity"

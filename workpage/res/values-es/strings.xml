@@ -13,7 +13,7 @@
     <string name="switch_task_context">Cambiar contexto</string>
     <string name="cancel">Cancelar</string>
     <string name="no_tasks">No hay tareas.</string>
-    <string name="set_status">Establecer estado</string>
+    <string name="set_state">Establecer estado</string>
     <string name="edit">Editar</string>
     <string name="delete">Borrar</string>
     <string name="selected">%1$d seleccionadas</string>
@@ -43,7 +43,7 @@
         <item quantity="other">Contextos borrados.</item>
     </plurals>
 
-    <plurals name="task_status">
+    <plurals name="task_state">
         <item quantity="one">Estado de la tarea</item>
         <item quantity="other">Estado de las tareas (%1$d)</item>
     </plurals>
@@ -110,7 +110,7 @@
     <string name="task_deadline">Límite: %1$s - %2$s</string>
     <string name="task_deadline_notime">Límite: %1$s</string>
     <string name="tags">Etiquetas:</string>
-    <string name="tag_filter">Filtro de etiquetas:</string>
+    <string name="filter_by_tags">Filtrar por etiquetas</string>
     <string name="tag_name">Nombre de la etiqueta</string>
     <string name="add">Añadir</string>
     <string name="tag_already_added">Etiqueta ya añadida.</string>
@@ -139,8 +139,13 @@
     <string name="dismiss">Descartar</string>
     <string name="snooze">Posponer</string>
 
-    <string name="view_1">Vista</string>
-    <string name="view_2">Vista:</string>
+    <string name="view">Vista</string>
+    <string name="style">Estilo</string>
+    <string name="view_style">Estilo de vista</string>
+    <string name="filter_by_state">Filtrar por estado</string>
+    <string name="state_1">Estado</string>
+    <string name="state_2">Estado:</string>
+
     <string name="open">Pendiente</string>
     <string name="open_description">Todas las tareas pendientes.</string>
     <string name="doable_today">Realizable Hoy</string>
@@ -185,7 +190,7 @@
     <string name="field_when">Cuándo</string>
     <string name="field_start">Comienzo</string>
     <string name="field_deadline">Límite</string>
-    <string name="field_status">Estado</string>
+    <string name="field_state">Estado</string>
     <string name="value_open">Pendiente</string>
     <string name="value_closed">Completa</string>
     <string name="value_yes">Sí</string>

@@ -13,7 +13,7 @@
     <string name="switch_task_context">Switch context</string>
     <string name="cancel">Cancel</string>
     <string name="no_tasks">There are no tasks.</string>
-    <string name="set_status">Set status</string>
+    <string name="set_state">Set state</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="selected">%1$d selected</string>
@@ -43,9 +43,9 @@
         <item quantity="other">Contexts deleted.</item>
     </plurals>
 
-    <plurals name="task_status">
-        <item quantity="one">Task status</item>
-        <item quantity="other">Tasks (%1$d) status</item>
+    <plurals name="task_state">
+        <item quantity="one">Task state</item>
+        <item quantity="other">Tasks (%1$d) state</item>
     </plurals>
 
     <string name="mark_as_open">Mark as open</string>
@@ -110,7 +110,7 @@
     <string name="task_deadline">Deadline: %1$s - %2$s</string>
     <string name="task_deadline_notime">Deadline: %1$s</string>
     <string name="tags">Tags:</string>
-    <string name="tag_filter">Tag filter:</string>
+    <string name="filter_by_tags">Filter by tags</string>
     <string name="tag_name">Tag name</string>
     <string name="add">Add</string>
     <string name="tag_already_added">Tag already added.</string>
@@ -139,8 +139,13 @@
     <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
 
-    <string name="view_1">View</string>
-    <string name="view_2">View:</string>
+    <string name="view">View</string>
+    <string name="style">Style</string>
+    <string name="view_style">View style</string>
+    <string name="filter_by_state">Filter by state</string>
+    <string name="state_1">State</string>
+    <string name="state_2">State:</string>
+
     <string name="open">Open</string>
     <string name="open_description">All the open tasks.</string>
     <string name="doable_today">Doable Today</string>
@@ -185,7 +190,7 @@
     <string name="field_when">When</string>
     <string name="field_start">Start</string>
     <string name="field_deadline">Deadline</string>
-    <string name="field_status">Status</string>
+    <string name="field_state">State</string>
     <string name="value_open">Open</string>
     <string name="value_closed">Closed</string>
     <string name="value_yes">Yes</string>

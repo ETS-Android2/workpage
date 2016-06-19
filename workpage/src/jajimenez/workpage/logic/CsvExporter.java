@@ -58,7 +58,7 @@ public class CsvExporter {
             writer.write(getCsvValue(appContext.getString(R.string.field_deadline)));
             writer.write(",");
 
-            writer.write(getCsvValue(appContext.getString(R.string.field_status)));
+            writer.write(getCsvValue(appContext.getString(R.string.field_state)));
 
             if (tags) {
                 writer.write(",");

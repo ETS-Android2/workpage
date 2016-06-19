@@ -54,7 +54,7 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
         int selectedTaskCount = tasks.size();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(resources.getQuantityString(R.plurals.task_status, selectedTaskCount, selectedTaskCount));
+        builder.setTitle(resources.getQuantityString(R.plurals.task_state, selectedTaskCount, selectedTaskCount));
         builder.setNegativeButton(R.string.cancel, null);
 
         String[] items = null;

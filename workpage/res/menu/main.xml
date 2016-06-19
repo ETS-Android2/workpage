@@ -12,7 +12,7 @@
         android:onClick="onNewTaskItemSelected" />
 
     <item android:icon="@drawable/ic_action_view_as_list"
-        android:title="@string/view_1"
+        android:title="@string/view"
         android:showAsAction="always"
         android:onClick="onViewItemSelected" />
 

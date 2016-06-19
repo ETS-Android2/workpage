@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/taskMenu_status"
         android:icon="@drawable/ic_action_settings"
-        android:title="@string/set_status"
+        android:title="@string/set_state"
         android:showAsAction="ifRoom" />
 
     <item android:id="@+id/taskMenu_edit"

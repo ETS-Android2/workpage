@@ -19,6 +19,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.TaskReminderAlarmReceiver;
@@ -32,7 +33,8 @@ import jajimenez.workpage.data.model.TaskReminder;
 public class ApplicationLogic {
     private static final String PREFERENCES_FILE = "workpage_preferences";
     private static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
-    private static final String CURRENT_VIEW_PREF_KEY = "current_view";
+    private static final String VIEW_STYLE_KEY = "view_style";
+    private static final String VIEW_STATE_FILTER_KEY = "view_state_filter";
     private static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
     private static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
 
@@ -77,9 +79,14 @@ public class ApplicationLogic {
         return dataManager.getTaskContext(currentTaskContextId);
     }
 
-    public String getCurrentView() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getString(CURRENT_VIEW_PREF_KEY, "open");
+    public String getViewStyle() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getString(VIEW_STYLE_KEY, "list");
+    }
+
+    public String getViewStateFilter() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getString(VIEW_STATE_FILTER_KEY, "open");
     }
 
     public boolean getIncludeTasksWithNoTag() {
@@ -148,10 +155,17 @@ public class ApplicationLogic {
         editor.commit();
     }
 
-    public void setCurrentView(String view) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+    public void setViewStyle(String style) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(CURRENT_VIEW_PREF_KEY, view);
+        editor.putString(VIEW_STYLE_KEY, style);
+        editor.commit();
+    }
+
+    public void setViewStateFilter(String state) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(VIEW_STATE_FILTER_KEY, state);
         editor.commit();
     }
 

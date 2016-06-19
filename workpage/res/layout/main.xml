@@ -12,7 +12,7 @@
         <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="5dp"
-            android:text="@string/view_2"
+            android:text="@string/state_2"
             android:textStyle="bold" />
 
         <TextView android:id="@+id/main_view"
@@ -23,7 +23,7 @@
         <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:text="@string/tag_filter"
+            android:text="@string/tags"
             android:textStyle="bold" />
 
         <TextView android:id="@+id/main_filterTags_value"

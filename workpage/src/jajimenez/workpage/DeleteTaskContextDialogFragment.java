@@ -73,12 +73,12 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
                     // It is assumed that there will be always 1 context at least.
                     TaskContext newCurrentContext = remainingContexts.get(0);
 
-                    String newCurrentView = "open";
+                    String newViewStateFilter = "open";
                     boolean newIncludeTasksWithNoTag = true;
                     List<TaskTag> newCurrentFilterTags = DeleteTaskContextDialogFragment.this.applicationLogic.getAllTaskTags(newCurrentContext);
 
                     DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(newCurrentContext);
-                    DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentView(newCurrentView);
+                    DeleteTaskContextDialogFragment.this.applicationLogic.setViewStateFilter(newViewStateFilter);
                     DeleteTaskContextDialogFragment.this.applicationLogic.setIncludeTasksWithNoTag(newIncludeTasksWithNoTag);
                     DeleteTaskContextDialogFragment.this.applicationLogic.setCurrentFilterTags(newCurrentFilterTags);
                 }

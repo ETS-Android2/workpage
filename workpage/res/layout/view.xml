@@ -3,61 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:text="@string/view_2" />
-
-        <RadioGroup android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:orientation="vertical">
-
-            <RadioButton android:id="@+id/view_open"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/open" />
-
-            <TextView android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="27dp"
-                android:text="@string/open_description"
-                android:clickable="true"
-                android:onClick="onOpenDescriptionTextViewClicked" />
-
-            <RadioButton android:id="@+id/view_doableToday"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/doable_today" />
-
-            <TextView android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="27dp"
-                android:text="@string/doable_today_description"
-                android:clickable="true"
-                android:onClick="onDoableTodayDescriptionTextViewClicked" />
-
-            <RadioButton android:id="@+id/view_closed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/closed" />
-
-            <TextView android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="27dp"
-                android:paddingBottom="10dp"
-                android:text="@string/closed_description"
-                android:clickable="true"
-                android:onClick="onClosedDescriptionTextViewClicked" />
-        </RadioGroup>
+        <fragment android:name="jajimenez.workpage.ViewSettingsFragment"
+            android:id="@+id/view_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <TextView android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +18,7 @@
             android:paddingRight="5dp"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:text="@string/tag_filter" />
+            android:text="@string/filter_by_tags" />
 
         <LinearLayout android:id="@+id/view_tags"
             android:layout_width="match_parent"
