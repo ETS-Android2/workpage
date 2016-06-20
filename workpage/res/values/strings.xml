@@ -205,7 +205,8 @@
     <string name="data_import_confirmation">The current data will be overwritten. Do you want to continue?</string>
 
     <string name="settings">Settings</string>
-    <string name="reminders_notifications">Reminders (notifications)</string>
+    <string name="reminder_type">Reminder type</string>
+    <string name="notifications">Notifications</string>
     <string name="play_sound">Play sound</string>
     <string name="vibrate">Vibrate</string>
     <string name="light">Light</string>

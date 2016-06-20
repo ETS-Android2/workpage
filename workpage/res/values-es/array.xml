@@ -10,4 +10,9 @@
         <item>Realizable Hoy</item>
         <item>Completo</item>
     </string-array>
+
+    <string-array name="reminder_type_texts">
+        <item>Notificación</item>
+        <item>Alerta</item>
+    </string-array>
 </resources>

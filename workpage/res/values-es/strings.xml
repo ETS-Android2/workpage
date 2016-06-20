@@ -205,7 +205,8 @@
     <string name="data_import_confirmation">Los datos actuales serán sobrescritos. ¿Quiere continuar?</string>
 
     <string name="settings">Configuración</string>
-    <string name="reminders_notifications">Recordatorios (notificaciones)</string>
+    <string name="reminder_type">Tipo de recordatorios</string>
+    <string name="notifications">Notificaciones</string>
     <string name="play_sound">Reproducir sonido</string>
     <string name="vibrate">Vibrar</string>
     <string name="light">Luz</string>

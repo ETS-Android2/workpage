@@ -91,9 +91,10 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
 
         // Get the reminder settings.
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean sound = preferences.getBoolean("notification_sound", true);
-        boolean vibrate = preferences.getBoolean("notification_vibrate", true);
-        boolean light = preferences.getBoolean("notification_light", true);
+
+        boolean sound = preferences.getBoolean("notifications_sound", true);
+        boolean vibrate = preferences.getBoolean("notifications_vibrate", true);
+        boolean light = preferences.getBoolean("notifications_light", true);
 
         int notificationFlags = 0;
         
