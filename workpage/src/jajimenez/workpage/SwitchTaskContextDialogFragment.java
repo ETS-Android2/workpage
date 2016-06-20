@@ -63,14 +63,7 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
                 TaskContext selectedTaskContext = taskContexts.get(which);
 
                 if (selectedTaskContext.getId() != SwitchTaskContextDialogFragment.this.currentTaskContext.getId()) { 
-                    String newViewStateFilter = "open";
-                    boolean newIncludeTasksWithNoTag = true;
-                    List<TaskTag> newCurrentFilterTags = SwitchTaskContextDialogFragment.this.applicationLogic.getAllTaskTags(selectedTaskContext);
-
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(selectedTaskContext);
-                    SwitchTaskContextDialogFragment.this.applicationLogic.setViewStateFilter(newViewStateFilter);
-                    SwitchTaskContextDialogFragment.this.applicationLogic.setIncludeTasksWithNoTag(newIncludeTasksWithNoTag);
-                    SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentFilterTags(newCurrentFilterTags);
 
                     if (SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener != null) {
                         SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener.onNewCurrentTaskContextSet();

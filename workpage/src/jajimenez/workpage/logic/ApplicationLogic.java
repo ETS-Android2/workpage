@@ -32,19 +32,18 @@ import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
     private static final String PREFERENCES_FILE = "workpage_preferences";
-    private static final String CURRENT_TASK_CONTEXT_ID_PREF_KEY = "current_task_context_id";
+    private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STYLE_KEY = "view_style";
-    private static final String VIEW_STATE_FILTER_KEY = "view_state_filter";
-    private static final String INCLUDE_TASKS_WITH_NO_TAG = "include_tasks_with_no_tag";
-    private static final String CURRENT_FILTER_TAGS_PREF_KEY = "current_filter_tags";
+    private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
+    private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
 
-    private static final String CSV_TASK_CONTEXT_TO_EXPORT_PREF_KEY = "csv_task_context_to_export";
-    private static final String CSV_TASKS_TO_EXPORT_PREF_KEY = "csv_tasks_to_export";
-    private static final String CSV_FIELD_NAMES_PREF_KEY = "csv_field_names";
-    private static final String CSV_UNIX_TIME_PREF_KEY = "csv_unix_time";
-    private static final String CSV_ID_PREF_KEY = "csv_id";
-    private static final String CSV_DESCRIPTION_PREF_KEY = "csv_description";
-    private static final String CSV_TAGS_PREF_KEY = "csv_tags";
+    private static final String CSV_TASK_CONTEXT_TO_EXPORT_KEY = "csv_task_context_to_export";
+    private static final String CSV_TASKS_TO_EXPORT_KEY = "csv_tasks_to_export";
+    private static final String CSV_FIELD_NAMES_KEY = "csv_field_names";
+    private static final String CSV_UNIX_TIME_KEY = "csv_unix_time";
+    private static final String CSV_ID_KEY = "csv_id";
+    private static final String CSV_DESCRIPTION_KEY = "csv_description";
+    private static final String CSV_TAGS_KEY = "csv_tags";
 
     public static final int ONLY_OPEN_TASKS = 0;
     public static final int ONLY_CLOSED_TASKS = 1;
@@ -74,7 +73,7 @@ public class ApplicationLogic {
 
     public TaskContext getCurrentTaskContext() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        long currentTaskContextId = preferences.getLong(CURRENT_TASK_CONTEXT_ID_PREF_KEY, 1);
+        long currentTaskContextId = preferences.getLong(CURRENT_TASK_CONTEXT_ID_KEY, 1);
 
         return dataManager.getTaskContext(currentTaskContextId);
     }
@@ -86,113 +85,81 @@ public class ApplicationLogic {
 
     public String getViewStateFilter() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getString(VIEW_STATE_FILTER_KEY, "open");
+        String key = VIEW_STATE_FILTER_KEY_START + (getCurrentTaskContext()).getId();
+
+        return preferences.getString(key, "open");
     }
 
     public boolean getIncludeTasksWithNoTag() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(INCLUDE_TASKS_WITH_NO_TAG, true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = VIEW_TAG_FILTER_NO_TAG_KEY_START + (getCurrentTaskContext()).getId();
+
+        return preferences.getBoolean(key, true);
     }
 
     public List<TaskTag> getCurrentFilterTags() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        List<TaskTag> filterTags = new LinkedList<TaskTag>();
         TaskContext currentContext = getCurrentTaskContext();
+        List<TaskTag> tags = getAllTaskTags(currentContext);
 
-        // Default tag names: all.
-        List<TaskTag> allTags = getAllTaskTags(currentContext);
-        TreeSet<String> allTagNames = new TreeSet<String>();
-        for (TaskTag tag : allTags) allTagNames.add(tag.getName());
+        for (TaskTag t : tags) {
+            String key = "view_tag_filter_tag_" + t.getId();
+            boolean value = preferences.getBoolean(key, true);
 
-        // Get current settings.
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        // The Set object returned by "getStringSet" must not be mofified.
-        Set<String> prefFilterTagNames = preferences.getStringSet(CURRENT_FILTER_TAGS_PREF_KEY, allTagNames);
-
-        LinkedList<String> filterTagNames = new LinkedList<String>(prefFilterTagNames);
-        List<TaskTag> filterTags = dataManager.getTaskTagsByNames(currentContext, filterTagNames);
+            if (value) filterTags.add(t);
+        }
 
         return filterTags;
     }
 
     public long getCsvTaskContextToExport() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getLong(CSV_TASK_CONTEXT_TO_EXPORT_PREF_KEY, 1);
+        return preferences.getLong(CSV_TASK_CONTEXT_TO_EXPORT_KEY, 1);
     }
 
     public int getCsvTasksToExport() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getInt(CSV_TASKS_TO_EXPORT_PREF_KEY, ALL_TASKS);
+        return preferences.getInt(CSV_TASKS_TO_EXPORT_KEY, ALL_TASKS);
     }
 
     public boolean getCsvFieldNames() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_FIELD_NAMES_PREF_KEY, true);
+        return preferences.getBoolean(CSV_FIELD_NAMES_KEY, true);
     }
 
     public boolean getCsvUnixTime() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_UNIX_TIME_PREF_KEY, false);
+        return preferences.getBoolean(CSV_UNIX_TIME_KEY, false);
     }
 
     public boolean getCsvId() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_ID_PREF_KEY, false);
+        return preferences.getBoolean(CSV_ID_KEY, false);
     }
 
     public boolean getCsvDescription() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_DESCRIPTION_PREF_KEY, false);
+        return preferences.getBoolean(CSV_DESCRIPTION_KEY, false);
     }
 
     public boolean getCsvTags() {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_TAGS_PREF_KEY, false);
+        return preferences.getBoolean(CSV_TAGS_KEY, false);
     }
 
     public void setCurrentTaskContext(TaskContext context) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(CURRENT_TASK_CONTEXT_ID_PREF_KEY, context.getId());
-        editor.commit();
-    }
-
-    public void setViewStyle(String style) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(VIEW_STYLE_KEY, style);
-        editor.commit();
-    }
-
-    public void setViewStateFilter(String state) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(VIEW_STATE_FILTER_KEY, state);
-        editor.commit();
-    }
-
-    public void setIncludeTasksWithNoTag(boolean include) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(INCLUDE_TASKS_WITH_NO_TAG, include);
-        editor.commit();
-    }
-
-    public void setCurrentFilterTags(List<TaskTag> filterTags) {
-        TreeSet<String> filterTagNames = new TreeSet<String>();
-        
-        if (filterTags != null) {
-            for (TaskTag tag : filterTags) filterTagNames.add(tag.getName());
-        }
-
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putStringSet(CURRENT_FILTER_TAGS_PREF_KEY, filterTagNames);
+        editor.putLong(CURRENT_TASK_CONTEXT_ID_KEY, context.getId());
         editor.commit();
     }
 
     public void setCsvTaskContextToExport(long taskContextId) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(CSV_TASK_CONTEXT_TO_EXPORT_PREF_KEY, taskContextId);
+        editor.putLong(CSV_TASK_CONTEXT_TO_EXPORT_KEY, taskContextId);
         editor.commit();
     }
 
@@ -201,42 +168,42 @@ public class ApplicationLogic {
 
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(CSV_TASKS_TO_EXPORT_PREF_KEY, tasksToExport);
+        editor.putInt(CSV_TASKS_TO_EXPORT_KEY, tasksToExport);
         editor.commit();
     }
 
     public void setCsvFieldNames(boolean csvFieldNames) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_FIELD_NAMES_PREF_KEY, csvFieldNames);
+        editor.putBoolean(CSV_FIELD_NAMES_KEY, csvFieldNames);
         editor.commit();
     }
 
     public void setCsvUnixTime(boolean csvUnixTime) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_UNIX_TIME_PREF_KEY, csvUnixTime);
+        editor.putBoolean(CSV_UNIX_TIME_KEY, csvUnixTime);
         editor.commit();
     }
 
     public void setCsvId(boolean csvId) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_ID_PREF_KEY, csvId);
+        editor.putBoolean(CSV_ID_KEY, csvId);
         editor.commit();
     }
 
     public void setCsvDescription(boolean csvDescription) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_DESCRIPTION_PREF_KEY, csvDescription);
+        editor.putBoolean(CSV_DESCRIPTION_KEY, csvDescription);
         editor.commit();
     }
 
     public void setCsvTags(boolean csvTags) {
         SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_TAGS_PREF_KEY, csvTags);
+        editor.putBoolean(CSV_TAGS_KEY, csvTags);
         editor.commit();
     }
 
@@ -253,8 +220,24 @@ public class ApplicationLogic {
     }
 
     public void deleteTaskContexts(List<TaskContext> contexts) {
-        // Cancel reminder alarms.
-        for (TaskContext c : contexts) updateAllOpenTaskReminderAlarms(c, true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        for (TaskContext c : contexts) {
+            // Cancel reminder alarms.
+            updateAllOpenTaskReminderAlarms(c, true);
+
+            // The context's settings must be removed from the tag filtering of the view.
+            long id = c.getId();
+
+            String stateKey = "view_state_filter_state_context_" + id;
+            String noTagKey = "view_tag_filter_notag_context_" + id;
+
+            editor.remove(stateKey);
+            editor.remove(noTagKey);
+
+            editor.commit();
+        }
 
         // Delete contexts.
         dataManager.deleteTaskContexts(contexts);
@@ -277,28 +260,19 @@ public class ApplicationLogic {
     }
 
     public void saveTaskTag(TaskTag tag) {
-        // If the tag is new, it must be added to the tag filtering of the current view.
-        TaskContext context = getTaskContext(tag.getContextId());
-        List<String> tagNames = new LinkedList<String>();
-        tagNames.add(tag.getName());
-
-        List<TaskTag> dbTags = dataManager.getTaskTagsByNames(context, tagNames);
-
-        if (dbTags == null || dbTags.size() == 0) {
-            // The tag is new.
-            List<TaskTag> filterTags = getCurrentFilterTags();
-            filterTags.add(tag);
-            setCurrentFilterTags(filterTags);
-        }
-
         dataManager.saveTaskTag(tag);
     }
 
     public void deleteTaskTags(List<TaskTag> tags) {
-        // The tags must be removed from the tag filtering of the current view.
-        List<TaskTag> filterTags = getCurrentFilterTags();
-        filterTags.removeAll(tags);
-        setCurrentFilterTags(filterTags);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        for (TaskTag t : tags) {
+            // The tag settings must be removed from the tag filtering of the view.
+            String key = "view_tag_filter_tag_" + t.getId();
+            editor.remove(key);
+            editor.commit();
+        }
 
         dataManager.deleteTaskTags(tags);
     }
@@ -377,26 +351,20 @@ public class ApplicationLogic {
         //    if the task is a new one.
         dataManager.saveTask(task);
 
-        // 4. Update tag filtering.
-        setCurrentFilterTags(filterTags);
-
-        // 5. Update reminder alarms.
+        // 4. Update reminder alarms.
         updateAllReminderAlarms(task, false);
     }
 
     // Updates all the alarms of all open tasks of all contexts.
     public void updateAllOpenTaskReminderAlarms(boolean tasksDeleted) {
         List<TaskContext> contexts = getAllTaskContexts();
-
         for (TaskContext c : contexts) updateAllOpenTaskReminderAlarms(c, tasksDeleted);
     }
 
     // Updates all the alarms of all open tasks of a given context.
     private void updateAllOpenTaskReminderAlarms(TaskContext context, boolean tasksDeleted) {
-        boolean includeTasksWithNoTag = true;
-
         List<TaskTag> tags = getAllTaskTags(context); // All context tags.
-        List<Task> tasks = getOpenTasksByTags(context, includeTasksWithNoTag, tags); // All context open tasks.
+        List<Task> tasks = getOpenTasksByTags(context, true, tags); // All context open tasks.
 
         for (Task t : tasks) updateAllReminderAlarms(t, tasksDeleted);
     }
