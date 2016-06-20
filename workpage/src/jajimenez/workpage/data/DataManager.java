@@ -1069,8 +1069,8 @@ public class DataManager extends SQLiteOpenHelper {
                 if (done) query += "AND tasks.done = 1 ";
                 else query += "AND tasks.done = 0 ";
 
-                query += "AND task_tags.name = ?";
-                Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(tag.getName()) });
+                query += "AND task_tags.id = ?";
+                Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(tag.getId()) });
 
                 if (cursor.moveToFirst()) count = cursor.getInt(0);
             }
