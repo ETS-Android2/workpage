@@ -33,7 +33,6 @@ import jajimenez.workpage.data.model.TaskReminder;
 public class ApplicationLogic {
     private static final String PREFERENCES_FILE = "workpage_preferences";
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
-    private static final String VIEW_STYLE_KEY = "view_style";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
 
@@ -76,11 +75,6 @@ public class ApplicationLogic {
         long currentTaskContextId = preferences.getLong(CURRENT_TASK_CONTEXT_ID_KEY, 1);
 
         return dataManager.getTaskContext(currentTaskContextId);
-    }
-
-    public String getViewStyle() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getString(VIEW_STYLE_KEY, "list");
     }
 
     public String getViewStateFilter() {
