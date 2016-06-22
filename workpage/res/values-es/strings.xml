@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Workpage</string>
-    <string name="app_description">Gestor de productividad.</string>
+    <string name="app_description">Gestor de productividad</string>
     <string name="app_version">0.8.0</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
@@ -12,7 +12,7 @@
 
     <string name="switch_task_context">Cambiar contexto</string>
     <string name="cancel">Cancelar</string>
-    <string name="no_tasks">No hay tareas.</string>
+    <string name="no_tasks">No hay tareas</string>
     <string name="set_state">Establecer estado</string>
     <string name="edit">Editar</string>
     <string name="delete">Borrar</string>
@@ -155,7 +155,7 @@
     <string name="all">(Todo)</string>
     <string name="no_tag">(Sin etiquetas)</string>
     <string name="none">(Ninguno)</string>
-    <string name="no_tags">No hay etiquetas.</string>
+    <string name="no_tags">No hay etiquetas</string>
 
     <string name="export_data">Exportar datos</string>
     <string name="go_up">Ir arriba</string>
@@ -215,7 +215,7 @@
     <string name="version">Versión:</string>
     <string name="author">Autor:</string>
     <string name="license">Licencia:</string>
-    <string name="web_site">Sitio web:</string>
+    <string name="project_website">Sitio web del proyecto:</string>
 
     <string name="separator">", "</string>
 </resources>

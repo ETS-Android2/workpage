@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Workpage</string>
-    <string name="app_description">Productivity manager.</string>
+    <string name="app_description">Productivity manager</string>
     <string name="app_version">0.8.0</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
@@ -12,7 +12,7 @@
 
     <string name="switch_task_context">Switch context</string>
     <string name="cancel">Cancel</string>
-    <string name="no_tasks">There are no tasks.</string>
+    <string name="no_tasks">There are no tasks</string>
     <string name="set_state">Set state</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -155,7 +155,7 @@
     <string name="all">(All)</string>
     <string name="no_tag">(No tag)</string>
     <string name="none">(None)</string>
-    <string name="no_tags">There are no tags.</string>
+    <string name="no_tags">There are no tags</string>
 
     <string name="export_data">Export data</string>
     <string name="go_up">Go up</string>
@@ -215,7 +215,7 @@
     <string name="version">Version:</string>
     <string name="author">Author:</string>
     <string name="license">License:</string>
-    <string name="web_site">Web site:</string>
+    <string name="project_website">Project website:</string>
 
     <string name="separator">", "</string>
 </resources>

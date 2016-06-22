@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:text="@string/web_site" />
+                    android:text="@string/project_website" />
             </TableRow>
 
             <TableRow>
