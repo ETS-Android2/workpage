@@ -2,8 +2,7 @@ package jajimenez.workpage.logic;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
 import java.util.Collections;
 import java.util.Calendar;
 import java.io.File;
@@ -497,6 +496,9 @@ public class ApplicationLogic {
                     File dbFile = dataManager.getDatabaseFile();
                     copyFile(from, dbFile);
 
+                    // Clear settings.
+                    clearSettings();
+
                     // Set reminder alarms for new tasks.
                     updateAllOpenTaskReminderAlarms(false);
 
@@ -522,6 +524,27 @@ public class ApplicationLogic {
 
 
         return importResult;
+    }
+
+    public void clearSettings() {
+        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        Map<String, ?> keys = preferences.getAll();
+
+        for (Map.Entry<String, ?> entry : keys.entrySet()) {
+            String key = entry.getKey();
+
+            if (!key.equals("reminder_type")
+                && !key.equals("notifications_sound")
+                && !key.equals("notifications_vibrate")
+                && !key.equals("notifications_light")) {
+
+                editor.remove(key);
+            }
+        }
+
+        editor.commit();
     }
 
     private void copyFile(File from, File to) throws IOException {
