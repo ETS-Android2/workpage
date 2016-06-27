@@ -29,7 +29,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="TaskReminderNotificationService"
+        <service android:name="TaskReminderAlarmService"
             android:exported="false" />
 
         <service android:name="DataExportService"

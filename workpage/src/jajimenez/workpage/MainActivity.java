@@ -312,7 +312,7 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
             String tagsText = "";
 
             if (includeTasksWithNoTag) {
-                tagsText += getString(R.string.no_tag); 
+                tagsText += getString(R.string.without_tags); 
                 if (filterTagCount > 0) tagsText += getString(R.string.separator);
             }
 

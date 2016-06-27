@@ -153,7 +153,7 @@
     <string name="closed">Closed</string>
     <string name="closed_description">All the closed tasks.</string>
     <string name="all">(All)</string>
-    <string name="no_tag">(No tag)</string>
+    <string name="without_tags">(Without tags)</string>
     <string name="none">(None)</string>
     <string name="no_tags">There are no tags</string>
 
@@ -205,7 +205,6 @@
     <string name="data_import_confirmation">The current data will be overwritten. Do you want to continue?</string>
 
     <string name="settings">Settings</string>
-    <string name="reminder_type">Reminder type</string>
     <string name="notifications">Notifications</string>
     <string name="play_sound">Play sound</string>
     <string name="vibrate">Vibrate</string>

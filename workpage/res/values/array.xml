@@ -11,14 +11,4 @@
         <item>Doable Today</item>
         <item>Closed</item>
     </string-array>
-
-    <string-array name="reminder_type_keys">
-        <item>notification</item>
-        <item>alert</item>
-    </string-array>
-
-    <string-array name="reminder_type_texts">
-        <item>Notification</item>
-        <item>Alert</item>
-    </string-array>
 </resources>

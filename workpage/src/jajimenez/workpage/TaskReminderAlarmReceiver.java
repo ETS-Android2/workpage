@@ -74,12 +74,12 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
         Intent taskIntent = new Intent(context, TaskActivity.class);
         taskIntent.putExtra("task_id", taskId);
 
-        Intent dismissIntent = new Intent(context, TaskReminderNotificationService.class);
+        Intent dismissIntent = new Intent(context, TaskReminderAlarmService.class);
         dismissIntent.putExtra("task_reminder_id", reminderId);
         dismissIntent.setAction(ApplicationConstants.TASK_REMINDER_DISMISS_ACTION);
         PendingIntent dismissPendingIntent = PendingIntent.getService(context, reminderId, dismissIntent, 0);
 
-        Intent snoozeIntent = new Intent(context, TaskReminderNotificationService.class);
+        Intent snoozeIntent = new Intent(context, TaskReminderAlarmService.class);
         snoozeIntent.putExtra("task_reminder_id", reminderId);
         snoozeIntent.setAction(ApplicationConstants.TASK_REMINDER_SNOOZE_ACTION);
         PendingIntent snoozePendingIntent = PendingIntent.getService(context, reminderId, snoozeIntent, 0);

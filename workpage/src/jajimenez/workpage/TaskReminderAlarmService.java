@@ -9,9 +9,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 
-public class TaskReminderNotificationService extends IntentService {
-    public TaskReminderNotificationService() {
-        super("task_reminder_notification_service");
+public class TaskReminderAlarmService extends IntentService {
+    public TaskReminderAlarmService() {
+        super("task_reminder_alarm_service");
     }
 
     @Override
