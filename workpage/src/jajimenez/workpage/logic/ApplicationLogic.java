@@ -70,7 +70,7 @@ public class ApplicationLogic {
     }
 
     public TaskContext getCurrentTaskContext() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         long currentTaskContextId = preferences.getLong(CURRENT_TASK_CONTEXT_ID_KEY, 1);
 
         return dataManager.getTaskContext(currentTaskContextId);
@@ -143,7 +143,8 @@ public class ApplicationLogic {
     }
 
     public void setCurrentTaskContext(TaskContext context) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(CURRENT_TASK_CONTEXT_ID_KEY, context.getId());
         editor.commit();
