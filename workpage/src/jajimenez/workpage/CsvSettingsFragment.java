@@ -5,6 +5,7 @@ import java.util.List;
 import android.os.Bundle;
 import android.app.Activity;
 import android.preference.PreferenceFragment;
+import android.preference.Preference;
 import android.preference.ListPreference;
 
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -12,6 +13,8 @@ import jajimenez.workpage.data.model.TaskContext;
 
 public class CsvSettingsFragment extends PreferenceFragment {
     private ListPreference taskContextPref;
+    private ListPreference tasksPref;
+
     private List<TaskContext> contexts;
 
     @Override
@@ -26,10 +29,33 @@ public class CsvSettingsFragment extends PreferenceFragment {
         contexts = logic.getAllTaskContexts();
 
         taskContextPref = (ListPreference) findPreference("csv_task_context_to_export");
-        addContexts();
+
+        taskContextPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int index = CsvSettingsFragment.this.taskContextPref.findIndexOfValue(String.valueOf(newValue));
+                CharSequence text = (CsvSettingsFragment.this.taskContextPref.getEntries())[index];
+                CsvSettingsFragment.this.taskContextPref.setSummary(text);
+
+                return true;
+            }
+        });
+
+        tasksPref = (ListPreference) findPreference("csv_tasks_to_export");
+
+        tasksPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int index = CsvSettingsFragment.this.tasksPref.findIndexOfValue(String.valueOf(newValue));
+                CharSequence text = (CsvSettingsFragment.this.tasksPref.getEntries())[index];
+                CsvSettingsFragment.this.tasksPref.setSummary(text);
+
+                return true;
+            }
+        });
+
+        addTaskContextPreferences();
     }
 
-    private void addContexts() {
+    private void addTaskContextPreferences() {
         String value = taskContextPref.getValue();
         boolean validValue = (value != null && !value.isEmpty());
 
