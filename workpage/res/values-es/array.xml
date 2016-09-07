@@ -5,4 +5,10 @@
         <item>Realizable Hoy</item>
         <item>Completo</item>
     </string-array>
+
+    <string-array name="csv_tasks_to_export_texts">
+        <item>Sólo tareas pendientes</item>
+        <item>Sólo tareas completas</item>
+        <item>Todas las tareas</item>
+    </string-array>
 </resources>

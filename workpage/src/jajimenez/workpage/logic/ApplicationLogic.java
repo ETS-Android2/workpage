@@ -30,18 +30,17 @@ import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
-    private static final String PREFERENCES_FILE = "workpage_preferences";
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
 
     private static final String CSV_TASK_CONTEXT_TO_EXPORT_KEY = "csv_task_context_to_export";
     private static final String CSV_TASKS_TO_EXPORT_KEY = "csv_tasks_to_export";
-    private static final String CSV_FIELD_NAMES_KEY = "csv_field_names";
-    private static final String CSV_UNIX_TIME_KEY = "csv_unix_time";
-    private static final String CSV_ID_KEY = "csv_id";
-    private static final String CSV_DESCRIPTION_KEY = "csv_description";
-    private static final String CSV_TAGS_KEY = "csv_tags";
+    private static final String CSV_PROPERTIES_FIELD_NAMES_KEY = "csv_properties_field_names";
+    private static final String CSV_PROPERTIES_UNIX_TIME_KEY = "csv_properties_unix_time";
+    private static final String CSV_PROPERTIES_ID_KEY = "csv_properties_id";
+    private static final String CSV_PROPERTIES_DESCRIPTION_KEY = "csv_properties_description";
+    private static final String CSV_PROPERTIES_TAGS_KEY = "csv_properties_tags";
 
     public static final int ONLY_OPEN_TASKS = 0;
     public static final int ONLY_CLOSED_TASKS = 1;
@@ -108,38 +107,38 @@ public class ApplicationLogic {
     }
 
     public long getCsvTaskContextToExport() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         return preferences.getLong(CSV_TASK_CONTEXT_TO_EXPORT_KEY, 1);
     }
 
     public int getCsvTasksToExport() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         return preferences.getInt(CSV_TASKS_TO_EXPORT_KEY, ALL_TASKS);
     }
 
     public boolean getCsvFieldNames() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_FIELD_NAMES_KEY, true);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getBoolean(CSV_PROPERTIES_FIELD_NAMES_KEY, true);
     }
 
     public boolean getCsvUnixTime() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_UNIX_TIME_KEY, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getBoolean(CSV_PROPERTIES_UNIX_TIME_KEY, false);
     }
 
     public boolean getCsvId() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_ID_KEY, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getBoolean(CSV_PROPERTIES_ID_KEY, false);
     }
 
     public boolean getCsvDescription() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_DESCRIPTION_KEY, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getBoolean(CSV_PROPERTIES_DESCRIPTION_KEY, false);
     }
 
     public boolean getCsvTags() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        return preferences.getBoolean(CSV_TAGS_KEY, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getBoolean(CSV_PROPERTIES_TAGS_KEY, false);
     }
 
     public void setCurrentTaskContext(TaskContext context) {
@@ -151,7 +150,8 @@ public class ApplicationLogic {
     }
 
     public void setCsvTaskContextToExport(long taskContextId) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(CSV_TASK_CONTEXT_TO_EXPORT_KEY, taskContextId);
         editor.commit();
@@ -160,44 +160,50 @@ public class ApplicationLogic {
     public void setCsvTasksToExport(int tasksToExport) {
         if (tasksToExport < 0 || tasksToExport > 2) tasksToExport = ALL_TASKS;
 
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(CSV_TASKS_TO_EXPORT_KEY, tasksToExport);
         editor.commit();
     }
 
     public void setCsvFieldNames(boolean csvFieldNames) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_FIELD_NAMES_KEY, csvFieldNames);
+        editor.putBoolean(CSV_PROPERTIES_FIELD_NAMES_KEY, csvFieldNames);
         editor.commit();
     }
 
     public void setCsvUnixTime(boolean csvUnixTime) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_UNIX_TIME_KEY, csvUnixTime);
+        editor.putBoolean(CSV_PROPERTIES_UNIX_TIME_KEY, csvUnixTime);
         editor.commit();
     }
 
     public void setCsvId(boolean csvId) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_ID_KEY, csvId);
+        editor.putBoolean(CSV_PROPERTIES_ID_KEY, csvId);
         editor.commit();
     }
 
     public void setCsvDescription(boolean csvDescription) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_DESCRIPTION_KEY, csvDescription);
+        editor.putBoolean(CSV_PROPERTIES_DESCRIPTION_KEY, csvDescription);
         editor.commit();
     }
 
     public void setCsvTags(boolean csvTags) {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_TAGS_KEY, csvTags);
+        editor.putBoolean(CSV_PROPERTIES_TAGS_KEY, csvTags);
         editor.commit();
     }
 
@@ -528,7 +534,7 @@ public class ApplicationLogic {
     }
 
     public void clearSettings() {
-        SharedPreferences preferences = appContext.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = preferences.edit();
 
         Map<String, ?> keys = preferences.getAll();

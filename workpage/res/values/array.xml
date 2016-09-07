@@ -11,4 +11,16 @@
         <item>Doable Today</item>
         <item>Closed</item>
     </string-array>
+
+    <string-array name="csv_tasks_to_export_keys">
+        <item>only_open_tasks</item>
+        <item>only_closed_tasks</item>
+        <item>all_tasks</item>
+    </string-array>
+
+    <string-array name="csv_tasks_to_export_texts">
+        <item>Only open tasks</item>
+        <item>Only closed tasks</item>
+        <item>All tasks</item>
+    </string-array>
 </resources>
