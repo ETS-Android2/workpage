@@ -62,7 +62,7 @@ public class ViewSettingsFragment extends PreferenceFragment {
     }
 
     private void addStatePreference() {
-        ListPreference statePref = new ListPreference(activity);
+        final ListPreference statePref = new ListPreference(activity);
 
         statePref.setKey("view_state_filter_state_context_" + currentContext.getId());
         statePref.setEntries(R.array.view_state_filter_texts);
@@ -72,6 +72,17 @@ public class ViewSettingsFragment extends PreferenceFragment {
         statePref.setSummary("%s");
         statePref.setDialogTitle(R.string.state_1);
         statePref.setOrder(0);
+
+        statePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int index = statePref.findIndexOfValue(String.valueOf(newValue));
+
+                CharSequence text = (statePref.getEntries())[index];
+                statePref.setSummary(text);
+
+                return true;
+            }
+        });
 
         stateFilterPref.addPreference(statePref);
     }
