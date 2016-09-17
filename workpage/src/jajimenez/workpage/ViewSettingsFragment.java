@@ -133,7 +133,7 @@ public class ViewSettingsFragment extends PreferenceFragment {
         boolean checked = true;
         int tagPrefCount = ViewSettingsFragment.this.tags.size() + 1;
 
-        for (int i = 1; i < tagPrefCount && checked; i++) {
+        for (int i = 1; i <= tagPrefCount && checked; i++) {
             CheckBoxPreference p = (CheckBoxPreference) tagFilterPref.getPreference(i);
 
             if (changedPref == null || p != changedPref) checked = p.isChecked();
