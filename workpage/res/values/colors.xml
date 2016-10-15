@@ -2,4 +2,17 @@
 <resources>
     <color name="color_view_border">#8e8e8e</color>
     <color name="color_view_background">#ffffff</color>
+
+    <color name="tag_color_1">#dddd00</color>
+    <color name="tag_color_2">#ff9900</color>
+    <color name="tag_color_3">#ff0000</color>
+    <color name="tag_color_4">#ff0066</color>
+    <color name="tag_color_5">#ff00ff</color>
+    <color name="tag_color_6">#6600ff</color>
+    <color name="tag_color_7">#0000ff</color>
+    <color name="tag_color_8">#0066ff</color>
+    <color name="tag_color_9">#00cccc</color>
+    <color name="tag_color_10">#009900</color>
+    <color name="tag_color_11">#00cc33</color>
+    <color name="tag_color_12">#66ff00</color>
 </resources>
