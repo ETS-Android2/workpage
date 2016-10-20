@@ -7,6 +7,7 @@
     <GridLayout android:id="@+id/colorPicker_colors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:columnCount="3">
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
