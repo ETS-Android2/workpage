@@ -77,10 +77,10 @@
     <string name="select">Seleccionar</string>
     <string name="tag_saved">Etiqueta guardada.</string>
     <string name="select_color">Seleccionar color</string>
-    <string name="selected_color">Color seleccionado:</string>
-    <string name="r">R:</string>
-    <string name="g">G:</string>
-    <string name="b">B:</string>
+    <string name="other_color">Otro color</string>
+    <string name="red">Rojo:</string>
+    <string name="green">Verde:</string>
+    <string name="blue">Azul:</string>
     <string name="accept">Aceptar</string>
 
     <plurals name="delete_selected_tag">

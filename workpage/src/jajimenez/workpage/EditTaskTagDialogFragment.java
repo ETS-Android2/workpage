@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.widget.EditText;
@@ -194,7 +193,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
         selectButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //ColorPickerDialogFragment fragment = new ColorPickerDialogFragment(EditTaskTagDialogFragment.this.selectedColorView.getBackgroundColor());
                 ColorPickerDialogFragment fragment = new ColorPickerDialogFragment();
                 fragment.setOnColorSelectedListener(EditTaskTagDialogFragment.this.colorSelectedListener);
                 fragment.show(getFragmentManager(), "color_picker");
