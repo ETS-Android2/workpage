@@ -1,55 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:workpage="http://schemas.android.com/apk/res/jajimenez.workpage"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingTop="10dp"
-    android:paddingRight="10dp"
-    android:paddingBottom="30dp"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <jajimenez.workpage.ColorView android:id="@+id/advancedColorPicker_color"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        workpage:borderWidth="2dp"
-        workpage:borderColor="@color/color_view_border" />
-
-    <TableLayout android:layout_width="wrap_content"
+    <LinearLayout android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="15dp"
-        android:layout_gravity="center_horizontal">
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="30dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <TableRow>
-            <TextView android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/red" />
+        <jajimenez.workpage.ColorView android:id="@+id/advancedColorPicker_color"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            workpage:borderWidth="2dp"
+            workpage:borderColor="@color/color_view_border" />
 
-            <EditText android:id="@+id/advancedColorPicker_red"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </TableRow>
-        <TableRow>
-            <TextView android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/green" />
+        <TableLayout android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp">
 
-            <EditText android:id="@+id/advancedColorPicker_green"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </TableRow>
-        <TableRow>
-            <TextView android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/blue" />
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/red" />
 
-            <EditText android:id="@+id/advancedColorPicker_blue"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </TableRow>
-    </TableLayout>
-</LinearLayout>
+                <EditText android:id="@+id/advancedColorPicker_red"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </TableRow>
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/green" />
+
+                <EditText android:id="@+id/advancedColorPicker_green"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </TableRow>
+            <TableRow>
+                <TextView android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/blue" />
+
+                <EditText android:id="@+id/advancedColorPicker_blue"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</ScrollView>
