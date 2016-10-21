@@ -108,12 +108,12 @@ public class ApplicationLogic {
 
     public long getCsvTaskContextToExport() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getLong(CSV_TASK_CONTEXT_TO_EXPORT_KEY, 1);
+        return Long.parseLong(preferences.getString(CSV_TASK_CONTEXT_TO_EXPORT_KEY, "1"));
     }
 
     public int getCsvTasksToExport() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getInt(CSV_TASKS_TO_EXPORT_KEY, ALL_TASKS);
+        return Integer.parseInt(preferences.getString(CSV_TASKS_TO_EXPORT_KEY, String.valueOf(ALL_TASKS)));
     }
 
     public boolean getCsvFieldNames() {
