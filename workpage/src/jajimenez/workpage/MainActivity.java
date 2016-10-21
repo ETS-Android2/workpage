@@ -190,6 +190,9 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.taskMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();
 
+                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.taskMenu_delete);
+                Drawable deleteItemIcon = deleteItem.getIcon();
+
                 if (selectedTaskCount == 1) {
                     editItem.setEnabled(true);
                     editItemIcon.setAlpha(255);
@@ -198,6 +201,12 @@ public class MainActivity extends ListActivity implements DataChangeReceiverActi
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
                 }
+
+                // This is to avoid that the icon has a different
+                // alpha value set in another activity. Despite
+                // each delete item is different in each activity,
+                // they all keep the last icon alpha value set.
+                deleteItemIcon.setAlpha(255);
             }
         });
     }

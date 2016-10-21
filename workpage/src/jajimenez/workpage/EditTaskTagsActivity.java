@@ -146,6 +146,9 @@ public class EditTaskTagsActivity extends ListActivity {
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();
 
+                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_delete);
+                Drawable deleteItemIcon = deleteItem.getIcon();
+
                 if (selectedTagCount == 1) {
                     editItem.setEnabled(true);
                     editItemIcon.setAlpha(255);
@@ -154,6 +157,12 @@ public class EditTaskTagsActivity extends ListActivity {
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
                 }
+
+                // This is to avoid that the icon has a different
+                // alpha value set in another activity. Despite
+                // each delete item is different in each activity,
+                // they all keep the last icon alpha value set.
+                deleteItemIcon.setAlpha(255);
             }
         });
     }
