@@ -28,13 +28,13 @@ public class AdvancedColorPickerDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (savedInstanceState != null) selectedColorView.setBackgroundColor(savedInstanceState.getInt("selected_color", 0xFFFFFFFF));
-
         Activity activity = getActivity();
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.advanced_color_picker, null);
 
         selectedColorView = (ColorView) view.findViewById(R.id.advancedColorPicker_color);
+
+        if (savedInstanceState != null) selectedColorView.setBackgroundColor(savedInstanceState.getInt("selected_color", 0xFFFFFFFF));
 
         redEditText = (EditText) view.findViewById(R.id.advancedColorPicker_red);
         greenEditText = (EditText) view.findViewById(R.id.advancedColorPicker_green);
