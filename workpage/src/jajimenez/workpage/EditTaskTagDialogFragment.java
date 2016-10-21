@@ -90,6 +90,9 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
             ColorPickerDialogFragment colorPickerFragment = (ColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("color_picker");
             if (colorPickerFragment != null) colorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
+
+            AdvancedColorPickerDialogFragment advancedColorPickerFragment = (AdvancedColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("advanced_color_picker");
+            if (advancedColorPickerFragment != null) advancedColorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
         }
 
         activity = getActivity();
