@@ -16,6 +16,7 @@
         <jajimenez.workpage.ColorView android:id="@+id/advancedColorPicker_color"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
             workpage:borderWidth="2dp"
             workpage:borderColor="@color/color_view_border" />
 
