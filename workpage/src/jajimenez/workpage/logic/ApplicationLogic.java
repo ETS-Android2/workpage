@@ -112,8 +112,15 @@ public class ApplicationLogic {
     }
 
     public int getCsvTasksToExport() {
+        int tasksToExport = ONLY_OPEN_TASKS;
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return Integer.parseInt(preferences.getString(CSV_TASKS_TO_EXPORT_KEY, String.valueOf(ALL_TASKS)));
+        String tasks = preferences.getString(CSV_TASKS_TO_EXPORT_KEY, "only_open_tasks");
+
+        if (tasks.equals("only_closed_tasks")) tasksToExport = ONLY_CLOSED_TASKS;
+        else if (tasks.equals("all_tasks")) tasksToExport = ALL_TASKS;
+
+        return tasksToExport;
     }
 
     public boolean getCsvFieldNames() {
