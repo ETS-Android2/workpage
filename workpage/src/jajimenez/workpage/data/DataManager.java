@@ -690,17 +690,22 @@ public class DataManager extends SQLiteOpenHelper {
                     "WHERE task_context_id = ? " +
                     "AND (";
 
+                String[] selectionArgs = new String[1 + tagCount];
+                selectionArgs[0] = String.valueOf(contextId);
+
                 for (int i = 0; i < tagCount; i++) {
                     String name = tagNames.get(i);
-                    query += String.format("name = '%s' ", name);
 
+                    query += "name = ? ";
                     if (i < (tagCount - 1)) query += "OR ";
+
+                    selectionArgs[i + 1] = name;
                 }
 
                 query += ") " +
                     "ORDER BY name";
 
-                Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
+                Cursor cursor = db.rawQuery(query, selectionArgs);
 
                 if (cursor.moveToFirst()) {
                     do {
@@ -871,16 +876,24 @@ public class DataManager extends SQLiteOpenHelper {
                     "AND tasks.done = 0 " +
                     "AND (";
 
+                    String[] selectionArgs = new String[3 + tagCount];
+
+                    selectionArgs[0] = String.valueOf(contextId);
+                    selectionArgs[1] = tomorrowTime;
+                    selectionArgs[2] = tomorrowTime;
+
                     for (int i = 0; i < tagCount; i++) {
                         TaskTag tag = tags.get(i);
-                        query += String.format("task_tags.name = '%s' ", tag.getName());
 
+                        query += "task_tags.name = ? ";
                         if (i < (tagCount - 1)) query += "OR ";
+
+                        selectionArgs[i + 3] = tag.getName();
                     }
 
                     query += ") ORDER BY tasks.id";
 
-                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId), tomorrowTime, tomorrowTime });
+                cursor = db.rawQuery(query, selectionArgs);
                 tasks.addAll(getTasksFromCursor(db, cursor, contextId));
             }
         }
@@ -1004,11 +1017,16 @@ public class DataManager extends SQLiteOpenHelper {
                     "AND tasks.task_context_id = ? " +
                     "AND (";
 
+                String[] selectionArgs = new String[1 + tagCount];
+                selectionArgs[0] = String.valueOf(contextId);
+
                 for (int i = 0; i < tagCount; i++) {
                     TaskTag tag = tags.get(i);
-                    query += String.format("task_tags.name = '%s' ", tag.getName());
 
+                    query += "task_tags.name = ? ";
                     if (i < (tagCount - 1)) query += "OR ";
+
+                    selectionArgs[i + 1] = tag.getName();
                 }
 
                 query += ") ";
@@ -1016,7 +1034,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (done) query += "AND tasks.done != 0 ORDER BY tasks.id DESC";
                 else query += "AND tasks.done = 0 ORDER BY tasks.id";
 
-                cursor = db.rawQuery(query, new String[] { String.valueOf(contextId) });
+                cursor = db.rawQuery(query, selectionArgs);
                 tasks.addAll(getTasksFromCursor(db, cursor, contextId));
             }
         }
