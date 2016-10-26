@@ -1,6 +1,7 @@
 0.8.0 (development)
 -------------------
 * User interface improved.
+* Data bug fix.
 * Bug fix on task counting by tag.
 * Spanish translation bug fix.
 
