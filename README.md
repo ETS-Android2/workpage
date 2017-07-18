@@ -21,14 +21,14 @@ Features
 
 Project data
 ------------
-* **Development version:** -
+* **Development version:** 0.9.0
 * **Release version:** 0.8.0
 * **Author:** Jose A. Jimenez (jajimenezcarm@gmail.com)
 * **License:** GPL 3.0
 
 Requirements
 ------------
-Android 4.1.2 (API Level 16)
+Android 4.4 (API Level 19)
 
 Screenshot
 ----------
