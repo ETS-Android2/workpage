@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/editDescription_description"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:lines="8"
-    android:gravity="left|top"
-    android:inputType="text|textMultiLine" />

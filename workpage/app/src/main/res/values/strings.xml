@@ -1,0 +1,211 @@
+<resources>
+    <string name="app_name">Workpage</string>
+
+    <string name="app_description">Productivity manager</string>
+    <string name="app_version">0.9.0</string>
+    <string name="app_author">Jose A. Jimenez</string>
+    <string name="app_license">GPL 3.0</string>
+    <string name="app_web_site">https://github.com/jajimenez/workpage</string>
+
+    <string name="initial_task_context_personal">Personal</string>
+    <string name="initial_task_context_work">Work</string>
+
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="context">Context</string>
+    <string name="view">View</string>
+    <string name="edit_tags">Edit tags</string>
+    <string name="settings">Settings</string>
+    <string name="import_data">Import data</string>
+    <string name="export_data">Export data</string>
+    <string name="about">About</string>
+
+    <string name="switch_task_context">Switch context</string>
+    <string name="edit_contexts">Edit contexts</string>
+    <string name="new_context">New context</string>
+    <string name="edit_context">Edit context</string>
+    <plurals name="open_task_count">
+        <item quantity="one">1 open task.</item>
+        <item quantity="other">%1$d open tasks.</item>
+    </plurals>
+    <plurals name="closed_task_count">
+        <item quantity="one">1 closed task</item>
+        <item quantity="other">%1$d closed tasks</item>
+    </plurals>
+
+    <string name="context_name">Context name</string>
+    <string name="context_saved">Context saved</string>
+    <plurals name="delete_selected_context">
+        <item quantity="one">Delete selected context? All associated tasks and tags will be deleted.</item>
+        <item quantity="other">Delete the %1$d selected contexts? All associated tasks and tags will be deleted.</item>
+    </plurals>
+    <plurals name="context_deleted">
+        <item quantity="one">Context deleted.</item>
+        <item quantity="other">Contexts deleted.</item>
+    </plurals>
+
+    <string name="cancel">Cancel</string>
+
+    <string name="open">Open</string>
+    <string name="doable_today">Doable Today</string>
+    <string name="closed">Closed</string>
+
+    <string name="all">(All)</string>
+    <string name="without_tags">(Without tags)</string>
+
+    <string name="no_tasks">There are no tasks</string>
+    <string name="set_status">Set status</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="selected">%1$d selected</string>
+    <string name="state">State:</string>
+    <string name="none">(None)</string>
+
+    <string name="task_datetime">%1$s - %2$s</string>
+    <string name="task_date">%1$s</string>
+    <string name="task_start">Start: %1$s - %2$s</string>
+    <string name="task_start_notime">Start: %1$s</string>
+    <string name="task_deadline">Deadline: %1$s - %2$s</string>
+    <string name="task_deadline_notime">Deadline: %1$s</string>
+    <string name="separator">", "</string>
+
+    <plurals name="task_state">
+        <item quantity="one">Task state</item>
+        <item quantity="other">Tasks (%1$d) state</item>
+    </plurals>
+    <string name="mark_as_open">Mark as open</string>
+    <string name="mark_as_closed">Mark as closed</string>
+    <plurals name="delete_selected_task">
+        <item quantity="one">Delete selected task?</item>
+        <item quantity="other">Delete the %1$d selected tasks?</item>
+    </plurals>
+    <plurals name="task_deleted">
+        <item quantity="one">Task deleted.</item>
+        <item quantity="other">Tasks deleted.</item>
+    </plurals>
+
+    <string name="task_open">Task (open)</string>
+    <string name="task_closed">Task (closed)</string>
+    <string name="new_task">New task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="save">Save</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="no_date">No date</string>
+    <string name="date">Date:</string>
+    <string name="time">Time:</string>
+    <string name="reminder_1">Reminder:</string>
+    <string name="reminder_2">Reminder</string>
+    <string name="date_range">Date range:</string>
+    <string name="start">Start:</string>
+    <string name="deadline">Deadline:</string>
+    <string name="tags">Tags:</string>
+    <string name="tag_name">Tag name</string>
+    <string name="add">Add</string>
+    <string name="task_saved">Task saved.</string>
+    <string name="title_error">Please, enter the title.</string>
+    <string name="dates_error">Please, enter valid dates.</string>
+    <string name="on_time">On time</string>
+    <string name="x_minutes">%1$d minutes</string>
+    <plurals name="x_hours">
+        <item quantity="one">%1$d hour</item>
+        <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="x_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="x_weeks">
+        <item quantity="one">%1$d week</item>
+        <item quantity="other">%1$d weeks</item>
+    </plurals>
+
+    <string name="no_tags">There are no tags</string>
+    <plurals name="on_open_task_count">
+        <item quantity="one">On 1 open task.</item>
+        <item quantity="other">On %1$d open tasks.</item>
+    </plurals>
+    <plurals name="on_closed_task_count">
+        <item quantity="one">On 1 closed task.</item>
+        <item quantity="other">On %1$d closed tasks.</item>
+    </plurals>
+    <plurals name="delete_selected_tag">
+        <item quantity="one">Delete selected tag?</item>
+        <item quantity="other">Delete the %1$d selected tags?</item>
+    </plurals>
+    <plurals name="tag_deleted">
+        <item quantity="one">Tag deleted</item>
+        <item quantity="other">Tags deleted</item>
+    </plurals>
+
+    <string name="new_tag">New tag</string>
+    <string name="edit_tag">Edit tag</string>
+    <string name="set_color">Set color</string>
+    <string name="select">Select</string>
+    <string name="select_color">Select color</string>
+    <string name="other_color">Other color</string>
+    <string name="red">Red:</string>
+    <string name="green">Green:</string>
+    <string name="blue">Blue:</string>
+    <string name="rgb_default">255</string>
+    <string name="accept">Accept</string>
+    <string name="tag_saved">Tag saved</string>
+
+    <string name="go_up">Go up</string>
+    <string name="as">As:</string>
+    <string name="select_format">Select format</string>
+    <string name="workpage_data">Workpage Data</string>
+    <string name="workpage_data_extension">.workpage</string>
+    <string name="csv">CSV</string>
+    <string name="csv_extension">.csv</string>
+    <string name="format_options">Format options</string>
+    <string name="file_name">File name</string>
+    <string name="storage_not_available">Storage not available.</string>
+    <string name="export_success">Data exported.</string>
+    <string name="export_error">Error trying to export the data.</string>
+    <string name="csv_settings">CSV Settings</string>
+    <string name="context_to_export">Context to export</string>
+    <string name="tasks_to_export">Tasks to export</string>
+    <string name="properties">Properties</string>
+    <string name="field_names">Field names</string>
+    <string name="field_id">ID</string>
+    <string name="field_title">Title</string>
+    <string name="field_description">Description</string>
+    <string name="field_when">When</string>
+    <string name="field_start">Start</string>
+    <string name="field_deadline">Deadline</string>
+    <string name="field_state">State</string>
+    <string name="unix_time">Unix Time</string>
+    <string name="id">ID</string>
+    <string name="tags_1">Tags</string>
+    <string name="file_overwrite_confirmation">File \"%1$s\" already exists. Do you want to overwrite it?</string>
+    <string name="overwrite">Overwrite</string>
+    <string name="value_open">Open</string>
+    <string name="value_closed">Closed</string>
+    <string name="value_yes">Yes</string>
+    <string name="value_no">No</string>
+
+    <string name="data_import_confirmation">The current data will be overwritten. Do you want to continue?</string>
+
+    <string name="import_success">Data imported</string>
+    <string name="import_error_opening_file">Error trying to open the file</string>
+    <string name="import_error_file_not_compatible">Error: The file is not compatible</string>
+    <string name="import_error_data_not_valid">Error: Data is not valid</string>
+    <string name="import_error_importing_data">Error trying to import the data</string>
+
+    <string name="notifications">Notifications</string>
+    <string name="play_sound">Play sound</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="light">Light</string>
+
+    <string name="version">Version:</string>
+    <string name="author">Author:</string>
+    <string name="license">License:</string>
+    <string name="project_website">Project website:</string>
+
+</resources>

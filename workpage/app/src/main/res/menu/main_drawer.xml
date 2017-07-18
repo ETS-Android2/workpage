@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/context">
+        <menu>
+            <item
+                android:id="@+id/main_nav_context"
+                android:icon="@drawable/context"
+                android:title="" />
+        </menu>
+    </item>
+
+    <item android:title="@string/view">
+        <menu>
+            <item
+                android:id="@+id/main_nav_edit_tags"
+                android:icon="@drawable/tag"
+                android:title="@string/edit_tags" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/main_nav_export_data"
+        android:icon="@drawable/export_data"
+        android:title="@string/export_data" />
+
+    <item
+        android:id="@+id/main_nav_import_data"
+        android:icon="@drawable/folder"
+        android:title="@string/import_data" />
+
+    <item
+        android:id="@+id/main_nav_settings"
+        android:icon="@drawable/settings"
+        android:title="@string/settings" />
+
+    <item
+        android:id="@+id/main_nav_about"
+        android:icon="@drawable/about"
+        android:title="@string/about" />
+
+</menu>
