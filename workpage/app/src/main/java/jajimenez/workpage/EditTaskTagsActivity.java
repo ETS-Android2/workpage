@@ -130,16 +130,17 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
                         //arguments = new Bundle();
                         long selectedTagId = (selectedTags.get(0)).getId();
-                        int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
-                        long[] contextTagIds = new long[contextTagCount];
+                        /*int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
+                        /long[] contextTagIds = new long[contextTagCount];
 
                         for (int i = 0; i < contextTagCount; i++) {
                             TaskTag t = EditTaskTagsActivity.this.contextTags.get(i);
                             contextTagIds[i] = t.getId();
-                        }
+                        }*/
 
                         arguments.putLong("tag_id", selectedTagId);
-                        arguments.putLongArray("context_tag_ids", contextTagIds);
+                        arguments.putLong("context_id", currentTaskContext.getId());
+                        //arguments.putLongArray("context_tag_ids", contextTagIds);
 
                         editFragment.setArguments(arguments);
 
@@ -315,16 +316,17 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         arguments.putLongArray("tag_ids", tagIds);
         deleteFragment.setArguments(arguments);*/
         long tagId = -1; // New tag
-        int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
-        long[] contextTagIds = new long[contextTagCount];
+        /*int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
+        //long[] contextTagIds = new long[contextTagCount];
 
         for (int i = 0; i < contextTagCount; i++) {
             TaskTag t = EditTaskTagsActivity.this.contextTags.get(i);
             contextTagIds[i] = t.getId();
-        }
+        }*/
 
         arguments.putLong("tag_id", tagId);
-        arguments.putLongArray("context_tag_ids", contextTagIds);
+        arguments.putLong("context_id", currentTaskContext.getId());
+        //arguments.putLongArray("context_tag_ids", contextTagIds);
 
         editFragment.setArguments(arguments);
 

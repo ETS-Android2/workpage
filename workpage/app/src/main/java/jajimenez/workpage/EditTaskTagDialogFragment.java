@@ -1,7 +1,6 @@
 package jajimenez.workpage;
 
 import java.util.List;
-import java.util.LinkedList;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -70,19 +69,27 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         Bundle arguments = getArguments();
 
         long tagId = arguments.getLong("tag_id", -1);
-        long[] contextTagIds = arguments.getLongArray("context_tag_ids");
+        long contextId = arguments.getLong("context_id", -1);
+        //long[] contextTagIds = arguments.getLongArray("context_tag_ids");
+        TaskContext context = applicationLogic.getTaskContext(contextId);
+        contextTags = applicationLogic.getAllTaskTags(context);
 
-        if (tagId == -1) tag = new TaskTag();
-        else tag = applicationLogic.getTaskTag(tagId);
+        if (tagId == -1) {
+            tag = new TaskTag();
+            tag.setContextId(contextId);
+        }
+        else {
+            tag = applicationLogic.getTaskTag(tagId);
+        }
 
-        contextTags = new LinkedList<TaskTag>();
+        /*contextTags = new LinkedList<TaskTag>();
 
         if (contextTagIds != null) {
             for (long id : contextTagIds) {
                 TaskTag t = applicationLogic.getTaskTag(id);
                 contextTags.add(t);
             }
-        }
+        }*/
 
         colorSelectedListener = new ColorPickerDialogFragment.OnColorSelectedListener() {
             public void onColorSelected(int color) {
@@ -237,11 +244,11 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    /*@Override
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         
-        int contextTagCount = contextTags.size();
+        /*int contextTagCount = contextTags.size();
         long[] contextTagIds = new long[contextTagCount];
         String[] contextTagNames = new String[contextTagCount];
 
@@ -256,11 +263,11 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         outState.putLong("tag_context_id", tag.getContextId());
 
         outState.putLongArray("context_task_tag_ids", contextTagIds);
-        outState.putStringArray("context_task_tag_names", contextTagNames);
+        outState.putStringArray("context_task_tag_names", contextTagNames);*/
         outState.putBoolean("set_color", setColorCheckBox.isChecked());
         outState.putInt("selected_color", selectedColorView.getBackgroundColor());
         outState.putBoolean("save_button_enabled", (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).isEnabled());
-    }*/
+    }
 
     @Override
     public void onStart() {
