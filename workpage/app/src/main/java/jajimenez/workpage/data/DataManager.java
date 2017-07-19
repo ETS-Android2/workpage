@@ -757,7 +757,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            Cursor cursor = db.rawQuery("SELECT id, task_context_id, name, color FROM task_tags WHERE id = ?",
+            Cursor cursor = db.rawQuery("SELECT task_context_id, name, color FROM task_tags WHERE id = ?",
                     new String[] { String.valueOf(id) });
 
             if (cursor.moveToFirst()) {
