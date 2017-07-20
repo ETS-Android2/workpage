@@ -7,11 +7,12 @@
                 android:id="@+id/main_nav_context"
                 android:icon="@drawable/context"
                 android:title="" />
-        </menu>
-    </item>
 
-    <item android:title="@string/view">
-        <menu>
+            <item
+                android:id="@+id/main_nav_view"
+                android:icon="@drawable/view"
+                android:title="@string/view" />
+
             <item
                 android:id="@+id/main_nav_edit_tags"
                 android:icon="@drawable/tag"

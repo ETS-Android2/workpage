@@ -25,6 +25,7 @@ import android.view.ActionMode;
 import android.view.Window;
 import android.content.IntentFilter;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -374,6 +375,10 @@ public class MainActivity extends AppCompatActivity
             fragment.setOnNewCurrentTaskContextSetListener(switchTaskContextListener);
             fragment.show(getFragmentManager(), "switch_task_context");
         }
+        else if (id == R.id.main_nav_view && interfaceReady) {
+            Intent intent = new Intent(this, ViewActivity.class);
+            startActivity(intent);
+        }
         else if (id == R.id.main_nav_edit_tags && interfaceReady) {
             Intent intent = new Intent(this, EditTaskTagsActivity.class);
             startActivity(intent);
@@ -432,7 +437,7 @@ public class MainActivity extends AppCompatActivity
 
         // Information about the current filter tags.
         includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
-        currentFilterTags = this.applicationLogic.getCurrentFilterTags();
+        //currentFilterTags = this.applicationLogic.getCurrentFilterTags();
 
         int filterTagCount = 0;
         if (currentFilterTags != null) filterTagCount = currentFilterTags.size();

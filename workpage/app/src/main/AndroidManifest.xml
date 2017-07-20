@@ -41,35 +41,45 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".TaskActivity"
+
+        <activity android:name=".EditTaskContextsActivity"
+            android:label="@string/edit_contexts"
             android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".EditTaskActivity"
+
+        <activity android:name=".ViewActivity"
+            android:label="@string/view"
             android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".EditTaskTagsActivity"
             android:label="@string/edit_tags"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".TaskActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".EditTaskActivity"
+            android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".FileBrowserActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".CsvSettingsActivity"
-            android:label="@string/csv_settings"
-            android:parentActivityName=".FileBrowserActivity" />
-        <activity
-            android:name=".AboutActivity"
-            android:label="@string/about"
             android:parentActivityName=".MainActivity" />
 
         <activity android:name=".SettingsActivity"
             android:label="@string/settings"
             android:parentActivityName=".MainActivity" />
 
-        <activity android:name=".EditTaskContextsActivity"
-            android:label="@string/edit_contexts"
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/about"
             android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".CsvSettingsActivity"
+            android:label="@string/csv_settings"
+            android:parentActivityName=".FileBrowserActivity" />
     </application>
 
 </manifest>
