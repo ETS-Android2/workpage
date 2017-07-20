@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity
 
         // Information about the current filter tags.
         includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
-        //currentFilterTags = this.applicationLogic.getCurrentFilterTags();
+        currentFilterTags = this.applicationLogic.getCurrentFilterTags();
 
         int filterTagCount = 0;
         if (currentFilterTags != null) filterTagCount = currentFilterTags.size();
