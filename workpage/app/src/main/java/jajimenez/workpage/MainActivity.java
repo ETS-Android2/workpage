@@ -3,14 +3,10 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -22,10 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.ActionMode;
-import android.view.Window;
 import android.content.IntentFilter;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -42,7 +36,6 @@ public class MainActivity extends AppCompatActivity
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
-    private Menu menu;
     private TextView viewTextView;
     private TextView filterTagsValueTextView;
     private ActionMode actionMode;
@@ -51,7 +44,6 @@ public class MainActivity extends AppCompatActivity
 
     private Bundle savedInstanceState;
     private boolean interfaceReady;
-    private boolean inFront;
 
     private SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener switchTaskContextListener;
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
@@ -69,8 +61,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar_main_toolbar);
@@ -96,7 +86,6 @@ public class MainActivity extends AppCompatActivity
 
         createContextualActionBar();
         interfaceReady = false;
-        inFront = false;
 
         // Add Task button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.app_bar_main_add_task_button);
@@ -104,8 +93,6 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
                 if (!interfaceReady) return;
 
                 Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
@@ -291,12 +278,6 @@ public class MainActivity extends AppCompatActivity
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
                 }
-
-                // This is to avoid that the icon has a different
-                // alpha value set in another activity. Despite
-                // each delete item is different in each activity,
-                // they all keep the last icon alpha value set.
-                deleteItemIcon.setAlpha(255);
             }
         });
     }
@@ -341,15 +322,6 @@ public class MainActivity extends AppCompatActivity
         else {
             disableInterface();
         }
-
-        inFront = true;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        inFront = false;
     }
 
     @Override
@@ -358,10 +330,6 @@ public class MainActivity extends AppCompatActivity
 
         unregisterReceiver(exportReceiver);
         unregisterReceiver(importReceiver);
-    }
-
-    public boolean isInFront() {
-        return inFront;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -410,13 +378,11 @@ public class MainActivity extends AppCompatActivity
 
     public void enableInterface() {
         listView.setEnabled(true);
-        setProgressBarIndeterminateVisibility(false);
         interfaceReady = true;
     }
 
     public void disableInterface() {
         interfaceReady = false;
-        setProgressBarIndeterminateVisibility(true);
         listView.setEnabled(false);
     }
 
@@ -464,8 +430,6 @@ public class MainActivity extends AppCompatActivity
             filterTagsValueTextView.setText(tagsText);
         }
 
-        //emptyTextView.setText("");
-
         // Show tasks.
         (new LoadTasksDBTask()).execute();
     }
@@ -478,7 +442,6 @@ public class MainActivity extends AppCompatActivity
         listView.setAdapter(adapter);
 
         if (adapter.isEmpty()) {
-            //emptyTextView.setText(R.string.no_tasks);
             listView.setVisibility(View.GONE);
             emptyTextView.setVisibility(View.VISIBLE);
         }
