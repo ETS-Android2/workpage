@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import android.util.SparseBooleanArray;
 import android.support.v7.app.AppCompatActivity;
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.view.Menu;
@@ -22,15 +21,10 @@ import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
 
 public class EditTaskContextsActivity extends AppCompatActivity {
-    private Menu menu;
     private ListView listView;
-    private TextView emptyTextView;
-    private ActionBar actionBar;
     private ActionMode actionMode;
 
     private ApplicationLogic applicationLogic;
-    private TaskContext currentContext;
-    private List<TaskContext> contexts;
 
     private Bundle savedInstanceState;
     private boolean interfaceReady;
@@ -45,11 +39,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.edit_task_contexts);
 
-        //listView = getListView();
         listView = (ListView) findViewById(android.R.id.list);
-        emptyTextView = (TextView) findViewById(android.R.id.empty);
-        actionBar = getActionBar();
-        //actionBar.setDisplayHomeAsUpEnabled(true);
         actionMode = null;
 
         createContextualActionBar();
@@ -86,8 +76,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         }
 
         applicationLogic = new ApplicationLogic(this);
-        currentContext = applicationLogic.getCurrentTaskContext();
-        contexts = new LinkedList<TaskContext>();
     }
 
     private void createContextualActionBar() {
@@ -147,7 +135,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
                     case R.id.edit_task_contexts_contextual_menu_delete:
                         // Show a deletion confirmation dialog.
-                        //DeleteTaskContextDialogFragment deleteFragment = new DeleteTaskContextDialogFragment(selectedContexts);
                         DeleteTaskContextDialogFragment deleteFragment = new DeleteTaskContextDialogFragment();
 
                         arguments = new Bundle();
@@ -209,7 +196,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_task_contexts, menu);
-        this.menu = menu;
 
         return true;
     }
@@ -242,9 +228,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     private void updateTaskContextListInterface(List<TaskContext> contexts) {
         if (contexts == null) contexts = new LinkedList<TaskContext>();
 
-        this.contexts = contexts;
         TaskContextAdapter adapter = new TaskContextAdapter(this, R.layout.task_context_list_item, contexts);
-        //setListAdapter(adapter);
         listView.setAdapter(adapter);
 
         if (savedInstanceState != null) {
@@ -276,7 +260,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     private List<TaskContext> getSelectedTaskContexts() {
         List<TaskContext> selectedContexts = new LinkedList<TaskContext>();
 
-        //TaskContextAdapter adapter = (TaskContextAdapter) getListAdapter();
         TaskContextAdapter adapter = (TaskContextAdapter) listView.getAdapter();
         List<Integer> selectedItems = getSelectedItems();
 
@@ -320,8 +303,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
             EditTaskContextsActivity.this.updateTaskContextListInterface(contexts);
 
             EditTaskContextsActivity.this.listView.setEnabled(true);
-            EditTaskContextsActivity.this.setProgressBarIndeterminateVisibility(false);
-
             EditTaskContextsActivity.this.interfaceReady = true;
         }
     }

@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
@@ -22,17 +21,11 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
     private ApplicationLogic applicationLogic;
 
     public TaskReminderPickerDialogFragment() {
-        //currentTaskReminder = null;
         onTaskReminderSetListener = null;
 
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
     }
-
-    /*public TaskReminderPickerDialogFragment(TaskReminder currentTaskReminder) {
-        this.currentTaskReminder = currentTaskReminder;
-        onTaskReminderSetListener = null;
-    }*/
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -43,15 +36,8 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
 
         TextTool tool = new TextTool();
 
-        /*if (savedInstanceState != null) {
-            long currentTaskReminderId = savedInstanceState.getLong("current_task_reminder_id");
-            currentTaskReminder = applicationLogic.getTaskReminder(currentTaskReminderId);
-        }
-
         // By default, the selected item is the task reminder with ID "4" (15 min.).
         // Note: Database IDs start at 1.
-        int selectedItem = 3;
-        if (currentTaskReminder != null) selectedItem = ((int) currentTaskReminder.getId()) - 1;*/
         int selectedItem = ((int) currentTaskReminder.getId()) - 1;;
 
         final List<TaskReminder> taskReminders = applicationLogic.getAllTaskReminders();
@@ -83,13 +69,6 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        outState.putLong("current_task_reminder_id", currentTaskReminder.getId());
-    }*/
 
     public void setOnTaskReminderSetListener(OnTaskReminderSetListener listener) {
         onTaskReminderSetListener = listener;

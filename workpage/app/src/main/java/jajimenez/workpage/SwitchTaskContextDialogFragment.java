@@ -1,7 +1,6 @@
 package jajimenez.workpage;
 
 import java.util.List;
-import java.util.LinkedList;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -13,7 +12,6 @@ import android.content.Intent;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
-import jajimenez.workpage.data.model.TaskTag;
 
 public class SwitchTaskContextDialogFragment extends DialogFragment {
     private Activity activity;

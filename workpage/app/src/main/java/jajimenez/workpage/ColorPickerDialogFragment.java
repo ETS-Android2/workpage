@@ -8,9 +8,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.widget.EditText;
 import android.widget.GridLayout;
-import android.graphics.Color;
 
 public class ColorPickerDialogFragment extends DialogFragment {
     //private int selectedColor;
@@ -22,13 +20,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        /*if (savedInstanceState != null) {
-            //selectedColor = savedInstanceState.getInt("selected_color", 0xFFFFFFFF);
-
-            //AdvancedColorPickerDialogFragment advancedColorPickerFragment = (AdvancedColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("advanced_color_picker");
-            //if (advancedColorPickerFragment != null && onColorSelectedListener != null) advancedColorPickerFragment.setOnColorSelectedListener(onColorSelectedListener);
-        }*/
-
         Activity activity = getActivity();
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.color_picker, null);
@@ -67,12 +58,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("selected_color", selectedColor);
-    }*/
 
     public void setOnColorSelectedListener(OnColorSelectedListener listener) {
         onColorSelectedListener = listener;

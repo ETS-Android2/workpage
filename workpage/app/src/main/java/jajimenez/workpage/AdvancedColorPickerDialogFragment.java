@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.GridLayout;
 import android.graphics.Color;
 
 public class AdvancedColorPickerDialogFragment extends DialogFragment {

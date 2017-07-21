@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
-import jajimenez.workpage.data.model.TaskTag;
 
 public class DeleteTaskContextDialogFragment extends DialogFragment {
     private Activity activity;
@@ -28,29 +27,9 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
         contexts = new LinkedList<TaskContext>();
     }
 
-    /*public DeleteTaskContextDialogFragment(List<TaskContext> contexts) {
-        onDeleteListener = null;
-        this.contexts = contexts;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         long[] contextIds = (getArguments()).getLongArray("task_context_ids");
-
-        /*if (savedInstanceState != null) {
-            long[] contextIds = savedInstanceState.getLongArray("task_contexts");
-            
-            if (contextIds != null) {
-                contexts = new LinkedList<TaskContext>();
-
-                for (long id : contextIds) {
-                    TaskContext context = new TaskContext();
-                    context.setId(id);
-
-                    contexts.add(context);
-                }
-            }
-        }*/
 
         if (contextIds != null) {
             contexts = new LinkedList<TaskContext>();
@@ -100,17 +79,6 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        int contextCount = contexts.size();
-        long[] contextIds = new long[contextCount];
-        for (int i = 0; i < contextCount; i++) contextIds[i] = (contexts.get(i)).getId();
-
-        outState.putLongArray("task_contexts", contextIds);
-    }*/
 
     public void setOnDeleteListener(OnDeleteListener listener) {
         onDeleteListener = listener;

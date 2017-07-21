@@ -24,37 +24,14 @@ public class DeleteTaskTagDialogFragment extends DialogFragment {
 
     public DeleteTaskTagDialogFragment() {
         onDeleteListener = null;
-        //tags = new LinkedList<TaskTag>();
 
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
         tags = new LinkedList<TaskTag>();
     }
 
-    /*public DeleteTaskTagDialogFragment(List<TaskTag> tags) {
-        onDeleteListener = null;
-        this.tags = tags;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        /*if (savedInstanceState != null) {
-            long[] tagIds = savedInstanceState.getLongArray("task_tags");
-            
-            if (tagIds != null) {
-                tags = new LinkedList<TaskTag>();
-
-                for (long id : tagIds) {
-                    TaskTag tag = new TaskTag();
-                    tag.setId(id);
-
-                    tags.add(tag);
-                }
-            }
-        }*/
-
-        //activity = getActivity();
-        //applicationLogic = new ApplicationLogic(activity);
         long[] tagIds = (getArguments()).getLongArray("tag_ids");
 
         if (tagIds != null) {
@@ -87,17 +64,6 @@ public class DeleteTaskTagDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        int tagCount = tags.size();
-        long[] tagIds = new long[tagCount];
-        for (int i = 0; i < tagCount; i++) tagIds[i] = (tags.get(i)).getId();
-
-        outState.putLongArray("task_tags", tagIds);
-    }*/
 
     public void setOnDeleteListener(OnDeleteListener listener) {
         onDeleteListener = listener;

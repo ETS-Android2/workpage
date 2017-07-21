@@ -20,12 +20,6 @@ public class DatePickerDialogFragment extends DialogFragment {
         onDateSetListener = null;
     }
 
-    /*public DatePickerDialogFragment(Calendar calendar) {
-        this.dialog = null;
-        this.calendar = calendar;
-        this.onDateSetListener = null;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle arguments = getArguments();
@@ -35,16 +29,6 @@ public class DatePickerDialogFragment extends DialogFragment {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        /*if (savedInstanceState == null) {
-            year = calendar.get(Calendar.YEAR);
-            month = calendar.get(Calendar.MONTH);
-            day = calendar.get(Calendar.DAY_OF_MONTH);
-        } else {
-            year = savedInstanceState.getInt("year");
-            month = savedInstanceState.getInt("month");
-            day = savedInstanceState.getInt("day");
-        }*/
 
         dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -62,17 +46,6 @@ public class DatePickerDialogFragment extends DialogFragment {
 
         return dialog;
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        DatePicker picker = dialog.getDatePicker();
-
-        outState.putInt("year", picker.getYear());
-        outState.putInt("month", picker.getYear());
-        outState.putInt("day", picker.getDayOfMonth());
-    }*/
 
     public void setOnDateSetListener(OnDateSetListener listener) {
         onDateSetListener = listener;

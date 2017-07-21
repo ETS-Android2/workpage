@@ -8,15 +8,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.widget.EditText;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CheckBox;
 import android.widget.Toast;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,8 +25,6 @@ public class EditTaskContextDialogFragment extends DialogFragment {
     private EditText nameEditText;
     private OnTaskContextSavedListener onTaskContextSavedListener;
 
-    private boolean saveButtonEnabled;
-
     private ApplicationLogic applicationLogic;
     private TaskContext context;
     private List<TaskContext> contexts;
@@ -41,12 +34,6 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         context = null;
         contexts = new LinkedList<TaskContext>();
     }
-
-    /*public EditTaskContextDialogFragment(TaskContext context, List<TaskContext> contexts) {
-        onTaskContextSavedListener = null;
-        this.context = context;
-        this.contexts = contexts;
-    }*/
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -59,51 +46,7 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         if (contextId == -1) context = new TaskContext();
         else context = applicationLogic.getTaskContext(contextId);
 
-        /*int contextsCount = 0;
-        if (contextsIds != null) contextsCount = contextsIds.length;
-
-        if (contextsCount > 0) {
-            for (int i = 0; i < contextsCount; i++) {
-                TaskContext c = new TaskContext();
-                c.setId(contextsIds[i]);
-                c.setName(contextsNames[i]);
-
-                contexts.add(c);
-            }
-        }*/
-
         contexts = applicationLogic.getAllTaskContexts();
-        //if (savedInstanceState == null) {
-        //    saveButtonEnabled = (context.getId() >= 0);
-        //} else {
-            /*long contextId = savedInstanceState.getLong("context_id");
-            long contextOrder = savedInstanceState.getLong("context_order");
-
-            long[] contextsIds = savedInstanceState.getLongArray("contexts_ids");
-            String[] contextsNames = savedInstanceState.getStringArray("contexts_names");
-
-            context = new TaskContext();
-            context.setId(contextId);
-            context.setOrder(contextOrder);*/
-            
-            /*int contextsCount = 0;
-            if (contextsIds != null) contextsCount = contextsIds.length;
-
-            if (contextsCount > 0) {
-                for (int i = 0; i < contextsCount; i++) {
-                    TaskContext c = new TaskContext();
-                    c.setId(contextsIds[i]);
-                    c.setName(contextsNames[i]);
-
-                    contexts.add(c);
-                }
-            }*/
-
-        //    saveButtonEnabled = savedInstanceState.getBoolean("save_button_enabled");
-        //}
-
-        //activity = getActivity();
-        //applicationLogic = new ApplicationLogic(activity);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_context, null);
@@ -170,35 +113,6 @@ public class EditTaskContextDialogFragment extends DialogFragment {
 
         return dialog;
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        int contextsCount = contexts.size();
-        long[] contextsIds = new long[contextsCount];
-        String[] contextsNames = new String[contextsCount];
-
-        for (int i = 0; i < contextsCount; i++) {
-            TaskContext c = contexts.get(i);
-
-            contextsIds[i] = c.getId();
-            contextsNames[i] = c.getName();
-        }
-
-        outState.putLong("context_id", context.getId());
-        outState.putLong("context_order", context.getOrder());
-
-        outState.putLongArray("contexts_ids", contextsIds);
-        outState.putStringArray("contexts_names", contextsNames);
-        outState.putBoolean("save_button_enabled", (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).isEnabled());
-    }*/
-
-    /*@Override
-    public void onStart() {
-        super.onStart();
-        (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).setEnabled(saveButtonEnabled);
-    }*/
 
     public void setOnTaskContextSavedListener(OnTaskContextSavedListener listener) {
         onTaskContextSavedListener = listener;

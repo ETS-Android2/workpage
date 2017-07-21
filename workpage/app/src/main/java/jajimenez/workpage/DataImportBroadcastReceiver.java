@@ -23,7 +23,6 @@ public class DataImportBroadcastReceiver extends BroadcastReceiver {
 
         if (receiverActivity instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) receiverActivity;
-            //if (mainActivity.isInFront()) mainActivity.updateInterface();
             mainActivity.updateInterface();
         }
         else if (receiverActivity instanceof FileBrowserActivity) {

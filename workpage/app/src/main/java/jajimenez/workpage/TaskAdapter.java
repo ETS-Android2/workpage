@@ -26,7 +26,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private TextView whenValueTextView;
     private TableLayout datesTableLayout;
 
-    private TableRow date1TableRow;
     private TextView date1TitleTextView;
     private TextView date1ValueTextView;
 
@@ -62,7 +61,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         whenValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_when_value);
         datesTableLayout = (TableLayout) itemView.findViewById(R.id.task_list_item_dates);
 
-        date1TableRow = (TableRow) itemView.findViewById(R.id.task_list_item_date1_row);
         date1TitleTextView = (TextView) itemView.findViewById(R.id.task_list_item_date1_title);
         date1ValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_date1_value);
 

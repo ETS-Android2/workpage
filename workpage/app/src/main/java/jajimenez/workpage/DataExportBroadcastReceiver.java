@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import jajimenez.workpage.logic.ApplicationLogic;
-
 public class DataExportBroadcastReceiver extends BroadcastReceiver {
     private DataChangeReceiverActivity receiverActivity;
 

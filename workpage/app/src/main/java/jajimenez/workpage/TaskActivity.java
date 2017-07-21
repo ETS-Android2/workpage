@@ -1,7 +1,6 @@
 package jajimenez.workpage;
 
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Calendar;
 
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +14,6 @@ import android.view.MenuInflater;
 import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
@@ -29,7 +27,6 @@ public class TaskActivity extends AppCompatActivity {
     private TextView whenValueTextView;
     private TableLayout datesTableLayout;
 
-    private TableRow date1TableRow;
     private TextView date1TitleTextView;
     private TextView date1ValueTextView;
 
@@ -38,8 +35,6 @@ public class TaskActivity extends AppCompatActivity {
     private TextView date2ValueTextView;
 
     private TextView descriptionTextView;
-
-    private ActionBar actionBar;
 
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
     private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
@@ -57,7 +52,6 @@ public class TaskActivity extends AppCompatActivity {
         whenValueTextView = (TextView) findViewById(R.id.task_when_value);
         datesTableLayout = (TableLayout) findViewById(R.id.task_dates);
 
-        date1TableRow = (TableRow) findViewById(R.id.task_date1_row);
         date1TitleTextView = (TextView) findViewById(R.id.task_date1_title);
         date1ValueTextView = (TextView) findViewById(R.id.task_date1_value);
 
@@ -66,8 +60,6 @@ public class TaskActivity extends AppCompatActivity {
         date2ValueTextView = (TextView) findViewById(R.id.task_date2_value);
 
         descriptionTextView = (TextView) findViewById(R.id.task_description);
-
-        actionBar = getActionBar();
 
         taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
             public void onItemClick() {
@@ -102,13 +94,6 @@ public class TaskActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_task, menu);
 
-        // This is necessary because the drawable of the Edit item icon of this activity keeps
-        // the last alpha value set for the Edit item icon of MainActivity. MainActivity has
-        // the same menu with the same drawables for the items.
-        //MenuItem editItem = menu.findItem(R.id.task_menu_edit);
-        //Drawable editItemIcon = editItem.getIcon();
-        //editItemIcon.setAlpha(255);
-
         return true;
     }
 
@@ -127,9 +112,6 @@ public class TaskActivity extends AppCompatActivity {
 
         if (currentTask.isDone()) setTitle(R.string.task_closed);
         else setTitle(R.string.task_open);
-
-        TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
-        //actionBar.setSubtitle(context.getName());
 
         titleTextView.setText(currentTask.getTitle());
         descriptionTextView.setText(currentTask.getDescription());
@@ -201,15 +183,11 @@ public class TaskActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean eventHandled = false;
-        //List<Task> tasks = null;
         Bundle arguments;
         long[] taskIds;
 
         switch (item.getItemId()) {
             case R.id.task_menu_status:
-                //tasks = new LinkedList<Task>();
-                //tasks.add(currentTask);
-
                 ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment();
 
                 arguments = new Bundle();
@@ -237,9 +215,6 @@ public class TaskActivity extends AppCompatActivity {
                 break;
 
             case R.id.task_menu_delete:
-                //tasks = new LinkedList<Task>();
-                //tasks.add(currentTask);
-
                 // Show a deletion confirmation dialog.
                 DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment();
 

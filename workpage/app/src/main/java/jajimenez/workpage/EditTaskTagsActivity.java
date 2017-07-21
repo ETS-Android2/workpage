@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 import android.util.SparseBooleanArray;
-//import android.app.ListActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.view.Menu;
@@ -19,21 +17,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 
-import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 
 public class EditTaskTagsActivity extends AppCompatActivity {
-    private Menu menu;
     private ListView listView;
     private TextView emptyTextView;
-    private ActionBar actionBar;
     private ActionMode actionMode;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
-    private List<TaskTag> contextTags;
 
     private Bundle savedInstanceState;
     private boolean interfaceReady;
@@ -48,11 +42,8 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.edit_task_tags);
 
-        //listView = getListView();
         listView = (ListView) findViewById(android.R.id.list);
         emptyTextView = (TextView) findViewById(android.R.id.empty);
-        actionBar = getActionBar();
-        //actionBar.setDisplayHomeAsUpEnabled(true);
         actionMode = null;
 
         createContextualActionBar();
@@ -90,7 +81,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = applicationLogic.getCurrentTaskContext();
-        contextTags = new LinkedList<TaskTag>();
     }
 
     private void createContextualActionBar() {
@@ -120,27 +110,15 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                 final List<TaskTag> selectedTags = EditTaskTagsActivity.this.getSelectedTaskTags();
 
                 Bundle arguments = new Bundle();
-                //int selectedTagCount;
-                //long[] tagIds;
 
                 switch (item.getItemId()) {
                     case R.id.editTaskTagsContextualMenu_edit:
                         // Show an edition dialog.
                         EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
-
-                        //arguments = new Bundle();
                         long selectedTagId = (selectedTags.get(0)).getId();
-                        /*int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
-                        /long[] contextTagIds = new long[contextTagCount];
-
-                        for (int i = 0; i < contextTagCount; i++) {
-                            TaskTag t = EditTaskTagsActivity.this.contextTags.get(i);
-                            contextTagIds[i] = t.getId();
-                        }*/
 
                         arguments.putLong("tag_id", selectedTagId);
                         arguments.putLong("context_id", currentTaskContext.getId());
-                        //arguments.putLongArray("context_tag_ids", contextTagIds);
 
                         editFragment.setArguments(arguments);
 
@@ -154,7 +132,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                         // Show a deletion confirmation dialog.
                         DeleteTaskTagDialogFragment deleteFragment = new DeleteTaskTagDialogFragment();
 
-                        //arguments = new Bundle();
                         int selectedTagCount = selectedTags.size();
                         long[] selectedTagIds = new long[selectedTagCount];
 
@@ -208,7 +185,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.edit_task_tags, menu);
-        this.menu = menu;
 
         return true;
     }
@@ -234,9 +210,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     private void updateInterface() {
-        // Information about the current task context.
-        //actionBar.setSubtitle(currentTaskContext.getName());
-
         emptyTextView.setText("");
 
         // Show tags.
@@ -246,9 +219,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     private void updateTaskTagListInterface(List<TaskTag> tags) {
         if (tags == null) tags = new LinkedList<TaskTag>();
 
-        contextTags = tags;
         TaskTagAdapter adapter = new TaskTagAdapter(this, R.layout.task_tag_list_item, tags);
-        //setListAdapter(adapter);
         listView.setAdapter(adapter);
 
         if (adapter.isEmpty()) {
@@ -283,7 +254,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     private List<TaskTag> getSelectedTaskTags() {
         List<TaskTag> selectedTags = new LinkedList<TaskTag>();
 
-        //TaskTagAdapter adapter = (TaskTagAdapter) getListAdapter();
         TaskTagAdapter adapter = (TaskTagAdapter) listView.getAdapter();
         List<Integer> selectedItems = getSelectedItems();
 
@@ -298,35 +268,14 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     public void onNewTaskTagItemSelected(MenuItem item) {
         if (!interfaceReady) return;
 
-        //TaskTag newTag = new TaskTag();
-        //newTag.setContextId(currentTaskContext.getId());
-
         // Show an edition dialog.
         EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
-
         Bundle arguments = new Bundle();
-        /*int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
-        tagIds = new long[selectedTagCount];
 
-        for (int i = 0; i < selectedTagCount; i++) {
-            TaskTag t = selectedTags.get(i);
-            tagIds[i] = t.getId();
-        }
-
-        arguments.putLongArray("tag_ids", tagIds);
-        deleteFragment.setArguments(arguments);*/
         long tagId = -1; // New tag
-        /*int contextTagCount = EditTaskTagsActivity.this.contextTags.size();
-        //long[] contextTagIds = new long[contextTagCount];
-
-        for (int i = 0; i < contextTagCount; i++) {
-            TaskTag t = EditTaskTagsActivity.this.contextTags.get(i);
-            contextTagIds[i] = t.getId();
-        }*/
 
         arguments.putLong("tag_id", tagId);
         arguments.putLong("context_id", currentTaskContext.getId());
-        //arguments.putLongArray("context_tag_ids", contextTagIds);
 
         editFragment.setArguments(arguments);
 
@@ -337,8 +286,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {
         protected void onPreExecute() {
             EditTaskTagsActivity.this.interfaceReady = false;
-
-            EditTaskTagsActivity.this.setProgressBarIndeterminateVisibility(true);
             EditTaskTagsActivity.this.listView.setEnabled(false);
         }
 
@@ -350,8 +297,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
             EditTaskTagsActivity.this.updateTaskTagListInterface(tags);
 
             EditTaskTagsActivity.this.listView.setEnabled(true);
-            EditTaskTagsActivity.this.setProgressBarIndeterminateVisibility(false);
-
             EditTaskTagsActivity.this.interfaceReady = true;
         }
     }

@@ -9,7 +9,6 @@ public class ViewActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //(getActionBar()).setDisplayHomeAsUpEnabled(true);
         setResult(RESULT_OK);
 
         // Display preference fragment.

@@ -17,22 +17,11 @@ public class EditDescriptionDialogFragment extends DialogFragment {
     private String description;
 
     public EditDescriptionDialogFragment() {
-        //description = "";
         onOkButtonClickedListener = null;
     }
 
-    /*public EditDescriptionDialogFragment(String description) {
-        if (description == null) description = "";
-
-        this.description = description;
-        this.onOkButtonClickedListener = null;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        /*if (savedInstanceState != null) {
-            description = savedInstanceState.getString("description");
-        }*/
         description = (getArguments()).getString("description", "");
         Activity activity = getActivity();
 
@@ -58,12 +47,6 @@ public class EditDescriptionDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("description", (descriptionEditText.getText()).toString());
-    }*/
 
     public void setOnOkButtonClickedListener(OnOkButtonClickedListener listener) {
         onOkButtonClickedListener = listener;

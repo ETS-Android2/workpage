@@ -26,11 +26,6 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
         tasks = new LinkedList<Task>();
     }
 
-    /*public ChangeTaskStatusDialogFragment(List<Task> tasks) {
-        onItemClickListener = null;
-        this.tasks = tasks;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         activity = getActivity();
@@ -45,20 +40,6 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
                 tasks.add(t);
             }
         }
-
-        /*if (savedInstanceState != null) {
-            long[] taskIds = savedInstanceState.getLongArray("task_ids");
-            
-            if (taskIds != null) {
-                int taskCount = taskIds.length;
-                tasks = new LinkedList<Task>();
-
-                for (int i = 0; i < taskCount; i++) {
-                    Task task = applicationLogic.getTask(taskIds[i]);
-                    tasks.add(task);
-                }
-            }
-        }*/
 
         int selectedTaskCount = tasks.size();
 
@@ -90,20 +71,6 @@ public class ChangeTaskStatusDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        
-        int taskCount = tasks.size();
-        long[] taskIds = new long[taskCount];
-
-        for (int i = 0; i < taskCount; i++) {
-            taskIds[i] = (tasks.get(i)).getId();
-        }
-
-        outState.putLongArray("task_ids", taskIds);
-    }*/
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         onItemClickListener = listener;

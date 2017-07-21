@@ -20,12 +20,6 @@ public class TimePickerDialogFragment extends DialogFragment {
         onTimeSetListener = null;
     }
 
-    /*public TimePickerDialogFragment(Calendar calendar) {
-        this.dialog = null;
-        this.calendar = calendar;
-        this.onTimeSetListener = null;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle arguments = getArguments();

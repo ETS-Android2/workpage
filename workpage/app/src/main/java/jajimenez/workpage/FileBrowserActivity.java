@@ -5,12 +5,8 @@ import java.util.LinkedList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.io.File;
-//import java.io.IOException;
 
-//import android.util.SparseBooleanArray;
-//import android.app.ListActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -21,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.Window;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.LinearLayout;
@@ -36,7 +31,6 @@ import android.graphics.drawable.Drawable;
 import jajimenez.workpage.logic.ApplicationLogic;
 
 public class FileBrowserActivity extends AppCompatActivity implements DataChangeReceiverActivity {
-    //private Menu menu;
     private LinearLayout exportingOptionsLinearLayout;
     private Button formatButton;
     private ImageButton formatOptionsImageButton;
@@ -56,7 +50,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
     private DataExportBroadcastReceiver exportReceiver;
     private DataImportBroadcastReceiver importReceiver;
 
-    //private ApplicationLogic applicationLogic;
     private File initialFile;
     private File currentFile;
 
@@ -76,15 +69,12 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
         workpageDataExtension = FileBrowserActivity.this.getString(R.string.workpage_data_extension);
         csvExtension = FileBrowserActivity.this.getString(R.string.csv_extension);
 
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.file_browser);
 
-        //listView = getListView();
         listView = (ListView) findViewById(android.R.id.list);
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //File selectedFile = (File) l.getItemAtPosition(position);
                 File selectedFile = (File) FileBrowserActivity.this.listView.getItemAtPosition(position);
 
                 if (selectedFile.isDirectory()) {
@@ -104,7 +94,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
                         fileNameEditText.setText(nameNoExtension);
                     }
                     else if (mode != null && mode.equals("import")) {
-                        //DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment(selectedFile);
                         DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
                         importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
 
@@ -171,7 +160,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
         currentFile = null;
 
         Intent intent = getIntent();
-        //mode = intent.getStringExtra("mode");
 
         if (savedInstanceState == null) {
             mode = intent.getStringExtra("mode");
@@ -197,15 +185,12 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
 
         if (mode == null || mode.equals("")) mode = "export";
 
-        //if (mode != null && mode.equals("export")) setTitle(R.string.export_data);
         if (mode.equals("export")) setTitle(R.string.export_data);
         else setTitle(R.string.import_data);
 
         saveButton.setEnabled(false);
         interfaceReady = false;
         storageAvailable = false;
-
-        //applicationLogic = new ApplicationLogic(this);
     }
 
     @Override
@@ -267,8 +252,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
         }
 
         listView.setEnabled(true);
-        setProgressBarIndeterminateVisibility(false);
-
         interfaceReady = true;
     }
 
@@ -281,7 +264,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
         }
 
         listView.setEnabled(false);
-        setProgressBarIndeterminateVisibility(true);
     }
 
     @Override
@@ -347,7 +329,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
         if (subfiles == null) subfiles = new LinkedList<File>();
 
         FileAdapter adapter = new FileAdapter(this, R.layout.file_list_item, subfiles);
-        //setListAdapter(adapter);
         listView.setAdapter(adapter);
 
         if (goUpMenuItem != null) {
@@ -378,7 +359,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
     }
 
     public void onFormatButtonClicked(View view) {
-        //SelectFormatDialogFragment formatFragment = new SelectFormatDialogFragment(selectedExportingFormat);
         SelectFormatDialogFragment formatFragment = new SelectFormatDialogFragment();
 
         Bundle arguments = new Bundle();
@@ -394,40 +374,6 @@ public class FileBrowserActivity extends AppCompatActivity implements DataChange
         Intent intent = new Intent(this, CsvSettingsActivity.class);
         startActivity(intent);
     }
-
-    /*@Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        File selectedFile = (File) l.getItemAtPosition(position);
-
-        if (selectedFile.isDirectory()) {
-            currentFile = selectedFile;
-            updateInterface();
-        }
-        else {
-            if (mode != null && mode.equals("export")) {
-                String selectedFileName = selectedFile.getName();
-
-                int extensionPosition = -1;
-
-                if (selectedExportingFormat == ApplicationLogic.WORKPAGE_DATA) extensionPosition = selectedFileName.lastIndexOf(".workpage");
-                else extensionPosition = selectedFileName.lastIndexOf(".csv");
-
-                String nameNoExtension = selectedFileName.substring(0, extensionPosition);
-                fileNameEditText.setText(nameNoExtension);
-            }
-            else if (mode != null && mode.equals("import")) {
-                //DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment(selectedFile);
-                DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
-                importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
-
-                Bundle arguments = new Bundle();
-                arguments.putString("file_path", selectedFile.getAbsolutePath());
-                importFragment.setArguments(arguments);
-
-                importFragment.show(getFragmentManager(), "data_import_confirmation");
-            }
-        }
-    }*/
 
     public void onSaveButtonClicked(View view) {
         File to = getToFile();

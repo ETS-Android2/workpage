@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.LayoutInflater;
@@ -42,24 +41,7 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
     public EditTaskTagDialogFragment() {
         onTaskTagSavedListener = null;
-        //tag = null;
-
-        //activity = getActivity();
-        //applicationLogic = new ApplicationLogic(activity);
     }
-
-    /*public EditTaskTagDialogFragment(TaskTag tag, List<TaskTag> contextTags) {
-        this.tag = tag;
-        this.contextTags = contextTags;
-        this.onTaskTagSavedListener = null;ay("context_task_tag_names");
-
-            tag = new TaskTag();
-            tag.setId(tagId);
-            tag.setContextId(tagContextId);
-
-            int contextTagCount = 0;
-            if (contextTagIds != null) contextTagCount = contextTagIds.
-    }*/
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -70,7 +52,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
         long tagId = arguments.getLong("tag_id", -1);
         long contextId = arguments.getLong("context_id", -1);
-        //long[] contextTagIds = arguments.getLongArray("context_tag_ids");
         TaskContext context = applicationLogic.getTaskContext(contextId);
         contextTags = applicationLogic.getAllTaskTags(context);
 
@@ -82,15 +63,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             tag = applicationLogic.getTaskTag(tagId);
         }
 
-        /*contextTags = new LinkedList<TaskTag>();
-
-        if (contextTagIds != null) {
-            for (long id : contextTagIds) {
-                TaskTag t = applicationLogic.getTaskTag(id);
-                contextTags.add(t);
-            }
-        }*/
-
         colorSelectedListener = new ColorPickerDialogFragment.OnColorSelectedListener() {
             public void onColorSelected(int color) {
                 EditTaskTagDialogFragment.this.selectedColorView.setBackgroundColor(color);
@@ -99,30 +71,8 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
         if (savedInstanceState == null) {
             saveButtonEnabled = (tag.getId() >= 0);
-        } else {
-            /*long tagId = savedInstanceState.getLong("tag_id");
-            long tagContextId = savedInstanceState.getLong("tag_context_id");
-
-            long[] contextTagIds = savedInstanceState.getLongArray("context_task_tag_ids");
-            String[] contextTagNames = savedInstanceState.getStringArray("context_task_tag_names");
-
-            tag = new TaskTag();
-            tag.setId(tagId);
-            tag.setContextId(tagContextId);
-            
-            int contextTagCount = 0;
-            if (contextTagIds != null) contextTagCount = contextTagIds.length;
-
-            if (contextTagCount > 0) {
-                for (int i = 0; i < contextTagCount; i++) {
-                    TaskTag tag = new TaskTag();
-                    tag.setId(contextTagIds[i]);
-                    tag.setName(contextTagNames[i]);
-
-                    contextTags.add(tag);
-                }
-            }*/
-
+        }
+        else {
             saveButtonEnabled = savedInstanceState.getBoolean("save_button_enabled");
 
             ColorPickerDialogFragment colorPickerFragment = (ColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("color_picker");
@@ -131,9 +81,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             AdvancedColorPickerDialogFragment advancedColorPickerFragment = (AdvancedColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("advanced_color_picker");
             if (advancedColorPickerFragment != null) advancedColorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
         }
-
-        //activity = getActivity();
-        //applicationLogic = new ApplicationLogic(activity);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_tag, null);
@@ -247,23 +194,7 @@ public class EditTaskTagDialogFragment extends DialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        
-        /*int contextTagCount = contextTags.size();
-        long[] contextTagIds = new long[contextTagCount];
-        String[] contextTagNames = new String[contextTagCount];
 
-        for (int i = 0; i < contextTagCount; i++) {
-            TaskTag contextTag = contextTags.get(i);
-
-            contextTagIds[i] = contextTag.getId();
-            contextTagNames[i] = contextTag.getName();
-        }
-
-        outState.putLong("tag_id", tag.getId());
-        outState.putLong("tag_context_id", tag.getContextId());
-
-        outState.putLongArray("context_task_tag_ids", contextTagIds);
-        outState.putStringArray("context_task_tag_names", contextTagNames);*/
         outState.putBoolean("set_color", setColorCheckBox.isChecked());
         outState.putInt("selected_color", selectedColorView.getBackgroundColor());
         outState.putBoolean("save_button_enabled", (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).isEnabled());

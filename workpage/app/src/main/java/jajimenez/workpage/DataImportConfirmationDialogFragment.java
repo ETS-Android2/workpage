@@ -3,12 +3,10 @@ package jajimenez.workpage;
 import java.io.File;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.res.Resources;
 
 public class DataImportConfirmationDialogFragment extends DialogFragment {
     private File from;
@@ -19,21 +17,13 @@ public class DataImportConfirmationDialogFragment extends DialogFragment {
         onConfirmationListener = null;
     }
 
-    /*public DataImportConfirmationDialogFragment(File from) {
-        this.from = from;
-        onConfirmationListener = null;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // "filePath" is an absolute file path
         String filePath = (getArguments()).getString("file_path");
         if (filePath != null && !filePath.equals("")) from = new File(filePath);
 
-        Activity activity = getActivity();
-        final Resources resources = activity.getResources();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setMessage(R.string.data_import_confirmation);
         builder.setNegativeButton(R.string.cancel, null);
