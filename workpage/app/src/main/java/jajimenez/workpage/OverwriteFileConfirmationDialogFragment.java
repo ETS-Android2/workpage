@@ -15,14 +15,8 @@ public class OverwriteFileConfirmationDialogFragment extends DialogFragment {
         onConfirmationListener = null;
     }
 
-    /*public OverwriteFileConfirmationDialogFragment(String fileName) {
-        this.fileName = fileName;
-        onConfirmationListener = null;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //if (savedInstanceState != null) fileName = savedInstanceState.getString("file_name");
         String fileName = (getArguments()).getString("file_name", "");
 
         Activity activity = getActivity();

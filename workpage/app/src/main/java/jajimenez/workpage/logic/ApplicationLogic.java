@@ -28,6 +28,9 @@ import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
+    public static final int CHANGE_TASKS = 0;
+    public static final int CHANGE_TASK_TAGS = 1;
+
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";

@@ -3,6 +3,7 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 
+import android.content.Intent;
 import android.util.SparseBooleanArray;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.ActionMode;
+import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.ListView;
@@ -51,6 +53,9 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
         saveTaskTagListener = new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
             public void onTaskTagSaved() {
+                // Set the result as OK for making Main Activity update its interface
+                setResult(RESULT_OK);
+
                 // Close the contextual action bar.
                 if (EditTaskTagsActivity.this.actionMode != null) EditTaskTagsActivity.this.actionMode.finish();
 
@@ -61,6 +66,9 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
         deleteTaskTagListener = new DeleteTaskTagDialogFragment.OnDeleteListener() {
             public void onDelete() {
+                // Set the result as OK for making Main Activity update its interface
+                setResult(RESULT_OK);
+
                 // Close the context action bar.
                 if (EditTaskTagsActivity.this.actionMode != null) EditTaskTagsActivity.this.actionMode.finish();
 
@@ -81,6 +89,8 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
         applicationLogic = new ApplicationLogic(this);
         currentTaskContext = applicationLogic.getCurrentTaskContext();
+
+        updateInterface();
     }
 
     private void createContextualActionBar() {
@@ -160,9 +170,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();
 
-                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_delete);
-                Drawable deleteItemIcon = deleteItem.getIcon();
-
                 if (selectedTagCount == 1) {
                     editItem.setEnabled(true);
                     editItemIcon.setAlpha(255);
@@ -171,12 +178,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
                 }
-
-                // This is to avoid that the icon has a different
-                // alpha value set in another activity. Despite
-                // each delete item is different in each activity,
-                // they all keep the last icon alpha value set.
-                deleteItemIcon.setAlpha(255);
             }
         });
     }
@@ -187,12 +188,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         inflater.inflate(R.menu.edit_task_tags, menu);
 
         return true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateInterface();
     }
 
     @Override
@@ -223,15 +218,21 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         if (adapter.isEmpty()) {
-            emptyTextView.setText(R.string.no_tags);
+            listView.setVisibility(View.GONE);
+            emptyTextView.setVisibility(View.VISIBLE);
         }
-        else if (savedInstanceState != null) {
-            int[] selectedItems = savedInstanceState.getIntArray("selected_items");
+        else {
+            if (savedInstanceState != null) {
+                int[] selectedItems = savedInstanceState.getIntArray("selected_items");
 
-            if (selectedItems != null) {
-                for (int position : selectedItems) listView.setItemChecked(position, true);
-                savedInstanceState.remove("selected_items");
+                if (selectedItems != null) {
+                    for (int position : selectedItems) listView.setItemChecked(position, true);
+                    savedInstanceState.remove("selected_items");
+                }
             }
+
+            listView.setVisibility(View.VISIBLE);
+            emptyTextView.setVisibility(View.GONE);
         }
     }
 

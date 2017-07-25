@@ -5,16 +5,12 @@ import java.util.LinkedList;
 import java.util.Calendar;
 
 import android.support.v7.app.AppCompatActivity;
-import android.app.Dialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.app.DialogFragment;
+import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.CheckBox;
@@ -24,8 +20,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -41,7 +35,6 @@ import jajimenez.workpage.data.model.Task;
 public class EditTaskActivity extends AppCompatActivity {
     private EditText titleEditText;
     private EditText descriptionEditText;
-    private Button editDescriptionButton;
 
     private RadioButton noDateRadioButton;
     private RadioButton whenRadioButton;
@@ -111,9 +104,12 @@ public class EditTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_task);
 
+        ActionBar bar = getSupportActionBar();
+        bar.setHomeAsUpIndicator(R.drawable.cancel_2);
+        bar.setDisplayHomeAsUpEnabled(true);
+
         titleEditText = (EditText) findViewById(R.id.edit_task_title);
         descriptionEditText = (EditText) findViewById(R.id.edit_task_description);
-        editDescriptionButton = (Button) findViewById(R.id.edit_task_edit_description);
 
         noDateRadioButton = (RadioButton) findViewById(R.id.edit_task_no_date_radiobutton);
         whenRadioButton = (RadioButton) findViewById(R.id.edit_task_when_radiobutton);
@@ -539,6 +535,22 @@ public class EditTaskActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        boolean eventHandled = false;
+        int id = item.getItemId();
+
+        switch (id) {
+            case android.R.id.home:
+                finish();
+
+                eventHandled = true;
+                break;
+        }
+
+        return eventHandled;
+    }
+
     private void updateInterface() {
         TextTool tool = new TextTool();
 
@@ -632,6 +644,7 @@ public class EditTaskActivity extends AppCompatActivity {
             // Save Current Task
             applicationLogic.saveTask(currentTask);
             (Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT)).show();
+            setResult(RESULT_OK);
 
             // Close the activity
             finish();

@@ -60,8 +60,7 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
-            android:name=".EditTaskActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".EditTaskActivity" />
 
         <activity
             android:name=".FileBrowserActivity"

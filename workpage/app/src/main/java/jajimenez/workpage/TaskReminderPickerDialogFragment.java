@@ -17,18 +17,15 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
     private TaskReminder currentTaskReminder;
     private OnTaskReminderSetListener onTaskReminderSetListener;
 
-    private Activity activity;
-    private ApplicationLogic applicationLogic;
-
     public TaskReminderPickerDialogFragment() {
         onTaskReminderSetListener = null;
-
-        activity = getActivity();
-        applicationLogic = new ApplicationLogic(activity);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Activity activity = getActivity();
+        ApplicationLogic applicationLogic = new ApplicationLogic(activity);
+
         // By default, the selected item is the task reminder with ID "4" (15 min.).
         // Note: Database IDs start at 1.
         long reminderId = (getArguments()).getLong("reminder_id", 4);

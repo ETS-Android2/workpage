@@ -24,14 +24,14 @@ public class DeleteTaskTagDialogFragment extends DialogFragment {
 
     public DeleteTaskTagDialogFragment() {
         onDeleteListener = null;
-
-        activity = getActivity();
-        applicationLogic = new ApplicationLogic(activity);
         tags = new LinkedList<TaskTag>();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        activity = getActivity();
+        applicationLogic = new ApplicationLogic(activity);
+
         long[] tagIds = (getArguments()).getLongArray("tag_ids");
 
         if (tagIds != null) {

@@ -18,14 +18,8 @@ public class SelectFormatDialogFragment extends DialogFragment {
         onNewFormatSelectedListener = null;
     }
 
-    /*public SelectFormatDialogFragment(int selectedFormat) {
-        this.selectedFormat = selectedFormat;
-        this.onNewFormatSelectedListener = null;
-    }*/
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        //if (savedInstanceState != null) selectedFormat = savedInstanceState.getInt("selected_format", ApplicationLogic.WORKPAGE_DATA);
         selectedFormat = (getArguments()).getInt("selected_format", ApplicationLogic.WORKPAGE_DATA);
 
         Activity activity = getActivity();
@@ -53,12 +47,6 @@ public class SelectFormatDialogFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /*@Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("selected_format", selectedFormat);
-        super.onSaveInstanceState(outState);
-    }*/
 
     public void setOnNewFormatSelectedListener(OnNewFormatSelectedListener listener) {
         onNewFormatSelectedListener = listener;

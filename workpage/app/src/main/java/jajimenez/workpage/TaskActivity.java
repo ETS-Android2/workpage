@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Calendar;
 
 import android.support.v7.app.AppCompatActivity;
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.TableRow;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
-import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskTag;
 
@@ -63,6 +61,9 @@ public class TaskActivity extends AppCompatActivity {
 
         taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
             public void onItemClick() {
+                // Set the result as OK for making Main Activity update its interface
+                setResult(RESULT_OK);
+
                 // Update the list view.
                 TaskActivity.this.updateInterface();
             }
@@ -70,6 +71,9 @@ public class TaskActivity extends AppCompatActivity {
 
         deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
             public void onDelete() {
+                // Set the result as OK for making Main Activity update its interface
+                setResult(RESULT_OK);
+
                 // Close the activity.
                 TaskActivity.this.finish();
             }
@@ -87,20 +91,24 @@ public class TaskActivity extends AppCompatActivity {
         Intent intent = getIntent();
         currentTaskId = intent.getLongExtra("task_id", -1);
         currentTask = null;
+
+        updateInterface();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_task, menu);
+        inflater.inflate(R.menu.task, menu);
 
         return true;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        updateInterface();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ApplicationLogic.CHANGE_TASKS && resultCode == RESULT_OK) {
+            setResult(RESULT_OK);
+            updateInterface();
+        }
     }
 
     private void updateInterface() {
@@ -185,8 +193,9 @@ public class TaskActivity extends AppCompatActivity {
         boolean eventHandled = false;
         Bundle arguments;
         long[] taskIds;
+        int id = item.getItemId();
 
-        switch (item.getItemId()) {
+        switch (id) {
             case R.id.task_menu_status:
                 ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment();
 
@@ -210,7 +219,8 @@ public class TaskActivity extends AppCompatActivity {
                 intent.putExtra("mode", "edit");
                 intent.putExtra("task_id", currentTaskId);
 
-                startActivity(intent);
+                startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
+
                 eventHandled = true;
                 break;
 
