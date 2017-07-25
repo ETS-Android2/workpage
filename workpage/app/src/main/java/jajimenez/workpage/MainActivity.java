@@ -317,8 +317,7 @@ public class MainActivity extends AppCompatActivity
         unregisterReceiver(exportReceiver);
         unregisterReceiver(importReceiver);
     }
-
-    @SuppressWarnings("StatementWithEmptyBody")
+    
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
