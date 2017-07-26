@@ -18,6 +18,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 
 import jajimenez.workpage.TaskReminderAlarmReceiver;
@@ -30,22 +32,14 @@ import jajimenez.workpage.data.model.TaskReminder;
 public class ApplicationLogic {
     public static final int CHANGE_TASKS = 0;
     public static final int CHANGE_TASK_TAGS = 1;
+    public static final int EXPORT_DATA = 2;
+    public static final int IMPORT_DATA = 3;
+
+    public static final String APP_MIME_TYPE = "*/*";
 
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
-
-    private static final String CSV_TASK_CONTEXT_TO_EXPORT_KEY = "csv_task_context_to_export";
-    private static final String CSV_TASKS_TO_EXPORT_KEY = "csv_tasks_to_export";
-    private static final String CSV_PROPERTIES_FIELD_NAMES_KEY = "csv_properties_field_names";
-    private static final String CSV_PROPERTIES_UNIX_TIME_KEY = "csv_properties_unix_time";
-    private static final String CSV_PROPERTIES_ID_KEY = "csv_properties_id";
-    private static final String CSV_PROPERTIES_DESCRIPTION_KEY = "csv_properties_description";
-    private static final String CSV_PROPERTIES_TAGS_KEY = "csv_properties_tags";
-
-    public static final int ONLY_OPEN_TASKS = 0;
-    public static final int ONLY_CLOSED_TASKS = 1;
-    public static final int ALL_TASKS = 2;
 
     // Constants for the "importData" function.
     public static final int IMPORT_SUCCESS = 0;
@@ -57,9 +51,6 @@ public class ApplicationLogic {
     private static final int WHEN = 0;
     private static final int START = 1;
     private static final int DEADLINE = 2;
-
-    public static final int WORKPAGE_DATA = 0;
-    public static final int CSV = 1;
 
     private Context appContext;
     private DataManager dataManager;
@@ -107,111 +98,11 @@ public class ApplicationLogic {
         return filterTags;
     }
 
-    public long getCsvTaskContextToExport() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return Long.parseLong(preferences.getString(CSV_TASK_CONTEXT_TO_EXPORT_KEY, "1"));
-    }
-
-    public int getCsvTasksToExport() {
-        int tasksToExport = ONLY_OPEN_TASKS;
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        String tasks = preferences.getString(CSV_TASKS_TO_EXPORT_KEY, "only_open_tasks");
-
-        if (tasks.equals("only_closed_tasks")) tasksToExport = ONLY_CLOSED_TASKS;
-        else if (tasks.equals("all_tasks")) tasksToExport = ALL_TASKS;
-
-        return tasksToExport;
-    }
-
-    public boolean getCsvFieldNames() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getBoolean(CSV_PROPERTIES_FIELD_NAMES_KEY, true);
-    }
-
-    public boolean getCsvUnixTime() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getBoolean(CSV_PROPERTIES_UNIX_TIME_KEY, false);
-    }
-
-    public boolean getCsvId() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getBoolean(CSV_PROPERTIES_ID_KEY, false);
-    }
-
-    public boolean getCsvDescription() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getBoolean(CSV_PROPERTIES_DESCRIPTION_KEY, false);
-    }
-
-    public boolean getCsvTags() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return preferences.getBoolean(CSV_PROPERTIES_TAGS_KEY, false);
-    }
-
     public void setCurrentTaskContext(TaskContext context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(CURRENT_TASK_CONTEXT_ID_KEY, context.getId());
-        editor.commit();
-    }
-
-    public void setCsvTaskContextToExport(long taskContextId) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(CSV_TASK_CONTEXT_TO_EXPORT_KEY, taskContextId);
-        editor.commit();
-    }
-
-    public void setCsvTasksToExport(int tasksToExport) {
-        if (tasksToExport < 0 || tasksToExport > 2) tasksToExport = ALL_TASKS;
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(CSV_TASKS_TO_EXPORT_KEY, tasksToExport);
-        editor.commit();
-    }
-
-    public void setCsvFieldNames(boolean csvFieldNames) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_PROPERTIES_FIELD_NAMES_KEY, csvFieldNames);
-        editor.commit();
-    }
-
-    public void setCsvUnixTime(boolean csvUnixTime) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_PROPERTIES_UNIX_TIME_KEY, csvUnixTime);
-        editor.commit();
-    }
-
-    public void setCsvId(boolean csvId) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_PROPERTIES_ID_KEY, csvId);
-        editor.commit();
-    }
-
-    public void setCsvDescription(boolean csvDescription) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_PROPERTIES_DESCRIPTION_KEY, csvDescription);
-        editor.commit();
-    }
-
-    public void setCsvTags(boolean csvTags) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(CSV_PROPERTIES_TAGS_KEY, csvTags);
         editor.commit();
     }
 
@@ -447,51 +338,43 @@ public class ApplicationLogic {
         // Delete tasks.
         dataManager.deleteTasks(tasks);
     }
-    
+
+    public static String getProposedExportDataFileName() {
+        Calendar calendar = Calendar.getInstance();
+
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+
+        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        if (month.length() == 1) month = "0" + month;
+
+        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        if (day.length() == 1) month = "0" + day;
+
+        String name = year + month + day + "_workpage_data.wpd";
+
+        return name;
+    }
+
     // Returns "false" if the operation was successful
     // or "true" if there was any error.
-    public boolean exportData(File to, int format) {
+    public boolean exportData(Uri output) {
         boolean error = false;
 
-        if (to != null) {
+        if (output != null) {
             try {
+                // Input file (database)
                 File databaseFile = dataManager.getDatabaseFile();
+                InputStream inputStr = new FileInputStream(databaseFile);
 
-                switch (format) {
-                    case WORKPAGE_DATA:
-                        copyFile(databaseFile, to);
-                        break;
-                    case CSV:
-                        TaskContext contextToExport = getTaskContext(getCsvTaskContextToExport());
-                        int tasksToExport = getCsvTasksToExport();
-                        boolean fieldNames = getCsvFieldNames();
-                        boolean unixTime = getCsvUnixTime();
-                        boolean id = getCsvId();
-                        boolean description = getCsvDescription();
-                        boolean tags = getCsvTags();
+                // Output file
+                ParcelFileDescriptor desc = (appContext.getContentResolver()).openFileDescriptor(output, "w");
+                OutputStream outputStr = new FileOutputStream(desc.getFileDescriptor());
 
-                        List<Task> tasks = null;
-                        List<TaskTag> contextTags = getAllTaskTags(contextToExport);
+                copyData(inputStr, outputStr);
 
-                        if (tasksToExport == ONLY_OPEN_TASKS) {
-                            tasks = getOpenTasksByTags(contextToExport, true, contextTags);
-                        }
-                        else if (tasksToExport == ONLY_CLOSED_TASKS) {
-                            tasks = getClosedTasksByTags(contextToExport, true, contextTags);
-                        }
-                        else { // ALL_TASKS
-                            tasks = getOpenTasksByTags(contextToExport, true, contextTags);
-                            tasks.addAll(getClosedTasksByTags(contextToExport, true, contextTags));
-
-                            // We sort the tasks.
-                            Collections.sort(tasks, new TaskComparator()); 
-                        }
-
-                        CsvExporter exporter = new CsvExporter(appContext);
-                        exporter.export(contextToExport, tasks, fieldNames, unixTime, id, description, tags, to);
-
-                        break;
-                }
+                inputStr.close();
+                outputStr.close();
+                desc.close();
             }
             catch (Exception e) {
                 error = true;
@@ -501,10 +384,22 @@ public class ApplicationLogic {
         return error;
     }
 
-    // Format is always Workpage Data.
-    public int importData(File from) {
+    public int importData(Uri input) {
         int importResult;
-        int compatible = DataManager.isDatabaseCompatible(from);
+        int compatible = DataManager.COMPATIBLE;
+
+        try {
+            // Make temporal copy of the file to import and check if it is compatible
+            File tempDbFile = dataManager.getTemporalDatabaseFile(); // This file does not exist yet
+            copyFile(input, tempDbFile);
+            compatible = DataManager.isDatabaseCompatible(tempDbFile);
+
+            // Delete temporal copy
+            tempDbFile.delete();
+        }
+        catch (Exception e) {
+            compatible = DataManager.ERROR_OPENING_DB;
+        }
 
         switch (compatible) {
             case DataManager.COMPATIBLE:
@@ -512,8 +407,9 @@ public class ApplicationLogic {
                     // Cancel reminder alarms of old tasks.
                     updateAllOpenTaskReminderAlarms(true);
 
+                    // Import file
                     File dbFile = dataManager.getDatabaseFile();
-                    copyFile(from, dbFile);
+                    copyFile(input, dbFile);
 
                     // Clear settings.
                     clearSettings();
@@ -541,11 +437,31 @@ public class ApplicationLogic {
                 importResult = IMPORT_ERROR_DATA_NOT_VALID;
         }
 
-
         return importResult;
     }
 
-    public void clearSettings() {
+    private void copyFile(Uri input, File output) throws IOException {
+        // Input file
+        InputStream inputStr = (appContext.getContentResolver()).openInputStream(input);
+
+        // Output file
+        OutputStream outputStr = new FileOutputStream(output);
+
+        copyData(inputStr, outputStr);
+        inputStr.close();
+        outputStr.close();
+    }
+
+    private void copyData(InputStream input, OutputStream output) throws IOException {
+        byte[] buffer = new byte[1024];
+        int bytesRead = 0;
+
+        while ((bytesRead = input.read(buffer)) > 0) {
+            output.write(buffer, 0, bytesRead);
+        }
+    }
+
+    private void clearSettings() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = preferences.edit();
 
@@ -555,27 +471,14 @@ public class ApplicationLogic {
             String key = entry.getKey();
 
             if (!key.equals("reminder_type")
-                && !key.equals("notifications_sound")
-                && !key.equals("notifications_vibrate")
-                && !key.equals("notifications_light")) {
+                    && !key.equals("notifications_sound")
+                    && !key.equals("notifications_vibrate")
+                    && !key.equals("notifications_light")) {
 
                 editor.remove(key);
             }
         }
 
         editor.commit();
-    }
-
-    private void copyFile(File from, File to) throws IOException {
-        InputStream in = new FileInputStream(from);
-        OutputStream out = new FileOutputStream(to);
-
-        byte[] buffer = new byte[1024];
-        int bytesRead = 0;
-
-        while ((bytesRead = in.read(buffer)) > 0) out.write(buffer, 0, bytesRead);
-
-        in.close();
-        out.close();
     }
 }

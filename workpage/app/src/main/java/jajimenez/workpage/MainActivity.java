@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
@@ -18,13 +19,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.ActionMode;
-import android.content.IntentFilter;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.graphics.drawable.Drawable;
 import android.util.SparseBooleanArray;
+import android.widget.Toast;
 
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
@@ -32,7 +33,7 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, DataChangeReceiverActivity {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
@@ -48,15 +49,13 @@ public class MainActivity extends AppCompatActivity
     private SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener switchTaskContextListener;
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
     private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
+    private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
     private String viewStateFilter;
     private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
-
-    private DataExportBroadcastReceiver exportReceiver;
-    private DataImportBroadcastReceiver importReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +141,12 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
+            public void onConfirmation(Uri input) {
+                (new ImportDataTask()).execute(input);
+            }
+        };
+
         // Instance state
         this.savedInstanceState = savedInstanceState;
 
@@ -154,6 +159,9 @@ public class MainActivity extends AppCompatActivity
 
             DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
             if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
+
+            DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
+            if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
         }
 
         // Parameters
@@ -290,34 +298,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else {
             super.onBackPressed();
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        exportReceiver = new DataExportBroadcastReceiver(this);
-        IntentFilter exportFilter = new IntentFilter(ApplicationConstants.DATA_EXPORT_ACTION);
-        registerReceiver(exportReceiver, exportFilter);
-
-        importReceiver = new DataImportBroadcastReceiver(this);
-        IntentFilter importFilter = new IntentFilter(ApplicationConstants.DATA_IMPORT_ACTION);
-        registerReceiver(importReceiver, importFilter);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        unregisterReceiver(exportReceiver);
-        unregisterReceiver(importReceiver);
-    }
-    
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -340,14 +329,19 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_TAGS);
                 break;
             case R.id.main_nav_export_data:
-                intent = new Intent(this, FileBrowserActivity.class);
-                intent.putExtra("mode", "export");
-                startActivity(intent);
+                intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType(ApplicationLogic.APP_MIME_TYPE);
+                intent.putExtra(Intent.EXTRA_TITLE, ApplicationLogic.getProposedExportDataFileName());
+
+                startActivityForResult(intent, ApplicationLogic.EXPORT_DATA);
                 break;
             case R.id.main_nav_import_data:
-                intent = new Intent(this, FileBrowserActivity.class);
-                intent.putExtra("mode", "import");
-                startActivity(intent);
+                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType(ApplicationLogic.APP_MIME_TYPE);
+
+                startActivityForResult(intent, ApplicationLogic.IMPORT_DATA);
                 break;
             case R.id.main_nav_settings:
                 intent = new Intent(this, SettingsActivity.class);
@@ -366,11 +360,31 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if ((requestCode == ApplicationLogic.CHANGE_TASKS
-                || requestCode == ApplicationLogic.CHANGE_TASK_TAGS)
-                && resultCode == RESULT_OK) {
-            updateInterface();
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Bundle arguments;
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == ApplicationLogic.CHANGE_TASKS || requestCode == ApplicationLogic.CHANGE_TASK_TAGS) {
+                updateInterface();
+            }
+            else if (requestCode == ApplicationLogic.EXPORT_DATA) {
+                // Export data
+                Uri output = resultData.getData();
+                (new ExportDataTask()).execute(output);
+            }
+            else if (requestCode == ApplicationLogic.IMPORT_DATA) {
+                // Import data
+                Uri input = resultData.getData();
+
+                DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
+
+                arguments = new Bundle();
+                arguments.putString("input", input.toString());
+
+                importFragment.setArguments(arguments);
+                importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
+                importFragment.show(getFragmentManager(), "data_import_confirmation");
+            }
         }
     }
 
@@ -516,7 +530,72 @@ public class MainActivity extends AppCompatActivity
 
         protected void onPostExecute(List<Task> tasks) {
             MainActivity.this.updateTaskListInterface(tasks);
-            MainActivity.this.enableInterface();;
+            MainActivity.this.enableInterface();
+        }
+    }
+
+    private class ExportDataTask extends AsyncTask<Uri, Void, Boolean> {
+        protected void onPreExecute() {
+            MainActivity.this.disableInterface();
+        }
+
+        protected Boolean doInBackground(Uri... parameters) {
+            Uri output = parameters[0];
+
+            // "result" will be "false" if the operation was
+            // successful or "true" if there was any error.
+            boolean result = MainActivity.this.applicationLogic.exportData(output);
+
+            return result;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                (Toast.makeText(MainActivity.this, R.string.export_error, Toast.LENGTH_SHORT)).show();
+            }
+            else {
+                (Toast.makeText(MainActivity.this, R.string.export_success, Toast.LENGTH_SHORT)).show();
+            }
+
+            MainActivity.this.enableInterface();
+        }
+    }
+
+    private class ImportDataTask extends AsyncTask<Uri, Void, Integer> {
+        protected void onPreExecute() {
+            MainActivity.this.disableInterface();
+        }
+
+        protected Integer doInBackground(Uri... parameters) {
+            Uri input = parameters[0];
+            int result = MainActivity.this.applicationLogic.importData(input);
+
+            return result;
+        }
+
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case ApplicationLogic.IMPORT_SUCCESS:
+                    (Toast.makeText(MainActivity.this, R.string.import_success, Toast.LENGTH_SHORT)).show();
+                    break;
+                case ApplicationLogic.IMPORT_ERROR_OPENING_FILE:
+                    (Toast.makeText(MainActivity.this, R.string.import_error_opening_file, Toast.LENGTH_SHORT)).show();
+                    break;
+
+                case ApplicationLogic.IMPORT_ERROR_FILE_NOT_COMPATIBLE:
+                    (Toast.makeText(MainActivity.this, R.string.import_error_file_not_compatible, Toast.LENGTH_SHORT)).show();
+                    break;
+
+                case ApplicationLogic.IMPORT_ERROR_DATA_NOT_VALID:
+                    (Toast.makeText(MainActivity.this, R.string.import_error_data_not_valid, Toast.LENGTH_SHORT)).show();
+                    break;
+
+                default:
+                    (Toast.makeText(MainActivity.this, R.string.import_error_importing_data, Toast.LENGTH_SHORT)).show();
+                    break;
+            }
+
+            MainActivity.this.updateInterface();
         }
     }
 }

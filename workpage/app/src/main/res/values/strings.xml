@@ -185,7 +185,7 @@
     <string name="unix_time">Unix Time</string>
     <string name="id">ID</string>
     <string name="tags_1">Tags</string>
-    <string name="file_overwrite_confirmation">File \"%1$s\" already exists. Do you want to overwrite it?</string>
+    <string name="file_overwrite_confirmation">File already exists. Do you want to overwrite it?</string>
     <string name="overwrite">Overwrite</string>
     <string name="value_open">Open</string>
     <string name="value_closed">Closed</string>

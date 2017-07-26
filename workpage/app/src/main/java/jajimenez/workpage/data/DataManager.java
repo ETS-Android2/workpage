@@ -20,6 +20,7 @@ import jajimenez.workpage.data.model.Task;
 
 public class DataManager extends SQLiteOpenHelper {
     public static final String DB_NAME = "workpage.db";
+    public static final String TEMP_DB_NAME = "temp.db";
     public static final int DB_VERSION = 3;
 
     // Constants for the "isDatabaseCompatible" function.
@@ -403,6 +404,11 @@ public class DataManager extends SQLiteOpenHelper {
         return context.getDatabasePath(DB_NAME);
     }
 
+    public File getTemporalDatabaseFile() {
+        File dir = context.getFilesDir();
+        return new File(dir, TEMP_DB_NAME);
+    }
+
     public static int isDatabaseCompatible(File dbFile) {
         SQLiteDatabase db = null;
 
@@ -420,8 +426,6 @@ public class DataManager extends SQLiteOpenHelper {
         // Check that the tables are the expected ones:
         //     * Only TaskTags and Tasks are not the same in the 3 database versions.
         //     * TaskReminders is new in version 3.
-        Cursor cursor = null;
-
         String taskContextsTableSql = "SELECT id, name, list_order FROM task_contexts LIMIT 1";
         String taskRemindersTableSql = "";
         String taskTagsTableSql = null;
@@ -452,13 +456,13 @@ public class DataManager extends SQLiteOpenHelper {
         }
 
         try {
-            cursor = db.rawQuery(taskContextsTableSql, null);
+            db.rawQuery(taskContextsTableSql, null);
 
-            if (dbVersion == 3) cursor = db.rawQuery(taskRemindersTableSql, null);
+            if (dbVersion == 3) db.rawQuery(taskRemindersTableSql, null);
 
-            cursor = db.rawQuery(taskTagsTableSql, null);
-            cursor = db.rawQuery(tasksTableSql, null);
-            cursor = db.rawQuery(taskTagRelationshipsTableSql, null);
+            db.rawQuery(taskTagsTableSql, null);
+            db.rawQuery(tasksTableSql, null);
+            db.rawQuery(taskTagRelationshipsTableSql, null);
         }
         catch (Exception e) {
             return ERROR_DB_NOT_COMPATIBLE;

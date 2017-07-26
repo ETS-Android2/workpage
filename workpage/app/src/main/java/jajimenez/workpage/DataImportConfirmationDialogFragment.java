@@ -1,7 +1,6 @@
 package jajimenez.workpage;
 
-import java.io.File;
-
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.app.AlertDialog;
@@ -9,19 +8,17 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 
 public class DataImportConfirmationDialogFragment extends DialogFragment {
-    private File from;
     private OnDataImportConfirmationListener onConfirmationListener;
 
     public DataImportConfirmationDialogFragment() {
-        from = null;
         onConfirmationListener = null;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // "filePath" is an absolute file path
-        String filePath = (getArguments()).getString("file_path");
-        if (filePath != null && !filePath.equals("")) from = new File(filePath);
+        String inputStr = (getArguments()).getString("input");
+        final Uri input = Uri.parse(inputStr);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -30,7 +27,7 @@ public class DataImportConfirmationDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.import_data, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 if (DataImportConfirmationDialogFragment.this.onConfirmationListener != null) {
-                    DataImportConfirmationDialogFragment.this.onConfirmationListener.onConfirmation(DataImportConfirmationDialogFragment.this.from);
+                    DataImportConfirmationDialogFragment.this.onConfirmationListener.onConfirmation(input);
                 }
             }
         });
@@ -43,6 +40,6 @@ public class DataImportConfirmationDialogFragment extends DialogFragment {
     }
 
     public static interface OnDataImportConfirmationListener {
-        void onConfirmation(File from);
+        void onConfirmation(Uri input);
     }
 }
