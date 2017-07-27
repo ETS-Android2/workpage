@@ -3,6 +3,7 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.Calendar;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -99,6 +100,13 @@ public class TaskActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.task, menu);
+
+        // This is necessary because the drawable of the Edit item icon of this activity keeps
+        // the last alpha value set for the Edit item icon in MainActivity. MainActivity has
+        // the same menu with the same drawables for the items.
+        MenuItem editItem = menu.findItem(R.id.task_menu_edit);
+        Drawable editItemIcon = editItem.getIcon();
+        editItemIcon.setAlpha(255);
 
         return true;
     }
