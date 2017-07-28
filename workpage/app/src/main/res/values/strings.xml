@@ -65,7 +65,7 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="selected">%1$d selected</string>
-    <string name="state">State:</string>
+    <string name="state_1">State:</string>
     <string name="none">(None)</string>
 
     <string name="task_datetime">%1$s - %2$s</string>
@@ -158,39 +158,8 @@
     <string name="accept">Accept</string>
     <string name="tag_saved">Tag saved</string>
 
-    <string name="go_up">Go up</string>
-    <string name="as">As:</string>
-    <string name="select_format">Select format</string>
-    <string name="workpage_data">Workpage Data</string>
-    <string name="workpage_data_extension">.workpage</string>
-    <string name="csv">CSV</string>
-    <string name="csv_extension">.csv</string>
-    <string name="format_options">Format options</string>
-    <string name="file_name">File name</string>
-    <string name="storage_not_available">Storage not available.</string>
     <string name="export_success">Data exported.</string>
     <string name="export_error">Error trying to export the data.</string>
-    <string name="csv_settings">CSV Settings</string>
-    <string name="context_to_export">Context to export</string>
-    <string name="tasks_to_export">Tasks to export</string>
-    <string name="properties">Properties</string>
-    <string name="field_names">Field names</string>
-    <string name="field_id">ID</string>
-    <string name="field_title">Title</string>
-    <string name="field_description">Description</string>
-    <string name="field_when">When</string>
-    <string name="field_start">Start</string>
-    <string name="field_deadline">Deadline</string>
-    <string name="field_state">State</string>
-    <string name="unix_time">Unix Time</string>
-    <string name="id">ID</string>
-    <string name="tags_1">Tags</string>
-    <string name="file_overwrite_confirmation">File already exists. Do you want to overwrite it?</string>
-    <string name="overwrite">Overwrite</string>
-    <string name="value_open">Open</string>
-    <string name="value_closed">Closed</string>
-    <string name="value_yes">Yes</string>
-    <string name="value_no">No</string>
 
     <string name="data_import_confirmation">The current data will be overwritten. Do you want to continue?</string>
 
@@ -200,7 +169,7 @@
     <string name="import_error_data_not_valid">Error: Data is not valid</string>
     <string name="import_error_importing_data">Error trying to import the data</string>
 
-    <string name="state_1">State</string>
+    <string name="state_2">State</string>
 
     <string name="notifications">Notifications</string>
     <string name="play_sound">Play sound</string>

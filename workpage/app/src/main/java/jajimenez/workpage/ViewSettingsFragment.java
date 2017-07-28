@@ -68,9 +68,9 @@ public class ViewSettingsFragment extends PreferenceFragment {
         statePref.setEntries(R.array.view_state_filter_texts);
         statePref.setEntryValues(R.array.view_state_filter_keys);
         statePref.setDefaultValue("open");
-        statePref.setTitle(R.string.state);
+        statePref.setTitle(R.string.state_2);
         statePref.setSummary("%s");
-        statePref.setDialogTitle(R.string.state);
+        statePref.setDialogTitle(R.string.state_2);
         statePref.setOrder(0);
 
         statePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
