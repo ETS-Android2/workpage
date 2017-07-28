@@ -94,6 +94,11 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (!interfaceReady) return;
 
+                // Unselect any selected task
+                MainActivity.this.listView.clearChoices();
+                MainActivity.this.listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+
+                // Launch Edit Activity
                 Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
                 intent.putExtra("mode", "new");
                 intent.putExtra("task_context_id", currentTaskContext.getId());
@@ -311,6 +316,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         if (!interfaceReady) return true;
+
         int id = item.getItemId();
         Intent intent;
 
