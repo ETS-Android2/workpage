@@ -94,9 +94,8 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (!interfaceReady) return;
 
-                // Unselect any selected task
-                MainActivity.this.listView.clearChoices();
-                MainActivity.this.listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+                // Close the context action bar
+                if (MainActivity.this.actionMode != null) MainActivity.this.actionMode.finish();
 
                 // Launch Edit Activity
                 Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
