@@ -65,10 +65,6 @@
             android:label="@string/about"
             android:parentActivityName=".MainActivity" />
 
-        <activity
-            android:name=".CsvSettingsActivity"
-            android:label="@string/csv_settings"
-            android:parentActivityName=".FileBrowserActivity" />
     </application>
 
 </manifest>
