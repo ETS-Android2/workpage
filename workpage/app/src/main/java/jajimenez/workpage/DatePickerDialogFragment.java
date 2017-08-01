@@ -1,57 +1,78 @@
 package jajimenez.workpage;
 
-import java.util.Calendar;
-
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.DatePickerDialog;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.DatePicker;
 
 public class DatePickerDialogFragment extends DialogFragment {
-    private DatePickerDialog dialog;
-    private Calendar calendar;
-    private OnDateSetListener onDateSetListener;
+    private OnDateSetListener dateSetListener;
+    private OnNoDateSetListener noDateSetListener;
 
     public DatePickerDialogFragment() {
-        dialog = null;
-        calendar = Calendar.getInstance();
-
-        onDateSetListener = null;
+        dateSetListener = null;
+        noDateSetListener = null;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Activity activity = getActivity();
         Bundle arguments = getArguments();
-        long time = arguments.getLong("time");
-        calendar.setTimeInMillis(time);
 
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int year = arguments.getInt("year", 0);
+        int month = arguments.getInt("month", 0);
+        int day = arguments.getInt("day", 0);
+        boolean includeNoDateButton = arguments.getBoolean("include_no_date_button", false);
 
-        dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                // There is a bug in DatePickerDialog and TimePickerDialog
-                // that makes always onDateSet/onTimeSet methods be
-                // called twice (when the "Done" button is clicked and
-                // when the dialog is dismissed). A workaround is to
-                // check if the view is visible.
-                if (view.isShown() && DatePickerDialogFragment.this.onDateSetListener != null) {
-                    DatePickerDialogFragment.this.onDateSetListener.onDateSet(year, month, day);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        final DatePicker picker = (DatePicker) inflater.inflate(R.layout.date_picker, null);
+
+        picker.init(year, month, day, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setView(picker);
+
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                if (DatePickerDialogFragment.this.dateSetListener != null) {
+                    DatePickerDialogFragment.this.dateSetListener.onDateSet(picker.getYear(), picker.getMonth(), picker.getDayOfMonth());
                 }
             }
+        });
 
-        }, year, month, day);
+        if (includeNoDateButton) {
+            builder.setNeutralButton(R.string.no_date, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    if (DatePickerDialogFragment.this.noDateSetListener != null) {
+                        DatePickerDialogFragment.this.noDateSetListener.onNoDateSet();
+                    }
+                }
+            });
+        }
 
-        return dialog;
+        builder.setNegativeButton(R.string.cancel, null);
+
+        return builder.create();
     }
 
     public void setOnDateSetListener(OnDateSetListener listener) {
-        onDateSetListener = listener;
+        dateSetListener = listener;
+    }
+
+    public void setOnNoDateSetListener(OnNoDateSetListener listener) {
+        noDateSetListener = listener;
     }
 
     public static interface OnDateSetListener {
         void onDateSet(int year, int month, int day);
+    }
+
+    public static interface OnNoDateSetListener {
+        void onNoDateSet();
     }
 }

@@ -30,6 +30,10 @@ import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
+    public static final int NO_DATE = 0;
+    public static final int SINGLE_DATE = 1;
+    public static final int DATE_RANGE = 2;
+
     public static final int CHANGE_TASKS = 0;
     public static final int CHANGE_TASK_TAGS = 1;
     public static final int EXPORT_DATA = 2;

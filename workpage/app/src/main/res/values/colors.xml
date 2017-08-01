@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#005B58</color>
+    <color name="colorPrimary">#005b58</color>
     <color name="colorPrimaryDark">#023735</color>
-    <color name="colorAccent">#005B58</color>
+    <color name="colorAccent">#005b58</color>
 
-    <color name="color_selected_item">#EDEDED</color>
+    <color name="color_selected_item">#ededed</color>
 
     <color name="color_view_border">#8e8e8e</color>
     <color name="color_view_background">#ffffff</color>
@@ -21,4 +21,6 @@
     <color name="tag_color_10">#009900</color>
     <color name="tag_color_11">#00cc33</color>
     <color name="tag_color_12">#66ff00</color>
+
+    <color name="divider">#d6d7d7</color>
 </resources>
