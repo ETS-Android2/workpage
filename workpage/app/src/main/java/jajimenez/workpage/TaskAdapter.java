@@ -147,10 +147,10 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
             // Both are defined.
             if (start != null && deadline != null) {
-                date1TitleTextView.setText(activity.getString(R.string.start));
+                date1TitleTextView.setText(activity.getString(R.string.start_2));
                 date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.START));
 
-                date2TitleTextView.setText(activity.getString(R.string.deadline));
+                date2TitleTextView.setText(activity.getString(R.string.deadline_2));
                 date2ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.DEADLINE));
             }
             // Only one is defined.
@@ -159,11 +159,11 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 space2TextView.setVisibility(View.INVISIBLE);
 
                 if (start != null) {
-                    date1TitleTextView.setText(activity.getString(R.string.start));
+                    date1TitleTextView.setText(activity.getString(R.string.start_2));
                     date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.START));
                 }
                 else { // deadline != null
-                    date1TitleTextView.setText(activity.getString(R.string.deadline));
+                    date1TitleTextView.setText(activity.getString(R.string.deadline_2));
                     date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.DEADLINE));
                 }
             }

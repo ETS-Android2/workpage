@@ -1,6 +1,5 @@
 package jajimenez.workpage;
 
-import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
@@ -14,7 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
@@ -27,27 +28,30 @@ import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.logic.TextTool;
 import jajimenez.workpage.data.model.TaskContext;
-import jajimenez.workpage.data.model.TaskReminder;
 import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class EditTaskActivity extends AppCompatActivity {
-    private EditText titleEditText;
-    private EditText descriptionEditText;
+    private EditText title;
+    private Button description;
 
     private Button dateMode;
 
-    private TableRow rowDateTitle1;
-    private TableRow rowDateTime1;
+    private TextView dateMode1;
+    private TableLayout tableDate1;
     private Button date1;
     private Button time1;
-    private TableRow rowTimeZone1;
+    private Button timeZone1;
+    private Button reminder1;
+    private View divider1;
 
-    private TableRow rowDateTitle2;
-    private TableRow rowDateTime2;
+    private TextView dateMode2;
+    private TableLayout tableDate2;
     private Button date2;
     private Button time2;
-    private TableRow rowTimeZone2;
+    private Button timeZone2;
+    private Button reminder2;
+    private View divider2;
 
     private AutoCompleteTextView addTagAutoTextView;
     private Button addTagButton;
@@ -88,26 +92,45 @@ public class EditTaskActivity extends AppCompatActivity {
             // Do nothing
         }
 
-        titleEditText = (EditText) findViewById(R.id.edit_task_title);
-        descriptionEditText = (EditText) findViewById(R.id.edit_task_description);
+        title = (EditText) findViewById(R.id.edit_task_title);
+        description = (Button) findViewById(R.id.edit_task_description);
 
         dateMode = (Button) findViewById(R.id.edit_task_date_mode);
 
-        rowDateTitle1 = (TableRow) findViewById(R.id.edit_task_row_date_title_1);
-        rowDateTime1 = (TableRow) findViewById(R.id.edit_task_row_date_time_1);
+        dateMode1 = (TextView) findViewById(R.id.edit_task_date_mode_1);
+        tableDate1 = (TableLayout) findViewById(R.id.edit_task_table_date_1);
         date1 = (Button) findViewById(R.id.edit_task_date_1);
         time1 = (Button) findViewById(R.id.edit_task_time_1);
-        rowTimeZone1 = (TableRow) findViewById(R.id.edit_task_row_time_zone_1);
+        timeZone1 = (Button) findViewById(R.id.edit_task_time_zone_1);
+        reminder1 = (Button) findViewById(R.id.edit_task_reminder_1);
+        divider1 = findViewById(R.id.edit_task_date_divider_1);
 
-        rowDateTitle2 = (TableRow) findViewById(R.id.edit_task_row_date_title_2);
-        rowDateTime2 = (TableRow) findViewById(R.id.edit_task_row_date_time_2);
+        dateMode2 = (TextView) findViewById(R.id.edit_task_date_mode_2);
+        tableDate2 = (TableLayout) findViewById(R.id.edit_task_table_date_2);
         date2 = (Button) findViewById(R.id.edit_task_date_2);
         time2 = (Button) findViewById(R.id.edit_task_time_2);
-        rowTimeZone2 = (TableRow) findViewById(R.id.edit_task_row_time_zone_2);
+        timeZone2 = (Button) findViewById(R.id.edit_task_time_zone_2);
+        reminder2 = (Button) findViewById(R.id.edit_task_reminder_2);
+        divider2 = findViewById(R.id.edit_task_date_divider_2);
 
         addTagAutoTextView = (AutoCompleteTextView) findViewById(R.id.edit_task_add_tag_autotextview);
         addTagButton = (Button) findViewById(R.id.edit_task_add_tag_button);
         addedTagsLinearLayout = (LinearLayout) findViewById(R.id.edit_task_added_tags);
+
+        title.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Nothing to do.
+            }
+
+            public void afterTextChanged(Editable s) {
+                String text = (s.toString()).trim();
+                EditTaskActivity.this.currentTask.setTitle(text);
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Nothing to do.
+            }
+        });
 
         addTagAutoTextView.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -138,15 +161,18 @@ public class EditTaskActivity extends AppCompatActivity {
 
         descriptionListener = new EditDescriptionDialogFragment.OnOkButtonClickedListener() {
             public void onOkButtonClicked(String description) {
-                EditTaskActivity.this.descriptionEditText.setText(description);
+                EditTaskActivity.this.currentTask.setDescription(description);
+                EditTaskActivity.this.updateInterface();
             }
         };
 
         // Date Mode
         dateModeListener = new DateModeDialogFragment.OnDateModeSetListener() {
             public void onDateModeSet(int mode) {
+                // If the selected mode is the same than the current one, we exit.
+                if (mode == EditTaskActivity.this.selectedDateMode) return;
+
                 EditTaskActivity.this.selectedDateMode = mode;
-                //DateTimeTool tool = new DateTimeTool();
 
                 switch (mode) {
                     case ApplicationLogic.SINGLE_DATE:
@@ -154,7 +180,6 @@ public class EditTaskActivity extends AppCompatActivity {
                         Calendar when = Calendar.getInstance();
                         when.add(Calendar.HOUR_OF_DAY, 1);
                         when.clear(Calendar.MINUTE);
-                        //tool.clearTimeFields(when);
 
                         currentTask.setWhen(when);
 
@@ -162,14 +187,12 @@ public class EditTaskActivity extends AppCompatActivity {
                     case ApplicationLogic.DATE_RANGE:
                         // Today
                         Calendar start = Calendar.getInstance();
-                        //tool.clearTimeFields(start);
                         start.add(Calendar.HOUR_OF_DAY, 1);
                         start.clear(Calendar.MINUTE);
 
                         // Tomorrow
                         Calendar deadline = Calendar.getInstance();
                         deadline.setTimeInMillis(start.getTimeInMillis());
-                        //tool.clearTimeFields(deadline);
                         deadline.add(Calendar.DAY_OF_MONTH, 1);
 
                         currentTask.setStart(start);
@@ -342,17 +365,6 @@ public class EditTaskActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
 
-        //int selectedDateOption = 0;
-        //selectedDateMode = ApplicationLogic.NO_DATE;
-        /*boolean whenTime = false;
-        boolean whenReminder = false;
-        boolean startDate = false;
-        boolean startTime = false;
-        boolean startReminder = false;
-        boolean deadlineDate = false;
-        boolean deadlineTime = false;
-        boolean deadlineReminder = false;*/
-
         if (mode != null && mode.equals("edit")) {
             // Get task data.
             long taskId = intent.getLongExtra("task_id", 0);
@@ -366,25 +378,7 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            /*if (mode != null && mode.equals("edit")) {
-                titleEditText.setText(currentTask.getTitle());
-                descriptionEditText.setText(currentTask.getDescription());
-            }*/
-
-            DateTimeTool tool = new DateTimeTool();
-            TaskReminder defaultReminder = applicationLogic.getTaskReminder(4); // 15 minutes.
-
-            /*selectedWhen = Calendar.getInstance();
-            tool.clearTimeFields(selectedWhen);
-            selectedWhenReminder = defaultReminder;
-
-            selectedStart = Calendar.getInstance();
-            tool.clearTimeFields(selectedStart);
-            selectedStartReminder = defaultReminder;
-
-            selectedDeadline = Calendar.getInstance();
-            tool.clearTimeFields(selectedDeadline);
-            selectedDeadlineReminder = defaultReminder;*/
+            //TaskReminder defaultReminder = applicationLogic.getTaskReminder(4); // 15 minutes.
 
             Calendar when = currentTask.getWhen();
             //TaskReminder whenRem = currentTask.getWhenReminder();
@@ -396,11 +390,9 @@ public class EditTaskActivity extends AppCompatActivity {
             //TaskReminder deadlineRem = currentTask.getDeadlineReminder();
 
             if (when == null && start == null && deadline == null) {
-                //selectedDateOption = NO_DATE;
                 selectedDateMode = ApplicationLogic.NO_DATE;
             }
             else if (when == null) {
-                //selectedDateOption = DATE_RANGE;
                 selectedDateMode = ApplicationLogic.DATE_RANGE;
 
                 /*if (start != null) {
@@ -426,7 +418,6 @@ public class EditTaskActivity extends AppCompatActivity {
                 }*/
             }
             else {
-                //selectedDateOption = WHEN;
                 selectedDateMode = ApplicationLogic.SINGLE_DATE;
                 /*selectedWhen = when;
                 whenTime = !currentTask.getIgnoreWhenTime();
@@ -468,6 +459,12 @@ public class EditTaskActivity extends AppCompatActivity {
                 time2Fragment.setOnTimeSetListener(time2Listener);
                 time2Fragment.setOnNoTimeSetListener(noTime2Listener);
             }
+
+            String title = savedInstanceState.getString("title");
+            String description = savedInstanceState.getString("description");
+
+            currentTask.setTitle(title);
+            currentTask.setDescription(description);
 
             // Date mode
             selectedDateMode = savedInstanceState.getInt("selected_date_mode");
@@ -526,18 +523,6 @@ public class EditTaskActivity extends AppCompatActivity {
             selectedDeadline = getSavedCalendar(savedInstanceState, "selected_deadline");
             selectedDeadlineReminder = applicationLogic.getTaskReminder(savedInstanceState.getLong("selected_deadline_reminder_id"));*/
         }
-
-        /*switch(selectedDateMode) {
-            case WHEN:
-                whenRadioButton.setChecked(true);
-                break;
-            case DATE_RANGE:
-                dateRangeRadioButton.setChecked(true);
-                break;
-            default:
-                noDateRadioButton.setChecked(true);
-                break;
-        }*/
 
         TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
         contextTags = applicationLogic.getAllTaskTags(context);
@@ -658,34 +643,38 @@ public class EditTaskActivity extends AppCompatActivity {
         if (currentTask.getId() < 0) setTitle(R.string.new_task);
         else setTitle(R.string.edit_task);
 
-        titleEditText.setText(currentTask.getTitle());
-        descriptionEditText.setText(currentTask.getDescription());
+        title.setText(currentTask.getTitle());
+
+        String desc = currentTask.getDescription();
+
+        if (desc != null && !desc.isEmpty()) description.setText(R.string.edit_description);
+        else description.setText(R.string.add_description);
 
         TextTool tool = new TextTool();
 
         if (selectedDateMode == ApplicationLogic.NO_DATE) {
             dateMode.setText(R.string.no_date);
 
-            rowDateTitle1.setVisibility(View.GONE);
-            rowDateTime1.setVisibility(View.GONE);
-            rowTimeZone1.setVisibility(View.GONE);
+            dateMode1.setVisibility(View.GONE);
+            tableDate1.setVisibility(View.GONE);
+            divider1.setVisibility(View.GONE);
 
-            rowDateTitle2.setVisibility(View.GONE);
-            rowDateTime2.setVisibility(View.GONE);
-            rowTimeZone2.setVisibility(View.GONE);
+            dateMode2.setVisibility(View.GONE);
+            tableDate2.setVisibility(View.GONE);
+            divider2.setVisibility(View.GONE);
         }
         else if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
             Calendar when = currentTask.getWhen();
 
             dateMode.setText(R.string.single_date);
 
-            rowDateTitle1.setVisibility(View.GONE);
-            rowDateTime1.setVisibility(View.VISIBLE);
-            rowTimeZone1.setVisibility(View.VISIBLE);
+            dateMode1.setVisibility(View.GONE);
+            tableDate1.setVisibility(View.VISIBLE);
+            divider1.setVisibility(View.VISIBLE);
 
-            rowDateTitle2.setVisibility(View.GONE);
-            rowDateTime2.setVisibility(View.GONE);
-            rowTimeZone2.setVisibility(View.GONE);
+            dateMode2.setVisibility(View.GONE);
+            tableDate2.setVisibility(View.GONE);
+            divider2.setVisibility(View.GONE);
 
             date1.setText(tool.getFormattedDate(when));
 
@@ -698,18 +687,20 @@ public class EditTaskActivity extends AppCompatActivity {
 
             dateMode.setText(R.string.date_range);
 
-            rowDateTitle1.setVisibility(View.VISIBLE);
-            rowDateTime1.setVisibility(View.VISIBLE);
-            rowTimeZone1.setVisibility(View.VISIBLE);
+            dateMode1.setVisibility(View.VISIBLE);
+            tableDate1.setVisibility(View.VISIBLE);
+            divider1.setVisibility(View.VISIBLE);
 
-            rowDateTitle2.setVisibility(View.VISIBLE);
-            rowDateTime2.setVisibility(View.VISIBLE);
-            rowTimeZone2.setVisibility(View.VISIBLE);
+            dateMode2.setVisibility(View.VISIBLE);
+            tableDate2.setVisibility(View.VISIBLE);
+            divider2.setVisibility(View.VISIBLE);
 
             if (start == null) {
                 date1.setText(R.string.no_date);
                 time1.setText(R.string.no_time);
                 time1.setEnabled(false);
+                timeZone1.setEnabled(false);
+                reminder1.setEnabled(false);
             }
             else {
                 date1.setText(tool.getFormattedDate(start));
@@ -718,12 +709,16 @@ public class EditTaskActivity extends AppCompatActivity {
                 else time1.setText(tool.getFormattedTime(start));
 
                 time1.setEnabled(true);
+                timeZone1.setEnabled(true);
+                reminder1.setEnabled(true);
             }
 
             if (deadline == null) {
                 date2.setText(R.string.no_date);
                 time2.setText(R.string.no_time);
                 time2.setEnabled(false);
+                timeZone2.setEnabled(false);
+                reminder2.setEnabled(false);
             }
             else {
                 date2.setText(tool.getFormattedDate(deadline));
@@ -732,29 +727,17 @@ public class EditTaskActivity extends AppCompatActivity {
                 else time2.setText(tool.getFormattedTime(deadline));
 
                 time2.setEnabled(true);
+                timeZone2.setEnabled(true);
+                reminder2.setEnabled(true);
             }
         }
-
-        /*whenDateButton.setText(tool.getFormattedDate(selectedWhen));
-        whenTimeButton.setText(tool.getFormattedTime(selectedWhen));
-        whenReminderButton.setText(tool.getTaskReminderText(this, selectedWhenReminder));
-
-        startDateButton.setText(tool.getFormattedDate(selectedStart));
-        startTimeButton.setText(tool.getFormattedTime(selectedStart));
-        startReminderButton.setText(tool.getTaskReminderText(this, selectedStartReminder));
-
-        deadlineDateButton.setText(tool.getFormattedDate(selectedDeadline));
-        deadlineTimeButton.setText(tool.getFormattedTime(selectedDeadline));
-        deadlineReminderButton.setText(tool.getTaskReminderText(this, selectedDeadlineReminder));*/
     }
 
     public void onSaveItemSelected(MenuItem item) {
-        //Calendar when = currentTask.getWhen();
+        String title = currentTask.getTitle();
+
         Calendar start = currentTask.getStart();
         Calendar deadline = currentTask.getDeadline();
-
-        //String title = (titleEditText.getText()).toString();
-        String title = currentTask.getTitle();
 
         // Check values
         boolean titleValid = (title.length() > 0);
@@ -771,67 +754,6 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         if (titleValid && datesValid) {
-            // Update Current Task
-            //currentTask.setTitle(title);
-            //currentTask.setDescription((descriptionEditText.getText()).toString());
-
-            /*Calendar when = null;
-            boolean ignoreWhenTime = false;
-            TaskReminder whenReminder = null;
-
-            Calendar start = null;
-            boolean ignoreStartTime = false;
-            TaskReminder startReminder = null;
-
-            Calendar deadline = null;
-            boolean ignoreDeadlineTime = false;
-            TaskReminder deadlineReminder = null;
-
-            DateTimeTool tool = new DateTimeTool();*/
-
-            /*if (whenRadioButton.isChecked()) {
-                when = Calendar.getInstance();
-                when.setTimeInMillis(selectedWhen.getTimeInMillis());
-
-                ignoreWhenTime = !whenTimeCheckBox.isChecked();
-                if (ignoreWhenTime) tool.clearTimeFields(when);
-
-                if (whenReminderCheckBox.isChecked()) whenReminder = selectedWhenReminder;
-            }
-            else if (dateRangeRadioButton.isChecked()) {
-                if (startDateCheckBox.isChecked()) {
-                    start = Calendar.getInstance();
-                    start.setTimeInMillis(selectedStart.getTimeInMillis());
-
-                    ignoreStartTime = !startTimeCheckBox.isChecked();
-                    if (ignoreStartTime) tool.clearTimeFields(start);
-
-                    if (startReminderCheckBox.isChecked()) startReminder = selectedStartReminder;
-                }
-
-                if (deadlineDateCheckBox.isChecked()) {
-                    deadline = Calendar.getInstance();
-                    deadline.setTimeInMillis(selectedDeadline.getTimeInMillis());
-
-                    ignoreDeadlineTime = !deadlineTimeCheckBox.isChecked();
-                    if (ignoreDeadlineTime) tool.clearTimeFields(deadline);
-
-                    if (deadlineReminderCheckBox.isChecked()) deadlineReminder = selectedDeadlineReminder;
-                }
-            }*/
-
-            /*currentTask.setWhen(when);
-            currentTask.setIgnoreWhenTime(ignoreWhenTime);
-            currentTask.setWhenReminder(whenReminder);
-
-            currentTask.setStart(start);
-            currentTask.setIgnoreStartTime(ignoreStartTime);
-            currentTask.setStartReminder(startReminder);
-
-            currentTask.setDeadline(deadline);
-            currentTask.setIgnoreDeadlineTime(ignoreDeadlineTime);
-            currentTask.setDeadlineReminder(deadlineReminder);*/
-
             // Save Current Task
             applicationLogic.saveTask(currentTask);
             (Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT)).show();
@@ -872,7 +794,7 @@ public class EditTaskActivity extends AppCompatActivity {
         EditDescriptionDialogFragment fragment = new EditDescriptionDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString("description", (descriptionEditText.getText()).toString());
+        arguments.putString("description", currentTask.getDescription());
         fragment.setArguments(arguments);
 
         fragment.setOnOkButtonClickedListener(descriptionListener);
@@ -883,7 +805,7 @@ public class EditTaskActivity extends AppCompatActivity {
         DateModeDialogFragment fragment = new DateModeDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putInt("mode", ApplicationLogic.NO_DATE);
+        arguments.putInt("mode", selectedDateMode);
         fragment.setArguments(arguments);
 
         fragment.setOnDateModeSetListener(dateModeListener);

@@ -5,7 +5,7 @@
         <menu>
             <item
                 android:id="@+id/main_nav_context"
-                android:icon="@drawable/context"
+                android:icon="@drawable/world"
                 android:title="" />
 
             <item

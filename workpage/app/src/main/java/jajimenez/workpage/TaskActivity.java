@@ -169,10 +169,10 @@ public class TaskActivity extends AppCompatActivity {
             if (start != null && deadline != null) {
                 date2TableRow.setVisibility(View.VISIBLE);
 
-                date1TitleTextView.setText(getString(R.string.start));
+                date1TitleTextView.setText(getString(R.string.start_2));
                 date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.START));
 
-                date2TitleTextView.setText(getString(R.string.deadline));
+                date2TitleTextView.setText(getString(R.string.deadline_2));
                 date2ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.DEADLINE));
             }
             // Only one is defined.
@@ -180,11 +180,11 @@ public class TaskActivity extends AppCompatActivity {
                 date2TableRow.setVisibility(View.GONE);
 
                 if (start != null) {
-                    date1TitleTextView.setText(getString(R.string.start));
+                    date1TitleTextView.setText(getString(R.string.start_2));
                     date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.START));
                 }
                 else { // deadline != null
-                    date1TitleTextView.setText(getString(R.string.deadline));
+                    date1TitleTextView.setText(getString(R.string.deadline_2));
                     date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.DEADLINE));
                 }
             }

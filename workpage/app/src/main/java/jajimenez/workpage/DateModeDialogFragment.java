@@ -35,7 +35,7 @@ public class DateModeDialogFragment extends DialogFragment {
         Activity activity = getActivity();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.switch_task_context);
+        builder.setTitle(R.string.date_mode);
         builder.setNegativeButton(R.string.cancel, null);
         builder.setSingleChoiceItems(mode_names, selectedItem, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
