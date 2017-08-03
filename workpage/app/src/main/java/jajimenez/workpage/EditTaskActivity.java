@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AutoCompleteTextView;
@@ -24,6 +23,7 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import jajimenez.workpage.data.model.TaskReminder;
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.logic.TextTool;
@@ -65,6 +65,8 @@ public class EditTaskActivity extends AppCompatActivity {
     private DatePickerDialogFragment.OnNoDateSetListener noDate1Listener;
     private TimePickerDialogFragment.OnTimeSetListener time1Listener;
     private TimePickerDialogFragment.OnNoTimeSetListener noTime1Listener;
+    private TaskReminderPickerDialogFragment.OnTaskReminderSetListener reminder1Listener;
+    private TaskReminderPickerDialogFragment.OnTaskReminderSetListener reminder2Listener;
 
     private DatePickerDialogFragment.OnDateSetListener date2Listener;
     private DatePickerDialogFragment.OnNoDateSetListener noDate2Listener;
@@ -132,33 +134,6 @@ public class EditTaskActivity extends AppCompatActivity {
             }
         });
 
-        addTagAutoTextView.addTextChangedListener(new TextWatcher() {
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
-            }
-
-            public void afterTextChanged(Editable s) {
-                String text = (s.toString()).trim();
-                boolean enabled = (text.length() > 0);
-
-                if (enabled) {
-                    // Auxiliar tag object.
-                    TaskTag tag = new TaskTag();
-                    tag.setName(text);
-
-                    List<TaskTag> taskTags = currentTask.getTags();
-
-                    enabled = !taskTags.contains(tag);
-                }
-
-                EditTaskActivity.this.addTagButton.setEnabled(enabled);
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
-            }
-        });
-
         descriptionListener = new EditDescriptionDialogFragment.OnOkButtonClickedListener() {
             public void onOkButtonClicked(String description) {
                 EditTaskActivity.this.currentTask.setDescription(description);
@@ -182,6 +157,8 @@ public class EditTaskActivity extends AppCompatActivity {
                         when.clear(Calendar.MINUTE);
 
                         currentTask.setWhen(when);
+                        currentTask.setStart(null);
+                        currentTask.setDeadline(null);
 
                         break;
                     case ApplicationLogic.DATE_RANGE:
@@ -195,11 +172,20 @@ public class EditTaskActivity extends AppCompatActivity {
                         deadline.setTimeInMillis(start.getTimeInMillis());
                         deadline.add(Calendar.DAY_OF_MONTH, 1);
 
+                        currentTask.setWhen(null);
                         currentTask.setStart(start);
                         currentTask.setDeadline(deadline);
 
                         break;
                 }
+
+                currentTask.setIgnoreWhenTime(false);
+                currentTask.setIgnoreStartTime(false);
+                currentTask.setIgnoreDeadlineTime(false);
+
+                currentTask.setWhenReminder(null);
+                currentTask.setStartReminder(null);
+                currentTask.setDeadlineReminder(null);
 
                 EditTaskActivity.this.updateInterface();
             }
@@ -340,7 +326,6 @@ public class EditTaskActivity extends AppCompatActivity {
                 deadline.set(Calendar.MINUTE, minute);
 
                 EditTaskActivity.this.currentTask.setIgnoreDeadlineTime(false);
-
                 EditTaskActivity.this.updateInterface();
             }
         };
@@ -354,10 +339,56 @@ public class EditTaskActivity extends AppCompatActivity {
                 tool.clearTimeFields(deadline);
 
                 EditTaskActivity.this.currentTask.setIgnoreDeadlineTime(true);
+                EditTaskActivity.this.updateInterface();
+            }
+        };
+
+        reminder1Listener = new TaskReminderPickerDialogFragment.OnTaskReminderSetListener() {
+            public void onTaskReminderSet(TaskReminder reminder) {
+                if (EditTaskActivity.this.selectedDateMode == ApplicationLogic.SINGLE_DATE) {
+                    EditTaskActivity.this.currentTask.setWhenReminder(reminder);
+                }
+                else if (EditTaskActivity.this.selectedDateMode == ApplicationLogic.DATE_RANGE) {
+                    EditTaskActivity.this.currentTask.setStartReminder(reminder);
+                }
 
                 EditTaskActivity.this.updateInterface();
             }
         };
+
+        reminder2Listener = new TaskReminderPickerDialogFragment.OnTaskReminderSetListener() {
+            public void onTaskReminderSet(TaskReminder reminder) {
+                EditTaskActivity.this.currentTask.setDeadlineReminder(reminder);
+                EditTaskActivity.this.updateInterface();
+            }
+        };
+
+        addTagAutoTextView.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Nothing to do.
+            }
+
+            public void afterTextChanged(Editable s) {
+                String text = (s.toString()).trim();
+                boolean enabled = (text.length() > 0);
+
+                if (enabled) {
+                    // Auxiliar tag object.
+                    TaskTag tag = new TaskTag();
+                    tag.setName(text);
+
+                    List<TaskTag> taskTags = currentTask.getTags();
+
+                    enabled = !taskTags.contains(tag);
+                }
+
+                EditTaskActivity.this.addTagButton.setEnabled(enabled);
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Nothing to do.
+            }
+        });
 
         addTagButton.setEnabled(false);
 
@@ -458,6 +489,16 @@ public class EditTaskActivity extends AppCompatActivity {
             if (time2Fragment != null) {
                 time2Fragment.setOnTimeSetListener(time2Listener);
                 time2Fragment.setOnNoTimeSetListener(noTime2Listener);
+            }
+
+            TaskReminderPickerDialogFragment reminder1Fragment = (TaskReminderPickerDialogFragment) (getFragmentManager()).findFragmentByTag("reminder_picker_1");
+            if (reminder1Fragment != null) {
+                reminder1Fragment.setOnTaskReminderSetListener(reminder1Listener);
+            }
+
+            TaskReminderPickerDialogFragment reminder2Fragment = (TaskReminderPickerDialogFragment) (getFragmentManager()).findFragmentByTag("reminder_picker_2");
+            if (reminder2Fragment != null) {
+                reminder2Fragment.setOnTaskReminderSetListener(reminder2Listener);
             }
 
             String title = savedInstanceState.getString("title");
@@ -680,6 +721,9 @@ public class EditTaskActivity extends AppCompatActivity {
 
             if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.no_time);
             else time1.setText(tool.getFormattedTime(when));
+
+            reminder1.setEnabled(true);
+            reminder1.setText(getReminderButtonText(currentTask.getWhenReminder()));
         }
         else {
             Calendar start = currentTask.getStart();
@@ -701,6 +745,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 time1.setEnabled(false);
                 timeZone1.setEnabled(false);
                 reminder1.setEnabled(false);
+                reminder1.setText(getReminderButtonText(null));
             }
             else {
                 date1.setText(tool.getFormattedDate(start));
@@ -711,6 +756,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 time1.setEnabled(true);
                 timeZone1.setEnabled(true);
                 reminder1.setEnabled(true);
+                reminder1.setText(getReminderButtonText(currentTask.getStartReminder()));
             }
 
             if (deadline == null) {
@@ -719,6 +765,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 time2.setEnabled(false);
                 timeZone2.setEnabled(false);
                 reminder2.setEnabled(false);
+                reminder2.setText(getReminderButtonText(null));
             }
             else {
                 date2.setText(tool.getFormattedDate(deadline));
@@ -729,8 +776,26 @@ public class EditTaskActivity extends AppCompatActivity {
                 time2.setEnabled(true);
                 timeZone2.setEnabled(true);
                 reminder2.setEnabled(true);
+                reminder2.setText(getReminderButtonText(currentTask.getDeadlineReminder()));
             }
         }
+    }
+
+    private String getReminderButtonText(TaskReminder reminder) {
+        String text;
+        TextTool tool = new TextTool();
+
+        if (reminder == null) {
+            text = getString(R.string.add_reminder);
+        }
+        else {
+            long minutes = reminder.getMinutes();
+
+            if (minutes == 0) text = getString(R.string.on_time);
+            else text = tool.getTaskReminderText(this, reminder);
+        }
+
+        return text;
     }
 
     public void onSaveItemSelected(MenuItem item) {
@@ -911,6 +976,37 @@ public class EditTaskActivity extends AppCompatActivity {
         fragment.setOnTimeSetListener(time2Listener);
         fragment.setOnNoTimeSetListener(noTime2Listener);
         fragment.show(getFragmentManager(), "time_picker_2");
+    }
+
+    public void onReminder1Clicked(View view) {
+        TaskReminderPickerDialogFragment fragment = new TaskReminderPickerDialogFragment();
+        Bundle arguments = new Bundle();
+        TaskReminder reminder = null;
+
+        if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
+            reminder = currentTask.getWhenReminder();
+        }
+        else if (selectedDateMode == ApplicationLogic.DATE_RANGE) {
+            reminder = currentTask.getStartReminder();
+        }
+
+        if (reminder != null) arguments.putLong("reminder_id", reminder.getId());
+
+        fragment.setArguments(arguments);
+        fragment.setOnTaskReminderSetListener(reminder1Listener);
+        fragment.show(getFragmentManager(), "reminder_picker_1");
+    }
+
+    public void onReminder2Clicked(View view) {
+        TaskReminderPickerDialogFragment fragment = new TaskReminderPickerDialogFragment();
+        Bundle arguments = new Bundle();
+        TaskReminder reminder = currentTask.getDeadlineReminder();
+
+        if (reminder != null) arguments.putLong("reminder_id", reminder.getId());
+
+        fragment.setArguments(arguments);
+        fragment.setOnTaskReminderSetListener(reminder2Listener);
+        fragment.show(getFragmentManager(), "reminder_picker_2");
     }
 
     public void onAddTagButtonClicked(View view) {

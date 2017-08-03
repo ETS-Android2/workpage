@@ -164,7 +164,7 @@
                     android:layout_gravity="center_vertical"
                     android:alpha="0.5"
                     android:src="@drawable/reminder"
-                    android:contentDescription="@string/reminder_2" />
+                    android:contentDescription="@string/reminder" />
 
                 <Button
                     android:id="@+id/edit_task_reminder_1"
@@ -172,7 +172,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
-                    android:textAlignment="textStart" />
+                    android:textAlignment="textStart"
+                    android:onClick="onReminder1Clicked" />
             </TableRow>
         </TableLayout>
 
@@ -259,7 +260,7 @@
                     android:layout_gravity="center_vertical"
                     android:alpha="0.5"
                     android:src="@drawable/reminder"
-                    android:contentDescription="@string/reminder_2" />
+                    android:contentDescription="@string/reminder" />
 
                 <Button
                     android:id="@+id/edit_task_reminder_2"
@@ -267,7 +268,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
-                    android:textAlignment="textStart" />
+                    android:textAlignment="textStart"
+                    android:onClick="onReminder2Clicked" />
             </TableRow>
 
         </TableLayout>

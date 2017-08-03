@@ -46,8 +46,8 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.reminder_2);
-        builder.setNegativeButton(R.string.cancel, null);
+        builder.setTitle(R.string.reminder);
+
         builder.setSingleChoiceItems(taskReminderNames, selectedItem, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // "which" is the index position of the selected item.
@@ -63,6 +63,16 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
                 TaskReminderPickerDialogFragment.this.dismiss();
             }
         });
+
+        builder.setNeutralButton(R.string.no_reminder, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                if (TaskReminderPickerDialogFragment.this.onTaskReminderSetListener != null) {
+                    TaskReminderPickerDialogFragment.this.onTaskReminderSetListener.onTaskReminderSet(null);
+                }
+            }
+        });
+
+        builder.setNegativeButton(R.string.cancel, null);
 
         return builder.create();
     }
