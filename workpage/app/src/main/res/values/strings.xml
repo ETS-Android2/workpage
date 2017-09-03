@@ -157,6 +157,9 @@
         <item quantity="one">Tag deleted</item>
         <item quantity="other">Tags deleted</item>
     </plurals>
+    <string name="time_zone_offset_1">GMT-%1$s:%2$s</string>
+    <string name="time_zone_offset_2">GMT+%1$s:%2$s</string>
+    <string name="time_zone_information">Now is %1$s - %2$s</string>
 
     <string name="new_tag">New tag</string>
     <string name="edit_tag">Edit tag</string>
@@ -170,6 +173,7 @@
     <string name="rgb_default">255</string>
     <string name="accept">Accept</string>
     <string name="tag_saved">Tag saved</string>
+    <string name="country_name">Country name</string>
 
     <string name="export_success">Data exported.</string>
     <string name="export_error">Error trying to export the data.</string>

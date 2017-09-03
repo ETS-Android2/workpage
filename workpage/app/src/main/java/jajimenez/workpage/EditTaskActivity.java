@@ -3,6 +3,7 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
@@ -58,8 +59,9 @@ public class EditTaskActivity extends AppCompatActivity {
     private LinearLayout addedTagsLinearLayout;
 
     private EditDescriptionDialogFragment.OnOkButtonClickedListener descriptionListener;
-
     private DateModeDialogFragment.OnDateModeSetListener dateModeListener;
+    private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener1;
+    private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener2;
 
     private DatePickerDialogFragment.OnDateSetListener date1Listener;
     private DatePickerDialogFragment.OnNoDateSetListener noDate1Listener;
@@ -187,6 +189,24 @@ public class EditTaskActivity extends AppCompatActivity {
                 currentTask.setStartReminder(null);
                 currentTask.setDeadlineReminder(null);
 
+                EditTaskActivity.this.updateInterface();
+            }
+        };
+
+        timeZoneSelectedListener1 = new TimeZonePickerDialogFragment.OnTimeZoneSelectedListener() {
+            @Override
+            public void onTimeZoneSelected(TimeZone t) {
+                if (selectedDateMode == ApplicationLogic.SINGLE_DATE) (currentTask.getWhen()).setTimeZone(t);
+                else (currentTask.getStart()).setTimeZone(t);
+
+                EditTaskActivity.this.updateInterface();
+            }
+        };
+
+        timeZoneSelectedListener2 = new TimeZonePickerDialogFragment.OnTimeZoneSelectedListener() {
+            @Override
+            public void onTimeZoneSelected(TimeZone t) {
+                (currentTask.getDeadline()).setTimeZone(t);
                 EditTaskActivity.this.updateInterface();
             }
         };
@@ -420,44 +440,9 @@ public class EditTaskActivity extends AppCompatActivity {
             Calendar deadline = currentTask.getDeadline();
             //TaskReminder deadlineRem = currentTask.getDeadlineReminder();
 
-            if (when == null && start == null && deadline == null) {
-                selectedDateMode = ApplicationLogic.NO_DATE;
-            }
-            else if (when == null) {
-                selectedDateMode = ApplicationLogic.DATE_RANGE;
-
-                /*if (start != null) {
-                    selectedStart = start;
-                    startDate = true;
-                    startTime = !currentTask.getIgnoreStartTime();
-
-                    if (startRem != null) {
-                        startReminder = true;
-                        selectedStartReminder = startRem;
-                    }
-                }
-
-                if (deadline != null) {
-                    selectedDeadline = deadline;
-                    deadlineDate = true;
-                    deadlineTime = !currentTask.getIgnoreDeadlineTime();
-
-                    if (deadlineRem != null) {
-                        deadlineReminder = true;
-                        selectedDeadlineReminder = deadlineRem;
-                    }
-                }*/
-            }
-            else {
-                selectedDateMode = ApplicationLogic.SINGLE_DATE;
-                /*selectedWhen = when;
-                whenTime = !currentTask.getIgnoreWhenTime();
-
-                if (whenRem != null) {
-                    whenReminder = true;
-                    selectedWhenReminder = whenRem;
-                }*/
-            }
+            if (when == null && start == null && deadline == null) selectedDateMode = ApplicationLogic.NO_DATE;
+            else if (when == null) selectedDateMode = ApplicationLogic.DATE_RANGE;
+            else selectedDateMode = ApplicationLogic.SINGLE_DATE;
         }
         else {
             // Dialog listeners
@@ -489,6 +474,16 @@ public class EditTaskActivity extends AppCompatActivity {
             if (time2Fragment != null) {
                 time2Fragment.setOnTimeSetListener(time2Listener);
                 time2Fragment.setOnNoTimeSetListener(noTime2Listener);
+            }
+
+            TimeZonePickerDialogFragment timeZone1Fragment = (TimeZonePickerDialogFragment) (getFragmentManager()).findFragmentByTag("time_zone_picker_1");
+            if (timeZone1Fragment != null) {
+                timeZone1Fragment.setOnTimeZoneSelectedListener(timeZoneSelectedListener1);
+            }
+
+            TimeZonePickerDialogFragment timeZone2Fragment = (TimeZonePickerDialogFragment) (getFragmentManager()).findFragmentByTag("time_zone_picker_2");
+            if (timeZone2Fragment != null) {
+                timeZone2Fragment.setOnTimeZoneSelectedListener(timeZoneSelectedListener2);
             }
 
             TaskReminderPickerDialogFragment reminder1Fragment = (TaskReminderPickerDialogFragment) (getFragmentManager()).findFragmentByTag("reminder_picker_1");
@@ -544,25 +539,6 @@ public class EditTaskActivity extends AppCompatActivity {
                 currentTask.setDeadline(calDeadline);
                 currentTask.setIgnoreDeadlineTime(ignoreDeadlineTime);
             }
-
-            /*whenReminder = savedInstanceState.getBoolean("when_reminder");
-            startDate = savedInstanceState.getBoolean("start_date");
-            startTime = savedInstanceState.getBoolean("start_time");
-            startReminder = savedInstanceState.getBoolean("start_reminder");
-            deadlineDate = savedInstanceState.getBoolean("deadline_date");
-            deadlineTime = savedInstanceState.getBoolean("deadline_time");
-            deadlineReminder = savedInstanceState.getBoolean("deadline_reminder");*/
-
-            //long whenTime = savedInstanceState.getLong("when",-1);
-
-            /*selectedWhen = getSavedCalendar(savedInstanceState, "selected_when");
-            selectedWhenReminder = applicationLogic.getTaskReminder(savedInstanceState.getLong("selected_when_reminder_id"));
-
-            selectedStart = getSavedCalendar(savedInstanceState, "selected_start");
-            selectedStartReminder = applicationLogic.getTaskReminder(savedInstanceState.getLong("selected_start_reminder_id"));
-
-            selectedDeadline = getSavedCalendar(savedInstanceState, "selected_deadline");
-            selectedDeadlineReminder = applicationLogic.getTaskReminder(savedInstanceState.getLong("selected_deadline_reminder_id"));*/
         }
 
         TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
@@ -692,6 +668,7 @@ public class EditTaskActivity extends AppCompatActivity {
         else description.setText(R.string.add_description);
 
         TextTool tool = new TextTool();
+        Calendar now;
 
         if (selectedDateMode == ApplicationLogic.NO_DATE) {
             dateMode.setText(R.string.no_date);
@@ -722,6 +699,11 @@ public class EditTaskActivity extends AppCompatActivity {
             if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.no_time);
             else time1.setText(tool.getFormattedTime(when));
 
+            TimeZone whenTimeZone = when.getTimeZone();
+            now = Calendar.getInstance();
+            boolean whenDaylight = whenTimeZone.inDaylightTime(now.getTime());
+            timeZone1.setText((when.getTimeZone()).getDisplayName(whenDaylight, TimeZone.LONG));
+
             reminder1.setEnabled(true);
             reminder1.setText(getReminderButtonText(currentTask.getWhenReminder()));
         }
@@ -744,6 +726,12 @@ public class EditTaskActivity extends AppCompatActivity {
                 time1.setText(R.string.no_time);
                 time1.setEnabled(false);
                 timeZone1.setEnabled(false);
+
+                TimeZone localTimeZone = TimeZone.getDefault();
+                now = Calendar.getInstance();
+                boolean localDaylight = localTimeZone.inDaylightTime(now.getTime());
+                timeZone1.setText(localTimeZone.getDisplayName(localDaylight, TimeZone.LONG));
+
                 reminder1.setEnabled(false);
                 reminder1.setText(getReminderButtonText(null));
             }
@@ -755,6 +743,12 @@ public class EditTaskActivity extends AppCompatActivity {
 
                 time1.setEnabled(true);
                 timeZone1.setEnabled(true);
+
+                TimeZone startTimeZone = start.getTimeZone();
+                now = Calendar.getInstance();
+                boolean startDaylight = startTimeZone.inDaylightTime(now.getTime());
+                timeZone1.setText((start.getTimeZone()).getDisplayName(startDaylight, TimeZone.LONG));
+
                 reminder1.setEnabled(true);
                 reminder1.setText(getReminderButtonText(currentTask.getStartReminder()));
             }
@@ -764,6 +758,12 @@ public class EditTaskActivity extends AppCompatActivity {
                 time2.setText(R.string.no_time);
                 time2.setEnabled(false);
                 timeZone2.setEnabled(false);
+
+                TimeZone localTimeZone = TimeZone.getDefault();
+                now = Calendar.getInstance();
+                boolean localDaylight = localTimeZone.inDaylightTime(now.getTime());
+                timeZone2.setText(localTimeZone.getDisplayName(localDaylight, TimeZone.LONG));
+
                 reminder2.setEnabled(false);
                 reminder2.setText(getReminderButtonText(null));
             }
@@ -775,6 +775,12 @@ public class EditTaskActivity extends AppCompatActivity {
 
                 time2.setEnabled(true);
                 timeZone2.setEnabled(true);
+
+                TimeZone deadlineTimeZone = deadline.getTimeZone();
+                now = Calendar.getInstance();
+                boolean deadlineDaylight = deadlineTimeZone.inDaylightTime(now.getTime());
+                timeZone2.setText((deadline.getTimeZone()).getDisplayName(deadlineDaylight, TimeZone.LONG));
+
                 reminder2.setEnabled(true);
                 reminder2.setText(getReminderButtonText(currentTask.getDeadlineReminder()));
             }
@@ -933,6 +939,13 @@ public class EditTaskActivity extends AppCompatActivity {
         fragment.show(getFragmentManager(), "time_picker_1");
     }
 
+    public void onTimeZone1Clicked(View view) {
+        TimeZonePickerDialogFragment fragment = new TimeZonePickerDialogFragment();
+
+        fragment.setOnTimeZoneSelectedListener(timeZoneSelectedListener1);
+        fragment.show(getFragmentManager(), "time_zone_picker_1");
+    }
+
     public void onDate2Clicked(View view) {
         DatePickerDialogFragment fragment = new DatePickerDialogFragment();
 
@@ -976,6 +989,13 @@ public class EditTaskActivity extends AppCompatActivity {
         fragment.setOnTimeSetListener(time2Listener);
         fragment.setOnNoTimeSetListener(noTime2Listener);
         fragment.show(getFragmentManager(), "time_picker_2");
+    }
+
+    public void onTimeZone2Clicked(View view) {
+        TimeZonePickerDialogFragment fragment = new TimeZonePickerDialogFragment();
+
+        fragment.setOnTimeZoneSelectedListener(timeZoneSelectedListener2);
+        fragment.show(getFragmentManager(), "time_zone_picker_2");
     }
 
     public void onReminder1Clicked(View view) {

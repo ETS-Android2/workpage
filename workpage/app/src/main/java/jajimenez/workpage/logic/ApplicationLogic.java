@@ -1,7 +1,9 @@
 package jajimenez.workpage.logic;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
 import java.util.Calendar;
@@ -11,6 +13,7 @@ import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.TimeZone;
 
 import android.app.AlarmManager;
 import android.app.NotificationManager;
@@ -24,6 +27,7 @@ import android.preference.PreferenceManager;
 
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
+import jajimenez.workpage.data.model.Country;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
@@ -343,6 +347,56 @@ public class ApplicationLogic {
         dataManager.deleteTasks(tasks);
     }
 
+    public List<Country> searchCountries(String name) {
+        List<Country> countries = dataManager.getAllCountries();
+        List<Country> result = new ArrayList<Country>(countries.size());
+
+        for (Country c : countries) {
+            String name1 = (c.getName()).toLowerCase();
+            String name2 = (name.trim()).toLowerCase();
+
+            if (name1.contains(name2)) result.add(c);
+        }
+
+        return result;
+    }
+
+    public Country getCountry(TimeZone timeZone) {
+        return dataManager.getCountry(timeZone);
+    }
+
+    public List<TimeZone> getTimeZones(Country country) {
+        List<String> codes = dataManager.getTimeZoneCodes(country);
+        List<TimeZone> timeZones = new ArrayList<TimeZone>(codes.size());
+
+        for (String c : codes) {
+            TimeZone t = TimeZone.getTimeZone(c);
+
+            if (!containsTimeZone(timeZones, t)) timeZones.add(t);
+        }
+
+        return timeZones;
+    }
+
+    private boolean containsTimeZone(List<TimeZone> list, TimeZone timeZone) {
+        boolean found = false;
+        int count = list.size();
+
+        TextTool tool = new TextTool();
+        Calendar now = Calendar.getInstance();
+
+        for (int i = 0; i < count && !found; i++) {
+            TimeZone t = list.get(i);
+
+            String name1 = tool.getTimeZoneName(t, now);
+            String name2 = tool.getTimeZoneName(timeZone, now);
+
+            if (name1.equals(name2)) found = true;
+        }
+
+        return found;
+    }
+
     public static String getProposedExportDataFileName() {
         Calendar calendar = Calendar.getInstance();
 
@@ -475,9 +529,9 @@ public class ApplicationLogic {
             String key = entry.getKey();
 
             if (!key.equals("reminder_type")
-                    && !key.equals("notifications_sound")
-                    && !key.equals("notifications_vibrate")
-                    && !key.equals("notifications_light")) {
+                && !key.equals("notifications_sound")
+                && !key.equals("notifications_vibrate")
+                && !key.equals("notifications_light")) {
 
                 editor.remove(key);
             }

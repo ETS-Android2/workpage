@@ -11,14 +11,17 @@ public class Task extends Entity {
 
     private Calendar when;
     private boolean ignoreWhenTime;
+    //private String whenTimeZoneCode;
     private TaskReminder whenReminder;
 
     private Calendar start;
     private boolean ignoreStartTime;
+    //private String startTimeZoneCode;
     private TaskReminder startReminder;
 
     private Calendar deadline;
     private boolean ignoreDeadlineTime;
+    //private String deadlineTimeZoneCode;
     private TaskReminder deadlineReminder;
 
     private boolean done;
@@ -33,14 +36,17 @@ public class Task extends Entity {
 
         when = null;
         ignoreWhenTime = false;
+        //whenTimeZoneCode = null;
         whenReminder = null;
 
         start = null;
         ignoreStartTime = false;
+        //startTimeZoneCode = null;
         startReminder = null;
 
         deadline = null;
         ignoreDeadlineTime = false;
+        //deadlineTimeZoneCode = null;
         deadlineReminder = null;
 
         done = false;
@@ -49,9 +55,9 @@ public class Task extends Entity {
 
     public Task(long contextId,
         String title, String description,
-        Calendar when, boolean ignoreWhenTime, TaskReminder whenReminder,
-        Calendar start, boolean ignoreStartTime, TaskReminder startReminder,
-        Calendar deadline, boolean ignoreDeadlineTime, TaskReminder deadlineReminder,
+        Calendar when, boolean ignoreWhenTime, /*String whenTimeZoneCode,*/ TaskReminder whenReminder,
+        Calendar start, boolean ignoreStartTime, /*String startTimeZoneCode,*/ TaskReminder startReminder,
+        Calendar deadline, boolean ignoreDeadlineTime, /*String deadlineTimeZoneCode,*/ TaskReminder deadlineReminder,
         boolean done, List<TaskTag> tags) {
 
         super();
@@ -62,14 +68,17 @@ public class Task extends Entity {
 
         this.when = when;
         this.ignoreWhenTime = ignoreWhenTime;
+        //this.whenTimeZoneCode = whenTimeZoneCode;
         this.whenReminder = whenReminder;
 
         this.start = start;
         this.ignoreStartTime = ignoreStartTime;
+        //this.startTimeZoneCode = startTimeZoneCode;
         this.startReminder = startReminder;
 
         this.deadline = deadline;
         this.ignoreDeadlineTime = ignoreDeadlineTime;
+        //this.deadlineTimeZoneCode = deadlineTimeZoneCode;
         this.deadlineReminder = deadlineReminder;
 
         this.done = done;
@@ -78,9 +87,9 @@ public class Task extends Entity {
 
     public Task(long id, long contextId,
         String title, String description,
-        Calendar when, boolean ignoreWhenTime, TaskReminder whenReminder,
-        Calendar start, boolean ignoreStartTime, TaskReminder startReminder,
-        Calendar deadline, boolean ignoreDeadlineTime, TaskReminder deadlineReminder,
+        Calendar when, boolean ignoreWhenTime, /*String whenTimeZoneCode,*/ TaskReminder whenReminder,
+        Calendar start, boolean ignoreStartTime, /*String startTimeZoneCode,*/ TaskReminder startReminder,
+        Calendar deadline, boolean ignoreDeadlineTime, /*String deadlineTimeZoneCode,*/ TaskReminder deadlineReminder,
         boolean done, List<TaskTag> tags) {
 
         super(id);
@@ -91,14 +100,17 @@ public class Task extends Entity {
 
         this.when = when;
         this.ignoreWhenTime = ignoreWhenTime;
+        //this.whenTimeZoneCode = whenTimeZoneCode;
         this.whenReminder = whenReminder;
 
         this.start = start;
         this.ignoreStartTime = ignoreStartTime;
+        //this.startTimeZoneCode = startTimeZoneCode;
         this.startReminder = startReminder;
 
         this.deadline = deadline;
         this.ignoreDeadlineTime = ignoreDeadlineTime;
+        //this.deadlineTimeZoneCode = deadlineTimeZoneCode;
         this.deadlineReminder = deadlineReminder;
 
         this.done = done;
@@ -125,6 +137,10 @@ public class Task extends Entity {
         return ignoreWhenTime;
     }
 
+    /*public String getWhenTimeZoneCode() {
+        return whenTimeZoneCode;
+    }*/
+
     public TaskReminder getWhenReminder() {
         return whenReminder;
     }
@@ -137,6 +153,10 @@ public class Task extends Entity {
         return ignoreStartTime;
     }
 
+    /*public String getStartTimeZoneCode() {
+        return startTimeZoneCode;
+    }*/
+
     public TaskReminder getStartReminder() {
         return startReminder;
     }
@@ -148,6 +168,10 @@ public class Task extends Entity {
     public boolean getIgnoreDeadlineTime() {
         return ignoreDeadlineTime;
     }
+
+    /*public String getDeadlineTimeZoneCode() {
+        return deadlineTimeZoneCode;
+    }*/
 
     public TaskReminder getDeadlineReminder() {
         return deadlineReminder;
@@ -181,6 +205,10 @@ public class Task extends Entity {
         this.ignoreWhenTime = ignore;
     }
 
+    /*public void setWhenTimeZoneCode(String code) {
+        this.whenTimeZoneCode = code;
+    }*/
+
     public void setWhenReminder(TaskReminder reminder) {
         this.whenReminder = reminder;
     }
@@ -193,6 +221,10 @@ public class Task extends Entity {
         this.ignoreStartTime = ignore;
     }
 
+    /*public void setStartTimeZoneCode(String code) {
+        this.startTimeZoneCode = code;
+    }*/
+
     public void setStartReminder(TaskReminder reminder) {
         this.startReminder = reminder;
     }
@@ -204,6 +236,10 @@ public class Task extends Entity {
     public void setIgnoreDeadlineTime(boolean ignore) {
         this.ignoreDeadlineTime = ignore;
     }
+
+    /*public void setDeadlineTimeZoneCode(String code) {
+        this.deadlineTimeZoneCode = code;
+    }*/
 
     public void setDeadlineReminder(TaskReminder reminder) {
         this.deadlineReminder = reminder;

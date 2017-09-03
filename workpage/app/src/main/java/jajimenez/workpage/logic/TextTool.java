@@ -3,6 +3,7 @@ package jajimenez.workpage.logic;
 import java.util.Calendar;
 import java.util.List;
 import java.text.DateFormat;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -21,6 +22,8 @@ public class TextTool {
         String date = "";
 
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        dateFormat.setTimeZone(calendar.getTimeZone());
+
         if (calendar != null) date = dateFormat.format(calendar.getTime());
 
         return date;
@@ -30,6 +33,8 @@ public class TextTool {
         String time = "";
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+        dateFormat.setTimeZone(calendar.getTimeZone());
+
         if (calendar != null) time = dateFormat.format(calendar.getTime());
 
         return time;
@@ -146,5 +151,37 @@ public class TextTool {
         }
 
         return text;
+    }
+
+    public String getTimeZoneName(TimeZone timeZone, Calendar date) {
+        boolean daylight = timeZone.inDaylightTime(date.getTime());
+        return timeZone.getDisplayName(daylight, TimeZone.LONG);
+    }
+
+    public String getFormattedOffset(Context context, TimeZone timeZone, Calendar date) {
+        long totalMilliseconds = timeZone.getOffset(date.getTimeInMillis());
+
+        long hours = totalMilliseconds / (1000 * 60 * 60);
+        long minutes = totalMilliseconds % (1000 * 60 * 60);
+
+        StringBuilder formattedOffsetMinutes = new StringBuilder(String.valueOf(minutes));
+        if (formattedOffsetMinutes.length() == 1) formattedOffsetMinutes.insert(0, "0");
+
+        StringBuilder formattedOffsetHours = new StringBuilder(String.valueOf(hours));
+        if (formattedOffsetHours.length() == 1) formattedOffsetHours.insert(0, "0");
+
+        int resource;
+
+        if (totalMilliseconds < 0) resource = R.string.time_zone_offset_1;
+        else resource = R.string.time_zone_offset_2;
+
+        return context.getString(resource, formattedOffsetHours, formattedOffsetMinutes);
+    }
+
+    public String getTimeZoneInformation(Context context, Calendar date) {
+        String formattedDate = getFormattedDate(date);
+        String formattedTime = getFormattedTime(date);
+
+        return context.getString(R.string.time_zone_information, formattedDate, formattedTime);
     }
 }

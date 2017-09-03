@@ -153,7 +153,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
-                    android:textAlignment="textStart" />
+                    android:textAlignment="textStart"
+                    android:onClick="onTimeZone1Clicked" />
             </TableRow>
 
             <TableRow>
@@ -241,7 +242,8 @@
                     android:layout_gravity="center_vertical"
                     android:alpha="0.5"
                     android:src="@drawable/world"
-                    android:contentDescription="@string/time_zone" />
+                    android:contentDescription="@string/time_zone"
+                    android:onClick="onTimeZone2Clicked" />
 
                 <Button
                     android:id="@+id/edit_task_time_zone_2"
