@@ -347,22 +347,12 @@ public class ApplicationLogic {
         dataManager.deleteTasks(tasks);
     }
 
-    public List<Country> searchCountries(String name) {
-        List<Country> countries = dataManager.getAllCountries();
-        List<Country> result = new ArrayList<Country>(countries.size());
-
-        for (Country c : countries) {
-            String name1 = (c.getName()).toLowerCase();
-            String name2 = (name.trim()).toLowerCase();
-
-            if (name1.contains(name2)) result.add(c);
-        }
-
-        return result;
+    public List<Country> getAllCountries() {
+        return dataManager.getAllCountries();
     }
 
-    public Country getCountry(TimeZone timeZone) {
-        return dataManager.getCountry(timeZone);
+    public Country getCountry(long id) {
+        return dataManager.getCountry(id);
     }
 
     public List<TimeZone> getTimeZones(Country country) {

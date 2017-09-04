@@ -34,6 +34,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     private ListView list;
 
     private int mode;
+    private List<Country> countries;
     private Country selectedCountry;
 
     private OnTimeZoneSelectedListener onTimeZoneSelectedListener;
@@ -48,11 +49,18 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
+        countries = applicationLogic.getAllCountries();
 
-        if (savedInstanceState == null) mode = COUNTRY;
-        else mode = savedInstanceState.getInt("mode", COUNTRY);
+        if (savedInstanceState == null) {
+            mode = COUNTRY;
+            selectedCountry = null;
+        }
+        else {
+            mode = savedInstanceState.getInt("mode", COUNTRY);
 
-        selectedCountry = null;
+            long selectedCountryCode = savedInstanceState.getLong("selected_country", 1);
+            selectedCountry = applicationLogic.getCountry(selectedCountryCode);
+        }
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.time_zone_picker, null);
@@ -63,6 +71,8 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
+        builder.setTitle(R.string.select_time_zone);
+        builder.setNegativeButton(R.string.cancel, null);
 
         countryEditText.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -125,7 +135,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
                 countries = new ArrayList<Country>();
             }
             else {
-                countries = applicationLogic.searchCountries(countryName);
+                countries = searchCountries(countryName);
                 Collections.sort(countries, new CountryComparator());
             }
             
@@ -144,7 +154,22 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putInt("mode", mode);
+        outState.putLong("selected_country", selectedCountry.getId());
+    }
+
+    private List<Country> searchCountries(String name) {
+        List<Country> result = new ArrayList<Country>(countries.size());
+
+        for (Country c : countries) {
+            String name1 = (c.getName()).toLowerCase();
+            String name2 = (name.trim()).toLowerCase();
+
+            if (name1.contains(name2)) result.add(c);
+        }
+
+        return result;
     }
 
     public void setOnTimeZoneSelectedListener(OnTimeZoneSelectedListener listener) {

@@ -2309,22 +2309,17 @@ public class DataManager extends SQLiteOpenHelper {
         return countries;
     }
 
-    public Country getCountry(TimeZone timeZone) {
-        if (timeZone == null) throw new NullPointerException("Time Zone is null.");
-
+    public Country getCountry(long id) {
         Country country = null;
         SQLiteDatabase db = null;
-
-        String timeZoneCode = timeZone.getID();
 
         try {
             db = getReadableDatabase();
 
-            Cursor cursor = db.rawQuery("SELECT countries.id, countries.code " +
-                "FROM countries INNER JOIN time_zones " +
-                "ON countries.id = time_zones.country_id " +
-                "WHERE time_zones.code = ?",
-                    new String[] { String.valueOf(timeZoneCode) });
+            Cursor cursor = db.rawQuery("SELECT id, code " +
+                "FROM countries " +
+                "WHERE id = ?",
+                    new String[] { String.valueOf(id) });
 
             if (cursor.moveToFirst()) {
                 long countryId = cursor.getLong(0);

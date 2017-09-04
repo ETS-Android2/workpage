@@ -157,6 +157,8 @@
         <item quantity="one">Tag deleted</item>
         <item quantity="other">Tags deleted</item>
     </plurals>
+    <string name="select_time_zone">Select time zone</string>
+    <string name="clear">Clear</string>
     <string name="time_zone_offset_1">GMT-%1$s:%2$s</string>
     <string name="time_zone_offset_2">GMT+%1$s:%2$s</string>
     <string name="time_zone_information">Now is %1$s - %2$s</string>

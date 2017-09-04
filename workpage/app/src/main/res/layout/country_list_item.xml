@@ -8,5 +8,5 @@
     android:paddingBottom="10dp"
     android:orientation="horizontal"
     android:background="@drawable/list_item"
-    android:textSize="16sp">
+    android:textSize="18sp">
 </TextView>
