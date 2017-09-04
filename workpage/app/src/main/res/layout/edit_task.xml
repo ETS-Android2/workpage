@@ -27,60 +27,29 @@
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <TableLayout
+        <Button android:id="@+id/edit_task_description"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1">
-
-            <TableRow>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/description"
-                    android:contentDescription="@string/description" />
-
-                <Button
-                    android:id="@+id/edit_task_description"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textStart"
-                    android:onClick="onEditDescriptionClicked" />
-            </TableRow>
-        </TableLayout>
+            android:textAlignment="textStart"
+            android:drawableStart="@drawable/description"
+            android:drawablePadding="10dp"
+            android:onClick="onEditDescriptionClicked" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <TableLayout
+        <Button
+            android:id="@+id/edit_task_date_mode"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1">
-
-            <TableRow>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/date_mode"
-                    android:contentDescription="@string/date_mode" />
-
-                <Button
-                    android:id="@+id/edit_task_date_mode"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textStart"
-                    android:onClick="onDateModeClicked" />
-            </TableRow>
-        </TableLayout>
+            android:textAlignment="textStart"
+            android:drawableStart="@drawable/date_mode"
+            android:drawablePadding="10dp"
+            android:onClick="onDateModeClicked" />
 
         <View
             android:layout_width="match_parent"
@@ -100,53 +69,30 @@
             android:id="@+id/edit_task_table_date_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1">
+            android:stretchColumns="0">
 
             <TableRow>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/date"
-                    android:contentDescription="@string/date" />
-
                 <Button
                     android:id="@+id/edit_task_date_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
+                    android:drawableStart="@drawable/date"
+                    android:drawablePadding="10dp"
                     android:onClick="onDate1Clicked" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/time"
-                    android:contentDescription="@string/time" />
 
                 <Button
                     android:id="@+id/edit_task_time_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/time"
+                    android:drawablePadding="10dp"
                     android:onClick="onTime1Clicked" />
             </TableRow>
 
             <TableRow android:id="@+id/edit_task_row_time_zone_1">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/world"
-                    android:contentDescription="@string/date" />
-
                 <Button
                     android:id="@+id/edit_task_time_zone_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
@@ -154,26 +100,21 @@
                     android:layout_height="wrap_content"
                     android:layout_span="3"
                     android:textAlignment="textStart"
+                    android:drawableStart="@drawable/world_2"
+                    android:drawablePadding="10dp"
                     android:onClick="onTimeZone1Clicked" />
             </TableRow>
 
             <TableRow>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/reminder"
-                    android:contentDescription="@string/reminder" />
-
                 <Button
                     android:id="@+id/edit_task_reminder_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_span="3"
+                    android:layout_span="2"
                     android:textAlignment="textStart"
+                    android:drawableStart="@drawable/reminder"
+                    android:drawablePadding="10dp"
                     android:onClick="onReminder1Clicked" />
             </TableRow>
         </TableLayout>
@@ -197,79 +138,50 @@
             android:id="@+id/edit_task_table_date_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1">
+            android:stretchColumns="0">
 
             <TableRow>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/date"
-                    android:contentDescription="@string/date" />
-
                 <Button
                     android:id="@+id/edit_task_date_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
+                    android:drawableStart="@drawable/date"
+                    android:drawablePadding="10dp"
                     android:onClick="onDate2Clicked" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/time"
-                    android:contentDescription="@string/time" />
 
                 <Button
                     android:id="@+id/edit_task_time_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/time"
+                    android:drawablePadding="10dp"
                     android:onClick="onTime2Clicked" />
             </TableRow>
 
             <TableRow android:id="@+id/edit_task_row_time_zone_2">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/world"
-                    android:contentDescription="@string/time_zone"
-                    android:onClick="onTimeZone2Clicked" />
-
                 <Button
                     android:id="@+id/edit_task_time_zone_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_span="3"
+                    android:layout_span="2"
+                    android:drawableStart="@drawable/world_2"
+                    android:drawablePadding="10dp"
                     android:textAlignment="textStart" />
             </TableRow>
 
             <TableRow>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/reminder"
-                    android:contentDescription="@string/reminder" />
-
                 <Button
                     android:id="@+id/edit_task_reminder_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
+                    android:drawableStart="@drawable/reminder"
+                    android:drawablePadding="10dp"
                     android:textAlignment="textStart"
                     android:onClick="onReminder2Clicked" />
             </TableRow>
