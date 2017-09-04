@@ -210,7 +210,7 @@ public class ApplicationLogic {
         List<Task> tasks = dataManager.getTasksByTags(context, true, includeTasksWithNoTag, tags);
 
         // We sort the tasks inversely.
-        Collections.sort(tasks, new TaskComparator()); 
+        Collections.sort(tasks, new TaskComparator());
         Collections.reverse(tasks);
 
         return tasks;

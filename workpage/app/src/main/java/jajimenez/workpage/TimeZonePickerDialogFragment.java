@@ -15,11 +15,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
 import jajimenez.workpage.data.model.Country;
 import jajimenez.workpage.logic.ApplicationLogic;
+import jajimenez.workpage.logic.CountryComparator;
+import jajimenez.workpage.logic.TimeZoneComparator;
 
 public class TimeZonePickerDialogFragment extends DialogFragment {
     public static final int COUNTRY = 0;
@@ -118,14 +121,22 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         if (mode == COUNTRY) {
             List<Country> countries;
             
-            if (countryName.isEmpty()) countries = new ArrayList<Country>();
-            else countries = applicationLogic.searchCountries(countryName);
+            if (countryName.isEmpty()) {
+                countries = new ArrayList<Country>();
+            }
+            else {
+                countries = applicationLogic.searchCountries(countryName);
+                Collections.sort(countries, new CountryComparator());
+            }
             
             CountryAdapter adapter = new CountryAdapter(activity, R.layout.country_list_item, countries);
             list.setAdapter(adapter);
         }
         else {
-            TimeZoneAdapter adapter = new TimeZoneAdapter(activity, R.layout.time_zone_list_item, applicationLogic.getTimeZones(selectedCountry));
+            List<TimeZone> timeZones = applicationLogic.getTimeZones(selectedCountry);
+            Collections.sort(timeZones, new TimeZoneComparator());
+
+            TimeZoneAdapter adapter = new TimeZoneAdapter(activity, R.layout.time_zone_list_item, timeZones);
             list.setAdapter(adapter);
         }
     }

@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import jajimenez.workpage.data.model.Country;
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
 
