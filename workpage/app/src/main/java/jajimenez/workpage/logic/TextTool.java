@@ -161,8 +161,12 @@ public class TextTool {
     public String getFormattedOffset(Context context, TimeZone timeZone, Calendar date) {
         long totalMilliseconds = timeZone.getOffset(date.getTimeInMillis());
 
-        long hours = totalMilliseconds / (1000 * 60 * 60);
-        long minutes = totalMilliseconds % (1000 * 60 * 60);
+        long millisecondsIn1hour = (1000 * 60 * 60);
+        long millisecondsIn1Minute = (1000 * 60);
+
+        long hours = totalMilliseconds / millisecondsIn1hour; // Number of hours
+        long rest = totalMilliseconds % millisecondsIn1hour; // The rest, in milliseconds
+        long minutes = rest / millisecondsIn1Minute; // The rest, in minutes
 
         StringBuilder formattedOffsetMinutes = new StringBuilder(String.valueOf(minutes));
         if (formattedOffsetMinutes.length() == 1) formattedOffsetMinutes.insert(0, "0");
