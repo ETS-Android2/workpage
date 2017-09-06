@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AutoCompleteTextView;
@@ -42,7 +43,9 @@ public class EditTaskActivity extends AppCompatActivity {
     private TableLayout tableDate1;
     private Button date1;
     private Button time1;
+    private TableRow timeZoneRow1;
     private Button timeZone1;
+    private TableRow reminderRow1;
     private Button reminder1;
     private View divider1;
 
@@ -50,7 +53,9 @@ public class EditTaskActivity extends AppCompatActivity {
     private TableLayout tableDate2;
     private Button date2;
     private Button time2;
+    private TableRow timeZoneRow2;
     private Button timeZone2;
+    private TableRow reminderRow2;
     private Button reminder2;
     private View divider2;
 
@@ -105,7 +110,9 @@ public class EditTaskActivity extends AppCompatActivity {
         tableDate1 = (TableLayout) findViewById(R.id.edit_task_table_date_1);
         date1 = (Button) findViewById(R.id.edit_task_date_1);
         time1 = (Button) findViewById(R.id.edit_task_time_1);
+        timeZoneRow1 = (TableRow) findViewById(R.id.edit_task_row_time_zone_1);
         timeZone1 = (Button) findViewById(R.id.edit_task_time_zone_1);
+        reminderRow1 = (TableRow) findViewById(R.id.edit_task_row_reminder_1);
         reminder1 = (Button) findViewById(R.id.edit_task_reminder_1);
         divider1 = findViewById(R.id.edit_task_date_divider_1);
 
@@ -113,7 +120,9 @@ public class EditTaskActivity extends AppCompatActivity {
         tableDate2 = (TableLayout) findViewById(R.id.edit_task_table_date_2);
         date2 = (Button) findViewById(R.id.edit_task_date_2);
         time2 = (Button) findViewById(R.id.edit_task_time_2);
+        timeZoneRow2 = (TableRow) findViewById(R.id.edit_task_row_time_zone_2);
         timeZone2 = (Button) findViewById(R.id.edit_task_time_zone_2);
+        reminderRow2 = (TableRow) findViewById(R.id.edit_task_row_reminder_2);
         reminder2 = (Button) findViewById(R.id.edit_task_reminder_2);
         divider2 = findViewById(R.id.edit_task_date_divider_2);
 
@@ -688,6 +697,8 @@ public class EditTaskActivity extends AppCompatActivity {
 
             dateMode1.setVisibility(View.GONE);
             tableDate1.setVisibility(View.VISIBLE);
+            timeZoneRow1.setVisibility(View.VISIBLE);
+            reminderRow1.setVisibility(View.VISIBLE);
             divider1.setVisibility(View.VISIBLE);
 
             dateMode2.setVisibility(View.GONE);
@@ -704,7 +715,6 @@ public class EditTaskActivity extends AppCompatActivity {
             boolean whenDaylight = whenTimeZone.inDaylightTime(now.getTime());
             timeZone1.setText((when.getTimeZone()).getDisplayName(whenDaylight, TimeZone.LONG));
 
-            reminder1.setEnabled(true);
             reminder1.setText(getReminderButtonText(currentTask.getWhenReminder()));
         }
         else {
@@ -713,10 +723,12 @@ public class EditTaskActivity extends AppCompatActivity {
 
             dateMode.setText(R.string.date_range);
 
+            // Start
             dateMode1.setVisibility(View.VISIBLE);
             tableDate1.setVisibility(View.VISIBLE);
             divider1.setVisibility(View.VISIBLE);
 
+            // Deadline
             dateMode2.setVisibility(View.VISIBLE);
             tableDate2.setVisibility(View.VISIBLE);
             divider2.setVisibility(View.VISIBLE);
@@ -725,15 +737,8 @@ public class EditTaskActivity extends AppCompatActivity {
                 date1.setText(R.string.no_date);
                 time1.setText(R.string.no_time);
                 time1.setEnabled(false);
-                timeZone1.setEnabled(false);
-
-                TimeZone localTimeZone = TimeZone.getDefault();
-                now = Calendar.getInstance();
-                boolean localDaylight = localTimeZone.inDaylightTime(now.getTime());
-                timeZone1.setText(localTimeZone.getDisplayName(localDaylight, TimeZone.LONG));
-
-                reminder1.setEnabled(false);
-                reminder1.setText(getReminderButtonText(null));
+                timeZoneRow1.setVisibility(View.GONE);
+                reminderRow1.setVisibility(View.GONE);
             }
             else {
                 date1.setText(tool.getFormattedDate(start));
@@ -742,14 +747,14 @@ public class EditTaskActivity extends AppCompatActivity {
                 else time1.setText(tool.getFormattedTime(start));
 
                 time1.setEnabled(true);
-                timeZone1.setEnabled(true);
+                timeZoneRow1.setVisibility(View.VISIBLE);
 
                 TimeZone startTimeZone = start.getTimeZone();
                 now = Calendar.getInstance();
                 boolean startDaylight = startTimeZone.inDaylightTime(now.getTime());
                 timeZone1.setText((start.getTimeZone()).getDisplayName(startDaylight, TimeZone.LONG));
 
-                reminder1.setEnabled(true);
+                reminderRow1.setVisibility(View.VISIBLE);
                 reminder1.setText(getReminderButtonText(currentTask.getStartReminder()));
             }
 
@@ -757,15 +762,8 @@ public class EditTaskActivity extends AppCompatActivity {
                 date2.setText(R.string.no_date);
                 time2.setText(R.string.no_time);
                 time2.setEnabled(false);
-                timeZone2.setEnabled(false);
-
-                TimeZone localTimeZone = TimeZone.getDefault();
-                now = Calendar.getInstance();
-                boolean localDaylight = localTimeZone.inDaylightTime(now.getTime());
-                timeZone2.setText(localTimeZone.getDisplayName(localDaylight, TimeZone.LONG));
-
-                reminder2.setEnabled(false);
-                reminder2.setText(getReminderButtonText(null));
+                timeZoneRow2.setVisibility(View.GONE);
+                reminderRow2.setVisibility(View.GONE);
             }
             else {
                 date2.setText(tool.getFormattedDate(deadline));
@@ -774,14 +772,14 @@ public class EditTaskActivity extends AppCompatActivity {
                 else time2.setText(tool.getFormattedTime(deadline));
 
                 time2.setEnabled(true);
-                timeZone2.setEnabled(true);
+                timeZoneRow2.setVisibility(View.VISIBLE);
 
                 TimeZone deadlineTimeZone = deadline.getTimeZone();
                 now = Calendar.getInstance();
                 boolean deadlineDaylight = deadlineTimeZone.inDaylightTime(now.getTime());
                 timeZone2.setText((deadline.getTimeZone()).getDisplayName(deadlineDaylight, TimeZone.LONG));
 
-                reminder2.setEnabled(true);
+                reminderRow2.setVisibility(View.VISIBLE);
                 reminder2.setText(getReminderButtonText(currentTask.getDeadlineReminder()));
             }
         }

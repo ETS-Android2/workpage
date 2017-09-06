@@ -34,6 +34,7 @@
         <ImageView android:id="@+id/time_zone_list_item_dst"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginStart="3dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/dst"
             android:alpha="0.5" />

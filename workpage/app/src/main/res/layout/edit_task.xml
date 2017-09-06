@@ -105,7 +105,7 @@
                     android:onClick="onTimeZone1Clicked" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:id="@+id/edit_task_row_reminder_1">
                 <Button
                     android:id="@+id/edit_task_reminder_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
@@ -173,7 +173,7 @@
                     android:textAlignment="textStart" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:id="@+id/edit_task_row_reminder_2">
                 <Button
                     android:id="@+id/edit_task_reminder_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
