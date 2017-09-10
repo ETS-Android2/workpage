@@ -98,8 +98,6 @@
     <string name="save">Save</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
-    <string name="add_description">Add description</string>
-    <string name="edit_description">Edit Description</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
     <string name="date_mode">Date mode</string>

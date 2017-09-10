@@ -1,7 +1,7 @@
 package jajimenez.workpage;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -18,9 +18,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AutoCompleteTextView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,13 +26,11 @@ import jajimenez.workpage.data.model.TaskReminder;
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.logic.TextTool;
-import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class EditTaskActivity extends AppCompatActivity {
     private EditText title;
-    private Button description;
 
     private Button dateMode;
 
@@ -59,10 +54,6 @@ public class EditTaskActivity extends AppCompatActivity {
     private Button reminder2;
     private View divider2;
 
-    private AutoCompleteTextView addTagAutoTextView;
-    private Button addTagButton;
-    private LinearLayout addedTagsLinearLayout;
-
     private EditDescriptionDialogFragment.OnOkButtonClickedListener descriptionListener;
     private DateModeDialogFragment.OnDateModeSetListener dateModeListener;
     private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener1;
@@ -80,9 +71,10 @@ public class EditTaskActivity extends AppCompatActivity {
     private TimePickerDialogFragment.OnTimeSetListener time2Listener;
     private TimePickerDialogFragment.OnNoTimeSetListener noTime2Listener;
 
+    private TaskTagPickerDialogFragment.OnTaskTagsSelectedListener tagsSelectedListener;
+
     private ApplicationLogic applicationLogic = null;
     private Task currentTask = null;
-    private List<TaskTag> contextTags = null;
 
     private int selectedDateMode;
 
@@ -102,7 +94,6 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         title = (EditText) findViewById(R.id.edit_task_title);
-        description = (Button) findViewById(R.id.edit_task_description);
 
         dateMode = (Button) findViewById(R.id.edit_task_date_mode);
 
@@ -125,10 +116,6 @@ public class EditTaskActivity extends AppCompatActivity {
         reminderRow2 = (TableRow) findViewById(R.id.edit_task_row_reminder_2);
         reminder2 = (Button) findViewById(R.id.edit_task_reminder_2);
         divider2 = findViewById(R.id.edit_task_date_divider_2);
-
-        addTagAutoTextView = (AutoCompleteTextView) findViewById(R.id.edit_task_add_tag_autotextview);
-        addTagButton = (Button) findViewById(R.id.edit_task_add_tag_button);
-        addedTagsLinearLayout = (LinearLayout) findViewById(R.id.edit_task_added_tags);
 
         title.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -392,41 +379,20 @@ public class EditTaskActivity extends AppCompatActivity {
             }
         };
 
-        addTagAutoTextView.addTextChangedListener(new TextWatcher() {
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
+        // Tags
+        tagsSelectedListener = new TaskTagPickerDialogFragment.OnTaskTagsSelectedListener() {
+            public void onTaskTagsSelected(List<TaskTag> tags) {
+                EditTaskActivity.this.currentTask.setTags(tags);
+                EditTaskActivity.this.updateInterface();
             }
-
-            public void afterTextChanged(Editable s) {
-                String text = (s.toString()).trim();
-                boolean enabled = (text.length() > 0);
-
-                if (enabled) {
-                    // Auxiliar tag object.
-                    TaskTag tag = new TaskTag();
-                    tag.setName(text);
-
-                    List<TaskTag> taskTags = currentTask.getTags();
-
-                    enabled = !taskTags.contains(tag);
-                }
-
-                EditTaskActivity.this.addTagButton.setEnabled(enabled);
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
-            }
-        });
-
-        addTagButton.setEnabled(false);
+        };
 
         applicationLogic = new ApplicationLogic(this);
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
 
         if (mode != null && mode.equals("edit")) {
-            // Get task data.
+            // Get task data
             long taskId = intent.getLongExtra("task_id", 0);
             currentTask = applicationLogic.getTask(taskId);
         }
@@ -438,16 +404,9 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            //TaskReminder defaultReminder = applicationLogic.getTaskReminder(4); // 15 minutes.
-
             Calendar when = currentTask.getWhen();
-            //TaskReminder whenRem = currentTask.getWhenReminder();
-
             Calendar start = currentTask.getStart();
-            //TaskReminder startRem = currentTask.getStartReminder();
-
             Calendar deadline = currentTask.getDeadline();
-            //TaskReminder deadlineRem = currentTask.getDeadlineReminder();
 
             if (when == null && start == null && deadline == null) selectedDateMode = ApplicationLogic.NO_DATE;
             else if (when == null) selectedDateMode = ApplicationLogic.DATE_RANGE;
@@ -505,6 +464,11 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminder2Fragment.setOnTaskReminderSetListener(reminder2Listener);
             }
 
+            TaskTagPickerDialogFragment tagsFragment = (TaskTagPickerDialogFragment) (getFragmentManager()).findFragmentByTag("task_tags_picker");
+            if (tagsFragment != null) {
+                tagsFragment.setOnTaskTagsSelectedListener(tagsSelectedListener);
+            }
+
             String title = savedInstanceState.getString("title");
             String description = savedInstanceState.getString("description");
 
@@ -521,9 +485,14 @@ public class EditTaskActivity extends AppCompatActivity {
 
             if (when >= 0) {
                 boolean ignoreWhenTime = savedInstanceState.getBoolean("ignore_when_time", false);
+                String whenTimeZoneCode = savedInstanceState.getString("when_time_zone_code", null);
+                long whenReminderId = savedInstanceState.getLong("when_reminder_id", -1);
 
                 Calendar calWhen = Calendar.getInstance();
                 calWhen.setTimeInMillis(when);
+
+                if (whenTimeZoneCode != null) calWhen.setTimeZone(TimeZone.getTimeZone(whenTimeZoneCode));
+                if (whenReminderId >= 0) currentTask.setWhenReminder(applicationLogic.getTaskReminder(whenReminderId));
 
                 currentTask.setWhen(calWhen);
                 currentTask.setIgnoreWhenTime(ignoreWhenTime);
@@ -531,9 +500,14 @@ public class EditTaskActivity extends AppCompatActivity {
 
             if (start >= 0) {
                 boolean ignoreStartTime = savedInstanceState.getBoolean("ignore_start_time", false);
+                String startTimeZoneCode = savedInstanceState.getString("start_time_zone_code", null);
+                long startReminderId = savedInstanceState.getLong("start_reminder_id", -1);
 
                 Calendar calStart = Calendar.getInstance();
                 calStart.setTimeInMillis(start);
+
+                if (startTimeZoneCode != null) calStart.setTimeZone(TimeZone.getTimeZone(startTimeZoneCode));
+                if (startReminderId >= 0) currentTask.setStartReminder(applicationLogic.getTaskReminder(startReminderId));
 
                 currentTask.setStart(calStart);
                 currentTask.setIgnoreWhenTime(ignoreStartTime);
@@ -541,40 +515,36 @@ public class EditTaskActivity extends AppCompatActivity {
 
             if (deadline >= 0) {
                 boolean ignoreDeadlineTime = savedInstanceState.getBoolean("ignore_deadline_time", false);
+                String deadlineTimeZoneCode = savedInstanceState.getString("deadline_time_zone_code", null);
+                long deadlineReminderId = savedInstanceState.getLong("deadline_reminder_id", -1);
 
                 Calendar calDeadline = Calendar.getInstance();
                 calDeadline.setTimeInMillis(deadline);
 
+                if (deadlineTimeZoneCode != null) calDeadline.setTimeZone(TimeZone.getTimeZone(deadlineTimeZoneCode));
+                if (deadlineReminderId >= 0) currentTask.setDeadlineReminder(applicationLogic.getTaskReminder(deadlineReminderId));
+
                 currentTask.setDeadline(calDeadline);
                 currentTask.setIgnoreDeadlineTime(ignoreDeadlineTime);
             }
+
+            String[] tagNames = savedInstanceState.getStringArray("task_tags");
+            LinkedList<TaskTag> tags = new LinkedList<TaskTag>();
+
+            if (tagNames != null) {
+                for (String name : tagNames) {
+                    TaskTag tag = new TaskTag();
+                    tag.setName(name);
+                    tag.setContextId(currentTask.getContextId());
+
+                    tags.add(tag);
+                }
+            }
+
+            currentTask.setTags(tags);
         }
-
-        TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
-        contextTags = applicationLogic.getAllTaskTags(context);
-
-        if (savedInstanceState != null) currentTask.setTags(getSavedAddedTaskTags(savedInstanceState));
-
-        setTagCompletionSuggestions();
-        addInitialTaskTagViews();
 
         updateInterface();
-    }
-
-    private List<TaskTag> getSavedAddedTaskTags(Bundle savedInstanceState) {
-        LinkedList<TaskTag> tags = new LinkedList<TaskTag>();
-        String[] tagNames = savedInstanceState.getStringArray("task_tags");
-
-        if (tagNames != null) {
-            for (String name : tagNames) {
-                TaskTag tag = new TaskTag();
-                tag.setName(name);
-
-                tags.add(tag);
-            }
-        }
-
-        return tags;
     }
 
     @Override
@@ -594,51 +564,61 @@ public class EditTaskActivity extends AppCompatActivity {
         if (when != null) {
             outState.putLong("when", when.getTimeInMillis());
             outState.putBoolean("ignore_when_time", currentTask.getIgnoreWhenTime());
-        }
-        else {
-            outState.putLong("when", -1);
-            outState.putBoolean("ignore_when_time", false);
+
+            TimeZone whenTimeZone = when.getTimeZone();
+            if (whenTimeZone != null) {
+                String whenTimeZoneCode = whenTimeZone.getID();
+
+                if (whenTimeZoneCode != null && !whenTimeZoneCode.isEmpty()) {
+                    outState.putString("when_time_zone_code", whenTimeZoneCode);
+                }
+            }
+
+            TaskReminder whenReminder = currentTask.getWhenReminder();
+            if (whenReminder != null) outState.putLong("when_reminder_id", whenReminder.getId());
         }
 
         if (start != null) {
             outState.putLong("start", start.getTimeInMillis());
             outState.putBoolean("ignore_start_time", currentTask.getIgnoreStartTime());
-        }
-        else {
-            outState.putLong("start", -1);
-            outState.putBoolean("ignore_start_time", false);
+
+            TimeZone startTimeZone = start.getTimeZone();
+            if (startTimeZone != null) {
+                String startTimeZoneCode = startTimeZone.getID();
+
+                if (startTimeZoneCode != null && !startTimeZoneCode.isEmpty()) {
+                    outState.putString("start_time_zone_code", startTimeZoneCode);
+                }
+            }
+
+            TaskReminder startReminder = currentTask.getStartReminder();
+            if (startReminder != null) outState.putLong("start_reminder_id", startReminder.getId());
         }
 
         if (deadline != null) {
             outState.putLong("deadline", deadline.getTimeInMillis());
             outState.putBoolean("ignore_deadline_time", currentTask.getIgnoreDeadlineTime());
-        }
-        else {
-            outState.putLong("deadline", -1);
-            outState.putBoolean("ignore_deadline_time", false);
+
+            TimeZone deadlineTimeZone = deadline.getTimeZone();
+            if (deadlineTimeZone != null) {
+                String deadlineTimeZoneCode = deadlineTimeZone.getID();
+
+                if (deadlineTimeZoneCode != null && !deadlineTimeZoneCode.isEmpty()) {
+                    outState.putString("deadline_time_zone_code", deadlineTimeZoneCode);
+                }
+            }
+
+            TaskReminder deadlineReminder = currentTask.getDeadlineReminder();
+            if (deadlineReminder != null) outState.putLong("deadline_reminder_id", deadlineReminder.getId());
         }
 
-        // Task tags.
+        // Task tags
         List<TaskTag> tags = currentTask.getTags();
         int tagCount = tags.size();
         String[] tagNames = new String[tagCount];
         for (int i = 0; i < tagCount; i++) tagNames[i] = (tags.get(i)).getName();
 
         outState.putStringArray("task_tags", tagNames);
-    }
-
-    private void setTagCompletionSuggestions() {
-        TaskContext context = applicationLogic.getTaskContext(currentTask.getContextId());
-        List<TaskTag> suggestedTags = new LinkedList<TaskTag>(contextTags);
-        suggestedTags.removeAll(currentTask.getTags());
-
-        ArrayAdapter<TaskTag> adapter = new ArrayAdapter<TaskTag>(this, android.R.layout.simple_dropdown_item_1line, suggestedTags);
-        addTagAutoTextView.setAdapter(adapter);
-    }
-
-    private void addInitialTaskTagViews() {
-        List<TaskTag> tags = currentTask.getTags();
-        for (TaskTag tag : tags) addTaskTagView(tag, tags);
     }
 
     @Override
@@ -670,11 +650,6 @@ public class EditTaskActivity extends AppCompatActivity {
         else setTitle(R.string.edit_task);
 
         title.setText(currentTask.getTitle());
-
-        String desc = currentTask.getDescription();
-
-        if (desc != null && !desc.isEmpty()) description.setText(R.string.edit_description);
-        else description.setText(R.string.add_description);
 
         TextTool tool = new TextTool();
         Calendar now;
@@ -812,15 +787,10 @@ public class EditTaskActivity extends AppCompatActivity {
         boolean titleValid = (title.length() > 0);
         boolean datesValid;
 
-        if (selectedDateMode == ApplicationLogic.DATE_RANGE) {
-            datesValid =
-                    start == null ||
-                    deadline == null ||
-                    compareCalendars(deadline, currentTask.getIgnoreDeadlineTime(), start, currentTask.getIgnoreStartTime()) >= 0;
-        }
-        else {
-            datesValid = true;
-        }
+        datesValid = selectedDateMode != ApplicationLogic.DATE_RANGE ||
+            start == null ||
+            deadline == null ||
+            compareCalendars(deadline, currentTask.getIgnoreDeadlineTime(), start, currentTask.getIgnoreStartTime()) >= 0;
 
         if (titleValid && datesValid) {
             // Save Current Task
@@ -1027,50 +997,22 @@ public class EditTaskActivity extends AppCompatActivity {
         fragment.show(getFragmentManager(), "reminder_picker_2");
     }
 
-    public void onAddTagButtonClicked(View view) {
-        String name = ((addTagAutoTextView.getText()).toString()).trim();
-        TaskTag tag = new TaskTag(currentTask.getContextId(), name, null);
-        List<TaskTag> taskTags = currentTask.getTags();
+    public void onTagsClicked(View view) {
+        TaskTagPickerDialogFragment fragment = new TaskTagPickerDialogFragment();
 
-        // Add the new tag to the tag list of the current task.
-        taskTags.add(tag);
+        Bundle arguments = new Bundle();
+        arguments.putLong("task_context_id", currentTask.getContextId());
 
-        // Add a new tag view.
-        addTaskTagView(tag, taskTags);
+        // Current selected tags
+        List<TaskTag> tags = currentTask.getTags();
+        int tagCount = tags.size();
+        String[] tagNames = new String[tagCount];
+        for (int i = 0; i < tagCount; i++) tagNames[i] = (tags.get(i)).getName();
 
-        // Clear the text box.
-        addTagAutoTextView.setText("");
-    }
+        arguments.putStringArray("initial_selected_tags", tagNames);
+        fragment.setArguments(arguments);
 
-    private void addTaskTagView(final TaskTag tag, final List<TaskTag> taskTags) {
-        // Remove the new tag from the suggestions (if the tag already existed). This is by removing it
-        // from the "suggestedTags" object, as that object is the source for the sugestions adapter.
-        final ArrayAdapter<TaskTag> suggestedTagsAdapter = (ArrayAdapter<TaskTag>) addTagAutoTextView.getAdapter();
-        suggestedTagsAdapter.remove(tag);
-
-        final TaskTagView tagView = new TaskTagView(this);
-        tagView.setText(tag.getName());
-
-        tagView.setOnRemoveIconClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Remove the tag from the tag list of the current task.
-                taskTags.remove(tag);
-
-                // Add the tag to the suggestions, if it previously existed in the
-                // current task context. This is by adding it to the "suggestedTags"
-                // object, as that object is the source for the sugestions adapter.
-                if (contextTags.contains(tag)) suggestedTagsAdapter.add(tag);
-
-                // Remove the tag view.
-                addedTagsLinearLayout.removeView(tagView);
-
-                if ((((EditTaskActivity.this.addTagAutoTextView.getText()).toString()).trim()).equals(tag.getName())) {
-                    EditTaskActivity.this.addTagButton.setEnabled(true);
-                }
-            }
-        });
-
-        // Add the tag view and clear the text box.
-        addedTagsLinearLayout.addView(tagView);
+        fragment.setOnTaskTagsSelectedListener(tagsSelectedListener);
+        fragment.show(getFragmentManager(), "task_tags_picker");
     }
 }

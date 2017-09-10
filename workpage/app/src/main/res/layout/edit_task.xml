@@ -34,6 +34,7 @@
             android:textAlignment="textStart"
             android:drawableStart="@drawable/description"
             android:drawablePadding="10dp"
+            android:text="@string/description"
             android:onClick="onEditDescriptionClicked" />
 
         <View
@@ -75,7 +76,7 @@
                 <Button
                     android:id="@+id/edit_task_date_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
                     android:drawableStart="@drawable/date"
@@ -96,7 +97,7 @@
                 <Button
                     android:id="@+id/edit_task_time_zone_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
                     android:textAlignment="textStart"
@@ -109,7 +110,7 @@
                 <Button
                     android:id="@+id/edit_task_reminder_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_span="2"
                     android:textAlignment="textStart"
@@ -144,7 +145,7 @@
                 <Button
                     android:id="@+id/edit_task_date_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
                     android:drawableStart="@drawable/date"
@@ -165,19 +166,20 @@
                 <Button
                     android:id="@+id/edit_task_time_zone_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_span="2"
                     android:drawableStart="@drawable/world_2"
                     android:drawablePadding="10dp"
-                    android:textAlignment="textStart" />
+                    android:textAlignment="textStart"
+                    android:onClick="onTimeZone2Clicked" />
             </TableRow>
 
             <TableRow android:id="@+id/edit_task_row_reminder_2">
                 <Button
                     android:id="@+id/edit_task_reminder_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_span="3"
                     android:drawableStart="@drawable/reminder"
@@ -185,7 +187,6 @@
                     android:textAlignment="textStart"
                     android:onClick="onReminder2Clicked" />
             </TableRow>
-
         </TableLayout>
 
         <View
@@ -194,58 +195,15 @@
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <TableLayout
+        <Button
+            android:id="@+id/edit_task_tags"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="20dp"
-            android:stretchColumns="1">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:paddingEnd="7dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:alpha="0.5"
-                    android:src="@drawable/tag"
-                    android:contentDescription="@string/tag" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/edit_task_add_tag_autotextview"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:inputType="text"
-                    android:completionThreshold="1"
-                    android:hint="@string/tag" />
-
-                <Button
-                    android:id="@+id/edit_task_add_tag_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/add"
-                    android:onClick="onAddTagButtonClicked" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/edit_task_added_tags"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="10dp"
-                    android:layout_column="1"
-                    android:layout_span="2"
-                    android:orientation="vertical" />
-            </TableRow>
-        </TableLayout>
+            android:drawableStart="@drawable/tag_2"
+            android:drawablePadding="10dp"
+            android:textAlignment="textStart"
+            android:text="@string/tags_1"
+            android:onClick="onTagsClicked" />
     </LinearLayout>
 </ScrollView>

@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
 
+    private LoadTasksDBTask taskDbTask = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -292,6 +294,10 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void showSavedTasks(Bundle savedInstanceState) {
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -446,10 +452,11 @@ public class MainActivity extends AppCompatActivity
             filterTagsValueTextView.setText(tagsText);
         }
 
-        // Show tasks.
-        (new LoadTasksDBTask()).execute();
+        if (taskDbTask == null || taskDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            taskDbTask = new LoadTasksDBTask();
+            taskDbTask.execute();
+        }
     }
-
 
     private void updateTaskListInterface(List<Task> tasks) {
         if (tasks == null) tasks = new LinkedList<Task>();
@@ -516,18 +523,18 @@ public class MainActivity extends AppCompatActivity
 
             if (viewStateFilter.equals("open")) {
                 tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
-                        MainActivity.this.includeTasksWithNoTag,
-                        MainActivity.this.currentFilterTags);
+                    MainActivity.this.includeTasksWithNoTag,
+                    MainActivity.this.currentFilterTags);
             }
             else if (viewStateFilter.equals("doable_today")) {
                 tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
-                        MainActivity.this.includeTasksWithNoTag,
-                        MainActivity.this.currentFilterTags);
+                    MainActivity.this.includeTasksWithNoTag,
+                    MainActivity.this.currentFilterTags);
             }
             else if (viewStateFilter.equals("closed")) {
                 tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
-                        MainActivity.this.includeTasksWithNoTag,
-                        MainActivity.this.currentFilterTags);
+                    MainActivity.this.includeTasksWithNoTag,
+                    MainActivity.this.currentFilterTags);
             }
 
             return tasks;
