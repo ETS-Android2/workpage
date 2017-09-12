@@ -681,7 +681,7 @@ public class EditTaskActivity extends AppCompatActivity {
             divider2.setVisibility(View.GONE);
 
             date1.setText(tool.getFormattedDate(when));
-            time1.setEnabled(true);
+            time1.setVisibility(View.VISIBLE);
 
             if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.no_time);
             else time1.setText(tool.getFormattedTime(when));
@@ -712,7 +712,7 @@ public class EditTaskActivity extends AppCompatActivity {
             if (start == null) {
                 date1.setText(R.string.no_date);
                 time1.setText(R.string.no_time);
-                time1.setEnabled(false);
+                time1.setVisibility(View.GONE);
                 timeZoneRow1.setVisibility(View.GONE);
                 reminderRow1.setVisibility(View.GONE);
             }
@@ -722,7 +722,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 if (currentTask.getIgnoreStartTime()) time1.setText(R.string.no_time);
                 else time1.setText(tool.getFormattedTime(start));
 
-                time1.setEnabled(true);
+                time1.setVisibility(View.VISIBLE);
                 timeZoneRow1.setVisibility(View.VISIBLE);
 
                 TimeZone startTimeZone = start.getTimeZone();
@@ -737,7 +737,7 @@ public class EditTaskActivity extends AppCompatActivity {
             if (deadline == null) {
                 date2.setText(R.string.no_date);
                 time2.setText(R.string.no_time);
-                time2.setEnabled(false);
+                time2.setVisibility(View.GONE);
                 timeZoneRow2.setVisibility(View.GONE);
                 reminderRow2.setVisibility(View.GONE);
             }
@@ -747,7 +747,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 if (currentTask.getIgnoreDeadlineTime()) time2.setText(R.string.no_time);
                 else time2.setText(tool.getFormattedTime(deadline));
 
-                time2.setEnabled(true);
+                time2.setVisibility(View.VISIBLE);
                 timeZoneRow2.setVisibility(View.VISIBLE);
 
                 TimeZone deadlineTimeZone = deadline.getTimeZone();
