@@ -18,7 +18,7 @@
             android:layout_weight="1"
             android:inputType="text"
             android:completionThreshold="1"
-            android:hint="@string/tag" />
+            android:hint="@string/tag_name" />
 
         <Button
             android:id="@+id/task_tag_picker_add_tag_button"
