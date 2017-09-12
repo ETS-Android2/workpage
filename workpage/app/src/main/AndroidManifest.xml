@@ -38,7 +38,13 @@
         <activity
             android:name=".EditTaskContextsActivity"
             android:label="@string/edit_contexts"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="jajimenez.workpage.MainActivity" />
+        </activity>
         <activity
             android:name=".ViewActivity"
             android:label="@string/view"
@@ -60,6 +66,7 @@
             android:label="@string/edit_tags"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="jajimenez.workpage.MainActivity" />

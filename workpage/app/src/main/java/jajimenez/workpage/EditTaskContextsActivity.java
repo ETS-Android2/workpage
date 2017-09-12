@@ -3,6 +3,8 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,10 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 import android.view.ActionMode;
-import android.view.Window;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 
 import jajimenez.workpage.logic.ApplicationLogic;
@@ -24,43 +25,68 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     private ListView listView;
     private ActionMode actionMode;
 
-    private ApplicationLogic applicationLogic;
-
     private Bundle savedInstanceState;
     private boolean interfaceReady;
 
     private EditTaskContextDialogFragment.OnTaskContextSavedListener saveTaskContextListener;
     private DeleteTaskContextDialogFragment.OnDeleteListener deleteTaskContextListener;
 
+    private ApplicationLogic applicationLogic;
+
+    private LoadTaskContextsDBTask contextsDbTask = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.edit_task_contexts);
 
-        listView = (ListView) findViewById(android.R.id.list);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.edit_task_contexts_toolbar);
+        setSupportActionBar(toolbar);
+
+        listView = (ListView) findViewById(R.id.edit_task_contexts_list);
         actionMode = null;
 
         createContextualActionBar();
         interfaceReady = false;
 
+        (getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.edit_task_contexts_add);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!interfaceReady) return;
+
+                TaskContext newContext = new TaskContext();
+
+                // Show an edition dialog
+                EditTaskContextDialogFragment editFragment = new EditTaskContextDialogFragment();
+
+                Bundle arguments = new Bundle();
+                arguments.putLong("context_id", newContext.getId());
+                editFragment.setArguments(arguments);
+
+                editFragment.setOnTaskContextSavedListener(saveTaskContextListener);
+                editFragment.show(getFragmentManager(), "edit_task_context");
+            }
+        });
+
         saveTaskContextListener = new EditTaskContextDialogFragment.OnTaskContextSavedListener() {
             public void onTaskContextSaved() {
-                // Close the contextual action bar.
+                // Close the contextual action bar
                 if (EditTaskContextsActivity.this.actionMode != null) EditTaskContextsActivity.this.actionMode.finish();
 
-                // Update the list view.
+                // Update the list view
                 EditTaskContextsActivity.this.updateInterface();
             }
         };
 
         deleteTaskContextListener = new DeleteTaskContextDialogFragment.OnDeleteListener() {
             public void onDelete() {
-                // Close the context action bar.
+                // Close the context action bar
                 if (EditTaskContextsActivity.this.actionMode != null) EditTaskContextsActivity.this.actionMode.finish();
 
-                // Update the list view.
+                // Update the list view
                 EditTaskContextsActivity.this.updateInterface();
             }
         };
@@ -76,6 +102,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         }
 
         applicationLogic = new ApplicationLogic(this);
+        updateInterface();
     }
 
     private void createContextualActionBar() {
@@ -116,7 +143,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
                 boolean eventHandled = false;
                 final List<TaskContext> selectedContexts = EditTaskContextsActivity.this.getSelectedTaskContexts();
 
-                Bundle arguments = new Bundle();
+                Bundle arguments;
 
                 switch (item.getItemId()) {
                     case R.id.edit_task_contexts_contextual_menu_edit:
@@ -193,20 +220,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_task_contexts, menu);
-
-        return true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateInterface();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         List<Integer> selectedItems = getSelectedItems();
         int selectedItemCount = selectedItems.size();
@@ -221,8 +234,11 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     }
 
     private void updateInterface() {
-        // Show contexts.
-        (new LoadTaskContextsDBTask()).execute();
+        // Show contexts
+        if (contextsDbTask == null || contextsDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            contextsDbTask = new LoadTaskContextsDBTask();
+            contextsDbTask.execute();
+        }
     }
 
     private void updateTaskContextListInterface(List<TaskContext> contexts) {
@@ -249,7 +265,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
         for (int i = 0; i < itemCount; i++) {
             if (itemSelectedStates.get(i)) {
-                // The item with position "i" is selected.
+                // The item with position "i" is selected
                 selectedItems.add(i);
             }
         }
@@ -271,27 +287,9 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         return selectedContexts;
     }
 
-    public void onNewTaskContextItemSelected(MenuItem item) {
-        if (!interfaceReady) return;
-
-        TaskContext newContext = new TaskContext();
-
-        // Show an edition dialog.
-        EditTaskContextDialogFragment editFragment = new EditTaskContextDialogFragment();
-
-        Bundle arguments = new Bundle();
-        arguments.putLong("context_id", newContext.getId());
-        editFragment.setArguments(arguments);
-
-        editFragment.setOnTaskContextSavedListener(saveTaskContextListener);
-        editFragment.show(getFragmentManager(), "edit_task_context");
-    }
-
     private class LoadTaskContextsDBTask extends AsyncTask<Void, Void, List<TaskContext>> {
         protected void onPreExecute() {
             EditTaskContextsActivity.this.interfaceReady = false;
-
-            EditTaskContextsActivity.this.setProgressBarIndeterminateVisibility(true);
             EditTaskContextsActivity.this.listView.setEnabled(false);
         }
 

@@ -34,6 +34,8 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     private EditTaskTagDialogFragment.OnTaskTagSavedListener saveTaskTagListener;
     private DeleteTaskTagDialogFragment.OnDeleteListener deleteTaskTagListener;
 
+    private LoadTaskTagsDBTask tagsDbTask = null;
+
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
 
@@ -52,13 +54,15 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         createContextualActionBar();
         interfaceReady = false;
 
+        (getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.edit_task_tags_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!interfaceReady) return;
 
-                // Show an edition dialog.
+                // Show an edition dialog
                 EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
                 Bundle arguments = new Bundle();
 
@@ -73,8 +77,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                 editFragment.show(getFragmentManager(), "edit_task_tag");
             }
         });
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         saveTaskTagListener = new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
             public void onTaskTagSaved() {
@@ -222,8 +224,11 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     private void updateInterface() {
-        // Show tags.
-        (new EditTaskTagsActivity.LoadTaskTagsDBTask()).execute();
+        // Show tags
+        if (tagsDbTask == null || tagsDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            tagsDbTask = new LoadTaskTagsDBTask();
+            tagsDbTask.execute();
+        }
     }
 
     private void updateTaskTagListInterface(List<TaskTag> tags) {

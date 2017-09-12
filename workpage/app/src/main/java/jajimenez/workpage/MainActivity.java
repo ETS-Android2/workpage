@@ -51,13 +51,13 @@ public class MainActivity extends AppCompatActivity
     private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
 
+    private LoadTasksDBTask tasksDbTask = null;
+
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
     private String viewStateFilter;
     private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
-
-    private LoadTasksDBTask taskDbTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -449,9 +449,9 @@ public class MainActivity extends AppCompatActivity
             filterTagsValueTextView.setText(tagsText);
         }
 
-        if (taskDbTask == null || taskDbTask.getStatus() == AsyncTask.Status.FINISHED) {
-            taskDbTask = new LoadTasksDBTask();
-            taskDbTask.execute();
+        if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            tasksDbTask = new LoadTasksDBTask();
+            tasksDbTask.execute();
         }
     }
 
