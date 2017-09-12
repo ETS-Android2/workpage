@@ -1,5 +1,6 @@
 package jajimenez.workpage;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
@@ -15,6 +16,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -72,6 +74,18 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
         builder.setTitle(R.string.select_time_zone);
+
+        builder.setNeutralButton(R.string.local_time_zone, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                TimeZone localTimeZone = (Calendar.getInstance()).getTimeZone();
+
+                if (TimeZonePickerDialogFragment.this.onTimeZoneSelectedListener != null) {
+                    TimeZonePickerDialogFragment.this.onTimeZoneSelectedListener.onTimeZoneSelected(localTimeZone);
+                }
+            }
+        });
+
         builder.setNegativeButton(R.string.cancel, null);
 
         countryEditText.addTextChangedListener(new TextWatcher() {
@@ -110,7 +124,10 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
                 }
                 else {
                     TimeZone selectedTimeZone = (TimeZone) l.getItemAtPosition(position);
-                    if (onTimeZoneSelectedListener != null) onTimeZoneSelectedListener.onTimeZoneSelected(selectedTimeZone);
+
+                    if (TimeZonePickerDialogFragment.this.onTimeZoneSelectedListener != null) {
+                        TimeZonePickerDialogFragment.this.onTimeZoneSelectedListener.onTimeZoneSelected(selectedTimeZone);
+                    }
 
                     TimeZonePickerDialogFragment.this.dismiss();
                 }
