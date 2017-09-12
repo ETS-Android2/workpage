@@ -681,6 +681,7 @@ public class EditTaskActivity extends AppCompatActivity {
             divider2.setVisibility(View.GONE);
 
             date1.setText(tool.getFormattedDate(when));
+            time1.setEnabled(true);
 
             if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.no_time);
             else time1.setText(tool.getFormattedTime(when));
