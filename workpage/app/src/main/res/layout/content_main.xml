@@ -46,15 +46,14 @@
 
     </LinearLayout>
 
-    <ListView android:id="@android:id/list"
+    <ListView android:id="@+id/main_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <TextView android:id="@android:id/empty"
+    <TextView android:id="@+id/main_empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:paddingTop="40dp"
         android:gravity="center_horizontal"
         android:textSize="20sp"

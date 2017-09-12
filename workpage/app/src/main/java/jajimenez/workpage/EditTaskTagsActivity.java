@@ -1,35 +1,32 @@
 package jajimenez.workpage;
 
-import java.util.List;
-import java.util.LinkedList;
-
-import android.content.Intent;
-import android.util.SparseBooleanArray;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuInflater;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.graphics.drawable.Drawable;
 
-import jajimenez.workpage.logic.ApplicationLogic;
+import java.util.LinkedList;
+import java.util.List;
+
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
+import jajimenez.workpage.logic.ApplicationLogic;
 
 public class EditTaskTagsActivity extends AppCompatActivity {
     private ListView listView;
     private TextView emptyTextView;
     private ActionMode actionMode;
-
-    private ApplicationLogic applicationLogic;
-    private TaskContext currentTaskContext;
 
     private Bundle savedInstanceState;
     private boolean interfaceReady;
@@ -37,19 +34,47 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     private EditTaskTagDialogFragment.OnTaskTagSavedListener saveTaskTagListener;
     private DeleteTaskTagDialogFragment.OnDeleteListener deleteTaskTagListener;
 
+    private ApplicationLogic applicationLogic;
+    private TaskContext currentTaskContext;
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.edit_task_tags);
+        
+        Toolbar toolbar = (Toolbar) findViewById(R.id.edit_task_tags_toolbar);
+        setSupportActionBar(toolbar);
 
-        listView = (ListView) findViewById(android.R.id.list);
-        emptyTextView = (TextView) findViewById(android.R.id.empty);
+        listView = (ListView) findViewById(R.id.edit_task_tags_list);
+        emptyTextView = (TextView) findViewById(R.id.edit_task_tags_empty);
         actionMode = null;
 
         createContextualActionBar();
         interfaceReady = false;
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.edit_task_tags_add);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!interfaceReady) return;
+
+                // Show an edition dialog.
+                EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
+                Bundle arguments = new Bundle();
+
+                long tagId = -1; // New tag
+
+                arguments.putLong("tag_id", tagId);
+                arguments.putLong("context_id", currentTaskContext.getId());
+
+                editFragment.setArguments(arguments);
+
+                editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
+                editFragment.show(getFragmentManager(), "edit_task_tag");
+            }
+        });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         saveTaskTagListener = new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
             public void onTaskTagSaved() {
@@ -183,14 +208,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.edit_task_tags, menu);
-
-        return true;
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         List<Integer> selectedItems = getSelectedItems();
         int selectedItemCount = selectedItems.size();
@@ -205,10 +222,8 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     private void updateInterface() {
-        emptyTextView.setText("");
-
         // Show tags.
-        (new LoadTaskTagsDBTask()).execute();
+        (new EditTaskTagsActivity.LoadTaskTagsDBTask()).execute();
     }
 
     private void updateTaskTagListInterface(List<TaskTag> tags) {
@@ -264,24 +279,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         }
 
         return selectedTags;
-    }
-
-    public void onNewTaskTagItemSelected(MenuItem item) {
-        if (!interfaceReady) return;
-
-        // Show an edition dialog.
-        EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
-        Bundle arguments = new Bundle();
-
-        long tagId = -1; // New tag
-
-        arguments.putLong("tag_id", tagId);
-        arguments.putLong("context_id", currentTaskContext.getId());
-
-        editFragment.setArguments(arguments);
-
-        editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
-        editFragment.show(getFragmentManager(), "edit_task_tag");
     }
 
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {

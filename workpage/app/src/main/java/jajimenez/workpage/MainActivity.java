@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar_main_toolbar);
         setSupportActionBar(toolbar);
 
-        listView = (ListView) findViewById(android.R.id.list);
+        listView = (ListView) findViewById(R.id.main_list);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView l, View v, int position, long id) {
                 Task selectedTask = (Task) l.getItemAtPosition(position);
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        emptyTextView = (TextView) findViewById(android.R.id.empty);
+        emptyTextView = (TextView) findViewById(R.id.main_empty);
         viewTextView = (TextView) findViewById(R.id.main_view);
         filterTagsValueTextView = (TextView) findViewById(R.id.main_filter_tags_value);
 
@@ -292,10 +293,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-    }
-
-    private void showSavedTasks(Bundle savedInstanceState) {
-
     }
 
     @Override
