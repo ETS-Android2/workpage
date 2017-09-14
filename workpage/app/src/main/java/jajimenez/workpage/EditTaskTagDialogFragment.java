@@ -2,6 +2,7 @@ package jajimenez.workpage;
 
 import java.util.List;
 
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Rect;
@@ -15,6 +16,7 @@ import android.content.DialogInterface;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.widget.Button;
@@ -179,7 +181,9 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             colorImageButton.setColorFilter(Color.parseColor(color));
         }
         else {
+            int noSelectionColor = ResourcesCompat.getColor(getResources(), R.color.tag_no_selection_color, null);
             colorImageButton.setImageResource(R.drawable.no_color);
+            colorImageButton.setColorFilter(noSelectionColor);
         }
 
         nameEditText.setText(tag.getName());
