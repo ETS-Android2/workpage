@@ -15,83 +15,95 @@
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_1"
-            workpage:backgroundColor="@color/tag_color_1" />
+            workpage:backgroundColor="@color/tag_color_1"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_2"
-            workpage:backgroundColor="@color/tag_color_2" />
-
+            workpage:backgroundColor="@color/tag_color_2"
+            workpage:cornerRadius="10" />
+        
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_3"
-            workpage:backgroundColor="@color/tag_color_3" />
-
+            workpage:backgroundColor="@color/tag_color_3"
+            workpage:cornerRadius="10" />
+        
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_4"
-            workpage:backgroundColor="@color/tag_color_4" />
+            workpage:backgroundColor="@color/tag_color_4"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_5"
-            workpage:backgroundColor="@color/tag_color_5" />
-
+            workpage:backgroundColor="@color/tag_color_5"
+            workpage:cornerRadius="10" />
+        
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_6"
-            workpage:backgroundColor="@color/tag_color_6" />
+            workpage:backgroundColor="@color/tag_color_6"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_7"
-            workpage:backgroundColor="@color/tag_color_7" />
+            workpage:backgroundColor="@color/tag_color_7"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_8"
-            workpage:backgroundColor="@color/tag_color_8" />
-
+            workpage:backgroundColor="@color/tag_color_8"
+            workpage:cornerRadius="10" />
+        
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_9"
-            workpage:backgroundColor="@color/tag_color_9" />
+            workpage:backgroundColor="@color/tag_color_9"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_10"
-            workpage:backgroundColor="@color/tag_color_10" />
+            workpage:backgroundColor="@color/tag_color_10"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_11"
-            workpage:backgroundColor="@color/tag_color_11" />
+            workpage:backgroundColor="@color/tag_color_11"
+            workpage:cornerRadius="10" />
 
         <jajimenez.workpage.ColorView android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="5dp"
             workpage:borderWidth="5dp"
             workpage:borderColor="@color/tag_color_12"
-            workpage:backgroundColor="@color/tag_color_12" />
+            workpage:backgroundColor="@color/tag_color_12"
+            workpage:cornerRadius="10" />
     </GridLayout>
 </ScrollView>

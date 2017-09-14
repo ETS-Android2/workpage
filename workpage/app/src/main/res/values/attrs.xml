@@ -4,5 +4,6 @@
         <attr name="borderWidth" format="dimension" />
         <attr name="borderColor" format="color" />
         <attr name="backgroundColor" format="color" />
+        <attr name="cornerRadius" format="float" />
     </declare-styleable>
 </resources>

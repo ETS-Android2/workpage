@@ -13,6 +13,8 @@ public class ColorView extends View {
     private int borderColor;
     private int backgroundColor;
 
+    private float cornerRadius;
+
     private RectF borderRect;
     private Paint borderPaint;
 
@@ -21,26 +23,12 @@ public class ColorView extends View {
 
     public ColorView(Context context) {
         super(context);
-
-        borderWidth = 0;
-
-        borderRect = null;
-        borderPaint = null;
-
-        backgroundRect = null;
-        backgroundPaint = null;
+        init();
     }
 
     public ColorView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        borderWidth = 0;
-
-        borderRect = null;
-        borderPaint = null;
-
-        backgroundRect = null;
-        backgroundPaint = null;
+        init();
 
         TypedArray a = (context.getTheme()).obtainStyledAttributes(attrs, R.styleable.ColorView, 0, 0);
 
@@ -49,12 +37,24 @@ public class ColorView extends View {
 
             borderColor = a.getColor(R.styleable.ColorView_borderColor, 0xFFFFFFFF);
             borderPaint = setupBorderPaint(borderColor);
+            cornerRadius = a.getFloat(R.styleable.ColorView_cornerRadius, 0);
 
             backgroundColor = a.getColor(R.styleable.ColorView_backgroundColor, 0xFFFFFFFF);
             backgroundPaint = setupBackgroundPaint(backgroundColor);
         } finally {
             a.recycle();
         }
+    }
+
+    private void init() {
+        borderWidth = 0;
+        borderRect = null;
+        borderPaint = null;
+
+        cornerRadius = 0;
+
+        backgroundRect = null;
+        backgroundPaint = null;
     }
 
     public float getBorderWidth() {
@@ -68,6 +68,8 @@ public class ColorView extends View {
     public int getBackgroundColor() {
         return backgroundColor;
     }
+
+    public float getCornerRadius() { return cornerRadius; }
 
     public void setBorderWidth(float width) {
         borderWidth = width;
@@ -115,6 +117,10 @@ public class ColorView extends View {
         return paint;
     }
 
+    public void setCornerRadius(float Radius) {
+        cornerRadius = Radius;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         float leftPadding = (float) getPaddingLeft();
@@ -133,7 +139,7 @@ public class ColorView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (backgroundRect != null && backgroundPaint != null) canvas.drawRect(backgroundRect, backgroundPaint);
-        if (borderRect != null && borderPaint != null) canvas.drawRect(borderRect, borderPaint);
+        if (backgroundRect != null && backgroundPaint != null) canvas.drawRoundRect(backgroundRect, cornerRadius, cornerRadius, backgroundPaint);
+        if (borderRect != null && borderPaint != null) canvas.drawRoundRect(borderRect, cornerRadius, cornerRadius, borderPaint);
     }
 }
