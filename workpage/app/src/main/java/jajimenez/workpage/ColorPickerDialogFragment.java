@@ -11,11 +11,12 @@ import android.view.LayoutInflater;
 import android.widget.GridLayout;
 
 public class ColorPickerDialogFragment extends DialogFragment {
-    //private int selectedColor;
     private OnColorSelectedListener onColorSelectedListener;
+    private OnNoColorSelectedListener onNoColorSelectedListener;
 
     public ColorPickerDialogFragment() {
         onColorSelectedListener = null;
+        onNoColorSelectedListener = null;
     }
 
     @Override
@@ -54,6 +55,15 @@ public class ColorPickerDialogFragment extends DialogFragment {
             }
         });
 
+        builder.setPositiveButton(R.string.no_color, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (ColorPickerDialogFragment.this.onNoColorSelectedListener != null) {
+                    ColorPickerDialogFragment.this.onNoColorSelectedListener.onNoColorSelected();
+                }
+            }
+        });
+
         builder.setNegativeButton(R.string.cancel, null);
 
         return builder.create();
@@ -63,7 +73,15 @@ public class ColorPickerDialogFragment extends DialogFragment {
         onColorSelectedListener = listener;
     }
 
+    public void setOnNoColorSelectedListener(OnNoColorSelectedListener listener) {
+        onNoColorSelectedListener = listener;
+    }
+
     public interface OnColorSelectedListener {
         public void onColorSelected(int color);
+    }
+
+    public interface OnNoColorSelectedListener {
+        public void onNoColorSelected();
     }
 }

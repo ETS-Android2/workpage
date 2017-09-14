@@ -2,18 +2,24 @@ package jajimenez.workpage;
 
 import java.util.List;
 
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Rect;
+import android.graphics.drawable.*;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.widget.EditText;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,14 +32,12 @@ import jajimenez.workpage.data.model.TaskTag;
 public class EditTaskTagDialogFragment extends DialogFragment {
     private Activity activity;
     private AlertDialog dialog;
+    private ImageButton colorImageButton;
     private EditText nameEditText;
-    private CheckBox setColorCheckBox;
-    private ColorView selectedColorView;
-    private Button selectButton;
     private OnTaskTagSavedListener onTaskTagSavedListener;
 
-    private boolean saveButtonEnabled;
     private ColorPickerDialogFragment.OnColorSelectedListener colorSelectedListener;
+    private ColorPickerDialogFragment.OnNoColorSelectedListener noColorSelectedListener;
 
     private ApplicationLogic applicationLogic;
     private TaskTag tag;
@@ -56,39 +60,21 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         contextTags = applicationLogic.getAllTaskTags(context);
 
         if (tagId == -1) {
+            // New Tag mode
             tag = new TaskTag();
             tag.setContextId(contextId);
         }
         else {
+            // Edit Tag mode
             tag = applicationLogic.getTaskTag(tagId);
-        }
-
-        colorSelectedListener = new ColorPickerDialogFragment.OnColorSelectedListener() {
-            public void onColorSelected(int color) {
-                EditTaskTagDialogFragment.this.selectedColorView.setBackgroundColor(color);
-            }
-        };
-
-        if (savedInstanceState == null) {
-            saveButtonEnabled = (tag.getId() >= 0);
-        }
-        else {
-            saveButtonEnabled = savedInstanceState.getBoolean("save_button_enabled");
-
-            ColorPickerDialogFragment colorPickerFragment = (ColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("color_picker");
-            if (colorPickerFragment != null) colorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
-
-            AdvancedColorPickerDialogFragment advancedColorPickerFragment = (AdvancedColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("advanced_color_picker");
-            if (advancedColorPickerFragment != null) advancedColorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
+            contextTags.remove(tag);
         }
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_tag, null);
 
         nameEditText = (EditText) view.findViewById(R.id.edit_task_tag_name);
-        setColorCheckBox = (CheckBox) view.findViewById(R.id.edit_task_tag_set_color);
-        selectedColorView = (ColorView) view.findViewById(R.id.edit_task_tag_selected);
-        selectButton = (Button) view.findViewById(R.id.edit_task_tag_select);
+        colorImageButton = (ImageButton) view.findViewById(R.id.edit_task_tag_color);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -96,54 +82,50 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         if (tag.getId() < 0) {
             // New Tag mode
             builder.setTitle(R.string.new_tag);
-            selectButton.setEnabled(false);
         }
         else {
             // Edit Tag mode
             builder.setTitle(R.string.edit_tag);
             nameEditText.setText(tag.getName());
-
-            boolean setColor;
-
-            if (savedInstanceState == null) {
-                String color = tag.getColor();
-                setColor = (color != null && !color.equals(""));
-
-                if (setColor) selectedColorView.setBackgroundColor(Color.parseColor(color));
-            } else {
-                int selectedColor = savedInstanceState.getInt("selected_color", 0xFFFFFFFF);
-                selectedColorView.setBackgroundColor(selectedColor);
-
-                setColor = savedInstanceState.getBoolean("set_color");
-            }
-
-            setColorCheckBox.setChecked(setColor);
-            selectButton.setEnabled(setColor);
         }
 
-        builder.setNegativeButton(R.string.cancel, null);
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                String name = ((EditTaskTagDialogFragment.this.nameEditText.getText()).toString()).trim();
-                
-                // Convert the int-color to hexadecimal color.
-                String color;
-
-                if (EditTaskTagDialogFragment.this.setColorCheckBox.isChecked()) {
-                    color = String.format("#%06X", 0xFFFFFF & EditTaskTagDialogFragment.this.selectedColorView.getBackgroundColor());
-                } else {
-                    color = null;
-                }
-
-                EditTaskTagDialogFragment.this.tag.setName(name);
-                EditTaskTagDialogFragment.this.tag.setColor(color);
-
                 EditTaskTagDialogFragment.this.applicationLogic.saveTaskTag(EditTaskTagDialogFragment.this.tag);
                 Toast.makeText(EditTaskTagDialogFragment.this.activity, R.string.tag_saved, Toast.LENGTH_SHORT).show();
 
                 if (EditTaskTagDialogFragment.this.onTaskTagSavedListener != null) {
                     EditTaskTagDialogFragment.this.onTaskTagSavedListener.onTaskTagSaved();
                 }
+            }
+        });
+
+        builder.setNegativeButton(R.string.cancel, null);
+
+        // Listeners
+        colorSelectedListener = new ColorPickerDialogFragment.OnColorSelectedListener() {
+            public void onColorSelected(int color) {
+                String tagColor = String.format("#%06X", 0xFFFFFF & color);
+                EditTaskTagDialogFragment.this.tag.setColor(tagColor);
+
+                EditTaskTagDialogFragment.this.updateInterface();
+            }
+        };
+
+        noColorSelectedListener = new ColorPickerDialogFragment.OnNoColorSelectedListener() {
+            public void onNoColorSelected() {
+                EditTaskTagDialogFragment.this.tag.setColor(null);
+                EditTaskTagDialogFragment.this.updateInterface();
+            }
+        };
+
+        colorImageButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ColorPickerDialogFragment fragment = new ColorPickerDialogFragment();
+                fragment.setOnColorSelectedListener(EditTaskTagDialogFragment.this.colorSelectedListener);
+                fragment.setOnNoColorSelectedListener(EditTaskTagDialogFragment.this.noColorSelectedListener);
+
+                fragment.show(getFragmentManager(), "color_picker");
             }
         });
 
@@ -154,17 +136,16 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
-                boolean enabled = (text.length() > 0);
+                EditTaskTagDialogFragment.this.tag.setName(text);
 
-                if (enabled) {
-                    // Auxiliar tag object.
-                    TaskTag newTag = new TaskTag();
-                    newTag.setName(text);
+                Button b = EditTaskTagDialogFragment.this.dialog.getButton(DialogInterface.BUTTON_POSITIVE);
 
-                    enabled = (newTag.equals(EditTaskTagDialogFragment.this.tag) || !EditTaskTagDialogFragment.this.contextTags.contains(newTag));
+                if (b != null) {
+                    boolean enabled = (text.length() > 0
+                            && !EditTaskTagDialogFragment.this.contextTags.contains(EditTaskTagDialogFragment.this.tag));
+
+                    b.setEnabled(enabled);
                 }
-
-                (EditTaskTagDialogFragment.this.dialog.getButton(DialogInterface.BUTTON_POSITIVE)).setEnabled(enabled);
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -172,38 +153,36 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             }
         });
 
-        setColorCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                EditTaskTagDialogFragment.this.selectButton.setEnabled(isChecked);
-            }
-        });
+        if (savedInstanceState != null) {
+            ColorPickerDialogFragment colorPickerFragment = (ColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("color_picker");
 
-        selectButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ColorPickerDialogFragment fragment = new ColorPickerDialogFragment();
-                fragment.setOnColorSelectedListener(EditTaskTagDialogFragment.this.colorSelectedListener);
-                fragment.show(getFragmentManager(), "color_picker");
+            if (colorPickerFragment != null) {
+                colorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
+                colorPickerFragment.setOnNoColorSelectedListener(noColorSelectedListener);
             }
-        });
+
+            AdvancedColorPickerDialogFragment advancedColorPickerFragment = (AdvancedColorPickerDialogFragment) (getFragmentManager()).findFragmentByTag("advanced_color_picker");
+            if (advancedColorPickerFragment != null) advancedColorPickerFragment.setOnColorSelectedListener(colorSelectedListener);
+        }
 
         dialog = builder.create();
+        updateInterface();
 
         return dialog;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    private void updateInterface() {
+        String color = tag.getColor();
 
-        outState.putBoolean("set_color", setColorCheckBox.isChecked());
-        outState.putInt("selected_color", selectedColorView.getBackgroundColor());
-        outState.putBoolean("save_button_enabled", (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).isEnabled());
-    }
+        if (color != null && !color.equals("")) {
+            colorImageButton.setImageResource(R.drawable.color);
+            colorImageButton.setColorFilter(Color.parseColor(color));
+        }
+        else {
+            colorImageButton.setImageResource(R.drawable.no_color);
+        }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).setEnabled(saveButtonEnabled);
+        nameEditText.setText(tag.getName());
     }
 
     public void setOnTaskTagSavedListener(OnTaskTagSavedListener listener) {
