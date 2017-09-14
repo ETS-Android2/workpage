@@ -2,20 +2,12 @@ package jajimenez.workpage;
 
 import java.util.List;
 
-import android.content.res.Resources;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.Rect;
-import android.graphics.drawable.*;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.LayoutInflater;
@@ -36,6 +28,8 @@ public class EditTaskTagDialogFragment extends DialogFragment {
     private AlertDialog dialog;
     private ImageButton colorImageButton;
     private EditText nameEditText;
+    private Button positiveButton;
+
     private OnTaskTagSavedListener onTaskTagSavedListener;
 
     private ColorPickerDialogFragment.OnColorSelectedListener colorSelectedListener;
@@ -75,8 +69,8 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_tag, null);
 
-        nameEditText = (EditText) view.findViewById(R.id.edit_task_tag_name);
         colorImageButton = (ImageButton) view.findViewById(R.id.edit_task_tag_color);
+        nameEditText = (EditText) view.findViewById(R.id.edit_task_tag_name);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -88,7 +82,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         else {
             // Edit Tag mode
             builder.setTitle(R.string.edit_tag);
-            nameEditText.setText(tag.getName());
         }
 
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
@@ -140,14 +133,8 @@ public class EditTaskTagDialogFragment extends DialogFragment {
                 String text = (s.toString()).trim();
                 EditTaskTagDialogFragment.this.tag.setName(text);
 
-                Button b = EditTaskTagDialogFragment.this.dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-
-                if (b != null) {
-                    boolean enabled = (text.length() > 0
-                            && !EditTaskTagDialogFragment.this.contextTags.contains(EditTaskTagDialogFragment.this.tag));
-
-                    b.setEnabled(enabled);
-                }
+                // The buttons can be accessed only when the dialog is shown, but not on the dialog creation
+                if (positiveButton != null) updateNameEditText();
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -173,6 +160,13 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         return dialog;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        positiveButton = EditTaskTagDialogFragment.this.dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        updateNameEditText();
+    }
+
     private void updateInterface() {
         String color = tag.getColor();
 
@@ -187,6 +181,10 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         }
 
         nameEditText.setText(tag.getName());
+    }
+
+    private void updateNameEditText() {
+        positiveButton.setEnabled((tag.getName()).length() > 0  && !contextTags.contains(tag));
     }
 
     public void setOnTaskTagSavedListener(OnTaskTagSavedListener listener) {

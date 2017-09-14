@@ -11,6 +11,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.text.Editable;
@@ -23,6 +24,7 @@ public class EditTaskContextDialogFragment extends DialogFragment {
     private Activity activity;
     private AlertDialog dialog;
     private EditText nameEditText;
+    private Button positiveButton;
     private OnTaskContextSavedListener onTaskContextSavedListener;
 
     private ApplicationLogic applicationLogic;
@@ -39,14 +41,20 @@ public class EditTaskContextDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
+        contexts = applicationLogic.getAllTaskContexts();
 
         Bundle arguments = getArguments();
         long contextId = arguments.getLong("context_id", -1);
 
-        if (contextId == -1) context = new TaskContext();
-        else context = applicationLogic.getTaskContext(contextId);
-
-        contexts = applicationLogic.getAllTaskContexts();
+        if (contextId == -1) {
+            // New Context mode
+            context = new TaskContext();
+        }
+        else {
+            // Edit Context mode
+            context = applicationLogic.getTaskContext(contextId);
+            contexts.remove(context);
+        }
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_context, null);
@@ -62,10 +70,8 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         } else {
             // Edit Context mode
             builder.setTitle(R.string.edit_context);
-            nameEditText.setText(context.getName());
         }
 
-        builder.setNegativeButton(R.string.cancel, null);
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 String name = ((EditTaskContextDialogFragment.this.nameEditText.getText()).toString()).trim();
@@ -81,6 +87,8 @@ public class EditTaskContextDialogFragment extends DialogFragment {
             }
         });
 
+        builder.setNegativeButton(R.string.cancel, null);
+
         nameEditText.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // Nothing to do.
@@ -88,20 +96,10 @@ public class EditTaskContextDialogFragment extends DialogFragment {
 
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
-                boolean enabled = (text.length() > 0);
+                EditTaskContextDialogFragment.this.context.setName(text);
 
-                if (enabled) {
-                    // Auxiliar context object.
-                    TaskContext newContext = new TaskContext();
-                    newContext.setName(text);
-
-                    enabled = (newContext.equals(EditTaskContextDialogFragment.this.context)
-                            || !EditTaskContextDialogFragment.this.contexts.contains(newContext));
-
-                    (dialog.getButton(DialogInterface.BUTTON_POSITIVE)).setEnabled(enabled);
-                }
-
-                (EditTaskContextDialogFragment.this.dialog.getButton(DialogInterface.BUTTON_POSITIVE)).setEnabled(enabled);
+                // The buttons can be accessed only when the dialog is shown, but not on the dialog creation
+                if (positiveButton != null) updateNameEditText();
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -110,8 +108,24 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         });
 
         dialog = builder.create();
+        updateInterface();
 
         return dialog;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        updateNameEditText();
+    }
+
+    private void updateInterface() {
+        nameEditText.setText(context.getName());
+    }
+
+    private void updateNameEditText() {
+        positiveButton.setEnabled((context.getName()).length() > 0  && !contexts.contains(context));
     }
 
     public void setOnTaskContextSavedListener(OnTaskContextSavedListener listener) {
