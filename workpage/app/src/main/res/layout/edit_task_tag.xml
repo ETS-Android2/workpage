@@ -3,6 +3,7 @@
     xmlns:workpage="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="10dp"
     android:orientation="horizontal"
     android:focusableInTouchMode="true">
 
@@ -17,6 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_marginStart="2dp"
         android:layout_gravity="center_vertical"
         android:inputType="text"
         android:hint="@string/tag_name" />
