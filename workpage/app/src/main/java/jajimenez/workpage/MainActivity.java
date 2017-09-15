@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar_main_toolbar);
         setSupportActionBar(toolbar);
 
+        viewTextView = (TextView) findViewById(R.id.main_view);
+        filterTagsValueTextView = (TextView) findViewById(R.id.main_filter_tags_value);
+        actionMode = null;
+
         listView = (ListView) findViewById(R.id.main_list);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,34 +84,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        emptyTextView = (TextView) findViewById(R.id.main_empty);
-        viewTextView = (TextView) findViewById(R.id.main_view);
-        filterTagsValueTextView = (TextView) findViewById(R.id.main_filter_tags_value);
 
-        actionMode = null;
+        emptyTextView = (TextView) findViewById(R.id.main_empty);
 
         createContextualActionBar();
         interfaceReady = false;
-
-        // Add Task button
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.app_bar_main_add_task_button);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!interfaceReady) return;
-
-                // Close the context action bar
-                if (MainActivity.this.actionMode != null) MainActivity.this.actionMode.finish();
-
-                // Launch Edit Activity
-                Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
-                intent.putExtra("mode", "new");
-                intent.putExtra("task_context_id", currentTaskContext.getId());
-
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-            }
-        });
 
         // Navigation menu
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -394,6 +375,20 @@ public class MainActivity extends AppCompatActivity
                 importFragment.show(getFragmentManager(), "data_import_confirmation");
             }
         }
+    }
+
+    public void onAddClick(View view) {
+        if (!interfaceReady) return;
+
+        // Close the context action bar
+        if (actionMode != null) actionMode.finish();
+
+        // Launch Edit Activity
+        Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
+        intent.putExtra("mode", "new");
+        intent.putExtra("task_context_id", currentTaskContext.getId());
+
+        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
     }
 
     public void enableInterface() {

@@ -51,26 +51,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
         (getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.edit_task_contexts_add);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!interfaceReady) return;
-
-                TaskContext newContext = new TaskContext();
-
-                // Show an edition dialog
-                EditTaskContextDialogFragment editFragment = new EditTaskContextDialogFragment();
-
-                Bundle arguments = new Bundle();
-                arguments.putLong("context_id", newContext.getId());
-                editFragment.setArguments(arguments);
-
-                editFragment.setOnTaskContextSavedListener(saveTaskContextListener);
-                editFragment.show(getFragmentManager(), "edit_task_context");
-            }
-        });
-
         saveTaskContextListener = new EditTaskContextDialogFragment.OnTaskContextSavedListener() {
             public void onTaskContextSaved() {
                 // Close the contextual action bar
@@ -231,6 +211,22 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         if (actionMode != null) actionMode.finish();
 
         super.onSaveInstanceState(outState);
+    }
+
+    public void onAddClick(View view) {
+        if (!interfaceReady) return;
+
+        TaskContext newContext = new TaskContext();
+
+        // Show an edition dialog
+        EditTaskContextDialogFragment editFragment = new EditTaskContextDialogFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putLong("context_id", newContext.getId());
+        editFragment.setArguments(arguments);
+
+        editFragment.setOnTaskContextSavedListener(saveTaskContextListener);
+        editFragment.show(getFragmentManager(), "edit_task_context");
     }
 
     private void updateInterface() {

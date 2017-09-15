@@ -56,28 +56,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
         (getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.edit_task_tags_add);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!interfaceReady) return;
-
-                // Show an edition dialog
-                EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
-                Bundle arguments = new Bundle();
-
-                long tagId = -1; // New tag
-
-                arguments.putLong("tag_id", tagId);
-                arguments.putLong("context_id", currentTaskContext.getId());
-
-                editFragment.setArguments(arguments);
-
-                editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
-                editFragment.show(getFragmentManager(), "edit_task_tag");
-            }
-        });
-
         saveTaskTagListener = new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
             public void onTaskTagSaved() {
                 // Set the result as OK for making Main Activity update its interface
@@ -221,6 +199,24 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         if (actionMode != null) actionMode.finish();
 
         super.onSaveInstanceState(outState);
+    }
+
+    public void onAddClick(View view) {
+        if (!interfaceReady) return;
+
+        // Show an edition dialog
+        EditTaskTagDialogFragment editFragment = new EditTaskTagDialogFragment();
+        Bundle arguments = new Bundle();
+
+        long tagId = -1; // New tag
+
+        arguments.putLong("tag_id", tagId);
+        arguments.putLong("context_id", currentTaskContext.getId());
+
+        editFragment.setArguments(arguments);
+
+        editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
+        editFragment.show(getFragmentManager(), "edit_task_tag");
     }
 
     private void updateInterface() {
