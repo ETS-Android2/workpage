@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -111,9 +112,16 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
         if (savedInstanceState == null) selectedTags = getInitialSelectedTags(arguments);
         else selectedTags = getSelectedTags(savedInstanceState);
 
+        AlertDialog dialog = builder.create();
+
+        if (selectedTags.size() == 0) {
+            addTagAutoTextView.requestFocus();
+            (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }
+
         updateInterface();
 
-        return builder.create();
+        return dialog;
     }
 
     private List<TaskTag> getInitialSelectedTags(Bundle arguments) {
