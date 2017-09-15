@@ -5,14 +5,12 @@
     android:layout_height="match_parent"
     tools:context="jajimenez.workpage.EditTaskActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:focusableInTouchMode="true">
 
-        <EditText
-            android:id="@+id/edit_task_title"
+        <EditText android:id="@+id/edit_task_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
@@ -23,8 +21,7 @@
             android:maxLength="100"
             android:hint="@string/title" />
 
-        <View
-            android:layout_width="match_parent"
+        <View android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider" />
 
@@ -38,13 +35,11 @@
             android:text="@string/description"
             android:onClick="onEditDescriptionClicked" />
 
-        <View
-            android:layout_width="match_parent"
+        <View android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <Button
-            android:id="@+id/edit_task_date_mode"
+        <Button android:id="@+id/edit_task_date_mode"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,13 +48,11 @@
             android:drawablePadding="10dp"
             android:onClick="onDateModeClicked" />
 
-        <View
-            android:layout_width="match_parent"
+        <View android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <TextView
-            android:id="@+id/edit_task_date_mode_1"
+        <TextView android:id="@+id/edit_task_date_mode_1"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,15 +60,13 @@
             android:textColor="@color/title_text_color"
             android:text="@string/start_1" />
 
-        <TableLayout
-            android:id="@+id/edit_task_table_date_1"
+        <TableLayout android:id="@+id/edit_task_table_date_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="0">
 
             <TableRow>
-                <Button
-                    android:id="@+id/edit_task_date_1"
+                <Button android:id="@+id/edit_task_date_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,8 +75,7 @@
                     android:drawablePadding="10dp"
                     android:onClick="onDate1Clicked" />
 
-                <Button
-                    android:id="@+id/edit_task_time_1"
+                <Button android:id="@+id/edit_task_time_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -95,8 +85,7 @@
             </TableRow>
 
             <TableRow android:id="@+id/edit_task_row_time_zone_1">
-                <Button
-                    android:id="@+id/edit_task_time_zone_1"
+                <Button android:id="@+id/edit_task_time_zone_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -108,8 +97,7 @@
             </TableRow>
 
             <TableRow android:id="@+id/edit_task_row_reminder_1">
-                <Button
-                    android:id="@+id/edit_task_reminder_1"
+                <Button android:id="@+id/edit_task_reminder_1"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -121,14 +109,12 @@
             </TableRow>
         </TableLayout>
 
-        <View
-            android:id="@+id/edit_task_date_divider_1"
+        <View android:id="@+id/edit_task_date_divider_1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <TextView
-            android:id="@+id/edit_task_date_mode_2"
+        <TextView android:id="@+id/edit_task_date_mode_2"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -136,15 +122,13 @@
             android:textColor="@color/title_text_color"
             android:text="@string/deadline_1"/>
 
-        <TableLayout
-            android:id="@+id/edit_task_table_date_2"
+        <TableLayout android:id="@+id/edit_task_table_date_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="0">
 
             <TableRow>
-                <Button
-                    android:id="@+id/edit_task_date_2"
+                <Button android:id="@+id/edit_task_date_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,8 +137,7 @@
                     android:drawablePadding="10dp"
                     android:onClick="onDate2Clicked" />
 
-                <Button
-                    android:id="@+id/edit_task_time_2"
+                <Button android:id="@+id/edit_task_time_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -177,8 +160,7 @@
             </TableRow>
 
             <TableRow android:id="@+id/edit_task_row_reminder_2">
-                <Button
-                    android:id="@+id/edit_task_reminder_2"
+                <Button android:id="@+id/edit_task_reminder_2"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -190,14 +172,12 @@
             </TableRow>
         </TableLayout>
 
-        <View
-            android:id="@+id/edit_task_date_divider_2"
+        <View android:id="@+id/edit_task_date_divider_2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/divider" />
 
-        <Button
-            android:id="@+id/edit_task_tags"
+        <Button android:id="@+id/edit_task_tags"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -206,5 +186,9 @@
             android:textAlignment="textStart"
             android:text="@string/tags_1"
             android:onClick="onTagsClicked" />
+
+        <View android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider" />
     </LinearLayout>
 </ScrollView>
