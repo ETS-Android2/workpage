@@ -52,16 +52,16 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
         countries = applicationLogic.getAllCountries();
+        selectedCountry = null;
 
         if (savedInstanceState == null) {
             mode = COUNTRY;
-            selectedCountry = null;
         }
         else {
             mode = savedInstanceState.getInt("mode", COUNTRY);
+            long selectedCountryCode = savedInstanceState.getLong("selected_country", -1);
 
-            long selectedCountryCode = savedInstanceState.getLong("selected_country", 1);
-            selectedCountry = applicationLogic.getCountry(selectedCountryCode);
+            if (selectedCountryCode > -1) selectedCountry = applicationLogic.getCountry(selectedCountryCode);
         }
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -173,7 +173,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         super.onSaveInstanceState(outState);
 
         outState.putInt("mode", mode);
-        outState.putLong("selected_country", selectedCountry.getId());
+        if (selectedCountry != null) outState.putLong("selected_country", selectedCountry.getId());
     }
 
     private List<Country> searchCountries(String name) {
