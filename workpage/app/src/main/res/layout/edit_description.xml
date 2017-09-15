@@ -5,4 +5,5 @@
     android:layout_height="wrap_content"
     android:lines="8"
     android:gravity="start|top"
-    android:inputType="text|textMultiLine" />
+    android:inputType="text|textMultiLine"
+    android:maxLength="5000" />

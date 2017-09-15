@@ -8,8 +8,8 @@
     android:focusableInTouchMode="true">
 
     <ImageButton android:id="@+id/edit_task_tag_color"
-        android:layout_width="54dp"
-        android:layout_height="54dp"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
         android:layout_gravity="center_vertical"
         android:padding="5dp"
         android:scaleType="fitCenter" />
@@ -21,6 +21,7 @@
         android:layout_marginStart="2dp"
         android:layout_gravity="center_vertical"
         android:inputType="text"
+        android:maxLength="100"
         android:hint="@string/tag_name" />
 
 </LinearLayout>

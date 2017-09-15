@@ -20,6 +20,7 @@
             android:paddingTop="20dp"
             android:layout_marginBottom="20dp"
             android:inputType="text"
+            android:maxLength="100"
             android:hint="@string/title" />
 
         <View
