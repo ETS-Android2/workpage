@@ -3,22 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="jajimenez.workpage.EditTaskActivity">
+    tools:context="jajimenez.workpage.EditTaskActivity"
+    android:focusableInTouchMode="true">
 
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:focusableInTouchMode="true">
+        android:orientation="vertical">
 
         <EditText android:id="@+id/edit_task_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:paddingTop="20dp"
-            android:layout_marginBottom="20dp"
+            android:paddingBottom="20dp"
             android:inputType="text"
             android:maxLength="100"
+            android:background="@android:color/transparent"
             android:hint="@string/title" />
 
         <View android:layout_width="match_parent"

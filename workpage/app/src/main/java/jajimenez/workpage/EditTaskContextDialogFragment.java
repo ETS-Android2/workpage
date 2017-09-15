@@ -3,6 +3,7 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
@@ -11,6 +12,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -64,9 +66,10 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
 
-        if (context.getId() < 0) {
+        if (contextId == -1) {
             // New Context mode
             builder.setTitle(R.string.new_context);
+
         } else {
             // Edit Context mode
             builder.setTitle(R.string.edit_context);
@@ -108,6 +111,8 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         });
 
         dialog = builder.create();
+        (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
         updateInterface();
 
         return dialog;
@@ -122,6 +127,8 @@ public class EditTaskContextDialogFragment extends DialogFragment {
 
     private void updateInterface() {
         nameEditText.setText(context.getName());
+        nameEditText.setSelection((nameEditText.getText()).length());
+        nameEditText.requestFocus();
     }
 
     private void updateNameEditText() {

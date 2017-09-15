@@ -93,8 +93,11 @@ public class EditTaskActivity extends AppCompatActivity {
             // Do nothing
         }
 
-        title = (EditText) findViewById(R.id.edit_task_title);
+        applicationLogic = new ApplicationLogic(this);
+        Intent intent = getIntent();
+        String mode = intent.getStringExtra("mode");
 
+        title = (EditText) findViewById(R.id.edit_task_title);
         dateMode = (Button) findViewById(R.id.edit_task_date_mode);
 
         dateMode1 = (TextView) findViewById(R.id.edit_task_date_mode_1);
@@ -131,6 +134,8 @@ public class EditTaskActivity extends AppCompatActivity {
                 // Nothing to do.
             }
         });
+
+        if (mode != null && mode.equals("new")) title.requestFocus();
 
         descriptionListener = new EditDescriptionDialogFragment.OnOkButtonClickedListener() {
             public void onOkButtonClicked(String description) {
@@ -386,10 +391,6 @@ public class EditTaskActivity extends AppCompatActivity {
                 EditTaskActivity.this.updateInterface();
             }
         };
-
-        applicationLogic = new ApplicationLogic(this);
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("mode");
 
         if (mode != null && mode.equals("edit")) {
             // Get task data
@@ -650,6 +651,7 @@ public class EditTaskActivity extends AppCompatActivity {
         else setTitle(R.string.edit_task);
 
         title.setText(currentTask.getTitle());
+        title.setSelection((title.getText()).length());
 
         TextTool tool = new TextTool();
         Calendar now;

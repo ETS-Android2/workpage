@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -75,7 +76,7 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
 
-        if (tag.getId() < 0) {
+        if (tagId == -1) {
             // New Tag mode
             builder.setTitle(R.string.new_tag);
         }
@@ -155,6 +156,13 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         }
 
         dialog = builder.create();
+
+        if (tagId == -1) {
+            // New Tag mode
+            nameEditText.requestFocus();
+            (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }
+
         updateInterface();
 
         return dialog;
@@ -181,6 +189,7 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         }
 
         nameEditText.setText(tag.getName());
+        nameEditText.setSelection((nameEditText.getText()).length());
     }
 
     private void updateNameEditText() {
