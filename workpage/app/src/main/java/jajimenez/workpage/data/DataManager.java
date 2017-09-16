@@ -1859,43 +1859,61 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreWhenTime = false;
                 if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
 
-                TaskReminder whenReminder = null;
+                String whenTimeZoneCode = null;
                 if (!cursor.isNull(5)) {
-                    long whenReminderId = cursor.getLong(5);
+                    whenTimeZoneCode = cursor.getString(5);
+                    when.setTimeZone(TimeZone.getTimeZone(whenTimeZoneCode));
+                }
+
+                TaskReminder whenReminder = null;
+                if (!cursor.isNull(6)) {
+                    long whenReminderId = cursor.getLong(6);
                     whenReminder = getTaskReminder(db, whenReminderId);
                 }
 
                 Calendar start = null;
-                if (!cursor.isNull(6)) {
+                if (!cursor.isNull(7)) {
                     start = Calendar.getInstance();
-                    start.setTimeInMillis(cursor.getLong(6));
+                    start.setTimeInMillis(cursor.getLong(7));
                 }
 
                 boolean ignoreStartTime = false;
-                if (!cursor.isNull(7)) ignoreStartTime = (cursor.getLong(7) != 0);
+                if (!cursor.isNull(8)) ignoreStartTime = (cursor.getLong(8) != 0);
+
+                String startTimeZoneCode = null;
+                if (!cursor.isNull(9)) {
+                    startTimeZoneCode = cursor.getString(9);
+                    start.setTimeZone(TimeZone.getTimeZone(startTimeZoneCode));
+                }
 
                 TaskReminder startReminder = null;
-                if (!cursor.isNull(8)) {
-                    long startReminderId = cursor.getLong(8);
+                if (!cursor.isNull(10)) {
+                    long startReminderId = cursor.getLong(10);
                     startReminder = getTaskReminder(db, startReminderId);
                 }
 
                 Calendar deadline = null;
-                if (!cursor.isNull(9)) {
+                if (!cursor.isNull(11)) {
                     deadline = Calendar.getInstance();
-                    deadline.setTimeInMillis(cursor.getLong(9));
+                    deadline.setTimeInMillis(cursor.getLong(11));
                 }
 
                 boolean ignoreDeadlineTime = false;
-                if (!cursor.isNull(10)) ignoreDeadlineTime = (cursor.getLong(10) != 0);
+                if (!cursor.isNull(12)) ignoreDeadlineTime = (cursor.getLong(12) != 0);
+
+                String deadlineTimeZoneCode = null;
+                if (!cursor.isNull(13)) {
+                    deadlineTimeZoneCode = cursor.getString(13);
+                    deadline.setTimeZone(TimeZone.getTimeZone(deadlineTimeZoneCode));
+                }
 
                 TaskReminder deadlineReminder = null;
-                if (!cursor.isNull(11)) {
-                    long deadlineReminderId = cursor.getLong(11);
+                if (!cursor.isNull(14)) {
+                    long deadlineReminderId = cursor.getLong(14);
                     deadlineReminder = getTaskReminder(db, deadlineReminderId);
                 }
 
-                boolean done = (cursor.getLong(12) != 0);
+                boolean done = (cursor.getLong(15) != 0);
                 List<TaskTag> tags = getTaskTags(db, id);
 
                 tasks.add(new Task(id, contextId, title, description,

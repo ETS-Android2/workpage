@@ -55,9 +55,9 @@ public class Task extends Entity {
 
     public Task(long contextId,
         String title, String description,
-        Calendar when, boolean ignoreWhenTime, /*String whenTimeZoneCode,*/ TaskReminder whenReminder,
-        Calendar start, boolean ignoreStartTime, /*String startTimeZoneCode,*/ TaskReminder startReminder,
-        Calendar deadline, boolean ignoreDeadlineTime, /*String deadlineTimeZoneCode,*/ TaskReminder deadlineReminder,
+        Calendar when, boolean ignoreWhenTime, TaskReminder whenReminder,
+        Calendar start, boolean ignoreStartTime, TaskReminder startReminder,
+        Calendar deadline, boolean ignoreDeadlineTime, TaskReminder deadlineReminder,
         boolean done, List<TaskTag> tags) {
 
         super();
