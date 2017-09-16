@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,7 +33,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
     private List<TaskTag> selectedTags;
 
     private AutoCompleteTextView addTagAutoTextView;
-    private Button addTagButton;
+    private ImageButton addTagButton;
     private LinearLayout addedTagsLinearLayout;
 
     private OnTaskTagsSelectedListener onTaskTagsSelectedListener;
@@ -49,7 +50,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.task_tag_picker, null);
 
         addTagAutoTextView = (AutoCompleteTextView) view.findViewById(R.id.task_tag_picker_add_tag_autotextview);
-        addTagButton = (Button) view.findViewById(R.id.task_tag_picker_add_tag_button);
+        addTagButton = (ImageButton) view.findViewById(R.id.task_tag_picker_add_tag_button);
         addedTagsLinearLayout = (LinearLayout) view.findViewById(R.id.task_tag_picker_added_tags);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);

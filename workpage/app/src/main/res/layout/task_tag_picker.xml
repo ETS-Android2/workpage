@@ -17,15 +17,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:inputType="text"
             android:completionThreshold="1"
             android:hint="@string/tag_name" />
 
-        <Button
+        <ImageButton
             android:id="@+id/task_tag_picker_add_tag_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add" />
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitCenter"
+            android:src="@drawable/add"
+            android:tint="@color/text_color" />
+
     </LinearLayout>
 
     <ScrollView
