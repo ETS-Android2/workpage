@@ -47,6 +47,8 @@ public class ColorPickerDialogFragment extends DialogFragment {
         builder.setView(view);
         builder.setTitle(getString(R.string.select_color));
 
+        builder.setPositiveButton(R.string.cancel, null);
+
         builder.setNeutralButton(R.string.other_color, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 AdvancedColorPickerDialogFragment fragment = new AdvancedColorPickerDialogFragment();
@@ -55,7 +57,7 @@ public class ColorPickerDialogFragment extends DialogFragment {
             }
         });
 
-        builder.setPositiveButton(R.string.no_color, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.no_color, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (ColorPickerDialogFragment.this.onNoColorSelectedListener != null) {
@@ -63,8 +65,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
                 }
             }
         });
-
-        builder.setNegativeButton(R.string.cancel, null);
 
         return builder.create();
     }
