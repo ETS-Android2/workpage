@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.main_nav_view:
                 intent = new Intent(this, ViewActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, ApplicationLogic.CHANGE_VIEW);
                 break;
             case R.id.main_nav_edit_tags:
                 intent = new Intent(this, EditTaskTagsActivity.class);
@@ -348,7 +348,10 @@ public class MainActivity extends AppCompatActivity
         Bundle arguments;
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == ApplicationLogic.CHANGE_TASKS || requestCode == ApplicationLogic.CHANGE_TASK_TAGS) {
+            if (requestCode == ApplicationLogic.CHANGE_TASKS
+                    || requestCode == ApplicationLogic.CHANGE_TASK_TAGS
+                    || requestCode == ApplicationLogic.CHANGE_VIEW) {
+
                 updateInterface();
             }
             else if (requestCode == ApplicationLogic.EXPORT_DATA) {
