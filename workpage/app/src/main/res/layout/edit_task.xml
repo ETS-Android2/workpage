@@ -60,9 +60,11 @@
             android:background="@color/divider" />
 
         <TextView android:id="@+id/edit_task_date_mode_1"
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:textAlignment="textStart"
             android:textColor="@color/text_color"
             android:text="@string/start_1" />
@@ -130,9 +132,11 @@
             android:background="@color/divider" />
 
         <TextView android:id="@+id/edit_task_date_mode_2"
-            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:textAlignment="textStart"
             android:textColor="@color/text_color"
             android:text="@string/deadline_1"/>
