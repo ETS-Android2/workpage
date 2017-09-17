@@ -46,8 +46,8 @@
         <item quantity="other">Delete the %1$d selected contexts? All associated tasks and tags will be deleted.</item>
     </plurals>
     <plurals name="context_deleted">
-        <item quantity="one">Context deleted.</item>
-        <item quantity="other">Contexts deleted.</item>
+        <item quantity="one">Context deleted</item>
+        <item quantity="other">Contexts deleted</item>
     </plurals>
 
     <string name="cancel">Cancel</string>
@@ -86,8 +86,8 @@
         <item quantity="other">Delete the %1$d selected tasks?</item>
     </plurals>
     <plurals name="task_deleted">
-        <item quantity="one">Task deleted.</item>
-        <item quantity="other">Tasks deleted.</item>
+        <item quantity="one">Task deleted</item>
+        <item quantity="other">Tasks deleted</item>
     </plurals>
 
     <string name="task_open">Task (open)</string>
@@ -103,8 +103,6 @@
     <string name="no_date">No date</string>
     <string name="single_date">Single date</string>
     <string name="no_time">No time</string>
-    <string name="select_date">Select date</string>
-    <string name="select_date_desc">If this option is off, the date will be undefined.</string>
     <string name="reminder">Reminder</string>
     <string name="add_reminder">Add reminder</string>
     <string name="no_reminder">No reminder</string>
@@ -114,14 +112,13 @@
     <string name="deadline_1">Deadline</string>
     <string name="deadline_2">Deadline:</string>
     <string name="time_zone">Time zone</string>
-    <string name="tag">Tag</string>
     <string name="tags_1">Tags</string>
     <string name="tags_2">Tags:</string>
     <string name="tag_name">Tag name</string>
     <string name="add">Add</string>
-    <string name="task_saved">Task saved.</string>
+    <string name="task_saved">Task saved</string>
     <string name="title_error">Please, enter the title.</string>
-    <string name="dates_error">Please, enter valid dates.</string>
+    <string name="dates_error">Please, enter a valid date range.</string>
     <string name="on_time">On time</string>
     <string name="x_minutes">%1$d minutes before</string>
     <plurals name="x_hours">
@@ -147,8 +144,8 @@
         <item quantity="other">On %1$d closed tasks</item>
     </plurals>
     <plurals name="delete_selected_tag">
-        <item quantity="one">Delete selected tag?</item>
-        <item quantity="other">Delete the %1$d selected tags?</item>
+        <item quantity="one">Delete selected tag? Tasks with this tag will not be deleted.</item>
+        <item quantity="other">Delete the %1$d selected tags? Tasks with any of these tags will not be deleted.</item>
     </plurals>
     <plurals name="tag_deleted">
         <item quantity="one">Tag deleted</item>
@@ -174,16 +171,16 @@
     <string name="tag_saved">Tag saved</string>
     <string name="country_name">Country name</string>
 
-    <string name="export_success">Data exported.</string>
-    <string name="export_error">Error trying to export the data.</string>
+    <string name="export_success">Data exported</string>
+    <string name="export_error">Error trying to export the data</string>
 
-    <string name="data_import_confirmation">The current data will be overwritten. Do you want to continue?</string>
+    <string name="data_import_confirmation">All current data will be overwritten. Do you want to continue?</string>
 
     <string name="import_success">Data imported</string>
     <string name="import_error_opening_file">Error trying to open the file</string>
-    <string name="import_error_file_not_compatible">Error: The file is not compatible</string>
-    <string name="import_error_data_not_valid">Error: Data is not valid</string>
-    <string name="import_error_importing_data">Error trying to import the data</string>
+    <string name="import_error_file_not_compatible">Error: The file is not compatible.</string>
+    <string name="import_error_data_not_valid">Error: Data is not valid.</string>
+    <string name="import_error_importing_data">Error trying to import the data.</string>
 
     <string name="state_2">State</string>
 

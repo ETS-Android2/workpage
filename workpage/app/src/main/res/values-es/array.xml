@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="view_state_filter_texts">
+        <item>Pendiente</item>
+        <item>Realizable Hoy</item>
+        <item>Completo</item>
+    </string-array>
+</resources>

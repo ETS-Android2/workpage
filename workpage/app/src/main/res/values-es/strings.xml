@@ -1,0 +1,197 @@
+<resources>
+    <string name="app_name">Workpage</string>
+
+    <string name="app_description">Gestor de productividad</string>
+    <string name="app_version">0.9.0</string>
+    <string name="app_author">Jose A. Jimenez</string>
+    <string name="app_license">GPL 3.0</string>
+    <string name="app_web_site">https://github.com/jajimenez/workpage</string>
+
+    <string name="initial_task_context_personal">Personal</string>
+    <string name="initial_task_context_work">Trabajo</string>
+
+    <string name="dismiss">Descartar</string>
+    <string name="snooze">Posponer</string>
+
+    <string name="navigation_drawer_open">Abrir cajón de navegación</string>
+    <string name="navigation_drawer_close">Cerrar cajón de navegación</string>
+
+    <string name="context">Contexto</string>
+    <string name="view">Vista</string>
+    <string name="filter_by_status">Filtrar por estado</string>
+    <string name="filter_by_tags">Filtrar por etiquetas</string>
+    <string name="edit_tags">Editar etiquetas</string>
+    <string name="settings">Configuración</string>
+    <string name="import_data">Importar datos</string>
+    <string name="export_data">Exportar datos</string>
+    <string name="about">Acerca De</string>
+
+    <string name="switch_task_context">Cambiar contexto</string>
+    <string name="edit_contexts">Editar contextos</string>
+    <string name="new_context">Nuevo contexto</string>
+    <string name="edit_context">Editar contexto</string>
+    <plurals name="open_task_count">
+        <item quantity="one">1 tarea pendiente</item>
+        <item quantity="other">%1$d tareas pendientes</item>
+    </plurals>
+    <plurals name="closed_task_count">
+        <item quantity="one">1 tarea completa</item>
+        <item quantity="other">%1$d tareas completas</item>
+    </plurals>
+
+    <string name="context_name">Nombre del contexto</string>
+    <string name="context_saved">Contexto guardado</string>
+    <plurals name="delete_selected_context">
+        <item quantity="one">¿Borrar el contexto seleccionado? Todas las tareas y etiquetas asociadas serán borradas.</item>
+        <item quantity="other">¿Borrar los %1$d contextos seleccionados? Todas las tareas y etiquetas asociadas serán borradas.</item>
+    </plurals>
+    <plurals name="context_deleted">
+        <item quantity="one">Contexto borrado</item>
+        <item quantity="other">Contextos borrados</item>
+    </plurals>
+
+    <string name="cancel">Cancelar</string>
+
+    <string name="open">Pendiente</string>
+    <string name="doable_today">Realizable Hoy</string>
+    <string name="closed">Completo</string>
+
+    <string name="all">(Todo)</string>
+    <string name="without_tags">(Sin etiquetas)</string>
+
+    <string name="no_tasks">No hay tareas</string>
+    <string name="set_status">Establecer estado</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Borrar</string>
+    <string name="selected">%1$d seleccionadas</string>
+    <string name="state_1">Estado:</string>
+    <string name="none">(Ninguno)</string>
+
+    <string name="task_datetime">%1$s - %2$s - %3$s</string>
+    <string name="task_date">%1$s - %2$s</string>
+    <string name="task_start">Comienzo: %1$s - %2$s - %3$s</string>
+    <string name="task_start_notime">Comienzo: %1$s - %2$s</string>
+    <string name="task_deadline">Límite: %1$s - %2$s - %3$s</string>
+    <string name="task_deadline_notime">Límite: %1$s - %2$s</string>
+    <string name="separator">", "</string>
+
+    <plurals name="task_state">
+        <item quantity="one">Estado de la tarea</item>
+        <item quantity="other">Estado de las tareas (%1$d)</item>
+    </plurals>
+    <string name="mark_as_open">Marcar como pendiente</string>
+    <string name="mark_as_closed">Marcar como completa</string>
+    <plurals name="delete_selected_task">
+        <item quantity="one">¿Borrar la tarea seleccionada?</item>
+        <item quantity="other">¿Borrar las %1$d tareas seleccionadas?</item>
+    </plurals>
+    <plurals name="task_deleted">
+        <item quantity="one">Tarea borrada</item>
+        <item quantity="other">Tareas borradas</item>
+    </plurals>
+
+    <string name="task_open">Tarea (pendiente)</string>
+    <string name="task_closed">Tarea (completa)</string>
+    <string name="new_task">Nueva tarea</string>
+    <string name="edit_task">Editar tarea</string>
+    <string name="save">Guardar</string>
+    <string name="title">Título</string>
+    <string name="description">Descripción</string>
+    <string name="date">Fecha</string>
+    <string name="time">Hora</string>
+    <string name="date_mode">Modo de fecha</string>
+    <string name="no_date">Sin fecha</string>
+    <string name="single_date">Fecha simple</string>
+    <string name="no_time">Sin hora</string>
+    <string name="reminder">Recordatorio</string>
+    <string name="add_reminder">Añadir recordatorio</string>
+    <string name="no_reminder">Sin recordatorio</string>
+    <string name="date_range">Rango de fechas:</string>
+    <string name="start_1">Comienzo</string>
+    <string name="start_2">Comienzo:</string>
+    <string name="deadline_1">Límite</string>
+    <string name="deadline_2">Límite:</string>
+    <string name="time_zone">Huso horario</string>
+    <string name="tags_1">Etiquetas</string>
+    <string name="tags_2">Etiquetas:</string>
+    <string name="tag_name">Nombre de la etiqueta</string>
+    <string name="add">Añadir</string>
+    <string name="task_saved">Tarea guardada</string>
+    <string name="title_error">Por favor, introduzca el título.</string>
+    <string name="dates_error">Por favor, introduzca un rango de fechas válido.</string>
+    <string name="on_time">Al momento</string>
+    <string name="x_minutes">%1$d minutos antes</string>
+    <plurals name="x_hours">
+        <item quantity="one">%1$d hora antes</item>
+        <item quantity="other">%1$d horas antes</item>
+    </plurals>
+    <plurals name="x_days">
+        <item quantity="one">%1$d día antes</item>
+        <item quantity="other">%1$d días antes</item>
+    </plurals>
+    <plurals name="x_weeks">
+        <item quantity="one">%1$d semana antes</item>
+        <item quantity="other">%1$d semanas antes</item>
+    </plurals>
+
+    <string name="no_tags">No hay etiquetas</string>
+    <plurals name="on_open_task_count">
+        <item quantity="one">En 1 tarea pendiente</item>
+        <item quantity="other">En %1$d tareas pendientes</item>
+    </plurals>
+    <plurals name="on_closed_task_count">
+        <item quantity="one">En 1 tarea completa</item>
+        <item quantity="other">En %1$d tareas completas</item>
+    </plurals>
+    <plurals name="delete_selected_tag">
+        <item quantity="one">¿Borrar la etiqueta seleccionada? Las tareas con esta etiqueta no se borrarán.</item>
+        <item quantity="other">Delete the %1$d selected tags? Las tareas con cualquiera de estas etiquetas no se borrarán.</item>
+    </plurals>
+    <plurals name="tag_deleted">
+        <item quantity="one">Etiqueta borrada</item>
+        <item quantity="other">Etiquetas borradas</item>
+    </plurals>
+    <string name="select_time_zone">Seleccionar huso horario</string>
+    <string name="clear">Limpiar</string>
+    <string name="local_time_zone">Huso horario local</string>
+    <string name="time_zone_offset_1">GMT-%1$s:%2$s</string>
+    <string name="time_zone_offset_2">GMT+%1$s:%2$s</string>
+    <string name="time_zone_information">Ahora es %1$s - %2$s</string>
+
+    <string name="new_tag">Nueva etiqueta</string>
+    <string name="edit_tag">Editar etiqueta</string>
+    <string name="select_color">Seleccionar color</string>
+    <string name="no_color">Sin color</string>
+    <string name="other_color">Otro color</string>
+    <string name="red">Rojo:</string>
+    <string name="green">Verde:</string>
+    <string name="blue">Azul:</string>
+    <string name="rgb_default">255</string>
+    <string name="accept">Aceptar</string>
+    <string name="tag_saved">Etiqueta guardada</string>
+    <string name="country_name">Nombre del país</string>
+
+    <string name="export_success">Datos exportados</string>
+    <string name="export_error">Error al intentar exportar los datos</string>
+
+    <string name="data_import_confirmation">Todos los datos actuales serán sobrescritos. ¿Quiere continuar?</string>
+
+    <string name="import_success">Datos importados</string>
+    <string name="import_error_opening_file">Error al intentar abrir el archivo</string>
+    <string name="import_error_file_not_compatible">Error: El archivo no es compatible.</string>
+    <string name="import_error_data_not_valid">Error: Los datos no son válidos.</string>
+    <string name="import_error_importing_data">Error al intentar importar los datos</string>
+
+    <string name="state_2">Estado</string>
+
+    <string name="notifications">Notificaciones</string>
+    <string name="play_sound">Reproducir sonido</string>
+    <string name="vibrate">Vibrar</string>
+    <string name="light">Luz</string>
+
+    <string name="version">Versión:</string>
+    <string name="author">Autor:</string>
+    <string name="license">Licencia:</string>
+    <string name="project_website">Sitio web del proyecto:</string>
+
+</resources>
