@@ -15,7 +15,6 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
 
     <string name="context">Context</string>
     <string name="view">View</string>
@@ -32,8 +31,8 @@
     <string name="new_context">New context</string>
     <string name="edit_context">Edit context</string>
     <plurals name="open_task_count">
-        <item quantity="one">1 open task.</item>
-        <item quantity="other">%1$d open tasks.</item>
+        <item quantity="one">1 open task</item>
+        <item quantity="other">%1$d open tasks</item>
     </plurals>
     <plurals name="closed_task_count">
         <item quantity="one">1 closed task</item>
@@ -68,12 +67,12 @@
     <string name="state_1">State:</string>
     <string name="none">(None)</string>
 
-    <string name="task_datetime">%1$s - %2$s</string>
-    <string name="task_date">%1$s</string>
-    <string name="task_start">Start: %1$s - %2$s</string>
-    <string name="task_start_notime">Start: %1$s</string>
-    <string name="task_deadline">Deadline: %1$s - %2$s</string>
-    <string name="task_deadline_notime">Deadline: %1$s</string>
+    <string name="task_datetime">%1$s - %2$s - %3$s</string>
+    <string name="task_date">%1$s - %2$s</string>
+    <string name="task_start">Start: %1$s - %2$s - %3$s</string>
+    <string name="task_start_notime">Start: %1$s - %2$s</string>
+    <string name="task_deadline">Deadline: %1$s - %2$s - %3$s</string>
+    <string name="task_deadline_notime">Deadline: %1$s - %2$s</string>
     <string name="separator">", "</string>
 
     <plurals name="task_state">
@@ -140,12 +139,12 @@
 
     <string name="no_tags">There are no tags</string>
     <plurals name="on_open_task_count">
-        <item quantity="one">On 1 open task.</item>
-        <item quantity="other">On %1$d open tasks.</item>
+        <item quantity="one">On 1 open task</item>
+        <item quantity="other">On %1$d open tasks</item>
     </plurals>
     <plurals name="on_closed_task_count">
-        <item quantity="one">On 1 closed task.</item>
-        <item quantity="other">On %1$d closed tasks.</item>
+        <item quantity="one">On 1 closed task</item>
+        <item quantity="other">On %1$d closed tasks</item>
     </plurals>
     <plurals name="delete_selected_tag">
         <item quantity="one">Delete selected tag?</item>

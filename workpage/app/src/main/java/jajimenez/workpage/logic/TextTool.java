@@ -45,6 +45,7 @@ public class TextTool {
 
         String date = null;
         String time = null;
+        String offset = null;
 
         switch (dateType) {
             case WHEN:
@@ -53,13 +54,14 @@ public class TextTool {
                 if (when != null) {
                     // In this case, we ignore "withTitle", as "When" is always shown without any title.
                     date = getFormattedDate(when);
+                    offset = getFormattedOffset(context, when.getTimeZone(), when);
 
                     if (task.getIgnoreWhenTime()) {
-                        text = context.getString(R.string.task_date, date);
+                        text = context.getString(R.string.task_date, date, offset);
                     }
                     else {
                         time = getFormattedTime(when);
-                        text = context.getString(R.string.task_datetime, date, time);
+                        text = context.getString(R.string.task_datetime, date, time, offset);
                     }
                 }
 
@@ -69,16 +71,17 @@ public class TextTool {
 
                 if (start != null) {
                     date = getFormattedDate(start);
+                    offset = getFormattedOffset(context, start.getTimeZone(), start);
 
                     if (task.getIgnoreStartTime()) {
-                        if (withTitle) text = context.getString(R.string.task_start_notime, date);
-                        else text = context.getString(R.string.task_date, date);
+                        if (withTitle) text = context.getString(R.string.task_start_notime, date, offset);
+                        else text = context.getString(R.string.task_date, date, offset);
                     }
                     else {
                         time = getFormattedTime(start);
 
-                        if (withTitle) text = context.getString(R.string.task_start, date, time);
-                        else text = context.getString(R.string.task_datetime, date, time);
+                        if (withTitle) text = context.getString(R.string.task_start, date, time, offset);
+                        else text = context.getString(R.string.task_datetime, date, time, offset);
                     }
                 }
 
@@ -88,16 +91,17 @@ public class TextTool {
 
                 if (deadline != null) {
                     date = getFormattedDate(deadline);
+                    offset = getFormattedOffset(context, deadline.getTimeZone(), deadline);
 
                     if (task.getIgnoreDeadlineTime()) {
-                        if (withTitle) text = context.getString(R.string.task_deadline_notime, date);
-                        else text = context.getString(R.string.task_date, date);
+                        if (withTitle) text = context.getString(R.string.task_deadline_notime, date, offset);
+                        else text = context.getString(R.string.task_date, date, offset);
                     }
                     else {
                         time = getFormattedTime(deadline);
 
-                        if (withTitle) text = context.getString(R.string.task_deadline, date, time);
-                        else text = context.getString(R.string.task_datetime, date, time);
+                        if (withTitle) text = context.getString(R.string.task_deadline, date, time, offset);
+                        else text = context.getString(R.string.task_datetime, date, time, offset);
                     }
                 }
                 
@@ -159,7 +163,8 @@ public class TextTool {
     }
 
     public String getFormattedOffset(Context context, TimeZone timeZone, Calendar date) {
-        long totalMilliseconds = timeZone.getOffset(date.getTimeInMillis());
+        long offset = timeZone.getOffset(date.getTimeInMillis());
+        long totalMilliseconds = Math.abs(offset);
 
         long millisecondsIn1hour = (1000 * 60 * 60);
         long millisecondsIn1Minute = (1000 * 60);
@@ -176,7 +181,7 @@ public class TextTool {
 
         int resource;
 
-        if (totalMilliseconds < 0) resource = R.string.time_zone_offset_1;
+        if (offset < 0) resource = R.string.time_zone_offset_1;
         else resource = R.string.time_zone_offset_2;
 
         return context.getString(resource, formattedOffsetHours, formattedOffsetMinutes);

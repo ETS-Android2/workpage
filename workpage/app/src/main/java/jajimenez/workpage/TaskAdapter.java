@@ -3,11 +3,13 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -23,15 +25,21 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private LinearLayout colorsLinearLayout;
     private TextView titleTextView;
     private TextView tagsTextView;
+
+    private LinearLayout whenInformation;
     private TextView whenValueTextView;
+    private ImageView whenDstImageView;
+
     private TableLayout datesTableLayout;
 
     private TextView date1TitleTextView;
     private TextView date1ValueTextView;
+    private ImageView date1DstImageView;
 
     private TableRow date2TableRow;
     private TextView date2TitleTextView;
     private TextView date2ValueTextView;
+    private ImageView date2DstImageView;
 
     private TextView space1TextView;
     private TextView space2TextView;
@@ -58,15 +66,21 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         colorsLinearLayout = (LinearLayout) itemView.findViewById(R.id.task_list_item_colors);
         titleTextView = (TextView) itemView.findViewById(R.id.task_list_item_title);
         tagsTextView = (TextView) itemView.findViewById(R.id.task_list_item_tags);
+
+        whenInformation = (LinearLayout) itemView.findViewById(R.id.task_list_item_when_information);
         whenValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_when_value);
+        whenDstImageView = (ImageView) itemView.findViewById(R.id.task_list_item_when_dst);
+
         datesTableLayout = (TableLayout) itemView.findViewById(R.id.task_list_item_dates);
 
         date1TitleTextView = (TextView) itemView.findViewById(R.id.task_list_item_date1_title);
         date1ValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_date1_value);
+        date1DstImageView = (ImageView) itemView.findViewById(R.id.task_list_item_date1_dst);
 
         date2TableRow = (TableRow) itemView.findViewById(R.id.task_list_item_date2_row);
         date2TitleTextView = (TextView) itemView.findViewById(R.id.task_list_item_date2_title);
         date2ValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_date2_value);
+        date2DstImageView = (ImageView) itemView.findViewById(R.id.task_list_item_date2_dst);
 
         space1TextView = (TextView) itemView.findViewById(R.id.task_list_item_space1);
         space2TextView = (TextView) itemView.findViewById(R.id.task_list_item_space2);
@@ -136,14 +150,22 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         // When is defined.
         if (when != null) {
+            whenInformation.setVisibility(View.VISIBLE);
             datesTableLayout.setVisibility(View.GONE);
+
             space2TextView.setVisibility(View.INVISIBLE);
 
             whenValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.WHEN));
+
+            TimeZone whenTimeZone = when.getTimeZone();
+
+            if (whenTimeZone.inDaylightTime(when.getTime())) whenDstImageView.setVisibility(View.VISIBLE);
+            else whenDstImageView.setVisibility(View.GONE);
         }
         // Any of Start and Deadline is defined.
         else if (start != null || deadline != null) {
-            whenValueTextView.setVisibility(View.GONE);
+            whenInformation.setVisibility(View.GONE);
+            datesTableLayout.setVisibility(View.VISIBLE);
 
             // Both are defined.
             if (start != null && deadline != null) {
@@ -152,6 +174,15 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
                 date2TitleTextView.setText(activity.getString(R.string.deadline_2));
                 date2ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.DEADLINE));
+
+                TimeZone startTimeZone = start.getTimeZone();
+                TimeZone deadlineTimeZone = deadline.getTimeZone();
+
+                if (startTimeZone.inDaylightTime(start.getTime())) date1DstImageView.setVisibility(View.VISIBLE);
+                else date1DstImageView.setVisibility(View.GONE);
+
+                if (deadlineTimeZone.inDaylightTime(deadline.getTime())) date2DstImageView.setVisibility(View.VISIBLE);
+                else date2DstImageView.setVisibility(View.GONE);
             }
             // Only one is defined.
             else {
@@ -161,15 +192,25 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                 if (start != null) {
                     date1TitleTextView.setText(activity.getString(R.string.start_2));
                     date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.START));
+
+                    TimeZone startTimeZone = start.getTimeZone();
+
+                    if (startTimeZone.inDaylightTime(start.getTime())) date1DstImageView.setVisibility(View.VISIBLE);
+                    else date1DstImageView.setVisibility(View.GONE);
                 }
                 else { // deadline != null
                     date1TitleTextView.setText(activity.getString(R.string.deadline_2));
                     date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.DEADLINE));
+
+                    TimeZone deadlineTimeZone = deadline.getTimeZone();
+
+                    if (deadlineTimeZone.inDaylightTime(deadline.getTime())) date2DstImageView.setVisibility(View.VISIBLE);
+                    else date2DstImageView.setVisibility(View.GONE);
                 }
             }
         }
         else { // No date is defined.
-            whenValueTextView.setVisibility(View.GONE);
+            whenInformation.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.GONE);
 
             space2TextView.setVisibility(View.INVISIBLE);
