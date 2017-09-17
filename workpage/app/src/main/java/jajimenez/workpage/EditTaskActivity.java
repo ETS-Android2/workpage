@@ -657,7 +657,7 @@ public class EditTaskActivity extends AppCompatActivity {
         Calendar now;
 
         if (selectedDateMode == ApplicationLogic.NO_DATE) {
-            dateMode.setText(R.string.no_date);
+            dateMode.setText(R.string.add_date);
 
             dateMode1.setVisibility(View.GONE);
             tableDate1.setVisibility(View.GONE);
@@ -685,7 +685,7 @@ public class EditTaskActivity extends AppCompatActivity {
             date1.setText(tool.getFormattedDate(when));
             time1.setVisibility(View.VISIBLE);
 
-            if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.no_time);
+            if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.add_time);
             else time1.setText(tool.getFormattedTime(when));
 
             TimeZone whenTimeZone = when.getTimeZone();
@@ -712,8 +712,8 @@ public class EditTaskActivity extends AppCompatActivity {
             divider2.setVisibility(View.VISIBLE);
 
             if (start == null) {
-                date1.setText(R.string.no_date);
-                time1.setText(R.string.no_time);
+                date1.setText(R.string.add_date);
+                time1.setText(R.string.add_time);
                 time1.setVisibility(View.GONE);
                 timeZoneRow1.setVisibility(View.GONE);
                 reminderRow1.setVisibility(View.GONE);
@@ -721,7 +721,7 @@ public class EditTaskActivity extends AppCompatActivity {
             else {
                 date1.setText(tool.getFormattedDate(start));
 
-                if (currentTask.getIgnoreStartTime()) time1.setText(R.string.no_time);
+                if (currentTask.getIgnoreStartTime()) time1.setText(R.string.add_time);
                 else time1.setText(tool.getFormattedTime(start));
 
                 time1.setVisibility(View.VISIBLE);
@@ -737,8 +737,8 @@ public class EditTaskActivity extends AppCompatActivity {
             }
 
             if (deadline == null) {
-                date2.setText(R.string.no_date);
-                time2.setText(R.string.no_time);
+                date2.setText(R.string.add_date);
+                time2.setText(R.string.add_time);
                 time2.setVisibility(View.GONE);
                 timeZoneRow2.setVisibility(View.GONE);
                 reminderRow2.setVisibility(View.GONE);
@@ -746,7 +746,7 @@ public class EditTaskActivity extends AppCompatActivity {
             else {
                 date2.setText(tool.getFormattedDate(deadline));
 
-                if (currentTask.getIgnoreDeadlineTime()) time2.setText(R.string.no_time);
+                if (currentTask.getIgnoreDeadlineTime()) time2.setText(R.string.add_time);
                 else time2.setText(tool.getFormattedTime(deadline));
 
                 time2.setVisibility(View.VISIBLE);
