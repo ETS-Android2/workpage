@@ -399,7 +399,7 @@ public class ApplicationLogic {
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if (day.length() == 1) month = "0" + day;
 
-        String name = year + month + day + "_workpage_data.wpd";
+        String name = year + month + day + "_workpage_data.db";
 
         return name;
     }
