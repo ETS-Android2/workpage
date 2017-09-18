@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import android.graphics.drawable.Drawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -165,8 +166,10 @@ public class TaskActivity extends AppCompatActivity {
         // Update Task object after possible changes.
         currentTask = applicationLogic.getTask(currentTaskId);
 
-        if (currentTask.isDone()) setTitle(R.string.task_closed);
-        else setTitle(R.string.task_open);
+        ActionBar bar = getSupportActionBar();
+
+        if (currentTask.isDone()) bar.setSubtitle(R.string.closed);
+        else bar.setSubtitle(R.string.open);
 
         titleTextView.setText(currentTask.getTitle());
         descriptionTextView.setText(currentTask.getDescription());

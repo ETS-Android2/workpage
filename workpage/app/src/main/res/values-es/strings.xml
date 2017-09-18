@@ -18,8 +18,8 @@
 
     <string name="context">Contexto</string>
     <string name="view">Vista</string>
-    <string name="filter_by_status">Filtrar por estado</string>
-    <string name="filter_by_tags">Filtrar por etiquetas</string>
+    <string name="filter_tasks_by_status">Filtrar tareas por estado</string>
+    <string name="filter_tasks_by_tags">Filtrar tareas por etiquetas</string>
     <string name="edit_tags">Editar etiquetas</string>
     <string name="settings">Configuración</string>
     <string name="import_data">Importar datos</string>
@@ -54,7 +54,7 @@
 
     <string name="open">Pendiente</string>
     <string name="doable_today">Realizable Hoy</string>
-    <string name="closed">Completo</string>
+    <string name="closed">Completa</string>
 
     <string name="all">(Todo)</string>
     <string name="without_tags">(Sin etiquetas)</string>
@@ -67,6 +67,7 @@
     <string name="state_1">Estado:</string>
     <string name="none">(Ninguno)</string>
 
+    <string name="task">Tarea</string>
     <string name="task_datetime_1">%1$s, %2$s - %3$s</string>
     <string name="task_datetime_2">%1$s, %2$s</string>
     <string name="task_date_1">%1$s - %2$s</string>
@@ -96,8 +97,6 @@
         <item quantity="other">Tareas borradas</item>
     </plurals>
 
-    <string name="task_open">Tarea (pendiente)</string>
-    <string name="task_closed">Tarea (completa)</string>
     <string name="new_task">Nueva tarea</string>
     <string name="edit_task">Editar tarea</string>
     <string name="save">Guardar</string>
