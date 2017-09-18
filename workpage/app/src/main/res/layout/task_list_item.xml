@@ -32,25 +32,11 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <LinearLayout android:id="@+id/task_list_item_when_information"
-            android:layout_width="match_parent"
+        <TextView android:id="@+id/task_list_item_when_value"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView android:id="@+id/task_list_item_when_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:ellipsize="end" />
-
-            <ImageView android:id="@+id/task_list_item_when_dst"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="3dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/dst"
-                android:alpha="0.5" />
-        </LinearLayout>
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <TableLayout android:id="@+id/task_list_item_dates"
             android:layout_width="match_parent"
@@ -62,23 +48,9 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="5dp" />
 
-                <LinearLayout
+                <TextView android:id="@+id/task_list_item_date1_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView android:id="@+id/task_list_item_date1_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ImageView android:id="@+id/task_list_item_date1_dst"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/dst"
-                        android:alpha="0.5" />
-                </LinearLayout>
+                    android:layout_height="wrap_content" />
             </TableRow>
             <TableRow android:id="@+id/task_list_item_date2_row">
                 <TextView android:id="@+id/task_list_item_date2_title"
@@ -86,23 +58,9 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="5dp" />
 
-                <LinearLayout
+                <TextView android:id="@+id/task_list_item_date2_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView android:id="@+id/task_list_item_date2_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <ImageView android:id="@+id/task_list_item_date2_dst"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/dst"
-                        android:alpha="0.5" />
-                </LinearLayout>
+                    android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
 

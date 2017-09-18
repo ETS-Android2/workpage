@@ -47,21 +47,21 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
             task.setWhenReminder(null);
 
             calendar = task.getWhen();
-            text = textTool.getTaskDateText(context, task, false, TextTool.WHEN);
+            text = textTool.getTaskDateText(context, task, false, TextTool.WHEN, true);
         }
         else if (reminderType.equals("1")) {
             // Type is "Start".
             task.setStartReminder(null);
 
             calendar = task.getStart();
-            text = textTool.getTaskDateText(context, task, true, TextTool.START);
+            text = textTool.getTaskDateText(context, task, true, TextTool.START, true);
         }
         else if (reminderType.equals("2")) {
             // Type is "Deadline".
             task.setDeadlineReminder(null);
 
             calendar = task.getDeadline();
-            text = textTool.getTaskDateText(context, task, true, TextTool.DEADLINE);
+            text = textTool.getTaskDateText(context, task, true, TextTool.DEADLINE, true);
         }
         else {
             return;

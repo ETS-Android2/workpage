@@ -18,6 +18,9 @@ public class TextTool {
     public final static int START = 1;
     public final static int DEADLINE = 2;
 
+    public final static int SHORT = 0;
+    public final static int LONG = 1;
+
     public String getFormattedDate(Calendar calendar) {
         String date = "";
 
@@ -40,7 +43,7 @@ public class TextTool {
         return time;
     }
 
-    public String getTaskDateText(Context context, Task task, boolean withTitle, int dateType) {
+    public String getTaskDateText(Context context, Task task, boolean withTitle, int dateType, boolean includeOffset) {
         String text = "";
 
         String date = null;
@@ -54,15 +57,15 @@ public class TextTool {
                 if (when != null) {
                     // In this case, we ignore "withTitle", as "When" is always shown without any title.
                     date = getFormattedDate(when);
-                    offset = getFormattedOffset(context, when.getTimeZone(), when);
+                    time = getFormattedTime(when);
+                    offset = getFormattedTimeZone(context, when.getTimeZone(), when, TextTool.SHORT);
 
-                    if (task.getIgnoreWhenTime()) {
-                        text = context.getString(R.string.task_date, date, offset);
-                    }
-                    else {
-                        time = getFormattedTime(when);
-                        text = context.getString(R.string.task_datetime, date, time, offset);
-                    }
+                    boolean ignoreWhenTime = task.getIgnoreWhenTime();
+
+                    if (!ignoreWhenTime && includeOffset) text = context.getString(R.string.task_datetime_1, date, time, offset);
+                    else if (!ignoreWhenTime && !includeOffset) text = context.getString(R.string.task_datetime_2, date, offset);
+                    else if (ignoreWhenTime && includeOffset) text = context.getString(R.string.task_date_1, date, offset);
+                    else text = context.getString(R.string.task_date_2, date);
                 }
 
                 break;
@@ -71,17 +74,21 @@ public class TextTool {
 
                 if (start != null) {
                     date = getFormattedDate(start);
-                    offset = getFormattedOffset(context, start.getTimeZone(), start);
+                    time = getFormattedTime(start);
+                    offset = getFormattedTimeZone(context, start.getTimeZone(), start, TextTool.SHORT);
 
-                    if (task.getIgnoreStartTime()) {
-                        if (withTitle) text = context.getString(R.string.task_start_notime, date, offset);
-                        else text = context.getString(R.string.task_date, date, offset);
-                    }
-                    else {
-                        time = getFormattedTime(start);
+                    boolean ignoreStartTime = task.getIgnoreWhenTime();
 
-                        if (withTitle) text = context.getString(R.string.task_start, date, time, offset);
-                        else text = context.getString(R.string.task_datetime, date, time, offset);
+                    if (withTitle) {
+                        if (!ignoreStartTime && includeOffset) text = context.getString(R.string.task_start_datetime_1, date, time, offset);
+                        else if (!ignoreStartTime && !includeOffset) text = context.getString(R.string.task_start_datetime_2, date, time);
+                        else if (ignoreStartTime && includeOffset) text = context.getString(R.string.task_start_date_1, date, offset);
+                        else text = context.getString(R.string.task_start_date_2, date);
+                    } else {
+                        if (!ignoreStartTime && includeOffset) text = context.getString(R.string.task_datetime_1, date, time, offset);
+                        else if (!ignoreStartTime && !includeOffset) text = context.getString(R.string.task_datetime_2, date, time);
+                        else if (ignoreStartTime && includeOffset) text = context.getString(R.string.task_date_1, date, offset);
+                        else text = context.getString(R.string.task_date_2, date);
                     }
                 }
 
@@ -91,17 +98,21 @@ public class TextTool {
 
                 if (deadline != null) {
                     date = getFormattedDate(deadline);
-                    offset = getFormattedOffset(context, deadline.getTimeZone(), deadline);
+                    time = getFormattedTime(deadline);
+                    offset = getFormattedTimeZone(context, deadline.getTimeZone(), deadline, TextTool.SHORT);
 
-                    if (task.getIgnoreDeadlineTime()) {
-                        if (withTitle) text = context.getString(R.string.task_deadline_notime, date, offset);
-                        else text = context.getString(R.string.task_date, date, offset);
-                    }
-                    else {
-                        time = getFormattedTime(deadline);
+                    boolean ignoreDeadlineTime = task.getIgnoreWhenTime();
 
-                        if (withTitle) text = context.getString(R.string.task_deadline, date, time, offset);
-                        else text = context.getString(R.string.task_datetime, date, time, offset);
+                    if (withTitle) {
+                        if (!ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_deadline_datetime_1, date, time, offset);
+                        else if (!ignoreDeadlineTime && !includeOffset) text = context.getString(R.string.task_deadline_datetime_2, date, time);
+                        else if (ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_deadline_date_1, date, offset);
+                        else text = context.getString(R.string.task_deadline_date_2, date);
+                    } else {
+                        if (!ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_datetime_1, date, time, offset);
+                        else if (!ignoreDeadlineTime && !includeOffset) text = context.getString(R.string.task_datetime_2, date, time);
+                        else if (ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_date_1, date, offset);
+                        else text = context.getString(R.string.task_date_2, date);
                     }
                 }
                 
@@ -162,29 +173,48 @@ public class TextTool {
         return timeZone.getDisplayName(daylight, TimeZone.LONG);
     }
 
-    public String getFormattedOffset(Context context, TimeZone timeZone, Calendar date) {
-        long offset = timeZone.getOffset(date.getTimeInMillis());
-        long totalMilliseconds = Math.abs(offset);
+    public String getFormattedTimeZone(Context context, TimeZone timeZone, Calendar date, int length) {
+        String result;
 
-        long millisecondsIn1hour = (1000 * 60 * 60);
-        long millisecondsIn1Minute = (1000 * 60);
+        String timeZoneShortName = timeZone.getDisplayName(timeZone.inDaylightTime(date.getTime()), TimeZone.SHORT);
+        String offsetName;
 
-        long hours = totalMilliseconds / millisecondsIn1hour; // Number of hours
-        long rest = totalMilliseconds % millisecondsIn1hour; // The rest, in milliseconds
-        long minutes = rest / millisecondsIn1Minute; // The rest, in minutes
+        if (length == SHORT) {
+            result = context.getString(R.string.time_zone_short, timeZoneShortName);
+        }
+        else {
+            long offset = timeZone.getOffset(date.getTimeInMillis());
+            long totalMilliseconds = Math.abs(offset);
 
-        StringBuilder formattedOffsetMinutes = new StringBuilder(String.valueOf(minutes));
-        if (formattedOffsetMinutes.length() == 1) formattedOffsetMinutes.insert(0, "0");
+            long millisecondsIn1hour = (1000 * 60 * 60);
+            long millisecondsIn1Minute = (1000 * 60);
 
-        StringBuilder formattedOffsetHours = new StringBuilder(String.valueOf(hours));
-        if (formattedOffsetHours.length() == 1) formattedOffsetHours.insert(0, "0");
+            long hours = totalMilliseconds / millisecondsIn1hour; // Number of hours
+            long rest = totalMilliseconds % millisecondsIn1hour; // The rest, in milliseconds
+            long minutes = rest / millisecondsIn1Minute; // The rest, in minutes
 
-        int resource;
+            StringBuilder formattedOffsetMinutes = new StringBuilder(String.valueOf(minutes));
+            if (formattedOffsetMinutes.length() == 1) formattedOffsetMinutes.insert(0, "0");
 
-        if (offset < 0) resource = R.string.time_zone_offset_1;
-        else resource = R.string.time_zone_offset_2;
+            StringBuilder formattedOffsetHours = new StringBuilder(String.valueOf(hours));
+            if (formattedOffsetHours.length() == 1) formattedOffsetHours.insert(0, "0");
 
-        return context.getString(resource, formattedOffsetHours, formattedOffsetMinutes);
+            if (offset < 0) {
+                //result = context.getString(R.string.time_zone_long_1, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
+                offsetName = context.getString(R.string.offset_1, formattedOffsetHours, formattedOffsetMinutes);
+            } else {
+                //result = context.getString(R.string.time_zone_long_2, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
+                offsetName = context.getString(R.string.offset_2, formattedOffsetHours, formattedOffsetMinutes);
+            }
+
+            if (timeZoneShortName.equals(offsetName)) {
+                result = context.getString(R.string.time_zone_short, timeZoneShortName);
+            } else {
+                result = context.getString(R.string.time_zone_long, timeZoneShortName, offsetName);
+            }
+        }
+
+        return result;
     }
 
     public String getTimeZoneInformation(Context context, Calendar date) {

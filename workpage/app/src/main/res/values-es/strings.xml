@@ -67,12 +67,18 @@
     <string name="state_1">Estado:</string>
     <string name="none">(Ninguno)</string>
 
-    <string name="task_datetime">%1$s - %2$s - %3$s</string>
-    <string name="task_date">%1$s - %2$s</string>
-    <string name="task_start">Comienzo: %1$s - %2$s - %3$s</string>
-    <string name="task_start_notime">Comienzo: %1$s - %2$s</string>
-    <string name="task_deadline">Límite: %1$s - %2$s - %3$s</string>
-    <string name="task_deadline_notime">Límite: %1$s - %2$s</string>
+    <string name="task_datetime_1">%1$s, %2$s - %3$s</string>
+    <string name="task_datetime_2">%1$s, %2$s</string>
+    <string name="task_date_1">%1$s - %2$s</string>
+    <string name="task_date_2">%1$s</string>
+    <string name="task_start_datetime_1">Comienzo: %1$s, %2$s - %3$s</string>
+    <string name="task_start_datetime_2">Comienzo: %1$s, %2$s</string>
+    <string name="task_start_date_1">Comienzo: %1$s - %2$s</string>
+    <string name="task_start_date_2">Comienzo: %1$s</string>
+    <string name="task_deadline_datetime_1">Límite: %1$s, %2$s - %3$s</string>
+    <string name="task_deadline_datetime_2">Límite: %1$s, %2$s</string>
+    <string name="task_deadline_date_1">Límite: %1$s - %2$s</string>
+    <string name="task_deadline_date_2">Límite: %1$s</string>
     <string name="separator">", "</string>
 
     <plurals name="task_state">
@@ -108,7 +114,7 @@
     <string name="reminder">Recordatorio</string>
     <string name="add_reminder">Añadir recordatorio</string>
     <string name="no_reminder">Sin recordatorio</string>
-    <string name="date_range">Rango de fechas:</string>
+    <string name="date_range">Rango de fechas</string>
     <string name="start_1">Comienzo</string>
     <string name="start_2">Comienzo:</string>
     <string name="deadline_1">Límite</string>
@@ -153,12 +159,14 @@
         <item quantity="one">Etiqueta borrada</item>
         <item quantity="other">Etiquetas borradas</item>
     </plurals>
-    <string name="select_time_zone">Seleccionar huso horario</string>
-    <string name="clear">Limpiar</string>
-    <string name="local_time_zone">Huso horario local</string>
-    <string name="time_zone_offset_1">GMT-%1$s:%2$s</string>
-    <string name="time_zone_offset_2">GMT+%1$s:%2$s</string>
-    <string name="time_zone_information">Ahora es %1$s - %2$s</string>
+    <string name="select_time_zone">Select time zone</string>
+    <string name="clear">Clear</string>
+    <string name="local_time_zone">Local time zone</string>
+    <string name="time_zone_short">%1$s</string>
+    <string name="time_zone_long">%1$s, %2$s</string>
+    <string name="offset_1">GMT-%1$s:%2$s</string>
+    <string name="offset_2">GMT+%1$s:%2$s</string>
+    <string name="time_zone_information">Ahora es %1$s %2$s</string>
 
     <string name="new_tag">Nueva etiqueta</string>
     <string name="edit_tag">Editar etiqueta</string>
