@@ -173,7 +173,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
 
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 int selectedTagCount = EditTaskTagsActivity.this.listView.getCheckedItemCount();
-                mode.setTitle(EditTaskTagsActivity.this.getString(R.string.selected, selectedTagCount));
+                if (selectedTagCount > 0) mode.setTitle(EditTaskTagsActivity.this.getString(R.string.selected, selectedTagCount));
 
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();

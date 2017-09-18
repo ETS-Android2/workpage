@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity
 
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
-                mode.setTitle(MainActivity.this.getString(R.string.selected, selectedTaskCount));
+                if (selectedTaskCount > 0) mode.setTitle(MainActivity.this.getString(R.string.selected, selectedTaskCount));
 
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.task_menu_edit);
                 Drawable editItemIcon = editItem.getIcon();
