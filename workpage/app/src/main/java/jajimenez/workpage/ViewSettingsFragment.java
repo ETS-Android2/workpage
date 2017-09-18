@@ -17,6 +17,7 @@ import jajimenez.workpage.data.model.TaskTag;
 public class ViewSettingsFragment extends PreferenceFragment {
     private Activity activity;
     private PreferenceGroup stateFilterPref;
+    private ListPreference statePref;
     private PreferenceGroup tagFilterPref;
     private CheckBoxPreference allPref;
 
@@ -62,29 +63,38 @@ public class ViewSettingsFragment extends PreferenceFragment {
     }
 
     private void addStatePreference() {
-        final ListPreference statePref = new ListPreference(activity);
+        statePref = new ListPreference(activity);
 
         statePref.setKey("view_state_filter_state_context_" + currentContext.getId());
         statePref.setEntries(R.array.view_state_filter_texts);
         statePref.setEntryValues(R.array.view_state_filter_keys);
         statePref.setDefaultValue("open");
-        statePref.setTitle(R.string.state_2);
-        statePref.setSummary("%s");
+        statePref.setTitle(getInitialStatePreferenceTitle());
         statePref.setDialogTitle(R.string.state_2);
         statePref.setOrder(0);
 
         statePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int index = statePref.findIndexOfValue(String.valueOf(newValue));
-
-                CharSequence text = (statePref.getEntries())[index];
-                statePref.setSummary(text);
+                CharSequence text = ViewSettingsFragment.this.getStatePreferenceValue(String.valueOf(newValue));
+                statePref.setTitle(text);
 
                 return true;
             }
         });
 
         stateFilterPref.addPreference(statePref);
+    }
+
+    private CharSequence getInitialStatePreferenceTitle() {
+        ApplicationLogic logic = new ApplicationLogic(activity);
+        String currentStateKey = logic.getViewStateFilter();
+
+        return getStatePreferenceValue(currentStateKey);
+    }
+
+    private CharSequence getStatePreferenceValue(String key) {
+        int index = statePref.findIndexOfValue(key);
+        return (statePref.getEntries())[index];
     }
 
     private void addNoTagPreference() {

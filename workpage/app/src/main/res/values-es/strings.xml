@@ -18,7 +18,7 @@
 
     <string name="context">Contexto</string>
     <string name="view">Vista</string>
-    <string name="filter_tasks_by_status">Filtrar tareas por estado</string>
+    <string name="filter_tasks_by_state">Filtrar tareas por estado</string>
     <string name="filter_tasks_by_tags">Filtrar tareas por etiquetas</string>
     <string name="edit_tags">Editar etiquetas</string>
     <string name="settings">Configuración</string>
@@ -60,7 +60,7 @@
     <string name="without_tags">(Sin etiquetas)</string>
 
     <string name="no_tasks">No hay tareas</string>
-    <string name="set_status">Establecer estado</string>
+    <string name="set_state">Establecer estado</string>
     <string name="edit">Editar</string>
     <string name="delete">Borrar</string>
     <string name="selected">%1$d seleccionadas</string>

@@ -18,7 +18,7 @@
 
     <string name="context">Context</string>
     <string name="view">View</string>
-    <string name="filter_tasks_by_status">Filter tasks by status</string>
+    <string name="filter_tasks_by_state">Filter tasks by state</string>
     <string name="filter_tasks_by_tags">Filter tasks by tags</string>
     <string name="edit_tags">Edit tags</string>
     <string name="settings">Settings</string>
@@ -60,7 +60,7 @@
     <string name="without_tags">(Without tags)</string>
 
     <string name="no_tasks">There are no tasks</string>
-    <string name="set_status">Set status</string>
+    <string name="set_state">Set state</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="selected">%1$d selected</string>
