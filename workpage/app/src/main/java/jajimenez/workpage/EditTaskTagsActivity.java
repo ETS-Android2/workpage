@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
@@ -54,7 +55,12 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         createContextualActionBar();
         interfaceReady = false;
 
-        (getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        applicationLogic = new ApplicationLogic(this);
+        currentTaskContext = applicationLogic.getCurrentTaskContext();
+
+        ActionBar bar = getSupportActionBar();
+        bar.setSubtitle(currentTaskContext.getName());
+        bar.setDisplayHomeAsUpEnabled(true);
 
         saveTaskTagListener = new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
             public void onTaskTagSaved() {
@@ -91,9 +97,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
             DeleteTaskTagDialogFragment deleteFragment = (DeleteTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task_tag");
             if (deleteFragment != null) deleteFragment.setOnDeleteListener(deleteTaskTagListener);
         }
-
-        applicationLogic = new ApplicationLogic(this);
-        currentTaskContext = applicationLogic.getCurrentTaskContext();
 
         updateInterface();
     }
