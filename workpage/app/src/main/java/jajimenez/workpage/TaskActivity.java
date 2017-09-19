@@ -27,6 +27,7 @@ import jajimenez.workpage.data.model.TaskTag;
 public class TaskActivity extends AppCompatActivity {
     private TextView titleTextView;
     private TextView tagsTextView;
+    private View datesDivider;
 
     // When
     private LinearLayout whenInformation;
@@ -70,6 +71,7 @@ public class TaskActivity extends AppCompatActivity {
 
         titleTextView = (TextView) findViewById(R.id.task_title);
         tagsTextView = (TextView) findViewById(R.id.task_tags);
+        datesDivider = findViewById(R.id.task_dates_divider);
 
         // When
         whenInformation = (LinearLayout) findViewById(R.id.task_when_information);
@@ -128,7 +130,7 @@ public class TaskActivity extends AppCompatActivity {
             if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
         }
 
-        // Load task data.
+        // Load task data
         Intent intent = getIntent();
         currentTaskId = intent.getLongExtra("task_id", -1);
         currentTask = null;
@@ -141,7 +143,7 @@ public class TaskActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.task, menu);
 
-        // This is necessary because the common drawables keep values previously set.
+        // This is necessary because the common drawables keep values previously set
         MenuItem editItem = menu.findItem(R.id.task_menu_edit);
         Drawable editItemIcon = editItem.getIcon();
 
@@ -169,7 +171,7 @@ public class TaskActivity extends AppCompatActivity {
         ApplicationLogic applicationLogic = new ApplicationLogic(this);
         TextTool textTool = new TextTool();
 
-        // Update Task object after possible changes.
+        // Update Task object after possible changes
         currentTask = applicationLogic.getTask(currentTaskId);
 
         ActionBar bar = getSupportActionBar();
@@ -180,7 +182,7 @@ public class TaskActivity extends AppCompatActivity {
         titleTextView.setText(currentTask.getTitle());
         descriptionTextView.setText(currentTask.getDescription());
 
-        // Tags text.
+        // Tags text
         List<TaskTag> tags = currentTask.getTags();
 
         int tagCount = 0;
@@ -194,15 +196,16 @@ public class TaskActivity extends AppCompatActivity {
             tagsTextView.setVisibility(View.VISIBLE);
         }
 
-        // Dates texts.
+        // Dates texts
         TextTool tool = new TextTool();
 
         Calendar when = currentTask.getWhen();
         Calendar start = currentTask.getStart();
         Calendar deadline = currentTask.getDeadline();
 
-        // When is defined.
+        // When is defined
         if (when != null) {
+            datesDivider.setVisibility(View.VISIBLE);
             whenInformation.setVisibility(View.VISIBLE);
             datesTableLayout.setVisibility(View.GONE);
 
@@ -214,12 +217,13 @@ public class TaskActivity extends AppCompatActivity {
             if (whenTimeZone.inDaylightTime(when.getTime())) whenDstImageView.setVisibility(View.VISIBLE);
             else whenDstImageView.setVisibility(View.GONE);
         }
-        // Any of Start and Deadline is defined.
+        // Any of Start and Deadline is defined
         else if (start != null || deadline != null) {
+            datesDivider.setVisibility(View.VISIBLE);
             whenInformation.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.VISIBLE);
 
-            // Both are defined.
+            // Both are defined
             if (start != null && deadline != null) {
                 date2TableRow1.setVisibility(View.VISIBLE);
                 date2TableRow2.setVisibility(View.VISIBLE);
@@ -242,9 +246,10 @@ public class TaskActivity extends AppCompatActivity {
                 if (deadlineTimeZone.inDaylightTime(deadline.getTime())) date2DstImageView.setVisibility(View.VISIBLE);
                 else date2DstImageView.setVisibility(View.GONE);
             }
-            // Only one is defined.
+            // Only one is defined
             else {
-                date2TableRow1.setVisibility(View.VISIBLE);
+                datesDivider.setVisibility(View.VISIBLE);
+                date2TableRow1.setVisibility(View.GONE);
                 date2TableRow2.setVisibility(View.GONE);
 
                 if (start != null) {
@@ -269,13 +274,14 @@ public class TaskActivity extends AppCompatActivity {
                 }
             }
         }
-        else { // No date is defined.
+        else { // No date is defined
+            datesDivider.setVisibility(View.GONE);
             whenInformation.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.GONE);
         }
     }
 
-    // Returns "true" if this callback handled the event.
+    // Returns "true" if this callback handled the event
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean eventHandled = false;
@@ -300,7 +306,7 @@ public class TaskActivity extends AppCompatActivity {
                 break;
 
             case R.id.task_menu_edit:
-                // Open the task edition activity.
+                // Open the task edition activity
                 long currentTaskId = currentTask.getId();
 
                 Intent intent = new Intent(this, EditTaskActivity.class);
@@ -313,7 +319,7 @@ public class TaskActivity extends AppCompatActivity {
                 break;
 
             case R.id.task_menu_delete:
-                // Show a deletion confirmation dialog.
+                // Show a deletion confirmation dialog
                 DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment();
 
                 arguments = new Bundle();
