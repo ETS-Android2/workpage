@@ -29,21 +29,19 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        activity = getActivity();
+        applicationLogic = new ApplicationLogic(activity);
+
         long[] contextIds = (getArguments()).getLongArray("task_context_ids");
 
         if (contextIds != null) {
             contexts = new LinkedList<TaskContext>();
 
             for (long id : contextIds) {
-                TaskContext context = new TaskContext();
-                context.setId(id);
-
+                TaskContext context = applicationLogic.getTaskContext(id);
                 contexts.add(context);
             }
         }
-
-        activity = getActivity();
-        applicationLogic = new ApplicationLogic(activity);
 
         final Resources resources = activity.getResources();
         final int selectedContextCount = contexts.size();
