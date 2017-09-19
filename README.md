@@ -34,6 +34,6 @@ Screenshot
 ----------
 ![Screenshot](media/readme_screenshot.png)
 
-Database
---------
+Database Model
+--------------
 ![Screenshot](doc/database.png)
