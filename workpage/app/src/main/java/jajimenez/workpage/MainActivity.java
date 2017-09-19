@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
     private Bundle savedInstanceState;
     private boolean interfaceReady;
 
-    private SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener switchTaskContextListener;
+    private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
     private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
@@ -100,9 +100,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Listeners
-        switchTaskContextListener = new SwitchTaskContextDialogFragment.OnNewCurrentTaskContextSetListener() {
-            public void onNewCurrentTaskContextSet() {
+        switchTaskContextListener = new SwitchTaskContextDialogFragment.OnTaskContextsChangedListener() {
+            public void onNewCurrentTaskContext() {
                 MainActivity.this.updateInterface();
+            }
+
+            public void onEditTaskContextsSelected() {
+                Intent intent = new Intent(MainActivity.this, EditTaskContextsActivity.class);
+                startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_CONTEXTS);
             }
         };
 
@@ -137,7 +142,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
-            if (switchTaskContextFragment != null) switchTaskContextFragment.setOnNewCurrentTaskContextSetListener(switchTaskContextListener);
+            if (switchTaskContextFragment != null) switchTaskContextFragment.setOnTaskContextsChangedListener(switchTaskContextListener);
 
             ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
             if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
@@ -304,7 +309,7 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.main_nav_context:
                 SwitchTaskContextDialogFragment fragment = new SwitchTaskContextDialogFragment();
-                fragment.setOnNewCurrentTaskContextSetListener(switchTaskContextListener);
+                fragment.setOnTaskContextsChangedListener(switchTaskContextListener);
                 fragment.show(getFragmentManager(), "switch_task_context");
                 break;
             case R.id.main_nav_view:
@@ -353,7 +358,8 @@ public class MainActivity extends AppCompatActivity
         if (resultCode == RESULT_OK) {
             if (requestCode == ApplicationLogic.CHANGE_TASKS
                     || requestCode == ApplicationLogic.CHANGE_TASK_TAGS
-                    || requestCode == ApplicationLogic.CHANGE_VIEW) {
+                    || requestCode == ApplicationLogic.CHANGE_VIEW
+                    || requestCode == ApplicationLogic.CHANGE_TASK_CONTEXTS) {
 
                 updateInterface();
             }

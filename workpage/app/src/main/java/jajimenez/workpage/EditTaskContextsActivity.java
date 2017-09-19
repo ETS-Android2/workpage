@@ -53,6 +53,12 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
         saveTaskContextListener = new EditTaskContextDialogFragment.OnTaskContextSavedListener() {
             public void onTaskContextSaved() {
+                // Set the Result to RESULT_OK to notify Main activity that there have been
+                // changes in the contexts and therefore it must update its user interface.
+                // This notification will happen when closing this activity and returning
+                // to Main activity.
+                EditTaskContextsActivity.this.setResult(EditTaskContextsActivity.this.RESULT_OK);
+
                 // Close the contextual action bar
                 if (EditTaskContextsActivity.this.actionMode != null) EditTaskContextsActivity.this.actionMode.finish();
 
@@ -63,6 +69,12 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
         deleteTaskContextListener = new DeleteTaskContextDialogFragment.OnDeleteListener() {
             public void onDelete() {
+                // Set the Result to RESULT_OK to notify Main activity that there have been
+                // changes in the contexts and therefore it must update its user interface.
+                // This notification will happen when closing this activity and returning
+                // to Main activity.
+                EditTaskContextsActivity.this.setResult(EditTaskContextsActivity.this.RESULT_OK);
+
                 // Close the context action bar
                 if (EditTaskContextsActivity.this.actionMode != null) EditTaskContextsActivity.this.actionMode.finish();
 

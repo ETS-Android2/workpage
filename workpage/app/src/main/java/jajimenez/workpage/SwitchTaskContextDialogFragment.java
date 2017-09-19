@@ -15,13 +15,14 @@ import jajimenez.workpage.data.model.TaskContext;
 
 public class SwitchTaskContextDialogFragment extends DialogFragment {
     private Activity activity;
-    private OnNewCurrentTaskContextSetListener onNewCurrentTaskContextSetListener;
+
+    private OnTaskContextsChangedListener onTaskContextsChangedListener;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
 
     public SwitchTaskContextDialogFragment() {
-        onNewCurrentTaskContextSetListener = null;
+        onTaskContextsChangedListener = null;
     }
 
     @Override
@@ -49,8 +50,9 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
         builder.setTitle(R.string.switch_task_context);
         builder.setNeutralButton(R.string.edit_contexts, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(SwitchTaskContextDialogFragment.this.activity, EditTaskContextsActivity.class);
-                SwitchTaskContextDialogFragment.this.activity.startActivity(intent);
+                if (SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener != null) {
+                    SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener.onEditTaskContextsSelected();
+                }
             }
         });
 
@@ -63,8 +65,8 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
                 if (selectedTaskContext.getId() != SwitchTaskContextDialogFragment.this.currentTaskContext.getId()) { 
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(selectedTaskContext);
 
-                    if (SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener != null) {
-                        SwitchTaskContextDialogFragment.this.onNewCurrentTaskContextSetListener.onNewCurrentTaskContextSet();
+                    if (SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener != null) {
+                        SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener.onNewCurrentTaskContext();
                     }
                 }
 
@@ -76,11 +78,12 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    public void setOnNewCurrentTaskContextSetListener(OnNewCurrentTaskContextSetListener listener) {
-        onNewCurrentTaskContextSetListener = listener;
+    public void setOnTaskContextsChangedListener(OnTaskContextsChangedListener listener) {
+        onTaskContextsChangedListener = listener;
     }
 
-    public static interface OnNewCurrentTaskContextSetListener {
-        void onNewCurrentTaskContextSet();
+    public static interface OnTaskContextsChangedListener {
+        void onNewCurrentTaskContext();
+        void onEditTaskContextsSelected();
     }
 }

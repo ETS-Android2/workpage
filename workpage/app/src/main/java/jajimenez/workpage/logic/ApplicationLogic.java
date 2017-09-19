@@ -41,8 +41,9 @@ public class ApplicationLogic {
     public static final int CHANGE_TASKS = 0;
     public static final int CHANGE_TASK_TAGS = 1;
     public static final int CHANGE_VIEW = 2;
-    public static final int EXPORT_DATA = 3;
-    public static final int IMPORT_DATA = 4;
+    public static final int CHANGE_TASK_CONTEXTS = 3;
+    public static final int EXPORT_DATA = 4;
+    public static final int IMPORT_DATA = 5;
 
     public static final String APP_MIME_TYPE = "*/*";
 
