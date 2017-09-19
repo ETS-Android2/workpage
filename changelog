@@ -3,6 +3,7 @@
 * Layout redesigned.
 * Time zones added to the tasks.
 * Data export/import improved and simplified. CSV format removed.
+* Bug when deleting current context fixed.
 
 0.8.0 (27 Oct 2016)
 -------------------
