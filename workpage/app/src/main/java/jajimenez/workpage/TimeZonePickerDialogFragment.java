@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -179,11 +180,27 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     private List<Country> searchCountries(String name) {
         List<Country> result = new ArrayList<Country>(countries.size());
 
-        for (Country c : countries) {
-            String name1 = (c.getName()).toLowerCase();
-            String name2 = (name.trim()).toLowerCase();
+        if (name.length() > 0) {
+            for (Country c : countries) {
+                String name1 = (c.getName()).toLowerCase();
+                name1 = Normalizer.normalize(name1, Normalizer.Form.NFD);
+                name1 = name1.replaceAll("\\p{M}", "");
 
-            if (name1.contains(name2)) result.add(c);
+                String name2 = (name.trim()).toLowerCase();
+                name2 = Normalizer.normalize(name2, Normalizer.Form.NFD);
+                name2 = name2.replaceAll("\\p{M}", "");
+
+                int length = name2.length();
+
+                if (length == 1) {
+                    String firstLetter1 = name1.substring(0, 1);
+                    String firstLetter2 = name2.substring(0, 1);
+
+                    if (firstLetter1.equals(firstLetter2)) result.add(c);
+                } else if (name1.contains(name2)) {
+                    result.add(c);
+                }
+            }
         }
 
         return result;
