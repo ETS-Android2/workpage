@@ -144,14 +144,8 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         if (when != null) {
             whenValueTextView.setVisibility(View.VISIBLE);
             datesTableLayout.setVisibility(View.GONE);
-
             space2TextView.setVisibility(View.INVISIBLE);
-
             whenValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.WHEN, true));
-
-            TimeZone whenTimeZone = when.getTimeZone();
-
-
         }
         // Any of Start and Deadline is defined.
         else if (start != null || deadline != null) {

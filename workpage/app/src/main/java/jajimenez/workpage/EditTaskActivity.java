@@ -682,11 +682,11 @@ public class EditTaskActivity extends AppCompatActivity {
             tableDate2.setVisibility(View.GONE);
             divider2.setVisibility(View.GONE);
 
-            date1.setText(tool.getFormattedDate(when));
+            date1.setText(tool.getFormattedDate(when, false));
             time1.setVisibility(View.VISIBLE);
 
             if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.add_time);
-            else time1.setText(tool.getFormattedTime(when));
+            else time1.setText(tool.getFormattedTime(when, false));
 
             TimeZone whenTimeZone = when.getTimeZone();
             now = Calendar.getInstance();
@@ -719,10 +719,10 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminderRow1.setVisibility(View.GONE);
             }
             else {
-                date1.setText(tool.getFormattedDate(start));
+                date1.setText(tool.getFormattedDate(start, false));
 
                 if (currentTask.getIgnoreStartTime()) time1.setText(R.string.add_time);
-                else time1.setText(tool.getFormattedTime(start));
+                else time1.setText(tool.getFormattedTime(start, false));
 
                 time1.setVisibility(View.VISIBLE);
                 timeZoneRow1.setVisibility(View.VISIBLE);
@@ -744,10 +744,10 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminderRow2.setVisibility(View.GONE);
             }
             else {
-                date2.setText(tool.getFormattedDate(deadline));
+                date2.setText(tool.getFormattedDate(deadline, false));
 
                 if (currentTask.getIgnoreDeadlineTime()) time2.setText(R.string.add_time);
-                else time2.setText(tool.getFormattedTime(deadline));
+                else time2.setText(tool.getFormattedTime(deadline, false));
 
                 time2.setVisibility(View.VISIBLE);
                 timeZoneRow2.setVisibility(View.VISIBLE);

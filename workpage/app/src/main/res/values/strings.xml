@@ -68,18 +68,12 @@
     <string name="none">(None)</string>
 
     <string name="task">Task</string>
-    <string name="task_datetime_1">%1$s, %2$s - %3$s</string>
-    <string name="task_datetime_2">%1$s, %2$s</string>
-    <string name="task_date_1">%1$s - %2$s</string>
-    <string name="task_date_2">%1$s</string>
-    <string name="task_start_datetime_1">Start: %1$s, %2$s - %3$s</string>
-    <string name="task_start_datetime_2">Start: %1$s, %2$s</string>
-    <string name="task_start_date_1">Start: %1$s - %2$s</string>
-    <string name="task_start_date_2">Start: %1$s</string>
-    <string name="task_deadline_datetime_1">Deadline: %1$s, %2$s - %3$s</string>
-    <string name="task_deadline_datetime_2">Deadline: %1$s, %2$s</string>
-    <string name="task_deadline_date_1">Deadline: %1$s - %2$s</string>
-    <string name="task_deadline_date_2">Deadline: %1$s</string>
+    <string name="task_datetime">%1$s - %2$s</string>
+    <string name="task_date">%1$s</string>
+    <string name="task_start_datetime">Start: %1$s - %2$s</string>
+    <string name="task_start_date">Start: %1$s</string>
+    <string name="task_deadline_datetime">Deadline: %1$s - %2$s</string>
+    <string name="task_deadline_date">Deadline: %1$s</string>
     <string name="separator">", "</string>
 
     <plurals name="task_state">

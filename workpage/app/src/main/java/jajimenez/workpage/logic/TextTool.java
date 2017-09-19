@@ -21,34 +21,55 @@ public class TextTool {
     public final static int SHORT = 0;
     public final static int LONG = 1;
 
-    public String getFormattedDate(Calendar calendar) {
-        String date = "";
+    public String getFormattedDate(Calendar date, boolean deviceLocalTimeZone) {
+        String formattedDate = "";
 
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        dateFormat.setTimeZone(calendar.getTimeZone());
+        if (date != null) {
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+            TimeZone timeZone;
 
-        if (calendar != null) date = dateFormat.format(calendar.getTime());
+            if (deviceLocalTimeZone) {
+                // Device local time zone
+                timeZone = (Calendar.getInstance()).getTimeZone();
+            } else {
+                // Date's time zone
+                timeZone = date.getTimeZone();
+            }
 
-        return date;
+            dateFormat.setTimeZone(timeZone);
+            formattedDate = dateFormat.format(date.getTime());
+        }
+
+        return formattedDate;
     }
 
-    public String getFormattedTime(Calendar calendar) {
-        String time = "";
+    public String getFormattedTime(Calendar date, boolean deviceLocalTimeZone) {
+        String formattedTime = "";
 
-        DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-        dateFormat.setTimeZone(calendar.getTimeZone());
+        if (date != null) {
+            DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+            TimeZone timeZone;
 
-        if (calendar != null) time = dateFormat.format(calendar.getTime());
+            if (deviceLocalTimeZone) {
+                // Device local time zone
+                timeZone = (Calendar.getInstance()).getTimeZone();
+            } else {
+                // Date's time zone
+                timeZone = date.getTimeZone();
+            }
 
-        return time;
+            dateFormat.setTimeZone(timeZone);
+            formattedTime = dateFormat.format(date.getTime());
+        }
+
+        return formattedTime;
     }
 
-    public String getTaskDateText(Context context, Task task, boolean withTitle, int dateType, boolean includeOffset) {
+    public String getTaskDateText(Context context, Task task, boolean withTitle, int dateType, boolean deviceLocalTimeZone) {
         String text = "";
 
-        String date = null;
-        String time = null;
-        String offset = null;
+        String date;
+        String time;
 
         switch (dateType) {
             case WHEN:
@@ -56,16 +77,13 @@ public class TextTool {
 
                 if (when != null) {
                     // In this case, we ignore "withTitle", as "When" is always shown without any title.
-                    date = getFormattedDate(when);
-                    time = getFormattedTime(when);
-                    offset = getFormattedTimeZone(context, when.getTimeZone(), when, TextTool.SHORT);
+                    date = getFormattedDate(when, deviceLocalTimeZone);
+                    time = getFormattedTime(when, deviceLocalTimeZone);
 
                     boolean ignoreWhenTime = task.getIgnoreWhenTime();
 
-                    if (!ignoreWhenTime && includeOffset) text = context.getString(R.string.task_datetime_1, date, time, offset);
-                    else if (!ignoreWhenTime && !includeOffset) text = context.getString(R.string.task_datetime_2, date, offset);
-                    else if (ignoreWhenTime && includeOffset) text = context.getString(R.string.task_date_1, date, offset);
-                    else text = context.getString(R.string.task_date_2, date);
+                    if (!ignoreWhenTime) text = context.getString(R.string.task_datetime, date, time);
+                    else text = context.getString(R.string.task_date, date);
                 }
 
                 break;
@@ -73,23 +91,15 @@ public class TextTool {
                 Calendar start = task.getStart();
 
                 if (start != null) {
-                    date = getFormattedDate(start);
-                    time = getFormattedTime(start);
-                    offset = getFormattedTimeZone(context, start.getTimeZone(), start, TextTool.SHORT);
+                    date = getFormattedDate(start, deviceLocalTimeZone);
+                    time = getFormattedTime(start, deviceLocalTimeZone);
 
                     boolean ignoreStartTime = task.getIgnoreWhenTime();
 
-                    if (withTitle) {
-                        if (!ignoreStartTime && includeOffset) text = context.getString(R.string.task_start_datetime_1, date, time, offset);
-                        else if (!ignoreStartTime && !includeOffset) text = context.getString(R.string.task_start_datetime_2, date, time);
-                        else if (ignoreStartTime && includeOffset) text = context.getString(R.string.task_start_date_1, date, offset);
-                        else text = context.getString(R.string.task_start_date_2, date);
-                    } else {
-                        if (!ignoreStartTime && includeOffset) text = context.getString(R.string.task_datetime_1, date, time, offset);
-                        else if (!ignoreStartTime && !includeOffset) text = context.getString(R.string.task_datetime_2, date, time);
-                        else if (ignoreStartTime && includeOffset) text = context.getString(R.string.task_date_1, date, offset);
-                        else text = context.getString(R.string.task_date_2, date);
-                    }
+                    if (!ignoreStartTime && withTitle) text = context.getString(R.string.task_start_datetime, date, time);
+                    else if (!ignoreStartTime && !withTitle) text = context.getString(R.string.task_datetime, date, time);
+                    else if (ignoreStartTime && withTitle) text = context.getString(R.string.task_start_date, date);
+                    else text = context.getString(R.string.task_date, date);
                 }
 
                 break;
@@ -97,23 +107,15 @@ public class TextTool {
                 Calendar deadline = task.getDeadline();
 
                 if (deadline != null) {
-                    date = getFormattedDate(deadline);
-                    time = getFormattedTime(deadline);
-                    offset = getFormattedTimeZone(context, deadline.getTimeZone(), deadline, TextTool.SHORT);
+                    date = getFormattedDate(deadline, deviceLocalTimeZone);
+                    time = getFormattedTime(deadline, deviceLocalTimeZone);
 
                     boolean ignoreDeadlineTime = task.getIgnoreWhenTime();
 
-                    if (withTitle) {
-                        if (!ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_deadline_datetime_1, date, time, offset);
-                        else if (!ignoreDeadlineTime && !includeOffset) text = context.getString(R.string.task_deadline_datetime_2, date, time);
-                        else if (ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_deadline_date_1, date, offset);
-                        else text = context.getString(R.string.task_deadline_date_2, date);
-                    } else {
-                        if (!ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_datetime_1, date, time, offset);
-                        else if (!ignoreDeadlineTime && !includeOffset) text = context.getString(R.string.task_datetime_2, date, time);
-                        else if (ignoreDeadlineTime && includeOffset) text = context.getString(R.string.task_date_1, date, offset);
-                        else text = context.getString(R.string.task_date_2, date);
-                    }
+                    if (!ignoreDeadlineTime && withTitle) text = context.getString(R.string.task_deadline_datetime, date, time);
+                    else if (!ignoreDeadlineTime && !withTitle) text = context.getString(R.string.task_datetime, date, time);
+                    else if (ignoreDeadlineTime && withTitle) text = context.getString(R.string.task_deadline_date, date);
+                    else text = context.getString(R.string.task_date, date);
                 }
                 
                 break;
@@ -218,8 +220,8 @@ public class TextTool {
     }
 
     public String getTimeZoneInformation(Context context, Calendar date) {
-        String formattedDate = getFormattedDate(date);
-        String formattedTime = getFormattedTime(date);
+        String formattedDate = getFormattedDate(date, true);
+        String formattedTime = getFormattedTime(date, true);
 
         return context.getString(R.string.time_zone_information, formattedDate, formattedTime);
     }

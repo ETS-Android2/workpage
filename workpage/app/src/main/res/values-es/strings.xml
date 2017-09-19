@@ -68,18 +68,12 @@
     <string name="none">(Ninguno)</string>
 
     <string name="task">Tarea</string>
-    <string name="task_datetime_1">%1$s, %2$s - %3$s</string>
-    <string name="task_datetime_2">%1$s, %2$s</string>
-    <string name="task_date_1">%1$s - %2$s</string>
-    <string name="task_date_2">%1$s</string>
-    <string name="task_start_datetime_1">Comienzo: %1$s, %2$s - %3$s</string>
-    <string name="task_start_datetime_2">Comienzo: %1$s, %2$s</string>
-    <string name="task_start_date_1">Comienzo: %1$s - %2$s</string>
-    <string name="task_start_date_2">Comienzo: %1$s</string>
-    <string name="task_deadline_datetime_1">Límite: %1$s, %2$s - %3$s</string>
-    <string name="task_deadline_datetime_2">Límite: %1$s, %2$s</string>
-    <string name="task_deadline_date_1">Límite: %1$s - %2$s</string>
-    <string name="task_deadline_date_2">Límite: %1$s</string>
+    <string name="task_datetime">%1$s - %2$s</string>
+    <string name="task_date">%1$s</string>
+    <string name="task_start_datetime">Comienzo: %1$s - %2$s</string>
+    <string name="task_start_date">Comienzo: %1$s</string>
+    <string name="task_deadline_datetime">Límite: %1$s - %2$s</string>
+    <string name="task_deadline_date">Límite: %1$s</string>
     <string name="separator">", "</string>
 
     <plurals name="task_state">
