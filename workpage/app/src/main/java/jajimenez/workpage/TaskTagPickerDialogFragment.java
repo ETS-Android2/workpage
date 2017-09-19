@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.text.Editable;
@@ -55,7 +54,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
-        builder.setTitle(R.string.tags_1);
+        builder.setTitle(R.string.tags);
 
         builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {

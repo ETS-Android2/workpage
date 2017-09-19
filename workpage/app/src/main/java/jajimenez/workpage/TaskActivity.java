@@ -168,8 +168,8 @@ public class TaskActivity extends AppCompatActivity {
 
         ActionBar bar = getSupportActionBar();
 
-        if (currentTask.isDone()) bar.setSubtitle(R.string.closed);
-        else bar.setSubtitle(R.string.open);
+        if (currentTask.isDone()) bar.setSubtitle(R.string.closed_1);
+        else bar.setSubtitle(R.string.open_1);
 
         titleTextView.setText(currentTask.getTitle());
         descriptionTextView.setText(currentTask.getDescription());

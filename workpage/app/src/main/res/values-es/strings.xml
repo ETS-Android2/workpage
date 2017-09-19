@@ -52,9 +52,13 @@
 
     <string name="cancel">Cancelar</string>
 
-    <string name="open">Pendiente</string>
-    <string name="doable_today">Realizable Hoy</string>
-    <string name="closed">Completa</string>
+    <string name="open_1">Pendiente</string>
+    <string name="open_2">Tareas pendientes</string>
+    <string name="doable_today_1">Realizable hoy</string>
+    <string name="doable_today_2">Tareas realizables hoy</string>
+    <string name="closed_1">Completa</string>
+    <string name="closed_2">Tareas completas</string>
+    <string name="view_filters">%1$s - Filtro por etiquetas</string>
 
     <string name="all">(Todo)</string>
     <string name="without_tags">(Sin etiquetas)</string>
@@ -113,8 +117,7 @@
     <string name="deadline_1">Límite</string>
     <string name="deadline_2">Límite:</string>
     <string name="time_zone">Huso horario</string>
-    <string name="tags_1">Etiquetas</string>
-    <string name="tags_2">Etiquetas:</string>
+    <string name="tags">Etiquetas</string>
     <string name="tag_name">Nombre de la etiqueta</string>
     <string name="add">Añadir</string>
     <string name="task_saved">Tarea guardada</string>

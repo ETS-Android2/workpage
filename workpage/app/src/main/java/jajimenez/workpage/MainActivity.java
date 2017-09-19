@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -37,8 +36,7 @@ public class MainActivity extends AppCompatActivity
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
-    private TextView viewTextView;
-    private TextView filterTagsValueTextView;
+    private TextView viewFilterTextView;
     private ActionMode actionMode;
     private ListView listView;
     private TextView emptyTextView;
@@ -67,8 +65,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar_main_toolbar);
         setSupportActionBar(toolbar);
 
-        viewTextView = (TextView) findViewById(R.id.main_view);
-        filterTagsValueTextView = (TextView) findViewById(R.id.main_filter_tags_value);
+        viewFilterTextView = (TextView) findViewById(R.id.main_view_filter);
         actionMode = null;
 
         listView = (ListView) findViewById(R.id.main_list);
@@ -408,38 +405,26 @@ public class MainActivity extends AppCompatActivity
 
         // Information about the current view.
         viewStateFilter = this.applicationLogic.getViewStateFilter();
+        String stateFilterText;
 
-        if (viewStateFilter.equals("open")) viewTextView.setText(R.string.open);
-        else if (viewStateFilter.equals("doable_today")) viewTextView.setText(R.string.doable_today);
-        else if (viewStateFilter.equals("closed")) viewTextView.setText(R.string.closed);
+        if (viewStateFilter.equals("open")) stateFilterText = getString(R.string.open_2);
+        else if (viewStateFilter.equals("doable_today")) stateFilterText = getString(R.string.doable_today_2);
+        else stateFilterText = getString(R.string.closed_2);
 
         // Information about the current filter tags.
         includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
         currentFilterTags = this.applicationLogic.getCurrentFilterTags();
 
-        int filterTagCount = 0;
-        if (currentFilterTags != null) filterTagCount = currentFilterTags.size();
+        int tagFilterCount = 0;
+        int maxFilterCount = applicationLogic.getTaskTagCount(currentTaskContext) + 1; // + 1 for the Without Tag filter
 
-        if (!includeTasksWithNoTag && filterTagCount == 0) {
-            filterTagsValueTextView.setText(R.string.none);
-        }
-        else if (includeTasksWithNoTag && filterTagCount == applicationLogic.getTaskTagCount(currentTaskContext)) {
-            filterTagsValueTextView.setText(R.string.all);
-        }
-        else {
-            String tagsText = "";
+        if (currentFilterTags != null) tagFilterCount = currentFilterTags.size();
+        if (includeTasksWithNoTag) tagFilterCount++;
 
-            if (includeTasksWithNoTag) {
-                tagsText += getString(R.string.without_tags);
-                if (filterTagCount > 0) tagsText += getString(R.string.separator);
-            }
-
-            for (int i = 0; i < filterTagCount; i++) {
-                tagsText += (currentFilterTags.get(i)).getName();
-                if (i < (filterTagCount - 1)) tagsText += getString(R.string.separator);
-            }
-
-            filterTagsValueTextView.setText(tagsText);
+        if (tagFilterCount < maxFilterCount) {
+            viewFilterTextView.setText(getString(R.string.view_filters, stateFilterText));
+        } else {
+            viewFilterTextView.setText(stateFilterText);
         }
 
         if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {

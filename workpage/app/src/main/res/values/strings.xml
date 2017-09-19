@@ -52,9 +52,13 @@
 
     <string name="cancel">Cancel</string>
 
-    <string name="open">Open</string>
-    <string name="doable_today">Doable Today</string>
-    <string name="closed">Closed</string>
+    <string name="open_1">Open</string>
+    <string name="open_2">Open tasks</string>
+    <string name="doable_today_1">Doable today</string>
+    <string name="doable_today_2">Doable today tasks</string>
+    <string name="closed_1">Closed</string>
+    <string name="closed_2">Closed tasks</string>
+    <string name="view_filters">%1$s - Tag filter</string>
 
     <string name="all">(All)</string>
     <string name="without_tags">(Without tags)</string>
@@ -113,8 +117,7 @@
     <string name="deadline_1">Deadline</string>
     <string name="deadline_2">Deadline:</string>
     <string name="time_zone">Time zone</string>
-    <string name="tags_1">Tags</string>
-    <string name="tags_2">Tags:</string>
+    <string name="tags">Tags</string>
     <string name="tag_name">Tag name</string>
     <string name="add">Add</string>
     <string name="task_saved">Task saved</string>

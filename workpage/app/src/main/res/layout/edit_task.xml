@@ -214,7 +214,7 @@
             android:drawablePadding="10dp"
             android:textAlignment="textStart"
             android:textSize="18sp"
-            android:text="@string/tags_1"
+            android:text="@string/tags"
             android:onClick="onTagsClicked" />
 
         <View android:layout_width="match_parent"
