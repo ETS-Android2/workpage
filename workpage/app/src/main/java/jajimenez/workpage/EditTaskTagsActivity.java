@@ -178,6 +178,9 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_edit);
                 Drawable editItemIcon = editItem.getIcon();
 
+                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.editTaskTagsContextualMenu_delete);
+                Drawable deleteItemIcon = deleteItem.getIcon();
+
                 if (selectedTagCount == 1) {
                     editItem.setEnabled(true);
                     editItemIcon.setAlpha(255);
@@ -186,6 +189,9 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
                 }
+
+                deleteItem.setEnabled(true);
+                deleteItemIcon.setAlpha(255);
             }
         });
     }

@@ -261,6 +261,9 @@ public class MainActivity extends AppCompatActivity
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.task_menu_edit);
                 Drawable editItemIcon = editItem.getIcon();
 
+                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.task_menu_delete);
+                Drawable deleteItemIcon = deleteItem.getIcon();
+
                 if (selectedTaskCount == 1) {
                     editItem.setEnabled(true);
                     editItemIcon.setAlpha(255);
@@ -269,6 +272,9 @@ public class MainActivity extends AppCompatActivity
                     editItem.setEnabled(false);
                     editItemIcon.setAlpha(127);
                 }
+
+                deleteItem.setEnabled(true);
+                deleteItemIcon.setAlpha(255);
             }
         });
     }

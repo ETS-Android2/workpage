@@ -94,18 +94,6 @@ public class EditTaskContextsActivity extends AppCompatActivity {
                 MenuInflater inflater = mode.getMenuInflater();
                 inflater.inflate(R.menu.edit_task_contexts_contextual, menu);
 
-                MenuItem deleteItem = menu.findItem(R.id.edit_task_contexts_contextual_menu_delete);
-                Drawable deleteItemIcon = deleteItem.getIcon();
-                int itemCount = EditTaskContextsActivity.this.listView.getCount();
-
-                if (itemCount > 1) {
-                    deleteItem.setEnabled(true);
-                    deleteItemIcon.setAlpha(255);
-                } else {
-                    deleteItem.setEnabled(false);
-                    deleteItemIcon.setAlpha(127);
-                }
-
                 return true;
             }
 
@@ -168,7 +156,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 int selectedContextCount = EditTaskContextsActivity.this.listView.getCheckedItemCount();
-                mode.setTitle(EditTaskContextsActivity.this.getString(R.string.selected, selectedContextCount));
+                if (selectedContextCount > 0) mode.setTitle(EditTaskContextsActivity.this.getString(R.string.selected, selectedContextCount));
 
                 MenuItem editItem = (mode.getMenu()).findItem(R.id.edit_task_contexts_contextual_menu_edit);
                 Drawable editItemIcon = editItem.getIcon();
@@ -187,7 +175,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
                     editItemIcon.setAlpha(127);
                 }
 
-                if (selectedContextCount < itemCount) {
+                if (selectedContextCount > 0 && selectedContextCount < itemCount) {
                     deleteItem.setEnabled(true);
                     deleteItemIcon.setAlpha(255);
                 }

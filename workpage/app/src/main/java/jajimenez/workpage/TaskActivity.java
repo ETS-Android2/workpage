@@ -141,12 +141,18 @@ public class TaskActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.task, menu);
 
-        // This is necessary because the drawable of the Edit item icon of this activity keeps
-        // the last alpha value set for the Edit item icon in MainActivity. MainActivity has
-        // the same menu with the same drawables for the items.
+        // This is necessary because the common drawables keep values previously set.
         MenuItem editItem = menu.findItem(R.id.task_menu_edit);
         Drawable editItemIcon = editItem.getIcon();
+
+        MenuItem deleteItem = menu.findItem(R.id.task_menu_delete);
+        Drawable deleteItemIcon = deleteItem.getIcon();
+
+        editItem.setEnabled(true);
         editItemIcon.setAlpha(255);
+
+        deleteItem.setEnabled(true);
+        deleteItemIcon.setAlpha(255);
 
         return true;
     }
