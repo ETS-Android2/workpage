@@ -37,7 +37,10 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     private ListView list;
 
     private int mode;
+
     private List<Country> countries;
+    private int countryCount;
+    private ArrayList<String> countryNames;
     private Country selectedCountry;
 
     private OnTimeZoneSelectedListener onTimeZoneSelectedListener;
@@ -52,7 +55,13 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
+
         countries = applicationLogic.getAllCountries();
+        Collections.sort(countries, new CountryComparator());
+
+        countryCount = countries.size();
+        countryNames = getNormalizedCountryNames(countries);
+
         selectedCountry = null;
 
         if (savedInstanceState == null) {
@@ -96,7 +105,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
 
             public void afterTextChanged(Editable s) {
                 if (!((s.toString()).trim()).isEmpty()) {
-                    TimeZonePickerDialogFragment.this.mode = TimeZonePickerDialogFragment.this.COUNTRY;
+                    TimeZonePickerDialogFragment.this.mode = TimeZonePickerDialogFragment.COUNTRY;
                 }
 
                 TimeZonePickerDialogFragment.this.updateInterface();
@@ -140,6 +149,30 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    private ArrayList<String> getNormalizedCountryNames(List<Country> countries) {
+        if (countries == null) throw new NullPointerException("'countries' is null.");
+        ArrayList<String> result = new ArrayList<>(countries.size());
+
+        for (Country c: countries) {
+            String normalizedName = getNormalizedString(c.getName());
+            result.add(normalizedName);
+        }
+
+        return result;
+    }
+
+    private String getNormalizedString(String s) {
+        String result = "";
+
+        if (s != null && !s.isEmpty()) {
+            result = (s.trim()).toLowerCase();
+            result = Normalizer.normalize(result, Normalizer.Form.NFD);
+            result = result.replaceAll("\\p{M}", "");
+        }
+
+        return result;
+    }
+
     private void updateInterface() {
         String countryName = ((countryEditText.getText()).toString()).trim();
 
@@ -147,17 +180,12 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         else clearImageButton.setVisibility(View.VISIBLE);
 
         if (mode == COUNTRY) {
-            List<Country> countries;
+            List<Country> countriesFound;
             
-            if (countryName.isEmpty()) {
-                countries = new ArrayList<Country>();
-            }
-            else {
-                countries = searchCountries(countryName);
-                Collections.sort(countries, new CountryComparator());
-            }
+            if (countryName.isEmpty()) countriesFound = new ArrayList<Country>();
+            else countriesFound = searchCountries(countryName);
             
-            CountryAdapter adapter = new CountryAdapter(activity, R.layout.country_list_item, countries);
+            CountryAdapter adapter = new CountryAdapter(activity, R.layout.country_list_item, countriesFound);
             list.setAdapter(adapter);
         }
         else {
@@ -177,27 +205,25 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         if (selectedCountry != null) outState.putLong("selected_country", selectedCountry.getId());
     }
 
-    private List<Country> searchCountries(String name) {
-        List<Country> result = new ArrayList<Country>(countries.size());
+    private List<Country> searchCountries(String countryName) {
+        List<Country> result = new ArrayList<Country>(countryNames.size());
 
-        if (name.length() > 0) {
-            for (Country c : countries) {
-                String name1 = (c.getName()).toLowerCase();
-                name1 = Normalizer.normalize(name1, Normalizer.Form.NFD);
-                name1 = name1.replaceAll("\\p{M}", "");
+        if (countryName != null && !countryName.isEmpty()) {
+            String name2 = getNormalizedString(countryName);
+            int length2 = name2.length();
 
-                String name2 = (name.trim()).toLowerCase();
-                name2 = Normalizer.normalize(name2, Normalizer.Form.NFD);
-                name2 = name2.replaceAll("\\p{M}", "");
+            for (int i = 0; i < countryCount; i++) {
+                String name1 = countryNames.get(i);
 
-                int length = name2.length();
-
-                if (length == 1) {
+                if (length2 == 1) {
                     String firstLetter1 = name1.substring(0, 1);
-                    String firstLetter2 = name2.substring(0, 1);
 
-                    if (firstLetter1.equals(firstLetter2)) result.add(c);
+                    if (firstLetter1.equals(name2)) {
+                        Country c = countries.get(i);
+                        result.add(c);
+                    }
                 } else if (name1.contains(name2)) {
+                    Country c = countries.get(i);
                     result.add(c);
                 }
             }
