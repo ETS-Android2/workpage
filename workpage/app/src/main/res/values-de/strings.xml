@@ -74,10 +74,10 @@
     <string name="task">Aufgabe</string>
     <string name="task_datetime">%1$s - %2$s</string>
     <string name="task_date">%1$s</string>
-    <string name="task_start_datetime">Anfang: %1$s - %2$s</string>
-    <string name="task_start_date">Anfang: %1$s</string>
-    <string name="task_deadline_datetime">Frist: %1$s - %2$s</string>
-    <string name="task_deadline_date">Frist: %1$s</string>
+    <string name="task_start_datetime">Beginn: %1$s - %2$s</string>
+    <string name="task_start_date">Beginn: %1$s</string>
+    <string name="task_deadline_datetime">Ende: %1$s - %2$s</string>
+    <string name="task_deadline_date">Ende: %1$s</string>
     <string name="separator">", "</string>
 
     <plurals name="task_state">
@@ -112,10 +112,10 @@
     <string name="add_reminder">Erinnerung hinzufügen</string>
     <string name="no_reminder">Keine Erinnerung</string>
     <string name="date_range">Datumsbereich</string>
-    <string name="start_1">Anfang</string>
-    <string name="start_2">Anfang:</string>
-    <string name="deadline_1">Frist</string>
-    <string name="deadline_2">Frist:</string>
+    <string name="start_1">Beginn</string>
+    <string name="start_2">Beginn:</string>
+    <string name="deadline_1">Ende</string>
+    <string name="deadline_2">Ende:</string>
     <string name="time_zone">Zeitzone</string>
     <string name="tags">Stichworte</string>
     <string name="tag_name">Stichwort Name</string>
