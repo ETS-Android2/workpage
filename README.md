@@ -16,7 +16,7 @@ Features
 4. **Flexible dates/times:** No Date, Single Date or Date Range.
 5. **Time zone support:** You can set specific time zones for each task. For a single task, you can set the start date on a specific time zone and the deadline on another time zone.
 6. **Reminders:** Every task can optionally have reminders.
-7. **Data export/import:** You can make a **backup** of your data into a file and recover it later, in your device or in another.
+7. **Data export/import:** You can make a backup of your data into a file and recover it later, in your device or in another.
 8. **Available languages:** English, Spanish and German.
 
 Project data
