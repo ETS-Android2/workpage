@@ -3,7 +3,8 @@
 * Layout redesigned.
 * Time zones added to the tasks.
 * Data export/import improved and simplified. CSV format removed.
-* Bug when deleting current context fixed.
+* German translation added.
+* Bug when deleting the current context fixed.
 
 0.8.0 (27 Oct 2016)
 -------------------
@@ -54,7 +55,7 @@
 * Feature added: color selection for tags.
 * UI performance issue fix.
 * Data management bug fix.
-* Application Spanish translation added.
+* Spanish translation added.
 
 0.1.1 (12 Jan 2015)
 -------------------
