@@ -8,9 +8,9 @@ Features:
 2. Tags: They allow you to classify and filter the tasks of a particular context.
 3. Colors: You can asily associate a task with one or more tags using colors.
 4. Flexible dates/times: No Date, Single Date or Date Range.
-5. Dates/times are shown in the system timezone: If you change the system timezone, dates/times will be automatically adapted.
+5. Time zone support: You can set specific time zones for each task. For a single task, you can set the start date on a specific time zone and the deadline on another time zone.
 6. Reminders: Every task can optionally have reminders.
-7. Data export/import: You can make a backup of your data into a file and recover it later, in your device or in another. You can also export the data to a CSV file.
-8. Available languages: English and Spanish.
+7. Data export/import: You can make a backup of your data into a file and recover it later, in your device or in another.
+8. Available languages: English, Spanish and German.
 
 The source code of the project is available on GitHub: https://github.com/jajimenez/workpage
