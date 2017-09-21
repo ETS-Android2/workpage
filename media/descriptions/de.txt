@@ -7,8 +7,8 @@ Eigenschaften:
 1. Kontexte: Die Aufgaben werden durch "Kontexte" ergänzt und helfen Ihnen, sich auf einen Kontext zu konzentrieren (z. B. "Persönlich", "Arbeit" ...).
 2. Tags: Sie erlauben es Ihnen, die Aufgaben eines bestimmten Kontextes zu klassifizieren und zu filtern.
 3. Farben: Sie können eine Aufgabe mit einem oder mehreren Tags mit Farben verknüpfen.
-4. Flexible Termine / Zeiten: Kein Datum, Einzeldatum oder Datumsbereich.
-5. Zeitzonenunterstützung: Sie können für jede Aufgabe bestimmte Zeitzonen festlegen. Für eine einzelne Aufgabe können Sie das Startdatum auf eine bestimmte Zeitzone und die Frist auf einer anderen Zeitzone einstellen.
+4. Verschiedene Termine / Zeit-Modi: Nein Datum, Einzeldatum und Datumsbereich.
+5. Zeitzonenunterstützung: Für jede Aufgabe können Sie bestimmte Zeitzonen festlegen. Für eine einzelne Aufgabe können Sie das Startdatum mit einer bestimmten Zeitzone und dem Enddatum mit einer anderen Zeitzone einstellen.
 6. Erinnerungen: Jede Aufgabe kann optional Erinnerungen haben.
 7. Datenexport/import: Sie können eine Sicherung Ihrer Daten in eine Datei vornehmen und später wiederherstellen, in Ihrem Gerät oder in einem anderen.
 8. Verfügbare Sprachen: Englisch, Spanisch und Deutsch.
