@@ -14,7 +14,7 @@ Features
 2. **Tags:** They allow you to classify and filter the tasks of a particular context.
 3. **Colors:** You can asily associate a task with one or more tags using colors.
 4. **Different date/time modes:** No Date, Single Date and Date Range.
-5. **Time zone support:** You can set specific time zones for each task. For a single task, you can set the start date on a specific time zone and the end date on another time zone.
+5. **Time zone support:** You can set specific time zones for each task. For a single task, you can set the start date with a specific time zone and the end date with another time zone.
 6. **Reminders:** Every task can optionally have reminders.
 7. **Data export/import:** You can make a backup of your data into a file and recover it later, in your device or in another.
 8. **Available languages:** English, Spanish and German.
