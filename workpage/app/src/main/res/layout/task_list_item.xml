@@ -33,7 +33,7 @@
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <TextView android:id="@+id/task_list_item_when_value"
+        <TextView android:id="@+id/task_list_item_single_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"

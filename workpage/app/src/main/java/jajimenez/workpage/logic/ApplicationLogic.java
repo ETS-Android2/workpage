@@ -3,7 +3,6 @@ package jajimenez.workpage.logic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
 import java.util.Calendar;
@@ -24,6 +23,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.sax.EndElementListener;
 
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
@@ -58,9 +58,9 @@ public class ApplicationLogic {
     public static final int IMPORT_ERROR_DATA_NOT_VALID = 3;
     public static final int IMPORT_ERROR_IMPORTING_DATA = 4;
 
-    private static final int WHEN = 0;
+    private static final int SINGLE = 0;
     private static final int START = 1;
-    private static final int DEADLINE = 2;
+    private static final int END = 2;
 
     private Context appContext;
     private DataManager dataManager;
@@ -233,9 +233,9 @@ public class ApplicationLogic {
     public void saveTask(Task task) {
         // 1. Update reminder fields of the task object.
         if (task.isDone()) {
-            task.setWhenReminder(null);
+            task.setSingleReminder(null);
             task.setStartReminder(null);
-            task.setDeadlineReminder(null);
+            task.setEndReminder(null);
         }
 
         // 2. Before saving the task, we figure out which
@@ -284,9 +284,9 @@ public class ApplicationLogic {
 
     // Updates all the alarms of a given task.
     private void updateAllReminderAlarms(Task task, boolean taskDeleted) {
-        updateReminderAlarm(task, WHEN, taskDeleted);
+        updateReminderAlarm(task, SINGLE, taskDeleted);
         updateReminderAlarm(task, START, taskDeleted);
-        updateReminderAlarm(task, DEADLINE, taskDeleted);
+        updateReminderAlarm(task, END, taskDeleted);
     }
 
     private void updateReminderAlarm(Task task, int reminderType, boolean taskDeleted) {
@@ -304,9 +304,9 @@ public class ApplicationLogic {
         TaskReminder reminder = null;
 
         switch (reminderType) {
-            case WHEN:
-                calendar = task.getWhen();
-                reminder = task.getWhenReminder();
+            case SINGLE:
+                calendar = task.getSingle();
+                reminder = task.getSingleReminder();
                 break;
 
             case START:
@@ -314,9 +314,9 @@ public class ApplicationLogic {
                 reminder = task.getStartReminder();
                 break;
 
-            default: // DEADLINE
-                calendar = task.getDeadline();
-                reminder = task.getDeadlineReminder();
+            default: // END
+                calendar = task.getEnd();
+                reminder = task.getEndReminder();
                 break;
         }
 

@@ -155,13 +155,13 @@ public class EditTaskActivity extends AppCompatActivity {
                 switch (mode) {
                     case ApplicationLogic.SINGLE_DATE:
                         // Today
-                        Calendar when = Calendar.getInstance();
-                        when.add(Calendar.HOUR_OF_DAY, 1);
-                        when.clear(Calendar.MINUTE);
+                        Calendar single = Calendar.getInstance();
+                        single.add(Calendar.HOUR_OF_DAY, 1);
+                        single.clear(Calendar.MINUTE);
 
-                        currentTask.setWhen(when);
+                        currentTask.setSingle(single);
                         currentTask.setStart(null);
-                        currentTask.setDeadline(null);
+                        currentTask.setEnd(null);
 
                         break;
                     case ApplicationLogic.DATE_RANGE:
@@ -171,24 +171,24 @@ public class EditTaskActivity extends AppCompatActivity {
                         start.clear(Calendar.MINUTE);
 
                         // Tomorrow
-                        Calendar deadline = Calendar.getInstance();
-                        deadline.setTimeInMillis(start.getTimeInMillis());
-                        deadline.add(Calendar.DAY_OF_MONTH, 1);
+                        Calendar end = Calendar.getInstance();
+                        end.setTimeInMillis(start.getTimeInMillis());
+                        end.add(Calendar.DAY_OF_MONTH, 1);
 
-                        currentTask.setWhen(null);
+                        currentTask.setSingle(null);
                         currentTask.setStart(start);
-                        currentTask.setDeadline(deadline);
+                        currentTask.setEnd(end);
 
                         break;
                 }
 
-                currentTask.setIgnoreWhenTime(false);
+                currentTask.setIgnoreSingleTime(false);
                 currentTask.setIgnoreStartTime(false);
-                currentTask.setIgnoreDeadlineTime(false);
+                currentTask.setIgnoreEndTime(false);
 
-                currentTask.setWhenReminder(null);
+                currentTask.setSingleReminder(null);
                 currentTask.setStartReminder(null);
-                currentTask.setDeadlineReminder(null);
+                currentTask.setEndReminder(null);
 
                 EditTaskActivity.this.updateInterface();
             }
@@ -197,7 +197,7 @@ public class EditTaskActivity extends AppCompatActivity {
         timeZoneSelectedListener1 = new TimeZonePickerDialogFragment.OnTimeZoneSelectedListener() {
             @Override
             public void onTimeZoneSelected(TimeZone t) {
-                if (selectedDateMode == ApplicationLogic.SINGLE_DATE) (currentTask.getWhen()).setTimeZone(t);
+                if (selectedDateMode == ApplicationLogic.SINGLE_DATE) (currentTask.getSingle()).setTimeZone(t);
                 else (currentTask.getStart()).setTimeZone(t);
 
                 EditTaskActivity.this.updateInterface();
@@ -207,7 +207,7 @@ public class EditTaskActivity extends AppCompatActivity {
         timeZoneSelectedListener2 = new TimeZonePickerDialogFragment.OnTimeZoneSelectedListener() {
             @Override
             public void onTimeZoneSelected(TimeZone t) {
-                (currentTask.getDeadline()).setTimeZone(t);
+                (currentTask.getEnd()).setTimeZone(t);
                 EditTaskActivity.this.updateInterface();
             }
         };
@@ -219,7 +219,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 DateTimeTool tool = new DateTimeTool();
 
                 if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-                    date = EditTaskActivity.this.currentTask.getWhen();
+                    date = EditTaskActivity.this.currentTask.getSingle();
                 }
                 else {
                     date = EditTaskActivity.this.currentTask.getStart();
@@ -230,7 +230,7 @@ public class EditTaskActivity extends AppCompatActivity {
                     tool.clearTimeFields(date);
 
                     if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-                        EditTaskActivity.this.currentTask.setWhen(date);
+                        EditTaskActivity.this.currentTask.setSingle(date);
                     }
                     else {
                         EditTaskActivity.this.currentTask.setStart(date);
@@ -248,8 +248,8 @@ public class EditTaskActivity extends AppCompatActivity {
         noDate1Listener = new DatePickerDialogFragment.OnNoDateSetListener() {
             public void onNoDateSet() {
                 if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-                    EditTaskActivity.this.currentTask.setWhen(null);
-                    EditTaskActivity.this.currentTask.setIgnoreWhenTime(true);
+                    EditTaskActivity.this.currentTask.setSingle(null);
+                    EditTaskActivity.this.currentTask.setIgnoreSingleTime(true);
                 }
                 else {
                     EditTaskActivity.this.currentTask.setStart(null);
@@ -266,8 +266,8 @@ public class EditTaskActivity extends AppCompatActivity {
                 DateTimeTool tool = new DateTimeTool();
 
                 if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-                    date = EditTaskActivity.this.currentTask.getWhen();
-                    EditTaskActivity.this.currentTask.setIgnoreWhenTime(false);
+                    date = EditTaskActivity.this.currentTask.getSingle();
+                    EditTaskActivity.this.currentTask.setIgnoreSingleTime(false);
                 }
                 else {
                     date = EditTaskActivity.this.currentTask.getStart();
@@ -290,8 +290,8 @@ public class EditTaskActivity extends AppCompatActivity {
                 DateTimeTool tool = new DateTimeTool();
 
                 if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-                    date = EditTaskActivity.this.currentTask.getWhen();
-                    EditTaskActivity.this.currentTask.setIgnoreWhenTime(true);
+                    date = EditTaskActivity.this.currentTask.getSingle();
+                    EditTaskActivity.this.currentTask.setIgnoreSingleTime(true);
                 }
                 else {
                     date = EditTaskActivity.this.currentTask.getStart();
@@ -308,19 +308,19 @@ public class EditTaskActivity extends AppCompatActivity {
         // Date and Time 2
         date2Listener = new DatePickerDialogFragment.OnDateSetListener() {
             public void onDateSet(int year, int month, int day) {
-                Calendar deadline = EditTaskActivity.this.currentTask.getDeadline();
+                Calendar end = EditTaskActivity.this.currentTask.getEnd();
                 DateTimeTool tool = new DateTimeTool();
 
-                if (deadline == null) {
-                    deadline = Calendar.getInstance();
-                    tool.clearTimeFields(deadline);
+                if (end == null) {
+                    end = Calendar.getInstance();
+                    tool.clearTimeFields(end);
 
-                    EditTaskActivity.this.currentTask.setDeadline(deadline);
+                    EditTaskActivity.this.currentTask.setEnd(end);
                 }
 
-                deadline.set(Calendar.YEAR, year);
-                deadline.set(Calendar.MONTH, month);
-                deadline.set(Calendar.DAY_OF_MONTH, day);
+                end.set(Calendar.YEAR, year);
+                end.set(Calendar.MONTH, month);
+                end.set(Calendar.DAY_OF_MONTH, day);
 
                 EditTaskActivity.this.updateInterface();
             }
@@ -328,8 +328,8 @@ public class EditTaskActivity extends AppCompatActivity {
 
         noDate2Listener = new DatePickerDialogFragment.OnNoDateSetListener() {
             public void onNoDateSet() {
-                EditTaskActivity.this.currentTask.setDeadline(null);
-                EditTaskActivity.this.currentTask.setIgnoreDeadlineTime(true);
+                EditTaskActivity.this.currentTask.setEnd(null);
+                EditTaskActivity.this.currentTask.setIgnoreEndTime(true);
 
                 EditTaskActivity.this.updateInterface();
             }
@@ -338,15 +338,15 @@ public class EditTaskActivity extends AppCompatActivity {
         time2Listener = new TimePickerDialogFragment.OnTimeSetListener() {
             public void onTimeSet(int hour, int minute) {
                 DateTimeTool tool = new DateTimeTool();
-                Calendar deadline = EditTaskActivity.this.currentTask.getDeadline();
+                Calendar end = EditTaskActivity.this.currentTask.getEnd();
 
-                if (deadline == null) deadline = Calendar.getInstance();
-                tool.clearTimeFields(deadline);
+                if (end == null) end = Calendar.getInstance();
+                tool.clearTimeFields(end);
 
-                deadline.set(Calendar.HOUR_OF_DAY, hour);
-                deadline.set(Calendar.MINUTE, minute);
+                end.set(Calendar.HOUR_OF_DAY, hour);
+                end.set(Calendar.MINUTE, minute);
 
-                EditTaskActivity.this.currentTask.setIgnoreDeadlineTime(false);
+                EditTaskActivity.this.currentTask.setIgnoreEndTime(false);
                 EditTaskActivity.this.updateInterface();
             }
         };
@@ -354,12 +354,12 @@ public class EditTaskActivity extends AppCompatActivity {
         noTime2Listener = new TimePickerDialogFragment.OnNoTimeSetListener() {
             public void onNoTimeSet() {
                 DateTimeTool tool = new DateTimeTool();
-                Calendar deadline = EditTaskActivity.this.currentTask.getDeadline();
+                Calendar end = EditTaskActivity.this.currentTask.getEnd();
 
-                if (deadline == null) deadline = Calendar.getInstance();
-                tool.clearTimeFields(deadline);
+                if (end == null) end = Calendar.getInstance();
+                tool.clearTimeFields(end);
 
-                EditTaskActivity.this.currentTask.setIgnoreDeadlineTime(true);
+                EditTaskActivity.this.currentTask.setIgnoreEndTime(true);
                 EditTaskActivity.this.updateInterface();
             }
         };
@@ -367,7 +367,7 @@ public class EditTaskActivity extends AppCompatActivity {
         reminder1Listener = new TaskReminderPickerDialogFragment.OnTaskReminderSetListener() {
             public void onTaskReminderSet(TaskReminder reminder) {
                 if (EditTaskActivity.this.selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-                    EditTaskActivity.this.currentTask.setWhenReminder(reminder);
+                    EditTaskActivity.this.currentTask.setSingleReminder(reminder);
                 }
                 else if (EditTaskActivity.this.selectedDateMode == ApplicationLogic.DATE_RANGE) {
                     EditTaskActivity.this.currentTask.setStartReminder(reminder);
@@ -379,7 +379,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
         reminder2Listener = new TaskReminderPickerDialogFragment.OnTaskReminderSetListener() {
             public void onTaskReminderSet(TaskReminder reminder) {
-                EditTaskActivity.this.currentTask.setDeadlineReminder(reminder);
+                EditTaskActivity.this.currentTask.setEndReminder(reminder);
                 EditTaskActivity.this.updateInterface();
             }
         };
@@ -405,12 +405,12 @@ public class EditTaskActivity extends AppCompatActivity {
         }
 
         if (savedInstanceState == null) {
-            Calendar when = currentTask.getWhen();
+            Calendar single = currentTask.getSingle();
             Calendar start = currentTask.getStart();
-            Calendar deadline = currentTask.getDeadline();
+            Calendar end = currentTask.getEnd();
 
-            if (when == null && start == null && deadline == null) selectedDateMode = ApplicationLogic.NO_DATE;
-            else if (when == null) selectedDateMode = ApplicationLogic.DATE_RANGE;
+            if (single == null && start == null && end == null) selectedDateMode = ApplicationLogic.NO_DATE;
+            else if (single == null) selectedDateMode = ApplicationLogic.DATE_RANGE;
             else selectedDateMode = ApplicationLogic.SINGLE_DATE;
         }
         else {
@@ -480,23 +480,23 @@ public class EditTaskActivity extends AppCompatActivity {
             selectedDateMode = savedInstanceState.getInt("selected_date_mode");
 
             // Dates and time
-            long when = savedInstanceState.getLong("when", -1);
+            long single = savedInstanceState.getLong("single", -1);
             long start = savedInstanceState.getLong("start", -1);
-            long deadline = savedInstanceState.getLong("deadline", -1);
+            long end = savedInstanceState.getLong("end", -1);
 
-            if (when >= 0) {
-                boolean ignoreWhenTime = savedInstanceState.getBoolean("ignore_when_time", false);
-                String whenTimeZoneCode = savedInstanceState.getString("when_time_zone_code", null);
-                long whenReminderId = savedInstanceState.getLong("when_reminder_id", -1);
+            if (single >= 0) {
+                boolean ignoreSingleTime = savedInstanceState.getBoolean("ignore_single_time", false);
+                String singleTimeZoneCode = savedInstanceState.getString("single_time_zone_code", null);
+                long singleReminderId = savedInstanceState.getLong("single_reminder_id", -1);
 
-                Calendar calWhen = Calendar.getInstance();
-                calWhen.setTimeInMillis(when);
+                Calendar calSingle = Calendar.getInstance();
+                calSingle.setTimeInMillis(single);
 
-                if (whenTimeZoneCode != null) calWhen.setTimeZone(TimeZone.getTimeZone(whenTimeZoneCode));
-                if (whenReminderId >= 0) currentTask.setWhenReminder(applicationLogic.getTaskReminder(whenReminderId));
+                if (singleTimeZoneCode != null) calSingle.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
+                if (singleReminderId >= 0) currentTask.setSingleReminder(applicationLogic.getTaskReminder(singleReminderId));
 
-                currentTask.setWhen(calWhen);
-                currentTask.setIgnoreWhenTime(ignoreWhenTime);
+                currentTask.setSingle(calSingle);
+                currentTask.setIgnoreSingleTime(ignoreSingleTime);
             }
 
             if (start >= 0) {
@@ -511,22 +511,22 @@ public class EditTaskActivity extends AppCompatActivity {
                 if (startReminderId >= 0) currentTask.setStartReminder(applicationLogic.getTaskReminder(startReminderId));
 
                 currentTask.setStart(calStart);
-                currentTask.setIgnoreWhenTime(ignoreStartTime);
+                currentTask.setIgnoreSingleTime(ignoreStartTime);
             }
 
-            if (deadline >= 0) {
-                boolean ignoreDeadlineTime = savedInstanceState.getBoolean("ignore_deadline_time", false);
-                String deadlineTimeZoneCode = savedInstanceState.getString("deadline_time_zone_code", null);
-                long deadlineReminderId = savedInstanceState.getLong("deadline_reminder_id", -1);
+            if (end >= 0) {
+                boolean ignoreEndTime = savedInstanceState.getBoolean("ignore_end_time", false);
+                String endTimeZoneCode = savedInstanceState.getString("end_time_zone_code", null);
+                long endReminderId = savedInstanceState.getLong("end_reminder_id", -1);
 
-                Calendar calDeadline = Calendar.getInstance();
-                calDeadline.setTimeInMillis(deadline);
+                Calendar calEnd = Calendar.getInstance();
+                calEnd.setTimeInMillis(end);
 
-                if (deadlineTimeZoneCode != null) calDeadline.setTimeZone(TimeZone.getTimeZone(deadlineTimeZoneCode));
-                if (deadlineReminderId >= 0) currentTask.setDeadlineReminder(applicationLogic.getTaskReminder(deadlineReminderId));
+                if (endTimeZoneCode != null) calEnd.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
+                if (endReminderId >= 0) currentTask.setEndReminder(applicationLogic.getTaskReminder(endReminderId));
 
-                currentTask.setDeadline(calDeadline);
-                currentTask.setIgnoreDeadlineTime(ignoreDeadlineTime);
+                currentTask.setEnd(calEnd);
+                currentTask.setIgnoreEndTime(ignoreEndTime);
             }
 
             String[] tagNames = savedInstanceState.getStringArray("task_tags");
@@ -558,25 +558,25 @@ public class EditTaskActivity extends AppCompatActivity {
         outState.putString("description", currentTask.getDescription());
 
         // Selected dates and reminders.
-        Calendar when = currentTask.getWhen();
+        Calendar single = currentTask.getSingle();
         Calendar start = currentTask.getStart();
-        Calendar deadline = currentTask.getDeadline();
+        Calendar end = currentTask.getEnd();
 
-        if (when != null) {
-            outState.putLong("when", when.getTimeInMillis());
-            outState.putBoolean("ignore_when_time", currentTask.getIgnoreWhenTime());
+        if (single != null) {
+            outState.putLong("single", single.getTimeInMillis());
+            outState.putBoolean("ignore_single_time", currentTask.getIgnoreSingleTime());
 
-            TimeZone whenTimeZone = when.getTimeZone();
-            if (whenTimeZone != null) {
-                String whenTimeZoneCode = whenTimeZone.getID();
+            TimeZone singleTimeZone = single.getTimeZone();
+            if (singleTimeZone != null) {
+                String singleTimeZoneCode = singleTimeZone.getID();
 
-                if (whenTimeZoneCode != null && !whenTimeZoneCode.isEmpty()) {
-                    outState.putString("when_time_zone_code", whenTimeZoneCode);
+                if (singleTimeZoneCode != null && !singleTimeZoneCode.isEmpty()) {
+                    outState.putString("single_time_zone_code", singleTimeZoneCode);
                 }
             }
 
-            TaskReminder whenReminder = currentTask.getWhenReminder();
-            if (whenReminder != null) outState.putLong("when_reminder_id", whenReminder.getId());
+            TaskReminder singleReminder = currentTask.getSingleReminder();
+            if (singleReminder != null) outState.putLong("single_reminder_id", singleReminder.getId());
         }
 
         if (start != null) {
@@ -596,21 +596,21 @@ public class EditTaskActivity extends AppCompatActivity {
             if (startReminder != null) outState.putLong("start_reminder_id", startReminder.getId());
         }
 
-        if (deadline != null) {
-            outState.putLong("deadline", deadline.getTimeInMillis());
-            outState.putBoolean("ignore_deadline_time", currentTask.getIgnoreDeadlineTime());
+        if (end != null) {
+            outState.putLong("end", end.getTimeInMillis());
+            outState.putBoolean("ignore_end_time", currentTask.getIgnoreEndTime());
 
-            TimeZone deadlineTimeZone = deadline.getTimeZone();
-            if (deadlineTimeZone != null) {
-                String deadlineTimeZoneCode = deadlineTimeZone.getID();
+            TimeZone endTimeZone = end.getTimeZone();
+            if (endTimeZone != null) {
+                String endTimeZoneCode = endTimeZone.getID();
 
-                if (deadlineTimeZoneCode != null && !deadlineTimeZoneCode.isEmpty()) {
-                    outState.putString("deadline_time_zone_code", deadlineTimeZoneCode);
+                if (endTimeZoneCode != null && !endTimeZoneCode.isEmpty()) {
+                    outState.putString("end_time_zone_code", endTimeZoneCode);
                 }
             }
 
-            TaskReminder deadlineReminder = currentTask.getDeadlineReminder();
-            if (deadlineReminder != null) outState.putLong("deadline_reminder_id", deadlineReminder.getId());
+            TaskReminder endReminder = currentTask.getEndReminder();
+            if (endReminder != null) outState.putLong("end_reminder_id", endReminder.getId());
         }
 
         // Task tags
@@ -668,7 +668,7 @@ public class EditTaskActivity extends AppCompatActivity {
             divider2.setVisibility(View.GONE);
         }
         else if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-            Calendar when = currentTask.getWhen();
+            Calendar single = currentTask.getSingle();
 
             dateMode.setText(R.string.single_date);
 
@@ -682,22 +682,22 @@ public class EditTaskActivity extends AppCompatActivity {
             tableDate2.setVisibility(View.GONE);
             divider2.setVisibility(View.GONE);
 
-            date1.setText(tool.getFormattedDate(when, false));
+            date1.setText(tool.getFormattedDate(single, false));
             time1.setVisibility(View.VISIBLE);
 
-            if (currentTask.getIgnoreWhenTime()) time1.setText(R.string.add_time);
-            else time1.setText(tool.getFormattedTime(when, false));
+            if (currentTask.getIgnoreSingleTime()) time1.setText(R.string.add_time);
+            else time1.setText(tool.getFormattedTime(single, false));
 
-            TimeZone whenTimeZone = when.getTimeZone();
+            TimeZone singleTimeZone = single.getTimeZone();
             now = Calendar.getInstance();
-            boolean whenDaylight = whenTimeZone.inDaylightTime(now.getTime());
-            timeZone1.setText((when.getTimeZone()).getDisplayName(whenDaylight, TimeZone.LONG));
+            boolean singleDaylight = singleTimeZone.inDaylightTime(now.getTime());
+            timeZone1.setText((single.getTimeZone()).getDisplayName(singleDaylight, TimeZone.LONG));
 
-            reminder1.setText(getReminderButtonText(currentTask.getWhenReminder()));
+            reminder1.setText(getReminderButtonText(currentTask.getSingleReminder()));
         }
         else {
             Calendar start = currentTask.getStart();
-            Calendar deadline = currentTask.getDeadline();
+            Calendar end = currentTask.getEnd();
 
             dateMode.setText(R.string.date_range);
 
@@ -706,7 +706,7 @@ public class EditTaskActivity extends AppCompatActivity {
             tableDate1.setVisibility(View.VISIBLE);
             divider1.setVisibility(View.VISIBLE);
 
-            // Deadline
+            // End
             dateMode2.setVisibility(View.VISIBLE);
             tableDate2.setVisibility(View.VISIBLE);
             divider2.setVisibility(View.VISIBLE);
@@ -736,7 +736,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminder1.setText(getReminderButtonText(currentTask.getStartReminder()));
             }
 
-            if (deadline == null) {
+            if (end == null) {
                 date2.setText(R.string.add_date);
                 time2.setText(R.string.add_time);
                 time2.setVisibility(View.GONE);
@@ -744,21 +744,21 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminderRow2.setVisibility(View.GONE);
             }
             else {
-                date2.setText(tool.getFormattedDate(deadline, false));
+                date2.setText(tool.getFormattedDate(end, false));
 
-                if (currentTask.getIgnoreDeadlineTime()) time2.setText(R.string.add_time);
-                else time2.setText(tool.getFormattedTime(deadline, false));
+                if (currentTask.getIgnoreEndTime()) time2.setText(R.string.add_time);
+                else time2.setText(tool.getFormattedTime(end, false));
 
                 time2.setVisibility(View.VISIBLE);
                 timeZoneRow2.setVisibility(View.VISIBLE);
 
-                TimeZone deadlineTimeZone = deadline.getTimeZone();
+                TimeZone endTimeZone = end.getTimeZone();
                 now = Calendar.getInstance();
-                boolean deadlineDaylight = deadlineTimeZone.inDaylightTime(now.getTime());
-                timeZone2.setText((deadline.getTimeZone()).getDisplayName(deadlineDaylight, TimeZone.LONG));
+                boolean endDaylight = endTimeZone.inDaylightTime(now.getTime());
+                timeZone2.setText((end.getTimeZone()).getDisplayName(endDaylight, TimeZone.LONG));
 
                 reminderRow2.setVisibility(View.VISIBLE);
-                reminder2.setText(getReminderButtonText(currentTask.getDeadlineReminder()));
+                reminder2.setText(getReminderButtonText(currentTask.getEndReminder()));
             }
         }
     }
@@ -784,7 +784,7 @@ public class EditTaskActivity extends AppCompatActivity {
         String title = currentTask.getTitle();
 
         Calendar start = currentTask.getStart();
-        Calendar deadline = currentTask.getDeadline();
+        Calendar end = currentTask.getEnd();
 
         // Check values
         boolean titleValid = (title.length() > 0);
@@ -792,8 +792,8 @@ public class EditTaskActivity extends AppCompatActivity {
 
         datesValid = selectedDateMode != ApplicationLogic.DATE_RANGE ||
             start == null ||
-            deadline == null ||
-            compareCalendars(deadline, currentTask.getIgnoreDeadlineTime(), start, currentTask.getIgnoreStartTime()) >= 0;
+            end == null ||
+            compareCalendars(end, currentTask.getIgnoreEndTime(), start, currentTask.getIgnoreStartTime()) >= 0;
 
         if (titleValid && datesValid) {
             // Save Current Task
@@ -861,7 +861,7 @@ public class EditTaskActivity extends AppCompatActivity {
         Calendar date;
 
         if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-            date = currentTask.getWhen();
+            date = currentTask.getSingle();
             arguments.putBoolean("include_no_date_button", false);
         }
         else {
@@ -891,7 +891,7 @@ public class EditTaskActivity extends AppCompatActivity {
         Bundle arguments = new Bundle();
         Calendar time;
 
-        if (selectedDateMode == ApplicationLogic.SINGLE_DATE) time = currentTask.getWhen();
+        if (selectedDateMode == ApplicationLogic.SINGLE_DATE) time = currentTask.getSingle();
         else time = currentTask.getStart();
 
         if (time == null) {
@@ -921,7 +921,7 @@ public class EditTaskActivity extends AppCompatActivity {
         DatePickerDialogFragment fragment = new DatePickerDialogFragment();
 
         Bundle arguments = new Bundle();
-        Calendar date = currentTask.getDeadline();
+        Calendar date = currentTask.getEnd();
 
         if (date == null) {
             date = Calendar.getInstance();
@@ -944,7 +944,7 @@ public class EditTaskActivity extends AppCompatActivity {
         TimePickerDialogFragment fragment = new TimePickerDialogFragment();
 
         Bundle arguments = new Bundle();
-        Calendar time = currentTask.getDeadline();
+        Calendar time = currentTask.getEnd();
 
         if (time == null) {
             time = Calendar.getInstance();
@@ -975,7 +975,7 @@ public class EditTaskActivity extends AppCompatActivity {
         TaskReminder reminder = null;
 
         if (selectedDateMode == ApplicationLogic.SINGLE_DATE) {
-            reminder = currentTask.getWhenReminder();
+            reminder = currentTask.getSingleReminder();
         }
         else if (selectedDateMode == ApplicationLogic.DATE_RANGE) {
             reminder = currentTask.getStartReminder();
@@ -991,7 +991,7 @@ public class EditTaskActivity extends AppCompatActivity {
     public void onReminder2Clicked(View view) {
         TaskReminderPickerDialogFragment fragment = new TaskReminderPickerDialogFragment();
         Bundle arguments = new Bundle();
-        TaskReminder reminder = currentTask.getDeadlineReminder();
+        TaskReminder reminder = currentTask.getEndReminder();
 
         if (reminder != null) arguments.putLong("reminder_id", reminder.getId());
 

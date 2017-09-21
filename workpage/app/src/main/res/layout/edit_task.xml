@@ -139,7 +139,7 @@
             android:paddingBottom="10dp"
             android:textAlignment="textStart"
             android:textColor="@color/text_color"
-            android:text="@string/deadline_1"/>
+            android:text="@string/end_1"/>
 
         <TableLayout android:id="@+id/edit_task_table_date_2"
             android:layout_width="match_parent"

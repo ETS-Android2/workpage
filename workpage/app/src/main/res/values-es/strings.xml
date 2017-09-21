@@ -76,8 +76,8 @@
     <string name="task_date">%1$s</string>
     <string name="task_start_datetime">Comienzo: %1$s - %2$s</string>
     <string name="task_start_date">Comienzo: %1$s</string>
-    <string name="task_deadline_datetime">Límite: %1$s - %2$s</string>
-    <string name="task_deadline_date">Límite: %1$s</string>
+    <string name="task_end_datetime">Final: %1$s - %2$s</string>
+    <string name="task_end_date">Final: %1$s</string>
     <string name="separator">", "</string>
 
     <plurals name="task_state">
@@ -114,8 +114,8 @@
     <string name="date_range">Rango de fechas</string>
     <string name="start_1">Comienzo</string>
     <string name="start_2">Comienzo:</string>
-    <string name="deadline_1">Límite</string>
-    <string name="deadline_2">Límite:</string>
+    <string name="end_1">Final</string>
+    <string name="end_2">Final:</string>
     <string name="time_zone">Huso horario</string>
     <string name="tags">Etiquetas</string>
     <string name="tag_name">Nombre de la etiqueta</string>

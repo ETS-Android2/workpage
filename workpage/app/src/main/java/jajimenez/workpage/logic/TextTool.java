@@ -14,9 +14,9 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
 
 public class TextTool {
-    public final static int WHEN = 0;
+    public final static int SINGLE = 0;
     public final static int START = 1;
-    public final static int DEADLINE = 2;
+    public final static int END = 2;
 
     public final static int SHORT = 0;
     public final static int LONG = 1;
@@ -72,17 +72,17 @@ public class TextTool {
         String time;
 
         switch (dateType) {
-            case WHEN:
-                Calendar when = task.getWhen();
+            case SINGLE:
+                Calendar single = task.getSingle();
 
-                if (when != null) {
-                    // In this case, we ignore "withTitle", as "When" is always shown without any title.
-                    date = getFormattedDate(when, deviceLocalTimeZone);
-                    time = getFormattedTime(when, deviceLocalTimeZone);
+                if (single != null) {
+                    // In this case, we ignore "withTitle", as "Single" is always shown without any title.
+                    date = getFormattedDate(single, deviceLocalTimeZone);
+                    time = getFormattedTime(single, deviceLocalTimeZone);
 
-                    boolean ignoreWhenTime = task.getIgnoreWhenTime();
+                    boolean ignoreSingleTime = task.getIgnoreSingleTime();
 
-                    if (!ignoreWhenTime) text = context.getString(R.string.task_datetime, date, time);
+                    if (!ignoreSingleTime) text = context.getString(R.string.task_datetime, date, time);
                     else text = context.getString(R.string.task_date, date);
                 }
 
@@ -94,7 +94,7 @@ public class TextTool {
                     date = getFormattedDate(start, deviceLocalTimeZone);
                     time = getFormattedTime(start, deviceLocalTimeZone);
 
-                    boolean ignoreStartTime = task.getIgnoreWhenTime();
+                    boolean ignoreStartTime = task.getIgnoreStartTime();
 
                     if (!ignoreStartTime && withTitle) text = context.getString(R.string.task_start_datetime, date, time);
                     else if (!ignoreStartTime && !withTitle) text = context.getString(R.string.task_datetime, date, time);
@@ -103,18 +103,18 @@ public class TextTool {
                 }
 
                 break;
-            case DEADLINE:
-                Calendar deadline = task.getDeadline();
+            case END:
+                Calendar end = task.getEnd();
 
-                if (deadline != null) {
-                    date = getFormattedDate(deadline, deviceLocalTimeZone);
-                    time = getFormattedTime(deadline, deviceLocalTimeZone);
+                if (end != null) {
+                    date = getFormattedDate(end, deviceLocalTimeZone);
+                    time = getFormattedTime(end, deviceLocalTimeZone);
 
-                    boolean ignoreDeadlineTime = task.getIgnoreWhenTime();
+                    boolean ignoreEndTime = task.getIgnoreEndTime();
 
-                    if (!ignoreDeadlineTime && withTitle) text = context.getString(R.string.task_deadline_datetime, date, time);
-                    else if (!ignoreDeadlineTime && !withTitle) text = context.getString(R.string.task_datetime, date, time);
-                    else if (ignoreDeadlineTime && withTitle) text = context.getString(R.string.task_deadline_date, date);
+                    if (!ignoreEndTime && withTitle) text = context.getString(R.string.task_end_datetime, date, time);
+                    else if (!ignoreEndTime && !withTitle) text = context.getString(R.string.task_datetime, date, time);
+                    else if (ignoreEndTime && withTitle) text = context.getString(R.string.task_end_date, date);
                     else text = context.getString(R.string.task_date, date);
                 }
                 

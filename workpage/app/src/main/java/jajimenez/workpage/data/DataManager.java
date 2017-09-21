@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
 import java.io.File;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import android.content.Context;
@@ -419,8 +418,9 @@ public class DataManager extends SQLiteOpenHelper {
         createTimeZonesTableDBVersion4(db);
         insertAllTimeZonesDBVersion4(db);
 
-        // Adding 3 new columns in the Tasks table, for defining the
-        // time zone of the date/times When, Start and Deadline
+        // Add 3 new columns in the Tasks table, for defining the
+        // time zone of the date/times When, Start and Deadline.
+        // Rename When as Single and Deadline as End.
         updateTasksTableDBVersion4(db);
     }
 
@@ -1202,38 +1202,38 @@ public class DataManager extends SQLiteOpenHelper {
 
         // Copy the current Tasks table into a new temporary table
         db.execSQL("CREATE TEMPORARY TABLE tasks_temp (" +
-            "id                      INTEGER PRIMARY KEY, " +
-            "task_context_id         INTEGER NOT NULL, " +
-            "title                   TEXT NOT NULL, " +
-            "description             TEXT, " +
+            "id                    INTEGER PRIMARY KEY, " +
+            "task_context_id       INTEGER NOT NULL, " +
+            "title                 TEXT NOT NULL, " +
+            "description           TEXT, " +
 
-            "when_datetime           INTEGER, " +
-            "ignore_when_time        INTEGER NOT NULL DEFAULT 0, " +
-            "when_time_zone_code     TEXT, " +
-            "when_reminder_id        INTEGER, " +
+            "single_datetime       INTEGER, " +
+            "ignore_single_time    INTEGER NOT NULL DEFAULT 0, " +
+            "single_time_zone_code TEXT, " +
+            "single_reminder_id    INTEGER, " +
 
-            "start_datetime          INTEGER, " +
-            "ignore_start_time       INTEGER NOT NULL DEFAULT 0, " +
-            "start_time_zone_code    TEXT, " +
-            "start_reminder_id       INTEGER, " +
+            "start_datetime        INTEGER, " +
+            "ignore_start_time     INTEGER NOT NULL DEFAULT 0, " +
+            "start_time_zone_code  TEXT, " +
+            "start_reminder_id     INTEGER, " +
 
-            "deadline_datetime       INTEGER, " +
-            "ignore_deadline_time    INTEGER NOT NULL DEFAULT 0, " +
-            "deadline_time_zone_code TEXT, " +
-            "deadline_reminder_id    NTEGER, " +
+            "end_datetime          INTEGER, " +
+            "ignore_end_time       INTEGER NOT NULL DEFAULT 0, " +
+            "end_time_zone_code    TEXT, " +
+            "end_reminder_id       INTEGER, " +
 
-            "done                    INTEGER NOT NULL DEFAULT 0, " +
+            "done                  INTEGER NOT NULL DEFAULT 0, " +
 
             "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
-            "FOREIGN KEY (when_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
+            "FOREIGN KEY (single_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
             "FOREIGN KEY (start_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
-            "FOREIGN KEY (deadline_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL" +
+            "FOREIGN KEY (end_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL" +
             ");");
 
         db.execSQL("INSERT INTO tasks_temp (id, task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, when_reminder_id, " +
+                "single_datetime, ignore_single_time, single_reminder_id, " +
                 "start_datetime, ignore_start_time, start_reminder_id, " +
-                "deadline_datetime, ignore_deadline_time, deadline_reminder_id, " +
+                "end_datetime, ignore_end_time, end_reminder_id, " +
                 "done) " +
             "SELECT id, task_context_id, title, description, " +
                 "when_datetime, ignore_when_time, when_reminder_id, " +
@@ -1247,44 +1247,44 @@ public class DataManager extends SQLiteOpenHelper {
 
         // Create again the Tasks table, with its new structure
         db.execSQL("CREATE TABLE tasks (" +
-            "id                      INTEGER PRIMARY KEY, " +
-            "task_context_id         INTEGER NOT NULL, " +
-            "title                   TEXT NOT NULL, " +
-            "description             TEXT, " +
+            "id                    INTEGER PRIMARY KEY, " +
+            "task_context_id       INTEGER NOT NULL, " +
+            "title                 TEXT NOT NULL, " +
+            "description           TEXT, " +
 
-            "when_datetime           INTEGER, " +
-            "ignore_when_time        INTEGER NOT NULL DEFAULT 0, " +
-            "when_time_zone_code     TEXT, " +
-            "when_reminder_id        INTEGER, " +
+            "single_datetime       INTEGER, " +
+            "ignore_single_time    INTEGER NOT NULL DEFAULT 0, " +
+            "single_time_zone_code TEXT, " +
+            "single_reminder_id    INTEGER, " +
 
-            "start_datetime          INTEGER, " +
-            "ignore_start_time       INTEGER NOT NULL DEFAULT 0, " +
-            "start_time_zone_code    TEXT, " +
-            "start_reminder_id       INTEGER, " +
+            "start_datetime        INTEGER, " +
+            "ignore_start_time     INTEGER NOT NULL DEFAULT 0, " +
+            "start_time_zone_code  TEXT, " +
+            "start_reminder_id     INTEGER, " +
 
-            "deadline_datetime       INTEGER, " +
-            "ignore_deadline_time    INTEGER NOT NULL DEFAULT 0, " +
-            "deadline_time_zone_code TEXT, " +
-            "deadline_reminder_id    INTEGER, " +
+            "end_datetime          INTEGER, " +
+            "ignore_end_time       INTEGER NOT NULL DEFAULT 0, " +
+            "end_time_zone_code    TEXT, " +
+            "end_reminder_id       INTEGER, " +
 
-            "done                 INTEGER NOT NULL DEFAULT 0, " +
+            "done                  INTEGER NOT NULL DEFAULT 0, " +
 
             "FOREIGN KEY (task_context_id) REFERENCES task_contexts(id) ON UPDATE CASCADE ON DELETE CASCADE, " +
-            "FOREIGN KEY (when_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
+            "FOREIGN KEY (single_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
             "FOREIGN KEY (start_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL, " +
-            "FOREIGN KEY (deadline_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL" +
+            "FOREIGN KEY (end_reminder_id) REFERENCES task_reminders(id) ON UPDATE CASCADE ON DELETE SET NULL" +
             ");");
 
         // Time zones are null, so there is no need to insert them, but we do it for clarity.
         db.execSQL("INSERT INTO tasks (id, task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, when_time_zone_code, when_reminder_id, " +
+                "single_datetime, ignore_single_time, single_time_zone_code, single_reminder_id, " +
                 "start_datetime, ignore_start_time, start_time_zone_code, start_reminder_id, " +
-                "deadline_datetime, ignore_deadline_time, deadline_time_zone_code, deadline_reminder_id, " +
+                "end_datetime, ignore_end_time, end_time_zone_code, end_reminder_id, " +
                 "done) " +
             "SELECT id, task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, when_time_zone_code, when_reminder_id, " +
+                "single_datetime, ignore_single_time, single_time_zone_code, single_reminder_id, " +
                 "start_datetime, ignore_start_time, start_time_zone_code, start_reminder_id, " +
-                "deadline_datetime, ignore_deadline_time, deadline_time_zone_code, deadline_reminder_id, " +
+                "end_datetime, ignore_end_time, end_time_zone_code, end_reminder_id, " +
                 "done " +
             "FROM tasks_temp;");
 
@@ -1337,9 +1337,11 @@ public class DataManager extends SQLiteOpenHelper {
         //     * TaskReminders is new in version 3.
         String taskContextsTableSql = "SELECT id, name, list_order FROM task_contexts LIMIT 1";
         String taskRemindersTableSql = "";
-        String taskTagsTableSql = null;
-        String tasksTableSql = null;
+        String taskTagsTableSql = "";
+        String tasksTableSql = "";
         String taskTagRelationshipsTableSql = "SELECT id, task_id, task_tag_id FROM task_tag_relationships LIMIT 1";
+        String countriesTableSql = "SELECT id, code FROM countries LIMIT 1";
+        String timeZonesTableSql = "SELECT id, code, country_id FROM time_zones LIMIT 1";
 
         if (dbVersion == 1) { 
             taskTagsTableSql = "SELECT id, task_context_id, name, list_order FROM task_tags LIMIT 1";
@@ -1347,7 +1349,7 @@ public class DataManager extends SQLiteOpenHelper {
         else if (dbVersion == 2) {
             taskTagsTableSql = "SELECT id, task_context_id, name, list_order, color FROM task_tags LIMIT 1";
         }
-        else { // dbVersion = 3
+        else { // dbVersion = 3 or dbVersion = 4
             taskTagsTableSql = "SELECT id, task_context_id, name, color FROM task_tags LIMIT 1";
             taskRemindersTableSql = "SELECT id, minutes FROM task_reminders LIMIT 1";
         }
@@ -1355,11 +1357,19 @@ public class DataManager extends SQLiteOpenHelper {
         if (dbVersion == 1 || dbVersion == 2) { 
             tasksTableSql = "SELECT id, task_context_id, title, description, start_datetime, deadline_datetime, done FROM tasks LIMIT 1";
         }
-        else { // dbVersion = 3
+        else if (dbVersion == 3) {
             tasksTableSql = "SELECT id, task_context_id, title, description, " +
                 "when_datetime, ignore_when_time, when_reminder_id, " +
                 "start_datetime, ignore_start_time, start_reminder_id, " +
                 "deadline_datetime, ignore_deadline_time, deadline_reminder_id, " +
+                "done " +
+                "FROM tasks LIMIT 1";
+        }
+        else { // dbVersion = 4
+            tasksTableSql = "SELECT id, task_context_id, title, description, " +
+                "single_datetime, ignore_single_time, single_time_zone_code, single_reminder_id, " +
+                "start_datetime, ignore_start_time, start_time_zone_code, start_reminder_id, " +
+                "end_datetime, ignore_end_time, end_time_zone_code, end_reminder_id, " +
                 "done " +
                 "FROM tasks LIMIT 1";
         }
@@ -1372,6 +1382,8 @@ public class DataManager extends SQLiteOpenHelper {
             db.rawQuery(taskTagsTableSql, null);
             db.rawQuery(tasksTableSql, null);
             db.rawQuery(taskTagRelationshipsTableSql, null);
+            db.rawQuery(countriesTableSql, null);
+            db.rawQuery(timeZonesTableSql, null);
         }
         catch (Exception e) {
             return ERROR_DB_NOT_COMPATIBLE;
@@ -1781,16 +1793,16 @@ public class DataManager extends SQLiteOpenHelper {
 
             if (includeTasksWithNoTag) {
                 query = "SELECT tasks.id, tasks.title, tasks.description, " +
-                    "tasks.when_datetime, tasks.ignore_when_time, tasks.when_time_zone_code, tasks.when_reminder_id, " +
+                    "tasks.single_datetime, tasks.ignore_single_time, tasks.single_time_zone_code, tasks.single_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_time_zone_code, tasks.start_reminder_id, " +
-                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_time_zone_code, tasks.deadline_reminder_id, " +
+                    "tasks.end_datetime, tasks.ignore_end_time, tasks.end_time_zone_code, tasks.end_reminder_id, " +
                     "tasks.done " +
                     "FROM tasks LEFT JOIN task_tag_relationships ON tasks.id = task_tag_relationships.task_id " +
                     "WHERE task_tag_relationships.task_id IS NULL " +
                     "AND tasks.task_context_id = ? " +
-                    "AND ((tasks.when_datetime IS NOT NULL AND tasks.when_datetime < ?) " +
-                        "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NULL) " +
-                        "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NOT NULL AND tasks.start_datetime < ?)) " +
+                    "AND ((tasks.single_datetime IS NOT NULL AND tasks.single_datetime < ?) " +
+                        "OR (tasks.single_datetime IS NULL AND tasks.start_datetime IS NULL) " +
+                        "OR (tasks.single_datetime IS NULL AND tasks.start_datetime IS NOT NULL AND tasks.start_datetime < ?)) " +
                     "AND tasks.done = 0 " +
                     "ORDER BY tasks.id";
 
@@ -1800,16 +1812,16 @@ public class DataManager extends SQLiteOpenHelper {
 
             if (tagCount > 0) {
                 query = "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
-                    "tasks.when_datetime, tasks.ignore_when_time, tasks.when_time_zone_code, tasks.when_reminder_id, " +
+                    "tasks.single_datetime, tasks.ignore_single_time, tasks.single_time_zone_code, tasks.single_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_time_zone_code, tasks.start_reminder_id, " +
-                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_time_zone_code, tasks.deadline_reminder_id, " +
+                    "tasks.end_datetime, tasks.ignore_end_time, tasks.end_time_zone_code, tasks.end_reminder_id, " +
                     "tasks.done " +
                     "FROM tasks, task_tag_relationships, task_tags " +
                     "WHERE tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id " +
                     "AND tasks.task_context_id = ? " +
-                    "AND ((tasks.when_datetime IS NOT NULL AND tasks.when_datetime < ?) " +
-                        "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NULL) " +
-                        "OR (tasks.when_datetime IS NULL AND tasks.start_datetime IS NOT NULL AND tasks.start_datetime < ?)) " +
+                    "AND ((tasks.single_datetime IS NOT NULL AND tasks.single_datetime < ?) " +
+                        "OR (tasks.single_datetime IS NULL AND tasks.start_datetime IS NULL) " +
+                        "OR (tasks.single_datetime IS NULL AND tasks.start_datetime IS NOT NULL AND tasks.start_datetime < ?)) " +
                     "AND tasks.done = 0 " +
                     "AND (";
 
@@ -1850,25 +1862,25 @@ public class DataManager extends SQLiteOpenHelper {
                 String title = cursor.getString(1);
                 String description = cursor.getString(2);
 
-                Calendar when = null;
+                Calendar single = null;
                 if (!cursor.isNull(3)) {
-                    when = Calendar.getInstance();
-                    when.setTimeInMillis(cursor.getLong(3));
+                    single = Calendar.getInstance();
+                    single.setTimeInMillis(cursor.getLong(3));
                 }
 
-                boolean ignoreWhenTime = false;
-                if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
+                boolean ignoreSingleTime = false;
+                if (!cursor.isNull(4)) ignoreSingleTime = (cursor.getLong(4) != 0);
 
-                String whenTimeZoneCode = null;
+                String singleTimeZoneCode = null;
                 if (!cursor.isNull(5)) {
-                    whenTimeZoneCode = cursor.getString(5);
-                    when.setTimeZone(TimeZone.getTimeZone(whenTimeZoneCode));
+                    singleTimeZoneCode = cursor.getString(5);
+                    single.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
                 }
 
-                TaskReminder whenReminder = null;
+                TaskReminder singleReminder = null;
                 if (!cursor.isNull(6)) {
-                    long whenReminderId = cursor.getLong(6);
-                    whenReminder = getTaskReminder(db, whenReminderId);
+                    long singleReminderId = cursor.getLong(6);
+                    singleReminder = getTaskReminder(db, singleReminderId);
                 }
 
                 Calendar start = null;
@@ -1892,34 +1904,34 @@ public class DataManager extends SQLiteOpenHelper {
                     startReminder = getTaskReminder(db, startReminderId);
                 }
 
-                Calendar deadline = null;
+                Calendar end = null;
                 if (!cursor.isNull(11)) {
-                    deadline = Calendar.getInstance();
-                    deadline.setTimeInMillis(cursor.getLong(11));
+                    end = Calendar.getInstance();
+                    end.setTimeInMillis(cursor.getLong(11));
                 }
 
-                boolean ignoreDeadlineTime = false;
-                if (!cursor.isNull(12)) ignoreDeadlineTime = (cursor.getLong(12) != 0);
+                boolean ignoreEndTime = false;
+                if (!cursor.isNull(12)) ignoreEndTime = (cursor.getLong(12) != 0);
 
-                String deadlineTimeZoneCode = null;
+                String endTimeZoneCode = null;
                 if (!cursor.isNull(13)) {
-                    deadlineTimeZoneCode = cursor.getString(13);
-                    deadline.setTimeZone(TimeZone.getTimeZone(deadlineTimeZoneCode));
+                    endTimeZoneCode = cursor.getString(13);
+                    end.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
                 }
 
-                TaskReminder deadlineReminder = null;
+                TaskReminder endReminder = null;
                 if (!cursor.isNull(14)) {
-                    long deadlineReminderId = cursor.getLong(14);
-                    deadlineReminder = getTaskReminder(db, deadlineReminderId);
+                    long endReminderId = cursor.getLong(14);
+                    endReminder = getTaskReminder(db, endReminderId);
                 }
 
                 boolean done = (cursor.getLong(15) != 0);
                 List<TaskTag> tags = getTaskTags(db, id);
 
                 tasks.add(new Task(id, contextId, title, description,
-                    when, ignoreWhenTime, whenReminder,
+                    single, ignoreSingleTime, singleReminder,
                     start, ignoreStartTime, startReminder,
-                    deadline, ignoreDeadlineTime, deadlineReminder,
+                    end, ignoreEndTime, endReminder,
                     done, tags));
             }
             while (cursor.moveToNext());
@@ -1946,9 +1958,9 @@ public class DataManager extends SQLiteOpenHelper {
 
             if (includeTasksWithNoTag) {
                 query = "SELECT tasks.id, tasks.title, tasks.description, " +
-                    "tasks.when_datetime, tasks.ignore_when_time, tasks.when_time_zone_code, tasks.when_reminder_id, " +
+                    "tasks.single_datetime, tasks.ignore_single_time, tasks.single_time_zone_code, tasks.single_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_time_zone_code, tasks.start_reminder_id, " +
-                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_time_zone_code, tasks.deadline_reminder_id, " +
+                    "tasks.end_datetime, tasks.ignore_end_time, tasks.end_time_zone_code, tasks.end_reminder_id, " +
                     "tasks.done " +
                     "FROM tasks LEFT JOIN task_tag_relationships ON tasks.id = task_tag_relationships.task_id " +
                     "WHERE task_tag_relationships.task_id IS NULL " +
@@ -1963,9 +1975,9 @@ public class DataManager extends SQLiteOpenHelper {
 
             if (tagCount > 0) {
                 query = "SELECT DISTINCT tasks.id, tasks.title, tasks.description, " +
-                    "tasks.when_datetime, tasks.ignore_when_time, tasks.when_time_zone_code, tasks.when_reminder_id, " +
+                    "tasks.single_datetime, tasks.ignore_single_time, tasks.single_time_zone_code, tasks.single_reminder_id, " +
                     "tasks.start_datetime, tasks.ignore_start_time, tasks.start_time_zone_code, tasks.start_reminder_id, " +
-                    "tasks.deadline_datetime, tasks.ignore_deadline_time, tasks.deadline_time_zone_code, tasks.deadline_reminder_id, " +
+                    "tasks.end_datetime, tasks.ignore_end_time, tasks.end_time_zone_code, tasks.end_reminder_id, " +
                     "tasks.done " +
                     "FROM tasks, task_tag_relationships, task_tags " +
                     "WHERE tasks.id = task_tag_relationships.task_id AND task_tag_relationships.task_tag_id = task_tags.id " +
@@ -2062,9 +2074,9 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, when_time_zone_code, when_reminder_id, " +
+                "single_datetime, ignore_single_time, single_time_zone_code, single_reminder_id, " +
                 "start_datetime, ignore_start_time, start_time_zone_code, start_reminder_id, " +
-                "deadline_datetime, ignore_deadline_time, deadline_time_zone_code, deadline_reminder_id, " +
+                "end_datetime, ignore_end_time, end_time_zone_code, end_reminder_id, " +
                 "done " +
                 "FROM tasks WHERE id = ?", new String[] { String.valueOf(id) });
 
@@ -2073,25 +2085,25 @@ public class DataManager extends SQLiteOpenHelper {
                 String title = cursor.getString(1);
                 String description = cursor.getString(2);
 
-                Calendar when = null;
+                Calendar single = null;
                 if (!cursor.isNull(3)) {
-                    when = Calendar.getInstance();
-                    when.setTimeInMillis(cursor.getLong(3));
+                    single = Calendar.getInstance();
+                    single.setTimeInMillis(cursor.getLong(3));
                 }
 
-                boolean ignoreWhenTime = false;
-                if (!cursor.isNull(4)) ignoreWhenTime = (cursor.getLong(4) != 0);
+                boolean ignoreSingleTime = false;
+                if (!cursor.isNull(4)) ignoreSingleTime = (cursor.getLong(4) != 0);
 
-                String whenTimeZoneCode = null;
+                String singleTimeZoneCode = null;
                 if (!cursor.isNull(5)) {
-                    whenTimeZoneCode = cursor.getString(5);
-                    when.setTimeZone(TimeZone.getTimeZone(whenTimeZoneCode));
+                    singleTimeZoneCode = cursor.getString(5);
+                    single.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
                 }
 
-                TaskReminder whenReminder = null;
+                TaskReminder singleReminder = null;
                 if (!cursor.isNull(6)) {
-                    long whenReminderId = cursor.getLong(6);
-                    whenReminder = getTaskReminder(db, whenReminderId);
+                    long singleReminderId = cursor.getLong(6);
+                    singleReminder = getTaskReminder(db, singleReminderId);
                 }
 
                 Calendar start = null;
@@ -2115,34 +2127,34 @@ public class DataManager extends SQLiteOpenHelper {
                     startReminder = getTaskReminder(db, startReminderId);
                 }
 
-                Calendar deadline = null;
+                Calendar end = null;
                 if (!cursor.isNull(11)) {
-                    deadline = Calendar.getInstance();
-                    deadline.setTimeInMillis(cursor.getLong(11));
+                    end = Calendar.getInstance();
+                    end.setTimeInMillis(cursor.getLong(11));
                 }
 
-                boolean ignoreDeadlineTime = false;
-                if (!cursor.isNull(12)) ignoreDeadlineTime = (cursor.getLong(12) != 0);
+                boolean ignoreEndTime = false;
+                if (!cursor.isNull(12)) ignoreEndTime = (cursor.getLong(12) != 0);
 
-                String deadlineTimeZoneCode = null;
+                String endTimeZoneCode = null;
                 if (!cursor.isNull(13)) {
-                    deadlineTimeZoneCode = cursor.getString(13);
-                    deadline.setTimeZone(TimeZone.getTimeZone(deadlineTimeZoneCode));
+                    endTimeZoneCode = cursor.getString(13);
+                    end.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
                 }
 
-                TaskReminder deadlineReminder = null;
+                TaskReminder endReminder = null;
                 if (!cursor.isNull(14)) {
-                    long deadlineReminderId = cursor.getLong(14);
-                    deadlineReminder = getTaskReminder(db, deadlineReminderId);
+                    long endReminderId = cursor.getLong(14);
+                    endReminder = getTaskReminder(db, endReminderId);
                 }
 
                 boolean done = (cursor.getLong(15) != 0);
                 List<TaskTag> tags = getTaskTags(db, id);
 
                 task = new Task(id, contextId, title, description,
-                    when, ignoreWhenTime, whenReminder,
+                    single, ignoreSingleTime, singleReminder,
                     start, ignoreStartTime, startReminder,
-                    deadline, ignoreDeadlineTime, deadlineReminder,
+                    end, ignoreEndTime, endReminder,
                     done, tags);
             }
         }
@@ -2168,19 +2180,19 @@ public class DataManager extends SQLiteOpenHelper {
         values.put("title", task.getTitle());
         values.put("description", task.getDescription());
 
-        // When
-        Calendar when = task.getWhen();
-        if (when != null) values.put("when_datetime", when.getTimeInMillis());
-        else values.putNull("when_datetime");
+        // Single
+        Calendar single = task.getSingle();
+        if (single != null) values.put("single_datetime", single.getTimeInMillis());
+        else values.putNull("single_datetime");
 
-        if (task.getIgnoreWhenTime()) values.put("ignore_when_time", 1);
-        else values.put("ignore_when_time", 0);
+        if (task.getIgnoreSingleTime()) values.put("ignore_single_time", 1);
+        else values.put("ignore_single_time", 0);
 
-        if (when != null) values.put("when_time_zone_code", (when.getTimeZone()).getID());
+        if (single != null) values.put("single_time_zone_code", (single.getTimeZone()).getID());
 
-        TaskReminder whenReminder = task.getWhenReminder();
-        if (whenReminder != null) values.put("when_reminder_id", whenReminder.getId());
-        else values.putNull("when_reminder_id");
+        TaskReminder singleReminder = task.getSingleReminder();
+        if (singleReminder != null) values.put("single_reminder_id", singleReminder.getId());
+        else values.putNull("single_reminder_id");
 
         // Start
         Calendar start = task.getStart();
@@ -2196,18 +2208,18 @@ public class DataManager extends SQLiteOpenHelper {
         if (startReminder != null) values.put("start_reminder_id", startReminder.getId());
         else values.putNull("start_reminder_id");
 
-        // Deadline
-        Calendar deadline = task.getDeadline();
-        if (deadline != null) values.put("deadline_datetime", deadline.getTimeInMillis());
-        else values.putNull("deadline_datetime");
+        // End
+        Calendar end = task.getEnd();
+        if (end != null) values.put("end_datetime", end.getTimeInMillis());
+        else values.putNull("end_datetime");
 
-        if (task.getIgnoreDeadlineTime()) values.put("ignore_deadline_time", 1);
-        else values.put("ignore_deadline_time", 0);
+        if (task.getIgnoreEndTime()) values.put("ignore_end_time", 1);
+        else values.put("ignore_end_time", 0);
 
-        if (deadline != null) values.put("deadline_time_zone_code", (deadline.getTimeZone()).getID());
+        if (end != null) values.put("end_time_zone_code", (end.getTimeZone()).getID());
 
-        TaskReminder deadlineReminder = task.getDeadlineReminder();
-        if (deadlineReminder != null) values.put("deadline_reminder_id", deadlineReminder.getId());
+        TaskReminder endReminder = task.getEndReminder();
+        if (endReminder != null) values.put("end_reminder_id", endReminder.getId());
         else values.putNull("deadline_reminder_id");
 
         // Done

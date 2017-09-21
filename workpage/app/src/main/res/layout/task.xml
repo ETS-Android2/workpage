@@ -29,13 +29,13 @@
             android:layout_marginTop="10dp"
             android:background="@color/divider" />
 
-        <LinearLayout android:id="@+id/task_when_information"
+        <LinearLayout android:id="@+id/task_single_information"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="vertical">
 
-            <TextView android:id="@+id/task_when_value"
+            <TextView android:id="@+id/task_single_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp" />
@@ -45,12 +45,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView android:id="@+id/task_when_time_zone"
+                <TextView android:id="@+id/task_single_time_zone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp" />
 
-                <ImageView android:id="@+id/task_when_dst"
+                <ImageView android:id="@+id/task_single_dst"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginStart="3dp"

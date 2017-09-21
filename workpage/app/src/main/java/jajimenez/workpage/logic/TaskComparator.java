@@ -13,14 +13,14 @@ public class TaskComparator implements Comparator<Task> {
             DateTimeTool tool = new DateTimeTool();
 
             long aId = a.getId();
-            Calendar aWhen = a.getWhen();
+            Calendar aSingle = a.getSingle();
             Calendar aStart = a.getStart();
-            Calendar aDeadline = a.getDeadline();
+            Calendar aEnd = a.getEnd();
 
             long bId = b.getId();
-            Calendar bWhen = b.getWhen();
+            Calendar bSingle = b.getSingle();
             Calendar bStart = b.getStart();
-            Calendar bDeadline = b.getDeadline();
+            Calendar bEnd = b.getEnd();
 
             // Get the next day in Unix Time format.
             Calendar tomorrow = Calendar.getInstance(); // At this point, "tomorrow" is the current time.
@@ -33,38 +33,38 @@ public class TaskComparator implements Comparator<Task> {
             // See "task_comparator.ods" file in the project documentation.
 
             // Case 1.
-            if (aWhen == null && aStart == null && aDeadline == null && bWhen == null && bStart == null && bDeadline == null) {
+            if (aSingle == null && aStart == null && aEnd == null && bSingle == null && bStart == null && bEnd == null) {
                 if (aId == bId) result = 0;
                 else if (aId < bId) result = -1;
                 else result = 1;
             }
             // Cases 2-5.
-            else if ((aWhen != null || aStart != null || aDeadline != null) && bWhen == null && bStart == null && bDeadline == null) {
-                if (aWhen != null) aCal = aWhen;
+            else if ((aSingle != null || aStart != null || aEnd != null) && bSingle == null && bStart == null && bEnd == null) {
+                if (aSingle != null) aCal = aSingle;
                 else if (aStart != null) aCal = aStart;
-                else aCal = aDeadline;
+                else aCal = aEnd;
 
                 if (aCal.getTimeInMillis() < tomorrow.getTimeInMillis()) result = -1;
                 else result = 1;
             }
             // Cases 6, 11, 16 and 21.
-            else if (aWhen == null && aStart == null && aDeadline == null && (bWhen != null || bStart != null || bDeadline != null)) {
-                if (bWhen != null) bCal = bWhen;
+            else if (aSingle == null && aStart == null && aEnd == null && (bSingle != null || bStart != null || bEnd != null)) {
+                if (bSingle != null) bCal = bSingle;
                 else if (bStart != null) bCal = bStart;
-                else bCal = bDeadline;
+                else bCal = bEnd;
 
                 if (bCal.getTimeInMillis() < tomorrow.getTimeInMillis()) result = 1;
                 else result = -1;
             }
             // Cases 7-10, 12-15, 17-20 and 22-25.
-            else if ((aWhen != null || aStart != null || aDeadline != null) && (bWhen != null || bStart != null || bDeadline != null)) {
-                if (aWhen != null) aCal = aWhen;
+            else if ((aSingle != null || aStart != null || aEnd != null) && (bSingle != null || bStart != null || bEnd != null)) {
+                if (aSingle != null) aCal = aSingle;
                 else if (aStart != null) aCal = aStart;
-                else aCal = aDeadline;
+                else aCal = aEnd;
 
-                if (bWhen != null) bCal = bWhen;
+                if (bSingle != null) bCal = bSingle;
                 else if (bStart != null) bCal = bStart;
-                else bCal = bDeadline;
+                else bCal = bEnd;
 
                 long aTime = aCal.getTimeInMillis();
                 long bTime = bCal.getTimeInMillis();

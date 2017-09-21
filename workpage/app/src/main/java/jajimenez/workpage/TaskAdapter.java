@@ -3,13 +3,11 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -26,7 +24,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private TextView titleTextView;
     private TextView tagsTextView;
 
-    private TextView whenValueTextView;
+    private TextView singleValueTextView;
 
     private TableLayout datesTableLayout;
 
@@ -63,7 +61,7 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         titleTextView = (TextView) itemView.findViewById(R.id.task_list_item_title);
         tagsTextView = (TextView) itemView.findViewById(R.id.task_list_item_tags);
 
-        whenValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_when_value);
+        singleValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_single_value);
 
         datesTableLayout = (TableLayout) itemView.findViewById(R.id.task_list_item_dates);
 
@@ -136,29 +134,29 @@ public class TaskAdapter extends ArrayAdapter<Task> {
     private void showDates() {
         TextTool tool = new TextTool();
 
-        Calendar when = task.getWhen();
+        Calendar single = task.getSingle();
         Calendar start = task.getStart();
-        Calendar deadline = task.getDeadline();
+        Calendar end = task.getEnd();
 
-        // When is defined.
-        if (when != null) {
-            whenValueTextView.setVisibility(View.VISIBLE);
+        // Single is defined.
+        if (single != null) {
+            singleValueTextView.setVisibility(View.VISIBLE);
             datesTableLayout.setVisibility(View.GONE);
             space2TextView.setVisibility(View.INVISIBLE);
-            whenValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.WHEN, true));
+            singleValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.SINGLE, true));
         }
-        // Any of Start and Deadline is defined.
-        else if (start != null || deadline != null) {
-            whenValueTextView.setVisibility(View.GONE);
+        // Any of Start and End is defined.
+        else if (start != null || end != null) {
+            singleValueTextView.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.VISIBLE);
 
             // Both are defined.
-            if (start != null && deadline != null) {
+            if (start != null && end != null) {
                 date1TitleTextView.setText(activity.getString(R.string.start_2));
                 date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.START, true));
 
-                date2TitleTextView.setText(activity.getString(R.string.deadline_2));
-                date2ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.DEADLINE, true));
+                date2TitleTextView.setText(activity.getString(R.string.end_2));
+                date2ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.END, true));
             }
             // Only one is defined.
             else {
@@ -169,14 +167,14 @@ public class TaskAdapter extends ArrayAdapter<Task> {
                     date1TitleTextView.setText(activity.getString(R.string.start_2));
                     date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.START, true));
                 }
-                else { // deadline != null
-                    date1TitleTextView.setText(activity.getString(R.string.deadline_2));
-                    date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.DEADLINE, true));
+                else { // end != null
+                    date1TitleTextView.setText(activity.getString(R.string.end_2));
+                    date1ValueTextView.setText(tool.getTaskDateText(activity, task, false, TextTool.END, true));
                 }
             }
         }
         else { // No date is defined.
-            whenValueTextView.setVisibility(View.GONE);
+            singleValueTextView.setVisibility(View.GONE);
             datesTableLayout.setVisibility(View.GONE);
 
             space2TextView.setVisibility(View.INVISIBLE);

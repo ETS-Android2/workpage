@@ -43,11 +43,11 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
         Calendar calendar = null;
 
         if (reminderType.equals("0")) {
-            // Type is "When".
-            task.setWhenReminder(null);
+            // Type is "Single".
+            task.setSingleReminder(null);
 
-            calendar = task.getWhen();
-            text = textTool.getTaskDateText(context, task, false, TextTool.WHEN, true);
+            calendar = task.getSingle();
+            text = textTool.getTaskDateText(context, task, false, TextTool.SINGLE, true);
         }
         else if (reminderType.equals("1")) {
             // Type is "Start".
@@ -57,11 +57,11 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
             text = textTool.getTaskDateText(context, task, true, TextTool.START, true);
         }
         else if (reminderType.equals("2")) {
-            // Type is "Deadline".
-            task.setDeadlineReminder(null);
+            // Type is "End".
+            task.setEndReminder(null);
 
-            calendar = task.getDeadline();
-            text = textTool.getTaskDateText(context, task, true, TextTool.DEADLINE, true);
+            calendar = task.getEnd();
+            text = textTool.getTaskDateText(context, task, true, TextTool.END, true);
         }
         else {
             return;

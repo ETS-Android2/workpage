@@ -9,20 +9,17 @@ public class Task extends Entity {
     private String title;
     private String description;
 
-    private Calendar when;
-    private boolean ignoreWhenTime;
-    //private String whenTimeZoneCode;
-    private TaskReminder whenReminder;
+    private Calendar single;
+    private boolean ignoreSingleTime;
+    private TaskReminder singleReminder;
 
     private Calendar start;
     private boolean ignoreStartTime;
-    //private String startTimeZoneCode;
     private TaskReminder startReminder;
 
-    private Calendar deadline;
-    private boolean ignoreDeadlineTime;
-    //private String deadlineTimeZoneCode;
-    private TaskReminder deadlineReminder;
+    private Calendar end;
+    private boolean ignoreEndTime;
+    private TaskReminder endReminder;
 
     private boolean done;
     private List<TaskTag> tags;
@@ -34,20 +31,17 @@ public class Task extends Entity {
         title = "";
         description = "";
 
-        when = null;
-        ignoreWhenTime = false;
-        //whenTimeZoneCode = null;
-        whenReminder = null;
+        single = null;
+        ignoreSingleTime = false;
+        singleReminder = null;
 
         start = null;
         ignoreStartTime = false;
-        //startTimeZoneCode = null;
         startReminder = null;
 
-        deadline = null;
-        ignoreDeadlineTime = false;
-        //deadlineTimeZoneCode = null;
-        deadlineReminder = null;
+        end = null;
+        ignoreEndTime = false;
+        endReminder = null;
 
         done = false;
         tags = new LinkedList<TaskTag>();
@@ -55,9 +49,9 @@ public class Task extends Entity {
 
     public Task(long contextId,
         String title, String description,
-        Calendar when, boolean ignoreWhenTime, TaskReminder whenReminder,
+        Calendar single, boolean ignoreSingleTime, TaskReminder singleReminder,
         Calendar start, boolean ignoreStartTime, TaskReminder startReminder,
-        Calendar deadline, boolean ignoreDeadlineTime, TaskReminder deadlineReminder,
+        Calendar end, boolean ignoreEndTime, TaskReminder endReminder,
         boolean done, List<TaskTag> tags) {
 
         super();
@@ -66,20 +60,17 @@ public class Task extends Entity {
         this.title = title;
         this.description = description;
 
-        this.when = when;
-        this.ignoreWhenTime = ignoreWhenTime;
-        //this.whenTimeZoneCode = whenTimeZoneCode;
-        this.whenReminder = whenReminder;
+        this.single = single;
+        this.ignoreSingleTime = ignoreSingleTime;
+        this.singleReminder = singleReminder;
 
         this.start = start;
         this.ignoreStartTime = ignoreStartTime;
-        //this.startTimeZoneCode = startTimeZoneCode;
         this.startReminder = startReminder;
 
-        this.deadline = deadline;
-        this.ignoreDeadlineTime = ignoreDeadlineTime;
-        //this.deadlineTimeZoneCode = deadlineTimeZoneCode;
-        this.deadlineReminder = deadlineReminder;
+        this.end = end;
+        this.ignoreEndTime = ignoreEndTime;
+        this.endReminder = endReminder;
 
         this.done = done;
         this.tags = tags;
@@ -87,9 +78,9 @@ public class Task extends Entity {
 
     public Task(long id, long contextId,
         String title, String description,
-        Calendar when, boolean ignoreWhenTime, /*String whenTimeZoneCode,*/ TaskReminder whenReminder,
-        Calendar start, boolean ignoreStartTime, /*String startTimeZoneCode,*/ TaskReminder startReminder,
-        Calendar deadline, boolean ignoreDeadlineTime, /*String deadlineTimeZoneCode,*/ TaskReminder deadlineReminder,
+        Calendar single, boolean ignoreSingleTime, TaskReminder singleReminder,
+        Calendar start, boolean ignoreStartTime, TaskReminder startReminder,
+        Calendar end, boolean ignoreEndTime, TaskReminder endReminder,
         boolean done, List<TaskTag> tags) {
 
         super(id);
@@ -98,17 +89,17 @@ public class Task extends Entity {
         this.title = title;
         this.description = description;
 
-        this.when = when;
-        this.ignoreWhenTime = ignoreWhenTime;
-        this.whenReminder = whenReminder;
+        this.single = single;
+        this.ignoreSingleTime = ignoreSingleTime;
+        this.singleReminder = singleReminder;
 
         this.start = start;
         this.ignoreStartTime = ignoreStartTime;
         this.startReminder = startReminder;
 
-        this.deadline = deadline;
-        this.ignoreDeadlineTime = ignoreDeadlineTime;
-        this.deadlineReminder = deadlineReminder;
+        this.end = end;
+        this.ignoreEndTime = ignoreEndTime;
+        this.endReminder = endReminder;
 
         this.done = done;
         this.tags = tags;
@@ -126,16 +117,16 @@ public class Task extends Entity {
         return description;
     }
 
-    public Calendar getWhen() {
-        return when;
+    public Calendar getSingle() {
+        return single;
     }
 
-    public boolean getIgnoreWhenTime() {
-        return ignoreWhenTime;
+    public boolean getIgnoreSingleTime() {
+        return ignoreSingleTime;
     }
 
-    public TaskReminder getWhenReminder() {
-        return whenReminder;
+    public TaskReminder getSingleReminder() {
+        return singleReminder;
     }
 
     public Calendar getStart() {
@@ -150,16 +141,16 @@ public class Task extends Entity {
         return startReminder;
     }
 
-    public Calendar getDeadline() {
-        return deadline;
+    public Calendar getEnd() {
+        return end;
     }
 
-    public boolean getIgnoreDeadlineTime() {
-        return ignoreDeadlineTime;
+    public boolean getIgnoreEndTime() {
+        return ignoreEndTime;
     }
 
-    public TaskReminder getDeadlineReminder() {
-        return deadlineReminder;
+    public TaskReminder getEndReminder() {
+        return endReminder;
     }
 
     public boolean isDone() {
@@ -182,16 +173,16 @@ public class Task extends Entity {
         this.description = description;
     }
 
-    public void setWhen(Calendar when) {
-        this.when = when;
+    public void setSingle(Calendar single) {
+        this.single = single;
     }
 
-    public void setIgnoreWhenTime(boolean ignore) {
-        this.ignoreWhenTime = ignore;
+    public void setIgnoreSingleTime(boolean ignore) {
+        this.ignoreSingleTime = ignore;
     }
 
-    public void setWhenReminder(TaskReminder reminder) {
-        this.whenReminder = reminder;
+    public void setSingleReminder(TaskReminder reminder) {
+        this.singleReminder = reminder;
     }
 
     public void setStart(Calendar start) {
@@ -206,16 +197,16 @@ public class Task extends Entity {
         this.startReminder = reminder;
     }
 
-    public void setDeadline(Calendar deadline) {
-        this.deadline = deadline;
+    public void setEnd(Calendar end) {
+        this.end = end;
     }
 
-    public void setIgnoreDeadlineTime(boolean ignore) {
-        this.ignoreDeadlineTime = ignore;
+    public void setIgnoreEndTime(boolean ignore) {
+        this.ignoreEndTime = ignore;
     }
 
-    public void setDeadlineReminder(TaskReminder reminder) {
-        this.deadlineReminder = reminder;
+    public void setEndReminder(TaskReminder reminder) {
+        this.endReminder = reminder;
     }
 
     public void setDone(boolean done) {
