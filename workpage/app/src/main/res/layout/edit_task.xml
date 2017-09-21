@@ -18,7 +18,7 @@
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
             android:inputType="text"
-            android:maxLength="100"
+            android:maxLength="200"
             android:background="@android:color/transparent"
             android:hint="@string/title" />
 
