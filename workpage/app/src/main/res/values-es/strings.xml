@@ -69,7 +69,6 @@
     <string name="delete">Borrar</string>
     <string name="selected">%1$d seleccionadas</string>
     <string name="state_1">Estado:</string>
-    <string name="none">(Ninguno)</string>
 
     <string name="task">Tarea</string>
     <string name="task_datetime">%1$s - %2$s</string>
@@ -149,15 +148,15 @@
     </plurals>
     <plurals name="delete_selected_tag">
         <item quantity="one">¿Borrar la etiqueta seleccionada? Las tareas con esta etiqueta no se borrarán.</item>
-        <item quantity="other">Delete the %1$d selected tags? Las tareas con cualquiera de estas etiquetas no se borrarán.</item>
+        <item quantity="other">¿Borrar las %1$d etiquetas seleccionadas? Las tareas con cualquiera de estas etiquetas no se borrarán.</item>
     </plurals>
     <plurals name="tag_deleted">
         <item quantity="one">Etiqueta borrada</item>
         <item quantity="other">Etiquetas borradas</item>
     </plurals>
-    <string name="select_time_zone">Select time zone</string>
-    <string name="clear">Clear</string>
-    <string name="local_time_zone">Local time zone</string>
+    <string name="select_time_zone">Seleccionar huso horario</string>
+    <string name="clear">Limpiar</string>
+    <string name="local_time_zone">Huso horario local</string>
     <string name="offset_1">GMT-%1$s:%2$s</string>
     <string name="offset_2">GMT+%1$s:%2$s</string>
     <string name="time_zone_information">Ahora es %1$s - %2$s</string>

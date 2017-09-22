@@ -69,7 +69,6 @@
     <string name="delete">Delete</string>
     <string name="selected">%1$d selected</string>
     <string name="state_1">State:</string>
-    <string name="none">(None)</string>
 
     <string name="task">Task</string>
     <string name="task_datetime">%1$s - %2$s</string>
