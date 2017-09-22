@@ -212,7 +212,7 @@ public class TaskActivity extends AppCompatActivity {
             singleValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.SINGLE, false));
 
             TimeZone singleTimeZone = single.getTimeZone();
-            singleTimeZoneTextView.setText(tool.getFormattedTimeZone(this, singleTimeZone, single, TextTool.LONG));
+            singleTimeZoneTextView.setText(tool.getFormattedOffset(this, singleTimeZone, single));
 
             if (singleTimeZone.inDaylightTime(single.getTime())) singleDstImageView.setVisibility(View.VISIBLE);
             else singleDstImageView.setVisibility(View.GONE);
@@ -237,8 +237,8 @@ public class TaskActivity extends AppCompatActivity {
                 TimeZone startTimeZone = start.getTimeZone();
                 TimeZone endTimeZone = end.getTimeZone();
 
-                date1TimeZoneTextView.setText(tool.getFormattedTimeZone(this, startTimeZone, start, TextTool.LONG));
-                date2TimeZoneTextView.setText(tool.getFormattedTimeZone(this, endTimeZone, end, TextTool.LONG));
+                date1TimeZoneTextView.setText(tool.getFormattedOffset(this, startTimeZone, start));
+                date2TimeZoneTextView.setText(tool.getFormattedOffset(this, endTimeZone, end));
 
                 if (startTimeZone.inDaylightTime(start.getTime())) date1DstImageView.setVisibility(View.VISIBLE);
                 else date1DstImageView.setVisibility(View.GONE);
@@ -257,7 +257,7 @@ public class TaskActivity extends AppCompatActivity {
                     date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.START, false));
 
                     TimeZone startTimeZone = start.getTimeZone();
-                    date1TimeZoneTextView.setText(tool.getFormattedTimeZone(this, startTimeZone, start, TextTool.LONG));
+                    date1TimeZoneTextView.setText(tool.getFormattedOffset(this, startTimeZone, start));
 
                     if (startTimeZone.inDaylightTime(start.getTime())) date1DstImageView.setVisibility(View.VISIBLE);
                     else date1DstImageView.setVisibility(View.GONE);
@@ -267,7 +267,7 @@ public class TaskActivity extends AppCompatActivity {
                     date1ValueTextView.setText(tool.getTaskDateText(this, currentTask, false, TextTool.END, false));
 
                     TimeZone endTimeZone = end.getTimeZone();
-                    date1TimeZoneTextView.setText(tool.getFormattedTimeZone(this, endTimeZone, end, TextTool.LONG));
+                    date1TimeZoneTextView.setText(tool.getFormattedOffset(this, endTimeZone, end));
 
                     if (endTimeZone.inDaylightTime(end.getTime())) date2DstImageView.setVisibility(View.VISIBLE);
                     else date2DstImageView.setVisibility(View.GONE);

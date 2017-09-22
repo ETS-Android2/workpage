@@ -46,7 +46,7 @@ public class TimeZoneAdapter extends ArrayAdapter<TimeZone> {
         nameTextView.setText(tool.getTimeZoneName(timeZone, now));
         timeTextView.setText(tool.getTimeZoneInformation(activity, now));
 
-        offsetTextView.setText(tool.getFormattedTimeZone(activity, timeZone, now, TextTool.LONG));
+        offsetTextView.setText(tool.getFormattedOffset(activity, timeZone, now));
 
         if (timeZone.inDaylightTime(now.getTime())) dstImageView.setVisibility(View.VISIBLE);
         else dstImageView.setVisibility(View.GONE);

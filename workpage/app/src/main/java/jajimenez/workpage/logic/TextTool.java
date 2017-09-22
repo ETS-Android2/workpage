@@ -18,9 +18,6 @@ public class TextTool {
     public final static int START = 1;
     public final static int END = 2;
 
-    public final static int SHORT = 0;
-    public final static int LONG = 1;
-
     public String getFormattedDate(Calendar date, boolean deviceLocalTimeZone) {
         String formattedDate = "";
 
@@ -175,48 +172,34 @@ public class TextTool {
         return timeZone.getDisplayName(daylight, TimeZone.LONG);
     }
 
-    public String getFormattedTimeZone(Context context, TimeZone timeZone, Calendar date, int length) {
-        String result;
-
-        String timeZoneShortName = timeZone.getDisplayName(timeZone.inDaylightTime(date.getTime()), TimeZone.SHORT);
+    public String getFormattedOffset(Context context, TimeZone timeZone, Calendar date) {
         String offsetName;
 
-        if (length == SHORT) {
-            result = context.getString(R.string.time_zone_short, timeZoneShortName);
-        }
-        else {
-            long offset = timeZone.getOffset(date.getTimeInMillis());
-            long totalMilliseconds = Math.abs(offset);
+        long offset = timeZone.getOffset(date.getTimeInMillis());
+        long totalMilliseconds = Math.abs(offset);
 
-            long millisecondsIn1hour = (1000 * 60 * 60);
-            long millisecondsIn1Minute = (1000 * 60);
+        long millisecondsIn1hour = (1000 * 60 * 60);
+        long millisecondsIn1Minute = (1000 * 60);
 
-            long hours = totalMilliseconds / millisecondsIn1hour; // Number of hours
-            long rest = totalMilliseconds % millisecondsIn1hour; // The rest, in milliseconds
-            long minutes = rest / millisecondsIn1Minute; // The rest, in minutes
+        long hours = totalMilliseconds / millisecondsIn1hour; // Number of hours
+        long rest = totalMilliseconds % millisecondsIn1hour; // The rest, in milliseconds
+        long minutes = rest / millisecondsIn1Minute; // The rest, in minutes
 
-            StringBuilder formattedOffsetMinutes = new StringBuilder(String.valueOf(minutes));
-            if (formattedOffsetMinutes.length() == 1) formattedOffsetMinutes.insert(0, "0");
+        StringBuilder formattedOffsetMinutes = new StringBuilder(String.valueOf(minutes));
+        if (formattedOffsetMinutes.length() == 1) formattedOffsetMinutes.insert(0, "0");
 
-            StringBuilder formattedOffsetHours = new StringBuilder(String.valueOf(hours));
-            if (formattedOffsetHours.length() == 1) formattedOffsetHours.insert(0, "0");
+        StringBuilder formattedOffsetHours = new StringBuilder(String.valueOf(hours));
+        if (formattedOffsetHours.length() == 1) formattedOffsetHours.insert(0, "0");
 
-            if (offset < 0) {
-                //result = context.getString(R.string.time_zone_long_1, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
-                offsetName = context.getString(R.string.offset_1, formattedOffsetHours, formattedOffsetMinutes);
-            } else {
-                //result = context.getString(R.string.time_zone_long_2, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
-                offsetName = context.getString(R.string.offset_2, formattedOffsetHours, formattedOffsetMinutes);
-            }
-
-            if (timeZoneShortName.equals(offsetName)) {
-                result = context.getString(R.string.time_zone_short, timeZoneShortName);
-            } else {
-                result = context.getString(R.string.time_zone_long, timeZoneShortName, offsetName);
-            }
+        if (offset < 0) {
+            //result = context.getString(R.string.time_zone_long_1, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
+            offsetName = context.getString(R.string.offset_1, formattedOffsetHours, formattedOffsetMinutes);
+        } else {
+            //result = context.getString(R.string.time_zone_long_2, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
+            offsetName = context.getString(R.string.offset_2, formattedOffsetHours, formattedOffsetMinutes);
         }
 
-        return result;
+        return offsetName;
     }
 
     public String getTimeZoneInformation(Context context, Calendar date) {
