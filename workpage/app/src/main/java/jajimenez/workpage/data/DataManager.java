@@ -1872,7 +1872,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (!cursor.isNull(4)) ignoreSingleTime = (cursor.getLong(4) != 0);
 
                 String singleTimeZoneCode = null;
-                if (!cursor.isNull(5)) {
+                if (single != null && !cursor.isNull(5)) {
                     singleTimeZoneCode = cursor.getString(5);
                     single.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
                 }
@@ -1893,7 +1893,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (!cursor.isNull(8)) ignoreStartTime = (cursor.getLong(8) != 0);
 
                 String startTimeZoneCode = null;
-                if (!cursor.isNull(9)) {
+                if (start != null && !cursor.isNull(9)) {
                     startTimeZoneCode = cursor.getString(9);
                     start.setTimeZone(TimeZone.getTimeZone(startTimeZoneCode));
                 }
@@ -1914,7 +1914,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (!cursor.isNull(12)) ignoreEndTime = (cursor.getLong(12) != 0);
 
                 String endTimeZoneCode = null;
-                if (!cursor.isNull(13)) {
+                if (end != null && !cursor.isNull(13)) {
                     endTimeZoneCode = cursor.getString(13);
                     end.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
                 }
@@ -2095,7 +2095,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (!cursor.isNull(4)) ignoreSingleTime = (cursor.getLong(4) != 0);
 
                 String singleTimeZoneCode = null;
-                if (!cursor.isNull(5)) {
+                if (single != null && !cursor.isNull(5)) {
                     singleTimeZoneCode = cursor.getString(5);
                     single.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
                 }
@@ -2116,7 +2116,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (!cursor.isNull(8)) ignoreStartTime = (cursor.getLong(8) != 0);
 
                 String startTimeZoneCode = null;
-                if (!cursor.isNull(9)) {
+                if (start != null && !cursor.isNull(9)) {
                     startTimeZoneCode = cursor.getString(9);
                     start.setTimeZone(TimeZone.getTimeZone(startTimeZoneCode));
                 }
@@ -2137,7 +2137,7 @@ public class DataManager extends SQLiteOpenHelper {
                 if (!cursor.isNull(12)) ignoreEndTime = (cursor.getLong(12) != 0);
 
                 String endTimeZoneCode = null;
-                if (!cursor.isNull(13)) {
+                if (end != null && !cursor.isNull(13)) {
                     endTimeZoneCode = cursor.getString(13);
                     end.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
                 }
