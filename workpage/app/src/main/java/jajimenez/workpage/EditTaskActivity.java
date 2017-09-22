@@ -180,6 +180,12 @@ public class EditTaskActivity extends AppCompatActivity {
                         currentTask.setEnd(end);
 
                         break;
+                    default: // NO_DATE
+                        currentTask.setSingle(null);
+                        currentTask.setStart(null);
+                        currentTask.setEnd(null);
+
+                        break;
                 }
 
                 currentTask.setIgnoreSingleTime(false);
