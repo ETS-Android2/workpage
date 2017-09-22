@@ -27,12 +27,12 @@
     <string name="about">Über</string>
 
     <string name="switch_task_context">Kontext umschalten</string>
-    <string name="edit_contexts">Bearbeiten von Kontexten</string>
+    <string name="edit_contexts">Kontexte bearbeiten</string>
     <string name="new_context">Neuer Kontext</string>
     <string name="edit_context">Kontext bearbeiten</string>
     <plurals name="open_task_count">
         <item quantity="one">1 offene Aufgabe</item>
-        <item quantity="other">%1$d 2 offene Aufgaben</item>
+        <item quantity="other">%1$d offene Aufgaben</item>
     </plurals>
     <plurals name="closed_task_count">
         <item quantity="one">1 abgeschlossene Aufgabe</item>
