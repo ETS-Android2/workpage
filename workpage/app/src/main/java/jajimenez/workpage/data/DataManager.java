@@ -2220,7 +2220,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         TaskReminder endReminder = task.getEndReminder();
         if (endReminder != null) values.put("end_reminder_id", endReminder.getId());
-        else values.putNull("deadline_reminder_id");
+        else values.putNull("end_reminder_id");
 
         // Done
         if (task.isDone()) values.put("done", 1);
