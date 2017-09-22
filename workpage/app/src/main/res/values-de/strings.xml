@@ -38,7 +38,7 @@
         <item quantity="one">1 abgeschlossene Aufgabe</item>
         <item quantity="other">%1$d abgeschlossene Aufgaben</item>
     </plurals>
-
+oche
     <string name="context_name">Kontextname</string>
     <string name="context_saved">Kontext gespeichert</string>
     <plurals name="delete_selected_context">
@@ -125,16 +125,16 @@
     <string name="on_time">Pünktlich</string>
     <string name="x_minutes">%1$d Minuten vorher</string>
     <plurals name="x_hours">
-        <item quantity="one">%1$d 1 Stunde vorher</item>
+        <item quantity="one">%1$d Stunde vorher</item>
         <item quantity="other">%1$d Stunden vorher</item>
     </plurals>
     <plurals name="x_days">
-        <item quantity="one">%1$d 1 Tag vorher</item>
-        <item quantity="other">%1$d 2 Tage vorher</item>
+        <item quantity="one">%1$d Tag vorher</item>
+        <item quantity="other">%1$d Tage vorher</item>
     </plurals>
     <plurals name="x_weeks">
-        <item quantity="one">%1$d 1 Woche vorher</item>
-        <item quantity="other">%1$d 2 Wochen vorher</item>
+        <item quantity="one">%1$d Woche vorher</item>
+        <item quantity="other">%1$d Wochen vorher</item>
     </plurals>
 
     <string name="no_tags">Es gibt keine Stichworte</string>
