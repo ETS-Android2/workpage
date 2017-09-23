@@ -19,11 +19,17 @@ public class TimeZoneAdapter extends ArrayAdapter<TimeZone> {
     private Activity activity;
     private int resource;
 
+    private Calendar date = null;
+
     public TimeZoneAdapter(Activity activity, int resource, List<TimeZone> items) {
         super(activity, resource, items);
 
         this.activity = activity;
         this.resource = resource;
+    }
+
+    public void setDate(Calendar date) {
+        this.date = date;
     }
 
     @Override
@@ -43,9 +49,8 @@ public class TimeZoneAdapter extends ArrayAdapter<TimeZone> {
         TextTool tool = new TextTool();
         Calendar now = Calendar.getInstance(timeZone);
 
-        nameTextView.setText(tool.getTimeZoneName(timeZone, now));
+        nameTextView.setText(tool.getTimeZoneName(timeZone, date));
         timeTextView.setText(tool.getTimeZoneInformation(activity, now));
-
         offsetTextView.setText(tool.getFormattedOffset(activity, timeZone, now));
 
         if (timeZone.inDaylightTime(now.getTime())) dstImageView.setVisibility(View.VISIBLE);

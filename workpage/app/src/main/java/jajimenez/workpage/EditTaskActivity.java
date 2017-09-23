@@ -660,7 +660,6 @@ public class EditTaskActivity extends AppCompatActivity {
         title.setSelection((title.getText()).length());
 
         TextTool tool = new TextTool();
-        Calendar now;
 
         if (selectedDateMode == ApplicationLogic.NO_DATE) {
             dateMode.setText(R.string.add_date);
@@ -695,8 +694,7 @@ public class EditTaskActivity extends AppCompatActivity {
             else time1.setText(tool.getFormattedTime(single, false));
 
             TimeZone singleTimeZone = single.getTimeZone();
-            now = Calendar.getInstance();
-            boolean singleDaylight = singleTimeZone.inDaylightTime(now.getTime());
+            boolean singleDaylight = singleTimeZone.inDaylightTime(single.getTime());
             timeZone1.setText((single.getTimeZone()).getDisplayName(singleDaylight, TimeZone.LONG));
 
             reminder1.setText(getReminderButtonText(currentTask.getSingleReminder()));
@@ -734,8 +732,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 timeZoneRow1.setVisibility(View.VISIBLE);
 
                 TimeZone startTimeZone = start.getTimeZone();
-                now = Calendar.getInstance();
-                boolean startDaylight = startTimeZone.inDaylightTime(now.getTime());
+                boolean startDaylight = startTimeZone.inDaylightTime(start.getTime());
                 timeZone1.setText((start.getTimeZone()).getDisplayName(startDaylight, TimeZone.LONG));
 
                 reminderRow1.setVisibility(View.VISIBLE);
@@ -759,8 +756,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 timeZoneRow2.setVisibility(View.VISIBLE);
 
                 TimeZone endTimeZone = end.getTimeZone();
-                now = Calendar.getInstance();
-                boolean endDaylight = endTimeZone.inDaylightTime(now.getTime());
+                boolean endDaylight = endTimeZone.inDaylightTime(end.getTime());
                 timeZone2.setText((end.getTimeZone()).getDisplayName(endDaylight, TimeZone.LONG));
 
                 reminderRow2.setVisibility(View.VISIBLE);
@@ -895,19 +891,19 @@ public class EditTaskActivity extends AppCompatActivity {
         TimePickerDialogFragment fragment = new TimePickerDialogFragment();
 
         Bundle arguments = new Bundle();
-        Calendar time;
+        Calendar date;
 
-        if (selectedDateMode == ApplicationLogic.SINGLE_DATE) time = currentTask.getSingle();
-        else time = currentTask.getStart();
+        if (selectedDateMode == ApplicationLogic.SINGLE_DATE) date = currentTask.getSingle();
+        else date = currentTask.getStart();
 
-        if (time == null) {
-            time = Calendar.getInstance();
-            time.add(Calendar.HOUR_OF_DAY, 1);
-            time.clear(Calendar.MINUTE);
+        if (date == null) {
+            date = Calendar.getInstance();
+            date.add(Calendar.HOUR_OF_DAY, 1);
+            date.clear(Calendar.MINUTE);
         }
 
-        arguments.putInt("hour", time.get(Calendar.HOUR_OF_DAY));
-        arguments.putInt("minute", time.get(Calendar.MINUTE));
+        arguments.putInt("hour", date.get(Calendar.HOUR_OF_DAY));
+        arguments.putInt("minute", date.get(Calendar.MINUTE));
         arguments.putBoolean("include_no_time_button", true);
 
         fragment.setArguments(arguments);
@@ -919,6 +915,15 @@ public class EditTaskActivity extends AppCompatActivity {
     public void onTimeZone1Clicked(View view) {
         TimeZonePickerDialogFragment fragment = new TimeZonePickerDialogFragment();
 
+        Calendar date;
+
+        if (selectedDateMode == ApplicationLogic.SINGLE_DATE) date = currentTask.getSingle();
+        else date = currentTask.getStart();
+
+        Bundle arguments = new Bundle();
+        arguments.putLong("date", date.getTimeInMillis());
+
+        fragment.setArguments(arguments);
         fragment.setOnTimeZoneSelectedListener(timeZoneSelectedListener1);
         fragment.show(getFragmentManager(), "time_zone_picker_1");
     }
@@ -950,16 +955,16 @@ public class EditTaskActivity extends AppCompatActivity {
         TimePickerDialogFragment fragment = new TimePickerDialogFragment();
 
         Bundle arguments = new Bundle();
-        Calendar time = currentTask.getEnd();
+        Calendar date = currentTask.getEnd();
 
-        if (time == null) {
-            time = Calendar.getInstance();
-            time.add(Calendar.HOUR_OF_DAY, 1);
-            time.clear(Calendar.MINUTE);
+        if (date == null) {
+            date = Calendar.getInstance();
+            date.add(Calendar.HOUR_OF_DAY, 1);
+            date.clear(Calendar.MINUTE);
         }
 
-        arguments.putInt("hour", time.get(Calendar.HOUR_OF_DAY));
-        arguments.putInt("minute", time.get(Calendar.MINUTE));
+        arguments.putInt("hour", date.get(Calendar.HOUR_OF_DAY));
+        arguments.putInt("minute", date.get(Calendar.MINUTE));
         arguments.putBoolean("include_no_time_button", true);
 
         fragment.setArguments(arguments);
@@ -971,6 +976,12 @@ public class EditTaskActivity extends AppCompatActivity {
     public void onTimeZone2Clicked(View view) {
         TimeZonePickerDialogFragment fragment = new TimeZonePickerDialogFragment();
 
+        Calendar date = currentTask.getEnd();
+
+        Bundle arguments = new Bundle();
+        arguments.putLong("date", date.getTimeInMillis());
+
+        fragment.setArguments(arguments);
         fragment.setOnTimeZoneSelectedListener(timeZoneSelectedListener2);
         fragment.show(getFragmentManager(), "time_zone_picker_2");
     }

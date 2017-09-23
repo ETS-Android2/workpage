@@ -37,6 +37,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     private ListView list;
 
     private int mode;
+    private Calendar date;
 
     private List<Country> countries;
     private int countryCount;
@@ -55,6 +56,12 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         activity = getActivity();
         applicationLogic = new ApplicationLogic(activity);
+
+        Bundle arguments = getArguments();
+
+        date = Calendar.getInstance();
+        long dateTime = arguments.getLong("date", date.getTimeInMillis());
+        date.setTimeInMillis(dateTime);
 
         countries = applicationLogic.getAllCountries();
         Collections.sort(countries, new CountryComparator());
@@ -193,6 +200,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
             Collections.sort(timeZones, new TimeZoneComparator());
 
             TimeZoneAdapter adapter = new TimeZoneAdapter(activity, R.layout.time_zone_list_item, timeZones);
+            adapter.setDate(date);
             list.setAdapter(adapter);
         }
     }
