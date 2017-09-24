@@ -3,7 +3,6 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
