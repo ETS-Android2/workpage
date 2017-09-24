@@ -8,6 +8,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 public class EditDescriptionDialogFragment extends DialogFragment {
@@ -44,9 +45,12 @@ public class EditDescriptionDialogFragment extends DialogFragment {
             }
         });
 
+        Dialog dialog = builder.create();
+        (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
         updateInterface();
 
-        return builder.create();
+        return dialog;
     }
 
     private void updateInterface() {
