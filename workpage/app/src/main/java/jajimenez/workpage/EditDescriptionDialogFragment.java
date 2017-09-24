@@ -29,7 +29,6 @@ public class EditDescriptionDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.edit_description, null);
 
         descriptionEditText = (EditText) view.findViewById(R.id.edit_description_description);
-        descriptionEditText.setText(description);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -45,7 +44,15 @@ public class EditDescriptionDialogFragment extends DialogFragment {
             }
         });
 
+        updateInterface();
+
         return builder.create();
+    }
+
+    private void updateInterface() {
+        descriptionEditText.setText(description);
+        descriptionEditText.setSelection((descriptionEditText.getText()).length());
+        descriptionEditText.requestFocus();
     }
 
     public void setOnOkButtonClickedListener(OnOkButtonClickedListener listener) {
