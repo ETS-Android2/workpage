@@ -157,7 +157,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
 
         dialog = builder.create();
         (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        
+
         updateInterface();
 
         return dialog;
