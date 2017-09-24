@@ -1,5 +1,6 @@
 package jajimenez.workpage;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Activity;
@@ -8,6 +9,8 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -32,6 +35,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
     public static final int TIME_ZONE = 1;
 
     private Activity activity;
+    private Dialog dialog;
     private EditText countryEditText;
     private ImageButton clearImageButton;
     private ListView list;
@@ -151,9 +155,12 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
             }
         });
 
+        dialog = builder.create();
+        (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        
         updateInterface();
 
-        return builder.create();
+        return dialog;
     }
 
     private ArrayList<String> getNormalizedCountryNames(List<Country> countries) {
@@ -196,6 +203,8 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
             list.setAdapter(adapter);
         }
         else {
+            hideKeyboard();
+
             List<TimeZone> timeZones = applicationLogic.getTimeZones(selectedCountry);
             Collections.sort(timeZones, new TimeZoneComparator());
 
@@ -238,6 +247,15 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         }
 
         return result;
+    }
+
+    private void hideKeyboard() {
+        View v = dialog.getCurrentFocus();
+
+        if (v != null) {
+            InputMethodManager m = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            m.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
     }
 
     public void setOnTimeZoneSelectedListener(OnTimeZoneSelectedListener listener) {
