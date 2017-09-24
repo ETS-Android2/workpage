@@ -1,7 +1,8 @@
-0.9.0 (development)
+0.9.0 (25 Sep 2017)
 -------------------
 * Layout redesigned.
 * Time zones added to the tasks.
+* Week day displayed.
 * Data export/import improved and simplified. CSV format removed.
 * German translation added.
 * Bug when deleting the current context fixed.
