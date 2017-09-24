@@ -342,10 +342,10 @@ public class ApplicationLogic {
     }
 
     public void deleteTasks(List<Task> tasks) {
-        // Cancel reminder alarms.
+        // Cancel reminder alarms
         for (Task task : tasks) updateAllReminderAlarms(task, true);
 
-        // Delete tasks.
+        // Delete tasks
         dataManager.deleteTasks(tasks);
     }
 
@@ -355,6 +355,10 @@ public class ApplicationLogic {
 
     public Country getCountry(long id) {
         return dataManager.getCountry(id);
+    }
+
+    public Country getCountry(String timeZoneCode) {
+        return dataManager.getCountry(timeZoneCode);
     }
 
     public List<TimeZone> getTimeZones(Country country) {

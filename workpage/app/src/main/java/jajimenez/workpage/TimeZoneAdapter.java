@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import jajimenez.workpage.data.model.Country;
 import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
 
@@ -40,21 +41,23 @@ public class TimeZoneAdapter extends ArrayAdapter<TimeZone> {
         itemView = inflater.inflate(resource, null);
 
         TimeZone timeZone = getItem(position);
+        Country country = logic.getCountry(timeZone.getID());
 
         TextView nameTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_name);
-        TextView timeTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_time);
-        TextView offsetTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_offset);
+        TextView nowTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_now);
         ImageView dstImageView = (ImageView) itemView.findViewById(R.id.time_zone_list_item_dst);
+        TextView countryTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_country);
 
         TextTool tool = new TextTool();
         Calendar now = Calendar.getInstance(timeZone);
 
         nameTextView.setText(tool.getTimeZoneName(timeZone, date));
-        timeTextView.setText(tool.getTimeZoneInformation(activity, now));
-        offsetTextView.setText(tool.getFormattedOffset(activity, timeZone, now));
+        nowTextView.setText(tool.getTimeZoneInformation(activity, now));
 
         if (timeZone.inDaylightTime(now.getTime())) dstImageView.setVisibility(View.VISIBLE);
         else dstImageView.setVisibility(View.GONE);
+
+        countryTextView.setText(country.getName());
 
         return itemView;
     }

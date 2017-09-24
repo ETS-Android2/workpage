@@ -159,7 +159,7 @@
     <string name="local_time_zone">Huso horario local</string>
     <string name="offset_1">GMT-%1$s:%2$s</string>
     <string name="offset_2">GMT+%1$s:%2$s</string>
-    <string name="time_zone_information">Ahora es %1$s - %2$s</string>
+    <string name="time_zone_information">Ahora es %1$s, %2$s</string>
 
     <string name="new_tag">Nueva etiqueta</string>
     <string name="edit_tag">Editar etiqueta</string>

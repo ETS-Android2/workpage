@@ -203,9 +203,9 @@ public class TextTool {
     }
 
     public String getTimeZoneInformation(Context context, Calendar date) {
-        String formattedDate = getFormattedDate(date, true);
         String formattedTime = getFormattedTime(date, true);
+        String formattedOffset = getFormattedOffset(context, date.getTimeZone(), date);
 
-        return context.getString(R.string.time_zone_information, formattedDate, formattedTime);
+        return context.getString(R.string.time_zone_information, formattedTime, formattedOffset);
     }
 }

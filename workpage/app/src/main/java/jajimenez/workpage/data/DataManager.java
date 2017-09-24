@@ -1769,6 +1769,7 @@ public class DataManager extends SQLiteOpenHelper {
     //   1) The task has no start date.
     //   2) The task has a start date and the date is the current day
     //      or before.
+
     public List<Task> getDoableTodayTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
         List<Task> tasks = new LinkedList<Task>();
 
@@ -2346,10 +2347,36 @@ public class DataManager extends SQLiteOpenHelper {
         try {
             db = getReadableDatabase();
 
-            Cursor cursor = db.rawQuery("SELECT id, code " +
+            Cursor cursor = db.rawQuery("SELECT code " +
                 "FROM countries " +
                 "WHERE id = ?",
                     new String[] { String.valueOf(id) });
+
+            if (cursor.moveToFirst()) {
+                String countryCode = cursor.getString(0);
+                country = new Country(id, countryCode);
+            }
+        }
+        finally {
+            if (db != null) db.close();
+        }
+
+        return country;
+    }
+
+    public Country getCountry(String timeZoneCode) {
+        Country country = null;
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase();
+
+            Cursor cursor = db.rawQuery("SELECT c.id, c.code " +
+                    "FROM countries AS c " +
+                    "INNER JOIN time_zones AS t " +
+                    "ON c.id = t.country_id " +
+                    "WHERE t.code = ?",
+                new String[] { String.valueOf(timeZoneCode) });
 
             if (cursor.moveToFirst()) {
                 long countryId = cursor.getLong(0);
@@ -2367,7 +2394,6 @@ public class DataManager extends SQLiteOpenHelper {
 
     public List<String> getTimeZoneCodes(Country country) {
         if (country == null) throw new NullPointerException("Country is null.");
-
         List<String> timeZoneCodes = new LinkedList<String>();
 
         long countryId = country.getId();

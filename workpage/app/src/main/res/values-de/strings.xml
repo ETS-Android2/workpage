@@ -159,7 +159,7 @@ oche
     <string name="local_time_zone">Ortszeit Zone</string>
     <string name="offset_1">GMT-%1$s:%2$s</string>
     <string name="offset_2">GMT+%1$s:%2$s</string>
-    <string name="time_zone_information">Jetzt ist %1$s - %2$s</string>
+    <string name="time_zone_information">Jetzt ist %1$s, %2$s</string>
 
     <string name="new_tag">Neues Stichwort</string>
     <string name="edit_tag">Stichwort bearbeiten</string>
