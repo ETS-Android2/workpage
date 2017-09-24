@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="view_state_filter_keys">
+        <item>open</item>
+        <item>doable_today</item>
+        <item>closed</item>
+    </string-array>
+
     <string-array name="view_state_filter_texts">
         <item>Offene</item>
         <item>Heute machbar</item>
