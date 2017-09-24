@@ -687,7 +687,7 @@ public class EditTaskActivity extends AppCompatActivity {
             tableDate2.setVisibility(View.GONE);
             divider2.setVisibility(View.GONE);
 
-            date1.setText(tool.getFormattedDate(single, false));
+            date1.setText(tool.getFormattedDate(this, single, false));
             time1.setVisibility(View.VISIBLE);
 
             if (currentTask.getIgnoreSingleTime()) time1.setText(R.string.add_time);
@@ -723,7 +723,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminderRow1.setVisibility(View.GONE);
             }
             else {
-                date1.setText(tool.getFormattedDate(start, false));
+                date1.setText(tool.getFormattedDate(this, start, false));
 
                 if (currentTask.getIgnoreStartTime()) time1.setText(R.string.add_time);
                 else time1.setText(tool.getFormattedTime(start, false));
@@ -747,7 +747,7 @@ public class EditTaskActivity extends AppCompatActivity {
                 reminderRow2.setVisibility(View.GONE);
             }
             else {
-                date2.setText(tool.getFormattedDate(end, false));
+                date2.setText(tool.getFormattedDate(this, end, false));
 
                 if (currentTask.getIgnoreEndTime()) time2.setText(R.string.add_time);
                 else time2.setText(tool.getFormattedTime(end, false));

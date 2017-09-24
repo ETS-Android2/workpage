@@ -1,6 +1,8 @@
 package jajimenez.workpage.logic;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.text.DateFormat;
 import java.util.TimeZone;
@@ -18,11 +20,11 @@ public class TextTool {
     public final static int START = 1;
     public final static int END = 2;
 
-    public String getFormattedDate(Calendar date, boolean deviceLocalTimeZone) {
+    public String getFormattedDate(Context context, Calendar date, boolean deviceLocalTimeZone) {
+        String formattedWeekDay = "";
         String formattedDate = "";
 
         if (date != null) {
-            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
             TimeZone timeZone;
 
             if (deviceLocalTimeZone) {
@@ -33,11 +35,18 @@ public class TextTool {
                 timeZone = date.getTimeZone();
             }
 
+            Date d = date.getTime();
+
+            SimpleDateFormat weekFormat = new SimpleDateFormat("EEE");
+            weekFormat.setTimeZone(timeZone);
+            formattedWeekDay = weekFormat.format(d);
+
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
             dateFormat.setTimeZone(timeZone);
-            formattedDate = dateFormat.format(date.getTime());
+            formattedDate = dateFormat.format(d);
         }
 
-        return formattedDate;
+        return context.getString(R.string.task_date_base, formattedWeekDay, formattedDate);
     }
 
     public String getFormattedTime(Calendar date, boolean deviceLocalTimeZone) {
@@ -74,7 +83,7 @@ public class TextTool {
 
                 if (single != null) {
                     // In this case, we ignore "withTitle", as "Single" is always shown without any title.
-                    date = getFormattedDate(single, deviceLocalTimeZone);
+                    date = getFormattedDate(context, single, deviceLocalTimeZone);
                     time = getFormattedTime(single, deviceLocalTimeZone);
 
                     boolean ignoreSingleTime = task.getIgnoreSingleTime();
@@ -88,7 +97,7 @@ public class TextTool {
                 Calendar start = task.getStart();
 
                 if (start != null) {
-                    date = getFormattedDate(start, deviceLocalTimeZone);
+                    date = getFormattedDate(context, start, deviceLocalTimeZone);
                     time = getFormattedTime(start, deviceLocalTimeZone);
 
                     boolean ignoreStartTime = task.getIgnoreStartTime();
@@ -104,7 +113,7 @@ public class TextTool {
                 Calendar end = task.getEnd();
 
                 if (end != null) {
-                    date = getFormattedDate(end, deviceLocalTimeZone);
+                    date = getFormattedDate(context, end, deviceLocalTimeZone);
                     time = getFormattedTime(end, deviceLocalTimeZone);
 
                     boolean ignoreEndTime = task.getIgnoreEndTime();

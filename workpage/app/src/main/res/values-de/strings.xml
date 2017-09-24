@@ -71,6 +71,7 @@ oche
     <string name="state_1">Zustand:</string>
 
     <string name="task">Aufgabe</string>
+    <string name="task_date_base">%1$s %2$s</string>
     <string name="task_datetime">%1$s - %2$s</string>
     <string name="task_date">%1$s</string>
     <string name="task_start_datetime">Beginn: %1$s - %2$s</string>

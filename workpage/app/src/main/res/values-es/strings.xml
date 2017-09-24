@@ -71,6 +71,7 @@
     <string name="state_1">Estado:</string>
 
     <string name="task">Tarea</string>
+    <string name="task_date_base">%1$s %2$s</string>
     <string name="task_datetime">%1$s - %2$s</string>
     <string name="task_date">%1$s</string>
     <string name="task_start_datetime">Comienzo: %1$s - %2$s</string>

@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="40dp"
         android:gravity="center_horizontal"
+        android:visibility="gone"
         android:textSize="20sp"
         android:text="@string/no_tasks" />
 
