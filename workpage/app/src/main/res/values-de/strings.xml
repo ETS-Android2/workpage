@@ -2,7 +2,7 @@
     <string name="app_name">Workpage</string>
 
     <string name="app_description">Produktivitätsmanager</string>
-    <string name="app_version">0.9.0</string>
+    <string name="app_version">0.9.1</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
     <string name="app_web_site">https://github.com/jajimenez/workpage</string>
