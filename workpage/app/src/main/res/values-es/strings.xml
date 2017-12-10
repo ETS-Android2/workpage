@@ -21,7 +21,6 @@
     <string name="filter_tasks_by_state">Filtrar tareas por estado</string>
     <string name="filter_tasks_by_tags">Filtrar tareas por etiquetas</string>
     <string name="edit_tags">Editar etiquetas</string>
-    <string name="settings">Configuración</string>
     <string name="import_data">Importar datos</string>
     <string name="export_data">Exportar datos</string>
     <string name="about">Acerca De</string>
@@ -188,10 +187,7 @@
 
     <string name="state_2">Estado</string>
 
-    <string name="notifications">Notificaciones</string>
-    <string name="play_sound">Reproducir sonido</string>
-    <string name="vibrate">Vibrar</string>
-    <string name="light">Luz</string>
+    <string name="workpage_reminders">Recordatorios de Workpage</string>
 
     <string name="version">Versión:</string>
     <string name="author">Autor:</string>

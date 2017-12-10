@@ -21,7 +21,6 @@
     <string name="filter_tasks_by_state">Filter tasks by state</string>
     <string name="filter_tasks_by_tags">Filter tasks by tags</string>
     <string name="edit_tags">Edit tags</string>
-    <string name="settings">Settings</string>
     <string name="import_data">Import data</string>
     <string name="export_data">Export data</string>
     <string name="about">About</string>
@@ -188,10 +187,7 @@
 
     <string name="state_2">State</string>
 
-    <string name="notifications">Notifications</string>
-    <string name="play_sound">Play sound</string>
-    <string name="vibrate">Vibrate</string>
-    <string name="light">Light</string>
+    <string name="workpage_reminders">Workpage Reminders</string>
 
     <string name="version">Version:</string>
     <string name="author">Author:</string>

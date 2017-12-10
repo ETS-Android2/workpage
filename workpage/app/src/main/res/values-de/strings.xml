@@ -21,7 +21,6 @@
     <string name="filter_tasks_by_state">Filter Aufgaben nach Zustand</string>
     <string name="filter_tasks_by_tags">Filtern von Aufgaben nach Stichworte</string>
     <string name="edit_tags">Stichworte bearbeiten</string>
-    <string name="settings">Einstellungen</string>
     <string name="import_data">Daten importieren</string>
     <string name="export_data">Daten exportieren</string>
     <string name="about">Über</string>
@@ -38,7 +37,7 @@
         <item quantity="one">1 abgeschlossene Aufgabe</item>
         <item quantity="other">%1$d abgeschlossene Aufgaben</item>
     </plurals>
-oche
+
     <string name="context_name">Kontextname</string>
     <string name="context_saved">Kontext gespeichert</string>
     <plurals name="delete_selected_context">
@@ -188,10 +187,7 @@ oche
 
     <string name="state_2">Zustand</string>
 
-    <string name="notifications">Benachrichtigungen</string>
-    <string name="play_sound">Ton abspielen</string>
-    <string name="vibrate">Vibrieren</string>
-    <string name="light">Licht</string>
+    <string name="workpage_reminders">Workpage Erinnerungen</string>
 
     <string name="version">Version:</string>
     <string name="author">Autor:</string>

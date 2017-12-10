@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.TimeZone;
 
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +22,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
-import android.sax.EndElementListener;
+import android.support.v4.app.NotificationManagerCompat;
 
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
@@ -336,7 +335,7 @@ public class ApplicationLogic {
         }
 
         if (done || taskDeleted) {
-            NotificationManager notificationManager = (NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(appContext);
             notificationManager.cancel(reminderId);
         }
     }
@@ -523,14 +522,7 @@ public class ApplicationLogic {
 
         for (Map.Entry<String, ?> entry : keys.entrySet()) {
             String key = entry.getKey();
-
-            if (!key.equals("reminder_type")
-                && !key.equals("notifications_sound")
-                && !key.equals("notifications_vibrate")
-                && !key.equals("notifications_light")) {
-
-                editor.remove(key);
-            }
+            editor.remove(key);
         }
 
         editor.commit();
