@@ -21,7 +21,7 @@ Features
 
 Project data
 ------------
-* **Development version:** -
+* **Development version:** 0.10.0
 * **Release version:** 0.9.1
 * **Author:** Jose A. Jimenez (jajimenezcarm@gmail.com)
 * **License:** GPL 3.0
