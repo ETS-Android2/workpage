@@ -3,7 +3,6 @@ package jajimenez.workpage;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -210,7 +209,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    public void onAddClick(View view) {
+    public void onAddClicked(View view) {
         if (!interfaceReady) return;
 
         // Show an edition dialog

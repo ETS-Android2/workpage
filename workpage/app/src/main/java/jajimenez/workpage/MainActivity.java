@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void onAddClick(View view) {
+    public void onAddClicked(View view) {
         if (!interfaceReady) return;
 
         // Close the context action bar
