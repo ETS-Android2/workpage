@@ -158,8 +158,6 @@ public class TaskListFragment extends Fragment {
     }
 
     private void updateInterface() {
-        if (tasks == null) tasks = new LinkedList<>();
-
         TaskAdapter adapter = new TaskAdapter(this.getActivity(), R.layout.task_list_item, tasks);
         list.setAdapter(adapter);
 
