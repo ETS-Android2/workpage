@@ -27,7 +27,7 @@ public class TaskListFragment extends Fragment {
     private ListView list;
     private TextView emptyText;
 
-    private TaskHostActivity activity;
+    private TaskListHostActivity activity;
 
     private List<Task> tasks;
     private Bundle savedInstanceState;
@@ -41,10 +41,10 @@ public class TaskListFragment extends Fragment {
         super.onAttach(context);
 
         try {
-            activity = (TaskHostActivity) context;
+            activity = (TaskListHostActivity) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() +
-                    " must implement TaskHostActivity");
+                    " must implement TaskListHostActivity");
         }
     }
 

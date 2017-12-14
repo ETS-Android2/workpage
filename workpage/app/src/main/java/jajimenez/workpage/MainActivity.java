@@ -26,7 +26,7 @@ import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.logic.ApplicationLogic;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, TaskHostActivity {
+        implements NavigationView.OnNavigationItemSelectedListener, TaskListHostActivity {
 
     private ActionMode actionMode;
     private TextView viewFilterTextView;

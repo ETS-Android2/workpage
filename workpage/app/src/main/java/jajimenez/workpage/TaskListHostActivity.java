@@ -6,7 +6,7 @@ import java.util.List;
 
 import jajimenez.workpage.data.model.Task;
 
-public interface TaskHostActivity {
+public interface TaskListHostActivity {
     ActionMode getActionMode();
     void setActionMode(ActionMode mode);
 
