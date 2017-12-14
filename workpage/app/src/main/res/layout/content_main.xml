@@ -9,18 +9,9 @@
     tools:context="jajimenez.workpage.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <ListView android:id="@+id/main_list"
+    <fragment
+        android:id="@+id/content_main_list"
+        android:name="jajimenez.workpage.TaskListFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <TextView android:id="@+id/main_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="40dp"
-        android:gravity="center_horizontal"
-        android:visibility="gone"
-        android:textSize="20sp"
-        android:text="@string/no_tasks" />
-
+        android:layout_height="match_parent" />
 </LinearLayout>

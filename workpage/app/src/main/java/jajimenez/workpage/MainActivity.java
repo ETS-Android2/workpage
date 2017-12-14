@@ -1,47 +1,39 @@
 package jajimenez.workpage;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuInflater;
-import android.view.ActionMode;
-import android.widget.AdapterView;
+import android.view.View;
 import android.widget.TextView;
-import android.widget.AbsListView;
-import android.widget.ListView;
-import android.graphics.drawable.Drawable;
-import android.util.SparseBooleanArray;
 import android.widget.Toast;
 
-import jajimenez.workpage.logic.ApplicationLogic;
+import java.util.LinkedList;
+import java.util.List;
+
+import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
-import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.logic.ApplicationLogic;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, TaskHostActivity {
 
+    private ActionMode actionMode;
+    private TextView viewFilterTextView;
     private DrawerLayout drawer;
     private NavigationView navigationView;
-    private TextView viewFilterTextView;
-    private ActionMode actionMode;
-    private ListView listView;
-    private TextView emptyTextView;
+    private TaskListFragment listFragment;
 
-    private Bundle savedInstanceState;
     private boolean interfaceReady;
 
     private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
@@ -62,44 +54,49 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar_main_toolbar);
+        Toolbar toolbar = findViewById(R.id.app_bar_main_toolbar);
         setSupportActionBar(toolbar);
 
-        viewFilterTextView = (TextView) findViewById(R.id.main_view_filter);
         actionMode = null;
-
-        listView = (ListView) findViewById(R.id.main_list);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView l, View v, int position, long id) {
-                Task selectedTask = (Task) l.getItemAtPosition(position);
-
-                Intent intent = new Intent(MainActivity.this, TaskActivity.class);
-                intent.putExtra("task_id", selectedTask.getId());
-
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-            }
-        });
-
-
-        emptyTextView = (TextView) findViewById(R.id.main_empty);
-
-        createContextualActionBar();
-        interfaceReady = false;
+        viewFilterTextView = findViewById(R.id.main_view_filter);
 
         // Navigation menu
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
 
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        listFragment = (TaskListFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_list);
+
         // Listeners
+        setDialogListeners();
+
+        // Instance state
+        if (savedInstanceState != null) resetDialogListeners();
+
+        // Parameters
+        applicationLogic = new ApplicationLogic(this);
+        viewStateFilter = "";
+        includeTasksWithNoTag = true;
+        currentFilterTags = new LinkedList<TaskTag>();
+
+        // Reminders
+        applicationLogic.updateAllOpenTaskReminderAlarms(false);
+
+        // User interface
+        interfaceReady = false;
+        updateInterface();
+    }
+
+    private void setDialogListeners() {
         switchTaskContextListener = new SwitchTaskContextDialogFragment.OnTaskContextsChangedListener() {
             public void onNewCurrentTaskContext() {
                 MainActivity.this.updateInterface();
@@ -113,21 +110,13 @@ public class MainActivity extends AppCompatActivity
 
         taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
             public void onItemClick() {
-                // Close the context action bar.
-                if (MainActivity.this.actionMode != null) MainActivity.this.actionMode.finish();
-
-                // Update the list view.
-                MainActivity.this.updateInterface();
+                MainActivity.this.closeActionBar();
             }
         };
 
         deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
             public void onDelete() {
-                // Close the context action bar.
-                if (MainActivity.this.actionMode != null) MainActivity.this.actionMode.finish();
-
-                // Update the list view.
-                MainActivity.this.updateInterface();
+                MainActivity.this.closeActionBar();
             }
         };
 
@@ -136,164 +125,32 @@ public class MainActivity extends AppCompatActivity
                 (new ImportDataTask()).execute(input);
             }
         };
+    }
 
-        // Instance state
-        this.savedInstanceState = savedInstanceState;
+    private void closeActionBar() {
+        // Close the context action bar
+        if (actionMode != null) actionMode.finish();
 
-        if (savedInstanceState != null) {
-            SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
-            if (switchTaskContextFragment != null) switchTaskContextFragment.setOnTaskContextsChangedListener(switchTaskContextListener);
-
-            ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
-            if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
-
-            DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
-            if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
-
-            DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
-            if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
-        }
-
-        // Parameters
-        applicationLogic = new ApplicationLogic(this);
-        viewStateFilter = "";
-        includeTasksWithNoTag = true;
-        currentFilterTags = new LinkedList<TaskTag>();
-
-        applicationLogic.updateAllOpenTaskReminderAlarms(false);
+        // Update the list view
         updateInterface();
     }
 
-    private void createContextualActionBar() {
-        listView.clearChoices();
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MainActivity.this.actionMode = mode;
+    private void resetDialogListeners() {
+        SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
+        if (switchTaskContextFragment != null) switchTaskContextFragment.setOnTaskContextsChangedListener(switchTaskContextListener);
 
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.task, menu);
+        ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
+        if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
 
-                return true;
-            }
+        DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
+        if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
 
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            public void onDestroyActionMode(ActionMode mode) {
-                MainActivity.this.actionMode = null;
-            }
-
-            // Returns "true" if this callback handled the event, "false"
-            // if the standard "MenuItem" invocation should continue.
-            public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
-                boolean eventHandled = false;
-                final List<Task> selectedTasks = MainActivity.this.getSelectedTasks();
-
-                Bundle arguments;
-                int selectedTaskCount;
-                long[] taskIds;
-
-                switch (item.getItemId()) {
-                    case R.id.task_menu_status:
-                        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment();
-
-                        arguments = new Bundle();
-                        selectedTaskCount = selectedTasks.size();
-                        taskIds = new long[selectedTaskCount];
-
-                        for (int i = 0; i < selectedTaskCount; i++) {
-                            Task t = selectedTasks.get(i);
-                            taskIds[i] = t.getId();
-                        }
-
-                        arguments.putLongArray("task_ids", taskIds);
-                        statusFragment.setArguments(arguments);
-
-                        statusFragment.setOnItemClickListener(MainActivity.this.taskStatusChangeListener);
-                        statusFragment.show(getFragmentManager(), "change_task_status");
-
-                        eventHandled = true;
-                        break;
-
-                    case R.id.task_menu_edit:
-                        // Open the task edition activity.
-                        long selectedTaskId = (selectedTasks.get(0)).getId();
-
-                        Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
-                        intent.putExtra("mode", "edit");
-                        intent.putExtra("task_id", selectedTaskId);
-
-                        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-
-                        // Close the context action bar.
-                        mode.finish();
-
-                        eventHandled = true;
-                        break;
-
-                    case R.id.task_menu_delete:
-                        // Show a deletion confirmation dialog.
-                        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment();
-
-                        arguments = new Bundle();
-                        selectedTaskCount = selectedTasks.size();
-                        taskIds = new long[selectedTaskCount];
-
-                        for (int i = 0; i < selectedTaskCount; i++) {
-                            Task t = selectedTasks.get(i);
-                            taskIds[i] = t.getId();
-                        }
-
-                        arguments.putLongArray("task_ids", taskIds);
-                        deleteFragment.setArguments(arguments);
-
-                        deleteFragment.setOnDeleteListener(MainActivity.this.deleteTaskListener);
-                        deleteFragment.show(getFragmentManager(), "delete_task");
-
-                        eventHandled = true;
-                        break;
-                }
-
-                return eventHandled;
-            }
-
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
-                if (selectedTaskCount > 0) mode.setTitle(MainActivity.this.getString(R.string.selected, selectedTaskCount));
-
-                MenuItem editItem = (mode.getMenu()).findItem(R.id.task_menu_edit);
-                Drawable editItemIcon = editItem.getIcon();
-
-                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.task_menu_delete);
-                Drawable deleteItemIcon = deleteItem.getIcon();
-
-                if (selectedTaskCount == 1) {
-                    editItem.setEnabled(true);
-                    editItemIcon.setAlpha(255);
-                }
-                else {
-                    editItem.setEnabled(false);
-                    editItemIcon.setAlpha(127);
-                }
-
-                deleteItem.setEnabled(true);
-                deleteItemIcon.setAlpha(255);
-            }
-        });
+        DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
+        if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
         else super.onBackPressed();
     }
@@ -341,7 +198,7 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
@@ -395,13 +252,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void enableInterface() {
-        listView.setEnabled(true);
+        listFragment.setEnabled(true);
         interfaceReady = true;
     }
 
     public void disableInterface() {
         interfaceReady = false;
-        listView.setEnabled(false);
+        listFragment.setEnabled(false);
     }
 
     public void updateInterface() {
@@ -441,59 +298,68 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void updateTaskListInterface(List<Task> tasks) {
-        if (tasks == null) tasks = new LinkedList<Task>();
-
-        TaskAdapter adapter = new TaskAdapter(this, R.layout.task_list_item, tasks);
-        listView.setAdapter(adapter);
-
-        if (adapter.isEmpty()) {
-            listView.setVisibility(View.GONE);
-            emptyTextView.setVisibility(View.VISIBLE);
-        }
-        else {
-            if (savedInstanceState != null) {
-                int[] selectedItems = savedInstanceState.getIntArray("selected_items");
-
-                if (selectedItems != null) {
-                    for (int position : selectedItems) listView.setItemChecked(position, true);
-                    savedInstanceState.remove("selected_items");
-                }
-            }
-
-            listView.setVisibility(View.VISIBLE);
-            emptyTextView.setVisibility(View.GONE);
-        }
+    @Override
+    public void setActionMode(ActionMode mode) {
+        actionMode = mode;
     }
 
-    private List<Integer> getSelectedItems() {
-        List<Integer> selectedItems = new LinkedList<Integer>();
+    @Override
+    public void onTaskClicked(Task task) {
+        Intent intent = new Intent(MainActivity.this, TaskActivity.class);
+        intent.putExtra("task_id", task.getId());
 
-        SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
-        int itemCount = listView.getCount();
-
-        for (int i = 0; i < itemCount; i++) {
-            if (itemSelectedStates.get(i)) {
-                // The item with position "i" is selected.
-                selectedItems.add(i);
-            }
-        }
-
-        return selectedItems;
+        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
     }
 
-    private List<Task> getSelectedTasks() {
-        List<Task> selectedTasks = new LinkedList<Task>();
+    @Override
+    public void showChangeTaskStatusDialog(List<Task> tasks) {
+        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment();
 
-        TaskAdapter adapter = (TaskAdapter) listView.getAdapter();
-        List<Integer> selectedItems = getSelectedItems();
+        Bundle arguments = new Bundle();
+        int selectedTaskCount = tasks.size();
+        long[] taskIds = new long[selectedTaskCount];
 
-        for (int position : selectedItems) {
-            Task task = adapter.getItem(position);
-            selectedTasks.add(task);
+        for (int i = 0; i < selectedTaskCount; i++) {
+            Task t = tasks.get(i);
+            taskIds[i] = t.getId();
         }
 
-        return selectedTasks;
+        arguments.putLongArray("task_ids", taskIds);
+        statusFragment.setArguments(arguments);
+
+        statusFragment.setOnItemClickListener(taskStatusChangeListener);
+        statusFragment.show(getFragmentManager(), "change_task_status");
+    }
+
+    @Override
+    public void showEditActivity(Task task) {
+        long taskId = task.getId();
+
+        Intent intent = new Intent(this, EditTaskActivity.class);
+        intent.putExtra("mode", "edit");
+        intent.putExtra("task_id", taskId);
+
+        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
+    }
+
+    @Override
+    public void showDeleteTaskDialog(List<Task> tasks) {
+        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment();
+
+        Bundle arguments = new Bundle();
+        int selectedTaskCount = tasks.size();
+        long[] taskIds = new long[selectedTaskCount];
+
+        for (int i = 0; i < selectedTaskCount; i++) {
+            Task t = tasks.get(i);
+            taskIds[i] = t.getId();
+        }
+
+        arguments.putLongArray("task_ids", taskIds);
+        deleteFragment.setArguments(arguments);
+
+        deleteFragment.setOnDeleteListener(deleteTaskListener);
+        deleteFragment.show(getFragmentManager(), "delete_task");
     }
 
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
@@ -524,7 +390,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         protected void onPostExecute(List<Task> tasks) {
-            MainActivity.this.updateTaskListInterface(tasks);
+            MainActivity.this.listFragment.setTasks(tasks);
             MainActivity.this.enableInterface();
         }
     }
