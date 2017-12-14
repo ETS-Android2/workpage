@@ -166,6 +166,16 @@ public class TaskListFragment extends Fragment {
             emptyText.setVisibility(View.VISIBLE);
         }
         else {
+            // Re-select items
+            if (savedInstanceState != null) {
+                int[] selectedItems = savedInstanceState.getIntArray("selected_items");
+
+                if (selectedItems != null) {
+                    for (int position : selectedItems) list.setItemChecked(position, true);
+                    savedInstanceState.remove("selected_items");
+                }
+            }
+
             list.setVisibility(View.VISIBLE);
             emptyText.setVisibility(View.GONE);
         }
@@ -190,6 +200,9 @@ public class TaskListFragment extends Fragment {
 
         for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItems.get(i);
         outState.putIntArray("selected_items", selected);
+
+        ActionMode mode = activity.getActionMode();
+        if (mode != null) mode.finish();
 
         super.onSaveInstanceState(outState);
     }

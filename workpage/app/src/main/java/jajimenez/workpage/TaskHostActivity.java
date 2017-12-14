@@ -7,7 +7,9 @@ import java.util.List;
 import jajimenez.workpage.data.model.Task;
 
 public interface TaskHostActivity {
+    ActionMode getActionMode();
     void setActionMode(ActionMode mode);
+
     void onTaskClicked(Task task);
 
     void showChangeTaskStatusDialog(List<Task> tasks);

@@ -299,6 +299,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public ActionMode getActionMode() {
+        return actionMode;
+    }
+
+    @Override
     public void setActionMode(ActionMode mode) {
         actionMode = mode;
     }
