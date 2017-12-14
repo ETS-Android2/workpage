@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -53,6 +54,7 @@ public class TaskListFragment extends Fragment {
         View view = inflater.inflate(R.layout.task_list, container, false);
 
         list = view.findViewById(R.id.task_list_list);
+        list.setVisibility(View.INVISIBLE);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView l, View v, int position, long id) {
                 Task task = (Task) l.getItemAtPosition(position);
@@ -61,9 +63,9 @@ public class TaskListFragment extends Fragment {
         });
 
         emptyText = view.findViewById(R.id.task_list_empty);
-        createContextualActionBar();
+        emptyText.setVisibility(View.GONE);
 
-        updateInterface();
+        createContextualActionBar();
         setSelectedTasks();
 
         return view;
@@ -182,7 +184,9 @@ public class TaskListFragment extends Fragment {
     }
 
     private void setSelectedTasks() {
-        if (!(list.getAdapter()).isEmpty() && savedInstanceState != null) {
+        ListAdapter adapter = list.getAdapter();
+
+        if (adapter != null && !adapter.isEmpty() && savedInstanceState != null) {
             int[] selectedItems = savedInstanceState.getIntArray("selected_items");
 
             if (selectedItems != null) {
