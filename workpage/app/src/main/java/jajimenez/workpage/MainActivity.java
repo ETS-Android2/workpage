@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity
     private TextView viewFilterTextView;
     private DrawerLayout drawer;
     private NavigationView navigationView;
+    private MenuItem interfaceModeMenuItem;
     private TaskListFragment listFragment;
     private TaskCalendarFragment calendarFragment;
 
@@ -77,6 +78,8 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        interfaceModeMenuItem = (navigationView.getMenu()).findItem(R.id.main_nav_interface_mode);
 
         listFragment = (TaskListFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_list);
         calendarFragment = (TaskCalendarFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_calendar);
@@ -274,13 +277,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void updateInterface() {
-        // Information about the current task context.
+        // Information about the current task context
         currentTaskContext = applicationLogic.getCurrentTaskContext();
         Menu drawerMenu = navigationView.getMenu();
         MenuItem contextItem = drawerMenu.findItem(R.id.main_nav_context);
         contextItem.setTitle(currentTaskContext.getName());
 
-        // Information about the current view.
+        // Information about the current view
         viewStateFilter = this.applicationLogic.getViewStateFilter();
         String stateFilterText;
 
@@ -311,9 +314,19 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction t = manager.beginTransaction();
 
         if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
+            // Drawer menu
+            interfaceModeMenuItem.setTitle(R.string.calendar);
+            interfaceModeMenuItem.setIcon(R.drawable.date_mode);
+
+            // Fragment
             t.hide(listFragment);
             t.show(calendarFragment);
         } else {
+            // Drawer menu
+            interfaceModeMenuItem.setTitle(R.string.list);
+            interfaceModeMenuItem.setIcon(R.drawable.list);
+
+            // Fragment
             t.show(listFragment);
             t.hide(calendarFragment);
         }
