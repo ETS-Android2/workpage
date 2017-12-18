@@ -41,9 +41,10 @@ public class MainActivity extends AppCompatActivity
     private boolean firstUpdate;
 
     private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
+    private SwitchInterfaceModeDialogFragment.OnInterfaceModeChangedListener switchInterfaceModeListener;
+    private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
     private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
-    private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
 
     private LoadTasksDBTask tasksDbTask = null;
 
@@ -123,6 +124,19 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        switchInterfaceModeListener = new SwitchInterfaceModeDialogFragment.OnInterfaceModeChangedListener() {
+            @Override
+            public void onModeChanged() {
+                MainActivity.this.updateInterface();
+            }
+        };
+
+        onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
+            public void onConfirmation(Uri input) {
+                (new ImportDataTask()).execute(input);
+            }
+        };
+
         taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
             public void onItemClick() {
                 MainActivity.this.closeActionBar();
@@ -132,12 +146,6 @@ public class MainActivity extends AppCompatActivity
         deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
             public void onDelete() {
                 MainActivity.this.closeActionBar();
-            }
-        };
-
-        onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
-            public void onConfirmation(Uri input) {
-                (new ImportDataTask()).execute(input);
             }
         };
     }
@@ -153,6 +161,9 @@ public class MainActivity extends AppCompatActivity
     private void resetDialogListeners() {
         SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
         if (switchTaskContextFragment != null) switchTaskContextFragment.setOnTaskContextsChangedListener(switchTaskContextListener);
+
+        SwitchInterfaceModeDialogFragment switchInterfaceModeFragment = (SwitchInterfaceModeDialogFragment) (getFragmentManager()).findFragmentByTag("switch_interface_mode");
+        if (switchInterfaceModeFragment != null) switchInterfaceModeFragment.setOnInterfaceModeChangedListener(switchInterfaceModeListener);
 
         ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
         if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
@@ -191,6 +202,11 @@ public class MainActivity extends AppCompatActivity
             case R.id.main_nav_edit_tags:
                 intent = new Intent(this, EditTaskTagsActivity.class);
                 startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_TAGS);
+                break;
+            case R.id.main_nav_interface_mode:
+                SwitchInterfaceModeDialogFragment interfaceModeFragment = new SwitchInterfaceModeDialogFragment();
+                interfaceModeFragment.setOnInterfaceModeChangedListener(switchInterfaceModeListener);
+                interfaceModeFragment.show(getFragmentManager(), "switch_interface_mode");
                 break;
             case R.id.main_nav_export_data:
                 intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
