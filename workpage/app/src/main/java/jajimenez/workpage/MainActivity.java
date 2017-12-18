@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity
         if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
             // Drawer menu
             interfaceModeMenuItem.setTitle(R.string.calendar);
-            interfaceModeMenuItem.setIcon(R.drawable.date_mode);
+            interfaceModeMenuItem.setIcon(R.drawable.calendar_1);
 
             // Fragment
             t.hide(listFragment);
