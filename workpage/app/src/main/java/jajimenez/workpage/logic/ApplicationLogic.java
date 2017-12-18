@@ -116,7 +116,6 @@ public class ApplicationLogic {
         String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
 
         return preferences.getInt(key, INTERFACE_MODE_LIST);
-
     }
 
     public void setCurrentTaskContext(TaskContext context) {
@@ -132,7 +131,7 @@ public class ApplicationLogic {
         String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
 
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(key, mode);
+        editor.putInt(key, mode);
         editor.commit();
     }
 
