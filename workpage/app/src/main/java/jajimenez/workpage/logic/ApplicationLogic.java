@@ -49,6 +49,10 @@ public class ApplicationLogic {
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
+    private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_";
+
+    public static final int INTERFACE_MODE_LIST = 0;
+    public static final int INTERFACE_MODE_CALENDAR = 1;
 
     // Constants for the "importData" function.
     public static final int IMPORT_SUCCESS = 0;
@@ -107,11 +111,28 @@ public class ApplicationLogic {
         return filterTags;
     }
 
+    public int getInterfaceMode() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
+
+        return preferences.getInt(key, INTERFACE_MODE_LIST);
+
+    }
+
     public void setCurrentTaskContext(TaskContext context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(CURRENT_TASK_CONTEXT_ID_KEY, context.getId());
+        editor.commit();
+    }
+
+    public void setInterfaceMode(int mode) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(key, mode);
         editor.commit();
     }
 

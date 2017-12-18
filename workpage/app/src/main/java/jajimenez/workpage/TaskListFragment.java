@@ -23,7 +23,7 @@ import java.util.List;
 
 import jajimenez.workpage.data.model.Task;
 
-public class TaskListFragment extends Fragment {
+public class TaskListFragment extends Fragment implements TaskContainerFragment {
     private ListView list;
     private TextView emptyText;
 
@@ -209,13 +209,6 @@ public class TaskListFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void setTasks(List<Task> tasks) {
-        if (tasks == null) tasks = new LinkedList<>();
-        this.tasks = tasks;
-
-        updateInterface();
-    }
-
     private List<Integer> getSelectedItems() {
         List<Integer> selectedItems = new LinkedList<>();
 
@@ -246,6 +239,15 @@ public class TaskListFragment extends Fragment {
         return selectedTasks;
     }
 
+    @Override
+    public void setTasks(List<Task> tasks) {
+        if (tasks == null) tasks = new LinkedList<>();
+
+        this.tasks = tasks;
+        updateInterface();
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         list.setEnabled(enabled);
     }

@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,7 +19,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import jajimenez.workpage.data.model.Task;
@@ -33,8 +34,10 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private TaskListFragment listFragment;
+    private TaskCalendarFragment calendarFragment;
 
     private boolean interfaceReady;
+    private boolean firstUpdate;
 
     private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
     private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private String viewStateFilter;
     private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
+    private int interfaceMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         listFragment = (TaskListFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_list);
+        calendarFragment = (TaskCalendarFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_calendar);
 
         // Listeners
         setDialogListeners();
@@ -84,16 +89,23 @@ public class MainActivity extends AppCompatActivity
 
         // Parameters
         applicationLogic = new ApplicationLogic(this);
-        viewStateFilter = "";
-        includeTasksWithNoTag = true;
-        currentFilterTags = new LinkedList<TaskTag>();
 
         // Reminders
         applicationLogic.updateAllOpenTaskReminderAlarms(false);
 
         // User interface
         interfaceReady = false;
-        updateInterface();
+        firstUpdate = true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (firstUpdate) {
+            updateInterface();
+            firstUpdate = false;
+        }
     }
 
     private void setDialogListeners() {
@@ -131,7 +143,7 @@ public class MainActivity extends AppCompatActivity
         // Close the context action bar
         if (actionMode != null) actionMode.finish();
 
-        // Update the list view
+        // Update the task view
         updateInterface();
     }
 
@@ -292,6 +304,23 @@ public class MainActivity extends AppCompatActivity
             viewFilterTextView.setText(stateFilterText);
         }
 
+        // Task mode (List or Calendar)
+        interfaceMode = applicationLogic.getInterfaceMode();
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction t = manager.beginTransaction();
+
+        if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
+            t.hide(listFragment);
+            t.show(calendarFragment);
+        } else {
+            t.show(listFragment);
+            t.hide(calendarFragment);
+        }
+
+        t.commit();
+
+        // Get the tasks
         if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
             tasksDbTask = new LoadTasksDBTask();
             tasksDbTask.execute();

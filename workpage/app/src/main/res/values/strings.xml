@@ -69,6 +69,10 @@
     <string name="selected">%1$d selected</string>
     <string name="state_1">State:</string>
 
+    <string name="mode">Mode</string>
+    <string name="list">List</string>
+    <string name="calendar">Calendar</string>
+
     <string name="task">Task</string>
     <string name="task_date_base">%1$s %2$s</string>
     <string name="task_datetime">%1$s - %2$s</string>
