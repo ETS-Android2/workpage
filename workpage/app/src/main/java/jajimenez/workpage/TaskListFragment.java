@@ -240,15 +240,23 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
     }
 
     @Override
-    public void setTasks(List<Task> tasks) {
-        if (tasks == null) tasks = new LinkedList<>();
+    public void setVisible(boolean visible) {
+        View root = getView();
 
-        this.tasks = tasks;
-        updateInterface();
+        if (visible) root.setVisibility(View.VISIBLE);
+        else root.setVisibility(View.GONE);
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         list.setEnabled(enabled);
+    }
+
+    @Override
+    public void setTasks(List<Task> tasks) {
+        if (tasks == null) tasks = new LinkedList<>();
+
+        this.tasks = tasks;
+        updateInterface();
     }
 }

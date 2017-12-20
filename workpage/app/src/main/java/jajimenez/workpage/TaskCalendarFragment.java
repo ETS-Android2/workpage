@@ -33,6 +33,14 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
     }
 
     @Override
+    public void setVisible(boolean visible) {
+        View root = getView();
+
+        if (visible) root.setVisibility(View.VISIBLE);
+        else root.setVisibility(View.GONE);
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
         calendar.setEnabled(enabled);
     }

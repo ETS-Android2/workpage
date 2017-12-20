@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity
     private TaskCalendarFragment calendarFragment;
 
     private boolean interfaceReady;
-    private boolean firstUpdate;
 
     private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
     private SwitchInterfaceModeDialogFragment.OnInterfaceModeChangedListener switchInterfaceModeListener;
@@ -99,17 +98,7 @@ public class MainActivity extends AppCompatActivity
 
         // User interface
         interfaceReady = false;
-        firstUpdate = true;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        if (firstUpdate) {
-            updateInterface();
-            firstUpdate = false;
-        }
+        updateInterface();
     }
 
     private void setDialogListeners() {
@@ -326,28 +315,23 @@ public class MainActivity extends AppCompatActivity
         // Task mode (List or Calendar)
         interfaceMode = applicationLogic.getInterfaceMode();
 
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction t = manager.beginTransaction();
-
         if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
             // Drawer menu
             interfaceModeMenuItem.setTitle(R.string.calendar);
             interfaceModeMenuItem.setIcon(R.drawable.calendar_1);
 
             // Fragment
-            t.hide(listFragment);
-            t.show(calendarFragment);
+            listFragment.setVisible(false);
+            calendarFragment.setVisible(true);
         } else {
             // Drawer menu
             interfaceModeMenuItem.setTitle(R.string.list);
             interfaceModeMenuItem.setIcon(R.drawable.list);
 
             // Fragment
-            t.show(listFragment);
-            t.hide(calendarFragment);
+            listFragment.setVisible(true);
+            calendarFragment.setVisible(false);
         }
-
-        t.commit();
 
         // Get the tasks
         if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
