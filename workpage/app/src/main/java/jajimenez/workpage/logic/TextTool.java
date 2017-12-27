@@ -1,10 +1,12 @@
 package jajimenez.workpage.logic;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.text.DateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import android.content.Context;
@@ -201,10 +203,8 @@ public class TextTool {
         if (formattedOffsetHours.length() == 1) formattedOffsetHours.insert(0, "0");
 
         if (offset < 0) {
-            //result = context.getString(R.string.time_zone_long_1, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
             offsetName = context.getString(R.string.offset_1, formattedOffsetHours, formattedOffsetMinutes);
         } else {
-            //result = context.getString(R.string.time_zone_long_2, timeZoneName, formattedOffsetHours, formattedOffsetMinutes);
             offsetName = context.getString(R.string.offset_2, formattedOffsetHours, formattedOffsetMinutes);
         }
 
@@ -216,5 +216,27 @@ public class TextTool {
         String formattedOffset = getFormattedOffset(context, date.getTimeZone(), date);
 
         return context.getString(R.string.time_zone_information, formattedTime, formattedOffset);
+    }
+
+    public String getMonthYearName(Calendar date) {
+        String month = date.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+        String year = String.valueOf(date.get(Calendar.YEAR));
+
+        return (month + " " + year);
+    }
+
+    public String[] getWeekDayShortNames() {
+        DateFormatSymbols symbols = DateFormatSymbols.getInstance();
+
+        // The getShortWeekdays method returns an 8-element
+        // array, being the first one an empty string.
+        String[] initial = symbols.getShortWeekdays();
+        String[] result = new String[initial.length - 1];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = initial[i + 1];
+        }
+
+        return result;
     }
 }

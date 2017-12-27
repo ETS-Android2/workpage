@@ -5,8 +5,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -104,6 +102,7 @@ public class MainActivity extends AppCompatActivity
     private void setDialogListeners() {
         switchTaskContextListener = new SwitchTaskContextDialogFragment.OnTaskContextsChangedListener() {
             public void onNewCurrentTaskContext() {
+                MainActivity.this.calendarFragment.setCurrentMonth();
                 MainActivity.this.updateInterface();
             }
 
@@ -331,6 +330,7 @@ public class MainActivity extends AppCompatActivity
             // Fragment
             listFragment.setVisible(true);
             calendarFragment.setVisible(false);
+            calendarFragment.setCurrentMonth();
         }
 
         // Get the tasks
