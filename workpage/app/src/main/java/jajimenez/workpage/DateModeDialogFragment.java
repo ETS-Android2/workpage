@@ -56,7 +56,7 @@ public class DateModeDialogFragment extends DialogFragment {
         onDateModeSetListener = listener;
     }
 
-    public static interface OnDateModeSetListener {
+    public interface OnDateModeSetListener {
         void onDateModeSet(int mode);
     }
 }

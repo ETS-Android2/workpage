@@ -36,33 +36,34 @@ public class TaskReminderAlarmReceiver extends BroadcastReceiver {
 
         // Text for the notification.
         String title = task.getTitle();
-        String text = null;
+        String text;
 
-        Calendar calendar = null;
+        Calendar calendar;
 
-        if (reminderType.equals("0")) {
-            // Type is "Single"
-            task.setSingleReminder(null);
+        switch (reminderType) {
+            case "0":
+                // Type is "Single"
+                task.setSingleReminder(null);
+                calendar = task.getSingle();
 
-            calendar = task.getSingle();
-            text = textTool.getTaskDateText(context, task, false, TextTool.SINGLE, true);
-        }
-        else if (reminderType.equals("1")) {
-            // Type is "Start"
-            task.setStartReminder(null);
+                text = textTool.getTaskDateText(context, task, false, TextTool.SINGLE, true);
+                break;
+            case "1":
+                // Type is "Start"
+                task.setStartReminder(null);
+                calendar = task.getStart();
 
-            calendar = task.getStart();
-            text = textTool.getTaskDateText(context, task, true, TextTool.START, true);
-        }
-        else if (reminderType.equals("2")) {
-            // Type is "End"
-            task.setEndReminder(null);
+                text = textTool.getTaskDateText(context, task, true, TextTool.START, true);
+                break;
+            case "2":
+                // Type is "End"
+                task.setEndReminder(null);
+                calendar = task.getEnd();
 
-            calendar = task.getEnd();
-            text = textTool.getTaskDateText(context, task, true, TextTool.END, true);
-        }
-        else {
-            return;
+                text = textTool.getTaskDateText(context, task, true, TextTool.END, true);
+                break;
+            default:
+                return;
         }
 
         if (calendar == null) return;

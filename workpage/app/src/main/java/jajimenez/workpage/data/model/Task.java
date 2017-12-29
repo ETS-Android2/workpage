@@ -44,7 +44,7 @@ public class Task extends Entity {
         endReminder = null;
 
         done = false;
-        tags = new LinkedList<TaskTag>();
+        tags = new LinkedList<>();
     }
 
     public Task(long contextId,

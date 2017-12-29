@@ -39,7 +39,7 @@ public class DataImportConfirmationDialogFragment extends DialogFragment {
         onConfirmationListener = listener;
     }
 
-    public static interface OnDataImportConfirmationListener {
+    public interface OnDataImportConfirmationListener {
         void onConfirmation(Uri input);
     }
 }

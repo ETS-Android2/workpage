@@ -3,6 +3,11 @@ package jajimenez.workpage;
 import java.util.List;
 import java.util.LinkedList;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
 import android.support.v7.app.AppCompatActivity;
@@ -27,11 +32,10 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     private Bundle savedInstanceState;
     private boolean interfaceReady;
 
-    private EditTaskContextDialogFragment.OnTaskContextSavedListener saveTaskContextListener;
-    private DeleteTaskContextDialogFragment.OnDeleteListener deleteTaskContextListener;
+    // Broadcast receiver
+    private AppBroadcastReceiver appBroadcastReceiver;
 
     private ApplicationLogic applicationLogic;
-
     private LoadTaskContextsDBTask contextsDbTask = null;
 
     @Override
@@ -39,61 +43,47 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_task_contexts);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.edit_task_contexts_toolbar);
+        Toolbar toolbar = findViewById(R.id.edit_task_contexts_toolbar);
         setSupportActionBar(toolbar);
 
-        listView = (ListView) findViewById(R.id.edit_task_contexts_list);
+        listView = findViewById(R.id.edit_task_contexts_list);
         actionMode = null;
 
         createContextualActionBar();
-        interfaceReady = false;
-
         (getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        saveTaskContextListener = new EditTaskContextDialogFragment.OnTaskContextSavedListener() {
-            public void onTaskContextSaved() {
-                // Set the Result to RESULT_OK to notify Main activity that there have been
-                // changes in the contexts and therefore it must update its user interface.
-                // This notification will happen when closing this activity and returning
-                // to Main activity.
-                EditTaskContextsActivity.this.setResult(EditTaskContextsActivity.this.RESULT_OK);
-
-                // Close the contextual action bar
-                if (EditTaskContextsActivity.this.actionMode != null) EditTaskContextsActivity.this.actionMode.finish();
-
-                // Update the list view
-                EditTaskContextsActivity.this.updateInterface();
-            }
-        };
-
-        deleteTaskContextListener = new DeleteTaskContextDialogFragment.OnDeleteListener() {
-            public void onDelete() {
-                // Set the Result to RESULT_OK to notify Main activity that there have been
-                // changes in the contexts and therefore it must update its user interface.
-                // This notification will happen when closing this activity and returning
-                // to Main activity.
-                EditTaskContextsActivity.this.setResult(EditTaskContextsActivity.this.RESULT_OK);
-
-                // Close the context action bar
-                if (EditTaskContextsActivity.this.actionMode != null) EditTaskContextsActivity.this.actionMode.finish();
-
-                // Update the list view
-                EditTaskContextsActivity.this.updateInterface();
-            }
-        };
-
         this.savedInstanceState = savedInstanceState;
-
-        if (savedInstanceState != null) {
-            EditTaskContextDialogFragment editTaskContextFragment = (EditTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("edit_task_context");
-            if (editTaskContextFragment != null) editTaskContextFragment.setOnTaskContextSavedListener(saveTaskContextListener);
-
-            DeleteTaskContextDialogFragment deleteFragment = (DeleteTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task_context");
-            if (deleteFragment != null) deleteFragment.setOnDeleteListener(deleteTaskContextListener);
-        }
-
+        interfaceReady = false;
         applicationLogic = new ApplicationLogic(this);
+
         updateInterface();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
+    }
+
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+
+        (LocalBroadcastManager.getInstance(this)).registerReceiver(appBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(this)).unregisterReceiver(appBroadcastReceiver);
+    }
+
+    private void closeActionBar() {
+        // Close the context action bar
+        if (actionMode != null) actionMode.finish();
     }
 
     private void createContextualActionBar() {
@@ -126,14 +116,13 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.edit_task_contexts_contextual_menu_edit:
-                        // Show an edition dialog.
+                        // Show an edition dialog
                         EditTaskContextDialogFragment editFragment = new EditTaskContextDialogFragment();
 
                         arguments = new Bundle();
                         arguments.putLong("context_id", (selectedContexts.get(0)).getId());
-                        editFragment.setArguments(arguments);
 
-                        editFragment.setOnTaskContextSavedListener(EditTaskContextsActivity.this.saveTaskContextListener);
+                        editFragment.setArguments(arguments);
                         editFragment.show(getFragmentManager(), "edit_task_context");
 
                         eventHandled = true;
@@ -153,9 +142,8 @@ public class EditTaskContextsActivity extends AppCompatActivity {
                         }
 
                         arguments.putLongArray("task_context_ids", selectedContextIds);
-                        deleteFragment.setArguments(arguments);
 
-                        deleteFragment.setOnDeleteListener(EditTaskContextsActivity.this.deleteTaskContextListener);
+                        deleteFragment.setArguments(arguments);
                         deleteFragment.show(getFragmentManager(), "delete_task_context");
 
                         eventHandled = true;
@@ -222,9 +210,8 @@ public class EditTaskContextsActivity extends AppCompatActivity {
 
         Bundle arguments = new Bundle();
         arguments.putLong("context_id", newContext.getId());
-        editFragment.setArguments(arguments);
 
-        editFragment.setOnTaskContextSavedListener(saveTaskContextListener);
+        editFragment.setArguments(arguments);
         editFragment.show(getFragmentManager(), "edit_task_context");
     }
 
@@ -237,7 +224,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     }
 
     private void updateTaskContextListInterface(List<TaskContext> contexts) {
-        if (contexts == null) contexts = new LinkedList<TaskContext>();
+        if (contexts == null) contexts = new LinkedList<>();
 
         TaskContextAdapter adapter = new TaskContextAdapter(this, R.layout.task_context_list_item, contexts);
         listView.setAdapter(adapter);
@@ -253,7 +240,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     }
 
     private List<Integer> getSelectedItems() {
-        List<Integer> selectedItems = new LinkedList<Integer>();
+        List<Integer> selectedItems = new LinkedList<>();
 
         SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
         int itemCount = listView.getCount();
@@ -269,7 +256,7 @@ public class EditTaskContextsActivity extends AppCompatActivity {
     }
 
     private List<TaskContext> getSelectedTaskContexts() {
-        List<TaskContext> selectedContexts = new LinkedList<TaskContext>();
+        List<TaskContext> selectedContexts = new LinkedList<>();
 
         TaskContextAdapter adapter = (TaskContextAdapter) listView.getAdapter();
         List<Integer> selectedItems = getSelectedItems();
@@ -280,6 +267,18 @@ public class EditTaskContextsActivity extends AppCompatActivity {
         }
 
         return selectedContexts;
+    }
+
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            EditTaskContextsActivity.this.closeActionBar();
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                EditTaskContextsActivity.this.updateInterface();
+            }
+        }
     }
 
     private class LoadTaskContextsDBTask extends AsyncTask<Void, Void, List<TaskContext>> {

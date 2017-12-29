@@ -26,16 +26,16 @@ public class TaskContextAdapter extends ArrayAdapter<TaskContext> {
 
     @Override
     public View getView(int position, View itemView, ViewGroup parentViewGroup)  {
-        TextView nameTextView = null;
-        TextView openTaskCountTextView = null;
-        TextView closedTaskCountTextView = null;
+        TextView nameTextView;
+        TextView openTaskCountTextView;
+        TextView closedTaskCountTextView;
 
         LayoutInflater inflater = activity.getLayoutInflater();
         itemView = inflater.inflate(resource, null);
 
-        nameTextView = (TextView) itemView.findViewById(R.id.task_context_list_item_name);
-        openTaskCountTextView = (TextView) itemView.findViewById(R.id.task_context_list_item_open);
-        closedTaskCountTextView = (TextView) itemView.findViewById(R.id.task_context_list_item_closed);
+        nameTextView = itemView.findViewById(R.id.task_context_list_item_name);
+        openTaskCountTextView = itemView.findViewById(R.id.task_context_list_item_open);
+        closedTaskCountTextView = itemView.findViewById(R.id.task_context_list_item_closed);
 
         ApplicationLogic applicationLogic = new ApplicationLogic(activity);
 

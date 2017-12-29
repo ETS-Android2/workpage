@@ -25,7 +25,7 @@ public class ColorPickerDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.color_picker, null);
 
-        GridLayout colorsGridLayout = (GridLayout) view.findViewById(R.id.color_picker_colors);
+        GridLayout colorsGridLayout = view.findViewById(R.id.color_picker_colors);
         int colorCount = colorsGridLayout.getChildCount();
 
         for (int i = 0; i < colorCount; i++) {
@@ -78,10 +78,10 @@ public class ColorPickerDialogFragment extends DialogFragment {
     }
 
     public interface OnColorSelectedListener {
-        public void onColorSelected(int color);
+        void onColorSelected(int color);
     }
 
     public interface OnNoColorSelectedListener {
-        public void onNoColorSelected();
+        void onNoColorSelected();
     }
 }

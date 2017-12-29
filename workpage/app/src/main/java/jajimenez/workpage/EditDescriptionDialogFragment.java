@@ -29,7 +29,7 @@ public class EditDescriptionDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_description, null);
 
-        descriptionEditText = (EditText) view.findViewById(R.id.edit_description_description);
+        descriptionEditText = view.findViewById(R.id.edit_description_description);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -63,7 +63,7 @@ public class EditDescriptionDialogFragment extends DialogFragment {
         onOkButtonClickedListener = listener;
     }
 
-    public static interface OnOkButtonClickedListener {
+    public interface OnOkButtonClickedListener {
         void onOkButtonClicked(String description);
     }
 }

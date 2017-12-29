@@ -17,14 +17,12 @@ import jajimenez.workpage.data.model.TaskContext;
 
 public class DeleteTaskContextDialogFragment extends DialogFragment {
     private Activity activity;
-    private OnDeleteListener onDeleteListener;
 
     private ApplicationLogic applicationLogic;
     private List<TaskContext> contexts;
 
     public DeleteTaskContextDialogFragment() {
-        onDeleteListener = null;
-        contexts = new LinkedList<TaskContext>();
+        contexts = new LinkedList<>();
     }
 
     @Override
@@ -35,7 +33,7 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
         long[] contextIds = (getArguments()).getLongArray("task_context_ids");
 
         if (contextIds != null) {
-            contexts = new LinkedList<TaskContext>();
+            contexts = new LinkedList<>();
 
             for (long id : contextIds) {
                 TaskContext context = applicationLogic.getTaskContext(id);
@@ -67,22 +65,9 @@ public class DeleteTaskContextDialogFragment extends DialogFragment {
 
                 String text = resources.getQuantityString(R.plurals.context_deleted, selectedContextCount, selectedContextCount);
                 Toast.makeText(DeleteTaskContextDialogFragment.this.activity, text, Toast.LENGTH_SHORT).show();
-
-                if (DeleteTaskContextDialogFragment.this.onDeleteListener != null) {
-                    DeleteTaskContextDialogFragment.this.onDeleteListener.onDelete();
-                }
-
             }
         });
 
         return builder.create();
-    }
-
-    public void setOnDeleteListener(OnDeleteListener listener) {
-        onDeleteListener = listener;
-    }
-
-    public static interface OnDeleteListener {
-        void onDelete();
     }
 }

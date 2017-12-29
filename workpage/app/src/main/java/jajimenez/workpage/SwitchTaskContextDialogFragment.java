@@ -16,14 +16,8 @@ import jajimenez.workpage.data.model.TaskContext;
 public class SwitchTaskContextDialogFragment extends DialogFragment {
     private Activity activity;
 
-    private OnTaskContextsChangedListener onTaskContextsChangedListener;
-
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
-
-    public SwitchTaskContextDialogFragment() {
-        onTaskContextsChangedListener = null;
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -37,7 +31,7 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
         final List<TaskContext> taskContexts = applicationLogic.getAllTaskContexts();
         int taskContextCount = taskContexts.size();
         String[] taskContextNames = new String[taskContextCount];
-        TaskContext t = null;
+        TaskContext t;
 
         for (int i = 0; i < taskContextCount; i++) {
             t = taskContexts.get(i);
@@ -50,9 +44,11 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
         builder.setTitle(R.string.switch_task_context);
         builder.setNeutralButton(R.string.edit_contexts, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                if (SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener != null) {
-                    SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener.onEditTaskContextsSelected();
-                }
+                Intent intent = new Intent(SwitchTaskContextDialogFragment.this.activity, EditTaskContextsActivity.class);
+                startActivity(intent);
+
+                // Close the dialog
+                SwitchTaskContextDialogFragment.this.dismiss();
             }
         });
 
@@ -64,26 +60,13 @@ public class SwitchTaskContextDialogFragment extends DialogFragment {
 
                 if (selectedTaskContext.getId() != SwitchTaskContextDialogFragment.this.currentTaskContext.getId()) { 
                     SwitchTaskContextDialogFragment.this.applicationLogic.setCurrentTaskContext(selectedTaskContext);
-
-                    if (SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener != null) {
-                        SwitchTaskContextDialogFragment.this.onTaskContextsChangedListener.onNewCurrentTaskContext();
-                    }
                 }
 
-                // Close the dialog.
+                // Close the dialog
                 SwitchTaskContextDialogFragment.this.dismiss();
             }
         });
 
         return builder.create();
-    }
-
-    public void setOnTaskContextsChangedListener(OnTaskContextsChangedListener listener) {
-        onTaskContextsChangedListener = listener;
-    }
-
-    public static interface OnTaskContextsChangedListener {
-        void onNewCurrentTaskContext();
-        void onEditTaskContextsSelected();
     }
 }

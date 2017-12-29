@@ -31,17 +31,17 @@ public class AdvancedColorPickerDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.advanced_color_picker, null);
 
-        selectedColorView = (ColorView) view.findViewById(R.id.advanced_color_picker_color);
+        selectedColorView = view.findViewById(R.id.advanced_color_picker_color);
 
         if (savedInstanceState != null) selectedColorView.setBackgroundColor(savedInstanceState.getInt("selected_color", 0xFFFFFFFF));
 
-        redEditText = (EditText) view.findViewById(R.id.advanced_color_picker_red);
-        greenEditText = (EditText) view.findViewById(R.id.advanced_color_picker_green);
-        blueEditText = (EditText) view.findViewById(R.id.advanced_color_picker_blue);
+        redEditText = view.findViewById(R.id.advanced_color_picker_red);
+        greenEditText = view.findViewById(R.id.advanced_color_picker_green);
+        blueEditText = view.findViewById(R.id.advanced_color_picker_blue);
 
         TextWatcher w = new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
+                // Nothing to do
             }
 
             public void afterTextChanged(Editable s) {
@@ -49,7 +49,7 @@ public class AdvancedColorPickerDialogFragment extends DialogFragment {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
+                // Nothing to do
             }
         };
 

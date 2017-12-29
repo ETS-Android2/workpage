@@ -17,14 +17,12 @@ import jajimenez.workpage.data.model.Task;
 
 public class DeleteTaskDialogFragment extends DialogFragment {
     private Activity activity;
-    private OnDeleteListener onDeleteListener;
 
     private ApplicationLogic applicationLogic;
     private List<Task> tasks;
 
     public DeleteTaskDialogFragment() {
-        onDeleteListener = null;
-        tasks = new LinkedList<Task>();
+        tasks = new LinkedList<>();
     }
 
     @Override
@@ -53,22 +51,9 @@ public class DeleteTaskDialogFragment extends DialogFragment {
 
                 String text = resources.getQuantityString(R.plurals.task_deleted, selectedTaskCount, selectedTaskCount);
                 Toast.makeText(DeleteTaskDialogFragment.this.activity, text, Toast.LENGTH_SHORT).show();
-
-                if (DeleteTaskDialogFragment.this.onDeleteListener != null) {
-                    DeleteTaskDialogFragment.this.onDeleteListener.onDelete();
-                }
-
             }
         });
 
         return builder.create();
-    }
-
-    public void setOnDeleteListener(OnDeleteListener listener) {
-        onDeleteListener = listener;
-    }
-
-    public static interface OnDeleteListener {
-        void onDelete();
     }
 }

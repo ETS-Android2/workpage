@@ -31,18 +31,12 @@ public class EditTaskTagDialogFragment extends DialogFragment {
     private EditText nameEditText;
     private Button positiveButton;
 
-    private OnTaskTagSavedListener onTaskTagSavedListener;
-
     private ColorPickerDialogFragment.OnColorSelectedListener colorSelectedListener;
     private ColorPickerDialogFragment.OnNoColorSelectedListener noColorSelectedListener;
 
     private ApplicationLogic applicationLogic;
     private TaskTag tag;
     private List<TaskTag> contextTags;
-
-    public EditTaskTagDialogFragment() {
-        onTaskTagSavedListener = null;
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -70,8 +64,8 @@ public class EditTaskTagDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_tag, null);
 
-        colorImageButton = (ImageButton) view.findViewById(R.id.edit_task_tag_color);
-        nameEditText = (EditText) view.findViewById(R.id.edit_task_tag_name);
+        colorImageButton = view.findViewById(R.id.edit_task_tag_color);
+        nameEditText = view.findViewById(R.id.edit_task_tag_name);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -89,10 +83,6 @@ public class EditTaskTagDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 EditTaskTagDialogFragment.this.applicationLogic.saveTaskTag(EditTaskTagDialogFragment.this.tag);
                 Toast.makeText(EditTaskTagDialogFragment.this.activity, R.string.tag_saved, Toast.LENGTH_SHORT).show();
-
-                if (EditTaskTagDialogFragment.this.onTaskTagSavedListener != null) {
-                    EditTaskTagDialogFragment.this.onTaskTagSavedListener.onTaskTagSaved();
-                }
             }
         });
 
@@ -127,19 +117,19 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
         nameEditText.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
+                // Nothing to do
             }
 
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
                 EditTaskTagDialogFragment.this.tag.setName(text);
 
-                // The buttons can be accessed only when the dialog is shown, but not on the dialog creation
+                // The buttons can be accessed only when the dialog is shown, but not on the dialog creation.
                 if (positiveButton != null) updateNameEditText();
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
+                // Nothing to do
             }
         });
 
@@ -194,13 +184,5 @@ public class EditTaskTagDialogFragment extends DialogFragment {
 
     private void updateNameEditText() {
         positiveButton.setEnabled((tag.getName()).length() > 0  && !contextTags.contains(tag));
-    }
-
-    public void setOnTaskTagSavedListener(OnTaskTagSavedListener listener) {
-        onTaskTagSavedListener = listener;
-    }
-
-    public static interface OnTaskTagSavedListener {
-        void onTaskTagSaved();
     }
 }

@@ -43,10 +43,10 @@ public class TimeZoneAdapter extends ArrayAdapter<TimeZone> {
         TimeZone timeZone = getItem(position);
         Country country = logic.getCountry(timeZone.getID());
 
-        TextView nameTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_name);
-        TextView nowTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_now);
-        ImageView dstImageView = (ImageView) itemView.findViewById(R.id.time_zone_list_item_dst);
-        TextView countryTextView = (TextView) itemView.findViewById(R.id.time_zone_list_item_country);
+        TextView nameTextView = itemView.findViewById(R.id.time_zone_list_item_name);
+        TextView nowTextView = itemView.findViewById(R.id.time_zone_list_item_now);
+        ImageView dstImageView = itemView.findViewById(R.id.time_zone_list_item_dst);
+        TextView countryTextView = itemView.findViewById(R.id.time_zone_list_item_country);
 
         TextTool tool = new TextTool();
         Calendar now = Calendar.getInstance(timeZone);

@@ -4,7 +4,11 @@ import java.util.List;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -58,8 +62,8 @@ public class TaskActivity extends AppCompatActivity {
     // Description
     private TextView descriptionTextView;
 
-    private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
-    private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
+    // Broadcast receiver
+    private AppBroadcastReceiver appBroadcastReceiver;
 
     private long currentTaskId;
     private Task currentTask;
@@ -69,66 +73,38 @@ public class TaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task);
 
-        titleTextView = (TextView) findViewById(R.id.task_title);
-        tagsTextView = (TextView) findViewById(R.id.task_tags);
+        titleTextView = findViewById(R.id.task_title);
+        tagsTextView = findViewById(R.id.task_tags);
         datesDivider = findViewById(R.id.task_dates_divider);
 
         // Single
-        singleInformation = (LinearLayout) findViewById(R.id.task_single_information);
-        singleValueTextView = (TextView) findViewById(R.id.task_single_value);
-        singleTimeZoneTextView = (TextView) findViewById(R.id.task_single_time_zone);
-        singleDstImageView = (ImageView) findViewById(R.id.task_single_dst);
+        singleInformation = findViewById(R.id.task_single_information);
+        singleValueTextView = findViewById(R.id.task_single_value);
+        singleTimeZoneTextView = findViewById(R.id.task_single_time_zone);
+        singleDstImageView = findViewById(R.id.task_single_dst);
 
         // Start/End Dates
-        datesTableLayout = (TableLayout) findViewById(R.id.task_dates);
+        datesTableLayout = findViewById(R.id.task_dates);
 
         // Date 1
-        date1TitleTextView = (TextView) findViewById(R.id.task_date1_title);
-        date1ValueTextView = (TextView) findViewById(R.id.task_date1_value);
-        date1TimeZoneTextView = (TextView) findViewById(R.id.task_date1_time_zone);
-        date1DstImageView = (ImageView) findViewById(R.id.task_date1_dst);
+        date1TitleTextView = findViewById(R.id.task_date1_title);
+        date1ValueTextView = findViewById(R.id.task_date1_value);
+        date1TimeZoneTextView = findViewById(R.id.task_date1_time_zone);
+        date1DstImageView = findViewById(R.id.task_date1_dst);
 
         // Date 2
-        date2TableRow1 = (TableRow) findViewById(R.id.task_date2_row_1);
+        date2TableRow1 = findViewById(R.id.task_date2_row_1);
 
-        date2TitleTextView = (TextView) findViewById(R.id.task_date2_title);
-        date2ValueTextView = (TextView) findViewById(R.id.task_date2_value);
+        date2TitleTextView = findViewById(R.id.task_date2_title);
+        date2ValueTextView = findViewById(R.id.task_date2_value);
 
-        date2TableRow2 = (TableRow) findViewById(R.id.task_date2_row_2);
+        date2TableRow2 = findViewById(R.id.task_date2_row_2);
 
-        date2TimeZoneTextView = (TextView) findViewById(R.id.task_date2_time_zone);
-        date2DstImageView = (ImageView) findViewById(R.id.task_date2_dst);
+        date2TimeZoneTextView = findViewById(R.id.task_date2_time_zone);
+        date2DstImageView = findViewById(R.id.task_date2_dst);
 
         // Description
-        descriptionTextView = (TextView) findViewById(R.id.task_description);
-
-        taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
-            public void onItemClick() {
-                // Set the result as OK for making Main Activity update its interface
-                setResult(RESULT_OK);
-
-                // Update the list view.
-                TaskActivity.this.updateInterface();
-            }
-        };
-
-        deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
-            public void onDelete() {
-                // Set the result as OK for making Main Activity update its interface
-                setResult(RESULT_OK);
-
-                // Close the activity.
-                TaskActivity.this.finish();
-            }
-        };
-
-        if (savedInstanceState != null) {
-            ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
-            if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
-
-            DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
-            if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
-        }
+        descriptionTextView = findViewById(R.id.task_description);
 
         // Load task data
         Intent intent = getIntent();
@@ -136,6 +112,28 @@ public class TaskActivity extends AppCompatActivity {
         currentTask = null;
 
         updateInterface();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
+    }
+
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+
+        (LocalBroadcastManager.getInstance(this)).registerReceiver(appBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(this)).unregisterReceiver(appBroadcastReceiver);
     }
 
     @Override
@@ -157,14 +155,6 @@ public class TaskActivity extends AppCompatActivity {
         deleteItemIcon.setAlpha(255);
 
         return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ApplicationLogic.CHANGE_TASKS && resultCode == RESULT_OK) {
-            setResult(RESULT_OK);
-            updateInterface();
-        }
     }
 
     private void updateInterface() {
@@ -284,7 +274,7 @@ public class TaskActivity extends AppCompatActivity {
     // Returns "true" if this callback handled the event
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean eventHandled = false;
+        boolean eventHandled;
         Bundle arguments;
         long[] taskIds;
         int id = item.getItemId();
@@ -299,7 +289,6 @@ public class TaskActivity extends AppCompatActivity {
                 arguments.putLongArray("task_ids", taskIds);
 
                 statusFragment.setArguments(arguments);
-                statusFragment.setOnItemClickListener(TaskActivity.this.taskStatusChangeListener);
                 statusFragment.show(getFragmentManager(), "change_task_status");
 
                 eventHandled = true;
@@ -313,8 +302,7 @@ public class TaskActivity extends AppCompatActivity {
                 intent.putExtra("mode", "edit");
                 intent.putExtra("task_id", currentTaskId);
 
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-
+                startActivity(intent);
                 eventHandled = true;
                 break;
 
@@ -328,7 +316,6 @@ public class TaskActivity extends AppCompatActivity {
                 arguments.putLongArray("task_ids", taskIds);
 
                 deleteFragment.setArguments(arguments);
-                deleteFragment.setOnDeleteListener(TaskActivity.this.deleteTaskListener);
                 deleteFragment.show(getFragmentManager(), "delete_task");
 
                 eventHandled = true;
@@ -340,5 +327,16 @@ public class TaskActivity extends AppCompatActivity {
         }
 
         return eventHandled;
+    }
+
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                TaskActivity.this.updateInterface();
+            }
+        }
     }
 }

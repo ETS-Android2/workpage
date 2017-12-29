@@ -11,13 +11,7 @@ import jajimenez.workpage.logic.ApplicationLogic;
 
 public class SwitchInterfaceModeDialogFragment extends DialogFragment {
     private ApplicationLogic applicationLogic;
-
-    private OnInterfaceModeChangedListener onInterfaceModeChangedListener;
     private int currentMode;
-
-    public SwitchInterfaceModeDialogFragment() {
-        onInterfaceModeChangedListener = null;
-    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -45,30 +39,18 @@ public class SwitchInterfaceModeDialogFragment extends DialogFragment {
         builder.setNegativeButton(R.string.cancel, null);
         builder.setSingleChoiceItems(modeNames, selectedItem, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                // "which" is the index position of the selected item.
+                // "which" is the index position of the selected item
                 int selectedMode = modeValues[which];
 
                 if (selectedMode != SwitchInterfaceModeDialogFragment.this.currentMode) {
                     SwitchInterfaceModeDialogFragment.this.applicationLogic.setInterfaceMode(selectedMode);
-
-                    if (SwitchInterfaceModeDialogFragment.this.onInterfaceModeChangedListener != null) {
-                        SwitchInterfaceModeDialogFragment.this.onInterfaceModeChangedListener.onModeChanged();
-                    }
                 }
 
-                // Close the dialog.
+                // Close the dialog
                 SwitchInterfaceModeDialogFragment.this.dismiss();
             }
         });
 
         return builder.create();
-    }
-
-    public void setOnInterfaceModeChangedListener(OnInterfaceModeChangedListener listener) {
-        onInterfaceModeChangedListener = listener;
-    }
-
-    public interface OnInterfaceModeChangedListener {
-        void onModeChanged();
     }
 }

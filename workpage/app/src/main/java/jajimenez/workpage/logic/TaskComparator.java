@@ -27,8 +27,8 @@ public class TaskComparator implements Comparator<Task> {
             tool.clearTimeFields(tomorrow);             // Clear all the time fields, setting them to 0.
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);     // Now, "tomorrow" is actually tomorrow's time.
 
-            Calendar aCal = null;
-            Calendar bCal = null;
+            Calendar aCal;
+            Calendar bCal;
 
             // See "task_comparator.ods" file in the project documentation.
 

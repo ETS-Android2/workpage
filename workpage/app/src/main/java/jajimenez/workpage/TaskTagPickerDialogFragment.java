@@ -48,9 +48,9 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.task_tag_picker, null);
 
-        addTagAutoTextView = (AutoCompleteTextView) view.findViewById(R.id.task_tag_picker_add_tag_autotextview);
-        addTagButton = (ImageButton) view.findViewById(R.id.task_tag_picker_add_tag_button);
-        addedTagsLinearLayout = (LinearLayout) view.findViewById(R.id.task_tag_picker_added_tags);
+        addTagAutoTextView = view.findViewById(R.id.task_tag_picker_add_tag_autotextview);
+        addTagButton = view.findViewById(R.id.task_tag_picker_add_tag_button);
+        addedTagsLinearLayout = view.findViewById(R.id.task_tag_picker_added_tags);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -68,7 +68,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
 
         addTagAutoTextView.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
+                // Nothing to do
             }
 
             public void afterTextChanged(Editable s) {
@@ -76,7 +76,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
+                // Nothing to do
             }
         });
 
@@ -135,7 +135,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
     }
 
     private List<TaskTag> getTags(String[] tagNames) {
-        LinkedList<TaskTag> tags = new LinkedList<TaskTag>();
+        LinkedList<TaskTag> tags = new LinkedList<>();
 
         if (tagNames != null) {
             for (String name : tagNames) {
@@ -157,10 +157,10 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
     }
 
     private void setTagCompletionSuggestions() {
-        List<TaskTag> suggestedTags = new LinkedList<TaskTag>(contextTags);
+        List<TaskTag> suggestedTags = new LinkedList<>(contextTags);
         suggestedTags.removeAll(selectedTags);
 
-        ArrayAdapter<TaskTag> adapter = new ArrayAdapter<TaskTag>(activity, android.R.layout.simple_dropdown_item_1line, suggestedTags);
+        ArrayAdapter<TaskTag> adapter = new ArrayAdapter<>(activity, android.R.layout.simple_dropdown_item_1line, suggestedTags);
         addTagAutoTextView.setAdapter(adapter);
     }
 
@@ -168,11 +168,6 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
         addedTagsLinearLayout.removeAllViews();
 
         for (final TaskTag tag : selectedTags) {
-            // Remove the new tag from the suggestions (if the tag already existed). This is by removing it
-            // from the "suggestedTags" object, as that object is the source for the sugestions adapter.
-            //final ArrayAdapter<TaskTag> suggestedTagsAdapter = (ArrayAdapter<TaskTag>) addTagAutoTextView.getAdapter();
-            //suggestedTagsAdapter.remove(tag);
-
             final TaskTagView tagView = new TaskTagView(activity);
             tagView.setText(tag.getName());
 
@@ -223,7 +218,7 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
         onTaskTagsSelectedListener = listener;
     }
 
-    public static interface OnTaskTagsSelectedListener {
+    public interface OnTaskTagsSelectedListener {
         void onTaskTagsSelected(List<TaskTag> tags);
     }
 }

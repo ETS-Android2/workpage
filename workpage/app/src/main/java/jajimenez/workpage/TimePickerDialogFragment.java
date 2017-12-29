@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.widget.TimePicker;
-import android.app.TimePickerDialog;
 
 public class TimePickerDialogFragment extends DialogFragment {
     private OnTimeSetListener timeSetListener;
@@ -68,11 +67,11 @@ public class TimePickerDialogFragment extends DialogFragment {
         noTimeSetListener = listener;
     }
 
-    public static interface OnTimeSetListener {
+    public interface OnTimeSetListener {
         void onTimeSet(int hour, int minute);
     }
 
-    public static interface OnNoTimeSetListener {
+    public interface OnNoTimeSetListener {
         void onNoTimeSet();
     }
 }

@@ -1,10 +1,14 @@
 package jajimenez.workpage;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -37,11 +41,11 @@ public class MainActivity extends AppCompatActivity
 
     private boolean interfaceReady;
 
-    private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
-    private SwitchInterfaceModeDialogFragment.OnInterfaceModeChangedListener switchInterfaceModeListener;
+    // Broadcast receiver
+    private AppBroadcastReceiver appBroadcastReceiver;
+
+    // Listeners
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
-    private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
-    private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
 
     private LoadTasksDBTask tasksDbTask = null;
 
@@ -97,68 +101,44 @@ public class MainActivity extends AppCompatActivity
         // User interface
         interfaceReady = false;
         updateInterface();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
     }
 
     private void setDialogListeners() {
-        switchTaskContextListener = new SwitchTaskContextDialogFragment.OnTaskContextsChangedListener() {
-            public void onNewCurrentTaskContext() {
-                MainActivity.this.calendarFragment.setCurrentMonth();
-                MainActivity.this.updateInterface();
-            }
-
-            public void onEditTaskContextsSelected() {
-                Intent intent = new Intent(MainActivity.this, EditTaskContextsActivity.class);
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_CONTEXTS);
-            }
-        };
-
-        switchInterfaceModeListener = new SwitchInterfaceModeDialogFragment.OnInterfaceModeChangedListener() {
-            @Override
-            public void onModeChanged() {
-                MainActivity.this.updateInterface();
-            }
-        };
-
         onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
             public void onConfirmation(Uri input) {
                 (new ImportDataTask()).execute(input);
             }
         };
+    }
 
-        taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
-            public void onItemClick() {
-                MainActivity.this.closeActionBar();
-            }
-        };
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
 
-        deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
-            public void onDelete() {
-                MainActivity.this.closeActionBar();
-            }
-        };
+        (LocalBroadcastManager.getInstance(this)).registerReceiver(appBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(this)).unregisterReceiver(appBroadcastReceiver);
     }
 
     private void closeActionBar() {
         // Close the context action bar
         if (actionMode != null) actionMode.finish();
-
-        // Update the task view
-        updateInterface();
     }
 
     private void resetDialogListeners() {
-        SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
-        if (switchTaskContextFragment != null) switchTaskContextFragment.setOnTaskContextsChangedListener(switchTaskContextListener);
-
-        SwitchInterfaceModeDialogFragment switchInterfaceModeFragment = (SwitchInterfaceModeDialogFragment) (getFragmentManager()).findFragmentByTag("switch_interface_mode");
-        if (switchInterfaceModeFragment != null) switchInterfaceModeFragment.setOnInterfaceModeChangedListener(switchInterfaceModeListener);
-
-        ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
-        if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
-
-        DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
-        if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
-
         DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
         if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
     }
@@ -171,7 +151,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+        // Handle navigation view item clicks here
         if (!interfaceReady) return true;
 
         int id = item.getItemId();
@@ -180,20 +160,18 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.main_nav_context:
                 SwitchTaskContextDialogFragment fragment = new SwitchTaskContextDialogFragment();
-                fragment.setOnTaskContextsChangedListener(switchTaskContextListener);
                 fragment.show(getFragmentManager(), "switch_task_context");
                 break;
             case R.id.main_nav_view:
                 intent = new Intent(this, ViewActivity.class);
-                startActivityForResult(intent, ApplicationLogic.CHANGE_VIEW);
+                startActivity(intent);
                 break;
             case R.id.main_nav_edit_tags:
                 intent = new Intent(this, EditTaskTagsActivity.class);
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_TAGS);
+                startActivity(intent);
                 break;
             case R.id.main_nav_interface_mode:
                 SwitchInterfaceModeDialogFragment interfaceModeFragment = new SwitchInterfaceModeDialogFragment();
-                interfaceModeFragment.setOnInterfaceModeChangedListener(switchInterfaceModeListener);
                 interfaceModeFragment.show(getFragmentManager(), "switch_interface_mode");
                 break;
             case R.id.main_nav_export_data:
@@ -228,14 +206,7 @@ public class MainActivity extends AppCompatActivity
         Bundle arguments;
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == ApplicationLogic.CHANGE_TASKS
-                    || requestCode == ApplicationLogic.CHANGE_TASK_TAGS
-                    || requestCode == ApplicationLogic.CHANGE_VIEW
-                    || requestCode == ApplicationLogic.CHANGE_TASK_CONTEXTS) {
-
-                updateInterface();
-            }
-            else if (requestCode == ApplicationLogic.EXPORT_DATA) {
+            if (requestCode == ApplicationLogic.EXPORT_DATA) {
                 // Export data
                 Uri output = resultData.getData();
                 (new ExportDataTask()).execute(output);
@@ -267,17 +238,19 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("mode", "new");
         intent.putExtra("task_context_id", currentTaskContext.getId());
 
-        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
+        startActivity(intent);
     }
 
     public void enableInterface() {
         listFragment.setEnabled(true);
+        calendarFragment.setEnabled(true);
         interfaceReady = true;
     }
 
     public void disableInterface() {
         interfaceReady = false;
         listFragment.setEnabled(false);
+        calendarFragment.setEnabled(false);
     }
 
     public void updateInterface() {
@@ -291,9 +264,16 @@ public class MainActivity extends AppCompatActivity
         viewStateFilter = this.applicationLogic.getViewStateFilter();
         String stateFilterText;
 
-        if (viewStateFilter.equals("open")) stateFilterText = getString(R.string.open_2);
-        else if (viewStateFilter.equals("doable_today")) stateFilterText = getString(R.string.doable_today_2);
-        else stateFilterText = getString(R.string.closed_2);
+        switch (viewStateFilter) {
+            case "open":
+                stateFilterText = getString(R.string.open_2);
+                break;
+            case "doable_today":
+                stateFilterText = getString(R.string.doable_today_2);
+                break;
+            default:
+                stateFilterText = getString(R.string.closed_2);
+        }
 
         // Information about the current filter tags.
         includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
@@ -355,7 +335,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, TaskActivity.class);
         intent.putExtra("task_id", task.getId());
 
-        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
+        startActivity(intent);
     }
 
     @Override
@@ -372,9 +352,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         arguments.putLongArray("task_ids", taskIds);
-        statusFragment.setArguments(arguments);
 
-        statusFragment.setOnItemClickListener(taskStatusChangeListener);
+        statusFragment.setArguments(arguments);
         statusFragment.show(getFragmentManager(), "change_task_status");
     }
 
@@ -386,7 +365,7 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("mode", "edit");
         intent.putExtra("task_id", taskId);
 
-        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
+        startActivity(intent);
     }
 
     @Override
@@ -403,10 +382,21 @@ public class MainActivity extends AppCompatActivity
         }
 
         arguments.putLongArray("task_ids", taskIds);
-        deleteFragment.setArguments(arguments);
 
-        deleteFragment.setOnDeleteListener(deleteTaskListener);
+        deleteFragment.setArguments(arguments);
         deleteFragment.show(getFragmentManager(), "delete_task");
+    }
+
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MainActivity.this.closeActionBar();
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                MainActivity.this.updateInterface();
+            }
+        }
     }
 
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
@@ -417,20 +407,21 @@ public class MainActivity extends AppCompatActivity
         protected List<Task> doInBackground(Void... parameters) {
             List<Task> tasks = null;
 
-            if (viewStateFilter.equals("open")) {
-                tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
-                    MainActivity.this.includeTasksWithNoTag,
-                    MainActivity.this.currentFilterTags);
-            }
-            else if (viewStateFilter.equals("doable_today")) {
-                tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
-                    MainActivity.this.includeTasksWithNoTag,
-                    MainActivity.this.currentFilterTags);
-            }
-            else if (viewStateFilter.equals("closed")) {
-                tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
-                    MainActivity.this.includeTasksWithNoTag,
-                    MainActivity.this.currentFilterTags);
+            switch (viewStateFilter) {
+                case "open":
+                    tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
+                                MainActivity.this.includeTasksWithNoTag,
+                                MainActivity.this.currentFilterTags);
+                    break;
+                case "doable_today":
+                    tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
+                                MainActivity.this.includeTasksWithNoTag,
+                                MainActivity.this.currentFilterTags);
+                    break;
+                default:
+                    tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
+                                MainActivity.this.includeTasksWithNoTag,
+                                MainActivity.this.currentFilterTags);
             }
 
             return tasks;
@@ -450,11 +441,9 @@ public class MainActivity extends AppCompatActivity
         protected Boolean doInBackground(Uri... parameters) {
             Uri output = parameters[0];
 
-            // "result" will be "false" if the operation was
-            // successful or "true" if there was any error.
-            boolean result = MainActivity.this.applicationLogic.exportData(output);
-
-            return result;
+            // The returned value will be "false" if the operation
+            // was successful or "true" if there was any error.
+            return MainActivity.this.applicationLogic.exportData(output);
         }
 
         protected void onPostExecute(Boolean result) {
@@ -476,9 +465,7 @@ public class MainActivity extends AppCompatActivity
 
         protected Integer doInBackground(Uri... parameters) {
             Uri input = parameters[0];
-            int result = MainActivity.this.applicationLogic.importData(input);
-
-            return result;
+            return MainActivity.this.applicationLogic.importData(input); // Return result
         }
 
         protected void onPostExecute(Integer result) {
@@ -502,8 +489,6 @@ public class MainActivity extends AppCompatActivity
                     (Toast.makeText(MainActivity.this, R.string.import_error_importing_data, Toast.LENGTH_SHORT)).show();
                     break;
             }
-
-            MainActivity.this.updateInterface();
         }
     }
 }

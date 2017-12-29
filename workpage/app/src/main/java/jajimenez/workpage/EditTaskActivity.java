@@ -99,27 +99,27 @@ public class EditTaskActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
 
-        title = (EditText) findViewById(R.id.edit_task_title);
-        dateMode = (Button) findViewById(R.id.edit_task_date_mode);
+        title = findViewById(R.id.edit_task_title);
+        dateMode = findViewById(R.id.edit_task_date_mode);
 
-        dateMode1 = (TextView) findViewById(R.id.edit_task_date_mode_1);
-        tableDate1 = (TableLayout) findViewById(R.id.edit_task_table_date_1);
-        date1 = (Button) findViewById(R.id.edit_task_date_1);
-        time1 = (Button) findViewById(R.id.edit_task_time_1);
-        timeZoneRow1 = (TableRow) findViewById(R.id.edit_task_row_time_zone_1);
-        timeZone1 = (Button) findViewById(R.id.edit_task_time_zone_1);
-        reminderRow1 = (TableRow) findViewById(R.id.edit_task_row_reminder_1);
-        reminder1 = (Button) findViewById(R.id.edit_task_reminder_1);
+        dateMode1 = findViewById(R.id.edit_task_date_mode_1);
+        tableDate1 = findViewById(R.id.edit_task_table_date_1);
+        date1 = findViewById(R.id.edit_task_date_1);
+        time1 = findViewById(R.id.edit_task_time_1);
+        timeZoneRow1 = findViewById(R.id.edit_task_row_time_zone_1);
+        timeZone1 = findViewById(R.id.edit_task_time_zone_1);
+        reminderRow1 = findViewById(R.id.edit_task_row_reminder_1);
+        reminder1 = findViewById(R.id.edit_task_reminder_1);
         divider1 = findViewById(R.id.edit_task_date_divider_1);
 
-        dateMode2 = (TextView) findViewById(R.id.edit_task_date_mode_2);
-        tableDate2 = (TableLayout) findViewById(R.id.edit_task_table_date_2);
-        date2 = (Button) findViewById(R.id.edit_task_date_2);
-        time2 = (Button) findViewById(R.id.edit_task_time_2);
-        timeZoneRow2 = (TableRow) findViewById(R.id.edit_task_row_time_zone_2);
-        timeZone2 = (Button) findViewById(R.id.edit_task_time_zone_2);
-        reminderRow2 = (TableRow) findViewById(R.id.edit_task_row_reminder_2);
-        reminder2 = (Button) findViewById(R.id.edit_task_reminder_2);
+        dateMode2 = findViewById(R.id.edit_task_date_mode_2);
+        tableDate2 = findViewById(R.id.edit_task_table_date_2);
+        date2 = findViewById(R.id.edit_task_date_2);
+        time2 = findViewById(R.id.edit_task_time_2);
+        timeZoneRow2 = findViewById(R.id.edit_task_row_time_zone_2);
+        timeZone2 = findViewById(R.id.edit_task_time_zone_2);
+        reminderRow2 = findViewById(R.id.edit_task_row_reminder_2);
+        reminder2 = findViewById(R.id.edit_task_reminder_2);
         divider2 = findViewById(R.id.edit_task_date_divider_2);
 
         title.addTextChangedListener(new TextWatcher() {
@@ -538,7 +538,7 @@ public class EditTaskActivity extends AppCompatActivity {
             }
 
             String[] tagNames = savedInstanceState.getStringArray("task_tags");
-            LinkedList<TaskTag> tags = new LinkedList<TaskTag>();
+            LinkedList<TaskTag> tags = new LinkedList<>();
 
             if (tagNames != null) {
                 for (String name : tagNames) {
@@ -803,7 +803,7 @@ public class EditTaskActivity extends AppCompatActivity {
             // Save Current Task
             applicationLogic.saveTask(currentTask);
             (Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT)).show();
-            setResult(RESULT_OK);
+            // setResult(RESULT_OK);
 
             // Close the activity
             finish();

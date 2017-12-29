@@ -17,14 +17,12 @@ import jajimenez.workpage.data.model.TaskTag;
 
 public class DeleteTaskTagDialogFragment extends DialogFragment {
     private Activity activity;
-    private OnDeleteListener onDeleteListener;
 
     private ApplicationLogic applicationLogic;
     private List<TaskTag> tags;
 
     public DeleteTaskTagDialogFragment() {
-        onDeleteListener = null;
-        tags = new LinkedList<TaskTag>();
+        tags = new LinkedList<>();
     }
 
     @Override
@@ -54,22 +52,9 @@ public class DeleteTaskTagDialogFragment extends DialogFragment {
 
                 String text = resources.getQuantityString(R.plurals.tag_deleted, selectedTagCount, selectedTagCount);
                 Toast.makeText(DeleteTaskTagDialogFragment.this.activity, text, Toast.LENGTH_SHORT).show();
-
-                if (DeleteTaskTagDialogFragment.this.onDeleteListener != null) {
-                    DeleteTaskTagDialogFragment.this.onDeleteListener.onDelete();
-                }
-
             }
         });
 
         return builder.create();
-    }
-
-    public void setOnDeleteListener(OnDeleteListener listener) {
-        onDeleteListener = listener;
-    }
-
-    public static interface OnDeleteListener {
-        void onDelete();
     }
 }

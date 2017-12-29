@@ -44,11 +44,9 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
         if (currentYear < minYear) currentYear = minYear;
         else if (currentYear > maxYear) currentYear = maxYear;
 
-        // Item index for the current month
         int yearIndex = currentYear - minYear;
-        int monthIndex = (yearIndex * 12) + currentMonth;
 
-        return monthIndex;
+        return (yearIndex * 12) + currentMonth; // Item index for the current month
     }
 
     private void updateInterface() {
