@@ -1,6 +1,8 @@
 0.10.0 (development)
 --------------------
+* Feature added: Calendar mode.
 * User interface bug fix.
+* Data export suggested file name fix.
 
 0.9.1 (10 Dec 2017)
 -------------------
