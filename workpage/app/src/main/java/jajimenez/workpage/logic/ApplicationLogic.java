@@ -437,7 +437,7 @@ public class ApplicationLogic {
 
         String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1); // The Month value is zero based
         if (month.length() == 1) month = "0" + month;
 
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
