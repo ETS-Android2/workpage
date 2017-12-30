@@ -405,7 +405,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         protected List<Task> doInBackground(Void... parameters) {
-            List<Task> tasks = null;
+            List<Task> tasks;
 
             switch (viewStateFilter) {
                 case "open":

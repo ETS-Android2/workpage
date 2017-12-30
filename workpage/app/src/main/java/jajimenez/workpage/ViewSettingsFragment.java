@@ -2,7 +2,6 @@ package jajimenez.workpage;
 
 import java.util.List;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.app.Activity;
 import android.preference.PreferenceFragment;
@@ -15,7 +14,7 @@ import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 
-public class ViewSettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ViewSettingsFragment extends PreferenceFragment {
     private Activity activity;
     private PreferenceGroup stateFilterPref;
     private ListPreference statePref;
@@ -60,22 +59,14 @@ public class ViewSettingsFragment extends PreferenceFragment implements SharedPr
         addNoTagPreference();
         addTagPreferences();
         updateAllPref(null, false);
-
-        registerChangeListener();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterChangeListener();
-    }
 
-    private void registerChangeListener() {
-        ((getPreferenceManager()).getSharedPreferences()).registerOnSharedPreferenceChangeListener(this);
-    }
-
-    private void unregisterChangeListener() {
-        ((getPreferenceManager()).getSharedPreferences()).unregisterOnSharedPreferenceChangeListener(this);
+        ApplicationLogic logic = new ApplicationLogic(getActivity());
+        logic.notifyDataChange();
     }
 
     private void addStatePreference() {
@@ -168,11 +159,5 @@ public class ViewSettingsFragment extends PreferenceFragment implements SharedPr
         }
 
         allPref.setChecked(checked);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        ApplicationLogic logic = new ApplicationLogic(getActivity());
-        logic.notifyDataChange();
     }
 }
