@@ -16,12 +16,6 @@ import jajimenez.workpage.data.model.Task;
 public class TaskCalendarFragment extends Fragment implements TaskContainerFragment {
     private ViewPager pager;
 
-    // private List<Task> tasks;
-
-    public TaskCalendarFragment() {
-        // tasks = new LinkedList<>();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.task_calendar, container, false);
@@ -33,7 +27,7 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
         return view;
     }
 
-    private int getCurrentMonthIndex() {
+    public void setCurrentMonth() {
         int minYear = MonthFragment.MIN_YEAR; // Month 0 (January) of this year is the pager's item no. 0
         int maxYear = MonthFragment.MAX_YEAR;
 
@@ -45,15 +39,9 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
         else if (currentYear > maxYear) currentYear = maxYear;
 
         int yearIndex = currentYear - minYear;
+        int monthIndex = (yearIndex * 12) + currentMonth; // Item index for the current month
 
-        return (yearIndex * 12) + currentMonth; // Item index for the current month
-    }
-
-    private void updateInterface() {
-    }
-
-    public void setCurrentMonth() {
-        pager.setCurrentItem(getCurrentMonthIndex());
+        pager.setCurrentItem(monthIndex);
     }
 
     @Override
@@ -62,18 +50,5 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
         if (visible) root.setVisibility(View.VISIBLE);
         else root.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        pager.setEnabled(enabled);
-    }
-
-    @Override
-    public void setTasks(List<Task> tasks) {
-        // if (tasks == null) tasks = new LinkedList<>();
-
-        // this.tasks = tasks;
-        updateInterface();
     }
 }

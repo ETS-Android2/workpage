@@ -39,15 +39,11 @@ public class MainActivity extends AppCompatActivity
     private TaskListFragment listFragment;
     private TaskCalendarFragment calendarFragment;
 
-    private boolean interfaceReady;
-
     // Broadcast receiver
     private AppBroadcastReceiver appBroadcastReceiver;
 
     // Listeners
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
-
-    private LoadTasksDBTask tasksDbTask = null;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
@@ -99,7 +95,6 @@ public class MainActivity extends AppCompatActivity
         applicationLogic.updateAllOpenTaskReminderAlarms(false);
 
         // User interface
-        interfaceReady = false;
         updateInterface();
 
         // Broadcast receiver
@@ -152,8 +147,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here
-        if (!interfaceReady) return true;
-
         int id = item.getItemId();
         Intent intent;
 
@@ -228,8 +221,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onAddClicked(View view) {
-        if (!interfaceReady) return;
-
         // Close the context action bar
         if (actionMode != null) actionMode.finish();
 
@@ -239,18 +230,6 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("task_context_id", currentTaskContext.getId());
 
         startActivity(intent);
-    }
-
-    public void enableInterface() {
-        listFragment.setEnabled(true);
-        calendarFragment.setEnabled(true);
-        interfaceReady = true;
-    }
-
-    public void disableInterface() {
-        interfaceReady = false;
-        listFragment.setEnabled(false);
-        calendarFragment.setEnabled(false);
     }
 
     public void updateInterface() {
@@ -311,12 +290,6 @@ public class MainActivity extends AppCompatActivity
             listFragment.setVisible(true);
             calendarFragment.setVisible(false);
             calendarFragment.setCurrentMonth();
-        }
-
-        // Get the tasks
-        if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
-            tasksDbTask = new LoadTasksDBTask();
-            tasksDbTask.execute();
         }
     }
 
@@ -399,43 +372,43 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
-        protected void onPreExecute() {
-            MainActivity.this.disableInterface();
-        }
-
-        protected List<Task> doInBackground(Void... parameters) {
-            List<Task> tasks;
-
-            switch (viewStateFilter) {
-                case "open":
-                    tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
-                                MainActivity.this.includeTasksWithNoTag,
-                                MainActivity.this.currentFilterTags);
-                    break;
-                case "doable_today":
-                    tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
-                                MainActivity.this.includeTasksWithNoTag,
-                                MainActivity.this.currentFilterTags);
-                    break;
-                default:
-                    tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
-                                MainActivity.this.includeTasksWithNoTag,
-                                MainActivity.this.currentFilterTags);
-            }
-
-            return tasks;
-        }
-
-        protected void onPostExecute(List<Task> tasks) {
-            MainActivity.this.listFragment.setTasks(tasks);
-            MainActivity.this.enableInterface();
-        }
-    }
+    // private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+    //     protected void onPreExecute() {
+    //         MainActivity.this.disableInterface();
+    //     }
+    //
+    //     protected List<Task> doInBackground(Void... parameters) {
+    //         List<Task> tasks;
+    //
+    //         switch (viewStateFilter) {
+    //             case "open":
+    //                 tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
+    //                             MainActivity.this.includeTasksWithNoTag,
+    //                             MainActivity.this.currentFilterTags);
+    //                 break;
+    //             case "doable_today":
+    //                 tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
+    //                             MainActivity.this.includeTasksWithNoTag,
+    //                             MainActivity.this.currentFilterTags);
+    //                 break;
+    //             default:
+    //                 tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
+    //                             MainActivity.this.includeTasksWithNoTag,
+    //                             MainActivity.this.currentFilterTags);
+    //         }
+    //
+    //         return tasks;
+    //     }
+    //
+    //     protected void onPostExecute(List<Task> tasks) {
+    //         MainActivity.this.listFragment.setTasks(tasks);
+    //         MainActivity.this.enableInterface();
+    //     }
+    // }
 
     private class ExportDataTask extends AsyncTask<Uri, Void, Boolean> {
         protected void onPreExecute() {
-            MainActivity.this.disableInterface();
+            // Nothing to do
         }
 
         protected Boolean doInBackground(Uri... parameters) {
@@ -453,14 +426,12 @@ public class MainActivity extends AppCompatActivity
             else {
                 (Toast.makeText(MainActivity.this, R.string.export_success, Toast.LENGTH_SHORT)).show();
             }
-
-            MainActivity.this.enableInterface();
         }
     }
 
     private class ImportDataTask extends AsyncTask<Uri, Void, Integer> {
         protected void onPreExecute() {
-            MainActivity.this.disableInterface();
+            // Nothing to do
         }
 
         protected Integer doInBackground(Uri... parameters) {

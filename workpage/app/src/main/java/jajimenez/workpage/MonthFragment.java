@@ -2,13 +2,19 @@ package jajimenez.workpage;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +23,10 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
+import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.TextTool;
 
 public class MonthFragment extends Fragment {
@@ -41,11 +51,11 @@ public class MonthFragment extends Fragment {
     private Calendar current;
 
     private Map<LinearLayout, Calendar> dates;
-    private Calendar selectedDate;
+    // private Calendar selectedDate;
 
-    private TextTool textTool;
-
-    private OnDateSelectedListener onDateSelectedListener;
+    private AppBroadcastReceiver appBroadcastReceiver;
+    private LoadTasksDBTask tasksDbTask = null;
+    // private OnDateSelectedListener onDateSelectedListener;
 
     @Override
     public void onAttach(Context context) {
@@ -79,6 +89,8 @@ public class MonthFragment extends Fragment {
             throw new IllegalArgumentException("Date greater than the maximum date supported.");
         }
 
+        TextTool textTool = new TextTool();
+
         // Date to represent
         current = Calendar.getInstance();
         current.set(Calendar.YEAR, currentYear);
@@ -90,31 +102,48 @@ public class MonthFragment extends Fragment {
         View view = inflater.inflate(R.layout.month, container, false);
 
         title = view.findViewById(R.id.month_title);
+        title.setText(textTool.getMonthYearName(current));
+
         table = view.findViewById(R.id.month_table);
 
         TableRow secondRow = (TableRow) table.getChildAt(1);
         LinearLayout firstCell = (LinearLayout) secondRow.getChildAt(0);
 
-        textTool = new TextTool();
         defaultDateDrawable = firstCell.getBackground();
         selectedDateDrawable = (getResources()).getDrawable(R.drawable.selected_date);
 
-        updateView();
+        setupWeekDayViews();
+
+        // Initial task load
+        loadTasks();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
 
         return view;
     }
 
-    private void updateView() {
-        updateTitleView();
-        updateWeekDayViews();
-        updateDayViews();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
     }
 
-    public void updateTitleView() {
-        title.setText(textTool.getMonthYearName(current));
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+
+        (LocalBroadcastManager.getInstance(getContext())).registerReceiver(appBroadcastReceiver, intentFilter);
     }
 
-    private void updateWeekDayViews() {
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(getContext())).unregisterReceiver(appBroadcastReceiver);
+    }
+
+    private void setupWeekDayViews() {
+        TextTool textTool = new TextTool();
         TableRow row = (TableRow) table.getChildAt(0);
 
         String[] names = textTool.getWeekDayShortNames();
@@ -126,7 +155,7 @@ public class MonthFragment extends Fragment {
         }
     }
 
-    private void updateDayViews() {
+    private void updateInterface(List<Task> tasks) {
         int currentMonthDayCount = current.getActualMaximum(Calendar.DAY_OF_MONTH);
 
         // We get the cell indexes of the first day and the last day of the month
@@ -161,11 +190,11 @@ public class MonthFragment extends Fragment {
                             MonthFragment.this.currentSelectedDateCell.setBackground(MonthFragment.this.defaultDateDrawable);
                         }
 
-                        MonthFragment.this.selectedDate = dates.get(cell);
+                        // MonthFragment.this.selectedDate = dates.get(cell);
 
-                        if (MonthFragment.this.onDateSelectedListener != null) {
-                            MonthFragment.this.onDateSelectedListener.onDateSelected(MonthFragment.this.selectedDate);
-                        }
+                        // if (MonthFragment.this.onDateSelectedListener != null) {
+                        //     MonthFragment.this.onDateSelectedListener.onDateSelected(MonthFragment.this.selectedDate);
+                        // }
 
                         MonthFragment.this.currentSelectedDateCell = cell;
                     }
@@ -214,11 +243,72 @@ public class MonthFragment extends Fragment {
         return date;
     }
 
-    public void setOnDateSelectedListener(OnDateSelectedListener listener) {
-        onDateSelectedListener = listener;
+    private void loadTasks() {
+        if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            tasksDbTask = new LoadTasksDBTask();
+            tasksDbTask.execute();
+        }
     }
 
-    public interface OnDateSelectedListener {
-        void onDateSelected(Calendar date);
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                // Get the tasks
+                MonthFragment.this.loadTasks();
+            }
+        }
     }
+
+    private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+        protected void onPreExecute() {
+            MonthFragment.this.table.setEnabled(false);
+        }
+
+        protected List<Task> doInBackground(Void... parameters) {
+            List<Task> tasks;
+
+            ApplicationLogic applicationLogic = new ApplicationLogic(MonthFragment.this.getContext());
+            TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
+
+            // View filters
+            String viewStateFilter = applicationLogic.getViewStateFilter();
+            boolean includeTasksWithNoTag = applicationLogic.getIncludeTasksWithNoTag();
+            List<TaskTag> currentFilterTags = applicationLogic.getCurrentFilterTags();
+
+            switch (viewStateFilter) {
+                case "open":
+                    tasks = applicationLogic.getOpenTasksByTags(currentTaskContext,
+                            includeTasksWithNoTag,
+                            currentFilterTags);
+                    break;
+                case "doable_today":
+                    tasks = applicationLogic.getDoableTodayTasksByTags(currentTaskContext,
+                            includeTasksWithNoTag,
+                            currentFilterTags);
+                    break;
+                default:
+                    tasks = applicationLogic.getClosedTasksByTags(currentTaskContext,
+                            includeTasksWithNoTag,
+                            currentFilterTags);
+            }
+
+            return tasks;
+        }
+
+        protected void onPostExecute(List<Task> tasks) {
+            MonthFragment.this.updateInterface(tasks);
+            MonthFragment.this.table.setEnabled(true);
+        }
+    }
+
+    // public void setOnDateSelectedListener(OnDateSelectedListener listener) {
+    //     onDateSelectedListener = listener;
+    // }
+    //
+    // public interface OnDateSelectedListener {
+    //     void onDateSelected(Calendar date);
+    // }
 }

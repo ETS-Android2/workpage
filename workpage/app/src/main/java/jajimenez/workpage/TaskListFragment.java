@@ -1,9 +1,14 @@
 package jajimenez.workpage;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -22,19 +27,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
+import jajimenez.workpage.logic.ApplicationLogic;
 
 public class TaskListFragment extends Fragment implements TaskContainerFragment {
     private ListView list;
     private TextView emptyText;
 
+    private Bundle savedInstanceState;
     private TaskListHostActivity activity;
 
-    private List<Task> tasks;
-    private Bundle savedInstanceState;
-
-    public TaskListFragment() {
-        tasks = new LinkedList<>();
-    }
+    private AppBroadcastReceiver appBroadcastReceiver;
+    private LoadTasksDBTask tasksDbTask = null;
 
     @Override
     public void onAttach(Context context) {
@@ -68,7 +73,32 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         createContextualActionBar();
         setSelectedTasks();
 
+        // Initial task load
+        loadTasks();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
+
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
+    }
+
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+
+        (LocalBroadcastManager.getInstance(getContext())).registerReceiver(appBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(getContext())).unregisterReceiver(appBroadcastReceiver);
     }
 
     private void createContextualActionBar() {
@@ -157,7 +187,7 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         });
     }
 
-    private void updateInterface() {
+    private void updateInterface(List<Task> tasks) {
         TaskAdapter adapter = new TaskAdapter(this.getActivity(), R.layout.task_list_item, tasks);
         list.setAdapter(adapter);
 
@@ -247,16 +277,71 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         else root.setVisibility(View.GONE);
     }
 
-    @Override
-    public void setEnabled(boolean enabled) {
-        list.setEnabled(enabled);
+    private void closeActionBar() {
+        // Close the context action bar
+        ActionMode mode = activity.getActionMode();
+        if (mode != null) mode.finish();
     }
 
-    @Override
-    public void setTasks(List<Task> tasks) {
-        if (tasks == null) tasks = new LinkedList<>();
+    private void loadTasks() {
+        if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            tasksDbTask = new LoadTasksDBTask();
+            tasksDbTask.execute();
+        }
+    }
 
-        this.tasks = tasks;
-        updateInterface();
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            TaskListFragment.this.closeActionBar();
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                // Get the tasks
+                TaskListFragment.this.loadTasks();
+            }
+        }
+    }
+
+    private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+        protected void onPreExecute() {
+            TaskListFragment.this.list.setEnabled(false);
+        }
+
+        protected List<Task> doInBackground(Void... parameters) {
+            List<Task> tasks;
+
+            ApplicationLogic applicationLogic = new ApplicationLogic(TaskListFragment.this.getContext());
+            TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
+
+            // View filters
+            String viewStateFilter = applicationLogic.getViewStateFilter();
+            boolean includeTasksWithNoTag = applicationLogic.getIncludeTasksWithNoTag();
+            List<TaskTag> currentFilterTags = applicationLogic.getCurrentFilterTags();
+
+            switch (viewStateFilter) {
+                case "open":
+                    tasks = applicationLogic.getOpenTasksByTags(currentTaskContext,
+                            includeTasksWithNoTag,
+                            currentFilterTags);
+                    break;
+                case "doable_today":
+                    tasks = applicationLogic.getDoableTodayTasksByTags(currentTaskContext,
+                            includeTasksWithNoTag,
+                            currentFilterTags);
+                    break;
+                default:
+                    tasks = applicationLogic.getClosedTasksByTags(currentTaskContext,
+                            includeTasksWithNoTag,
+                            currentFilterTags);
+            }
+
+            return tasks;
+        }
+
+        protected void onPostExecute(List<Task> tasks) {
+            TaskListFragment.this.updateInterface(tasks);
+            TaskListFragment.this.list.setEnabled(true);
+        }
     }
 }
