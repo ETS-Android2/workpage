@@ -236,7 +236,7 @@ public class ApplicationLogic {
         List<Task> tasks = dataManager.getTasksByTags(context, false, includeTasksWithNoTag, tags);
 
         // We sort the tasks.
-        Collections.sort(tasks, new TaskComparator()); 
+        Collections.sort(tasks, new TaskComparator());
 
         return tasks;
     }

@@ -188,7 +188,7 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
     }
 
     private void updateInterface(List<Task> tasks) {
-        TaskAdapter adapter = new TaskAdapter(this.getActivity(), R.layout.task_list_item, tasks);
+        TaskAdapter adapter = new TaskAdapter(getActivity(), R.layout.task_list_item, tasks);
         list.setAdapter(adapter);
 
         if (adapter.isEmpty()) {
@@ -296,7 +296,7 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
             TaskListFragment.this.closeActionBar();
             String action = intent.getAction();
 
-            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+            if (action != null && action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
                 // Get the tasks
                 TaskListFragment.this.loadTasks();
             }
@@ -309,39 +309,48 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         }
 
         protected List<Task> doInBackground(Void... parameters) {
-            List<Task> tasks;
+            List<Task> tasks = new LinkedList<>();
 
-            ApplicationLogic applicationLogic = new ApplicationLogic(TaskListFragment.this.getContext());
-            TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
+            try {
+                ApplicationLogic applicationLogic = new ApplicationLogic(TaskListFragment.this.getContext());
+                TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
 
-            // View filters
-            String viewStateFilter = applicationLogic.getViewStateFilter();
-            boolean includeTasksWithNoTag = applicationLogic.getIncludeTasksWithNoTag();
-            List<TaskTag> currentFilterTags = applicationLogic.getCurrentFilterTags();
+                // View filters
+                String viewStateFilter = applicationLogic.getViewStateFilter();
+                boolean includeTasksWithNoTag = applicationLogic.getIncludeTasksWithNoTag();
+                List<TaskTag> currentFilterTags = applicationLogic.getCurrentFilterTags();
 
-            switch (viewStateFilter) {
-                case "open":
-                    tasks = applicationLogic.getOpenTasksByTags(currentTaskContext,
-                            includeTasksWithNoTag,
-                            currentFilterTags);
-                    break;
-                case "doable_today":
-                    tasks = applicationLogic.getDoableTodayTasksByTags(currentTaskContext,
-                            includeTasksWithNoTag,
-                            currentFilterTags);
-                    break;
-                default:
-                    tasks = applicationLogic.getClosedTasksByTags(currentTaskContext,
-                            includeTasksWithNoTag,
-                            currentFilterTags);
+                switch (viewStateFilter) {
+                    case "open":
+                        tasks = applicationLogic.getOpenTasksByTags(currentTaskContext,
+                                includeTasksWithNoTag,
+                                currentFilterTags);
+                        break;
+                    case "doable_today":
+                        tasks = applicationLogic.getDoableTodayTasksByTags(currentTaskContext,
+                                includeTasksWithNoTag,
+                                currentFilterTags);
+                        break;
+                    default:
+                        tasks = applicationLogic.getClosedTasksByTags(currentTaskContext,
+                                includeTasksWithNoTag,
+                                currentFilterTags);
+                }
+            }
+            catch (Exception e) {
+                // Nothing to do
             }
 
             return tasks;
         }
 
         protected void onPostExecute(List<Task> tasks) {
-            TaskListFragment.this.updateInterface(tasks);
-            TaskListFragment.this.list.setEnabled(true);
+            try {
+                TaskListFragment.this.updateInterface(tasks);
+                TaskListFragment.this.list.setEnabled(true);
+            } catch (Exception e) {
+                // Nothing to do
+            }
         }
     }
 }

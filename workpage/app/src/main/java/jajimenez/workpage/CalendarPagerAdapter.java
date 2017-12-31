@@ -8,8 +8,14 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.Calendar;
 
 public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
+    private MonthFragment.OnGetTasksListener onGetTasksListener;
+
     public CalendarPagerAdapter(FragmentManager fm) {
         super(fm);
+    }
+
+    public void setOnGetTasksListener(MonthFragment.OnGetTasksListener onGetTasksListener) {
+        this.onGetTasksListener = onGetTasksListener;
     }
 
     @Override
@@ -29,6 +35,7 @@ public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
 
         MonthFragment item = new MonthFragment();
         item.setArguments(arguments);
+        item.setOnGetTasksListener(onGetTasksListener);
 
         return item;
     }
