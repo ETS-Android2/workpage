@@ -2,11 +2,12 @@ package jajimenez.workpage;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.logic.TextTool;
 
 public class MonthFragment extends Fragment {
@@ -35,7 +37,10 @@ public class MonthFragment extends Fragment {
     private LinearLayout currentSelectedDateCell;
 
     private Drawable defaultDateDrawable;
-    private Drawable selectedDateDrawable;
+    private Drawable taskDateDrawable;
+    private Map<TextView, Integer> dateTextColors;
+    private Drawable defaultDateNumberDrawable;
+    private Drawable selectedDateNumberDrawable;
 
     // Date to represent
     private int currentYear;
@@ -44,21 +49,6 @@ public class MonthFragment extends Fragment {
 
     private Map<LinearLayout, Calendar> dates;
     private OnGetTasksListener onGetTasksListener;
-    
-    // private Calendar selectedDate;
-    // private OnDateSelectedListener onDateSelectedListener;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        try {
-            // activity = (TaskListHostActivity) context;
-        } catch (ClassCastException e) {
-            // throw new ClassCastException(context.toString() +
-            //         " must implement TaskListHostActivity");
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,14 +71,14 @@ public class MonthFragment extends Fragment {
         }
 
         TextTool textTool = new TextTool();
+        DateTimeTool dateTool = new DateTimeTool();
 
         // Date to represent
         current = Calendar.getInstance();
         current.set(Calendar.YEAR, currentYear);
         current.set(Calendar.MONTH, currentMonth);
         current.set(Calendar.DAY_OF_MONTH, 1);
-
-        dates = new HashMap<>();
+        dateTool.clearTimeFields(current);
 
         View view = inflater.inflate(R.layout.month, container, false);
 
@@ -97,12 +87,20 @@ public class MonthFragment extends Fragment {
 
         table = view.findViewById(R.id.month_table);
 
-        TableRow secondRow = (TableRow) table.getChildAt(1);
-        LinearLayout firstCell = (LinearLayout) secondRow.getChildAt(0);
+        // Drawables
+        TableRow row = (TableRow) table.getChildAt(1);
+        LinearLayout cell = (LinearLayout) row.getChildAt(0);
+        TextView text = (TextView) cell.getChildAt(0);
 
-        defaultDateDrawable = firstCell.getBackground();
-        selectedDateDrawable = (getResources()).getDrawable(R.drawable.selected_date);
+        Resources resources = getResources();
+        defaultDateDrawable = cell.getBackground();
+        taskDateDrawable = resources.getDrawable(R.drawable.task_date);
 
+        dateTextColors = new HashMap<>();
+        defaultDateNumberDrawable = text.getBackground();
+        selectedDateNumberDrawable = resources.getDrawable(R.drawable.selected_date_number);
+
+        // Interface
         setupWeekDayViews();
         updateInterface();
 
@@ -123,7 +121,12 @@ public class MonthFragment extends Fragment {
     }
 
     private void updateInterface() {
-        List<Task> tasks;
+        final Resources resources = getResources();
+        DateTimeTool dateTool = new DateTimeTool();
+
+        dates = new HashMap<>();
+
+        List<Task> tasks = null;
         if (onGetTasksListener != null) tasks = onGetTasksListener.getTasks();
 
         int currentMonthDayCount = current.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -141,6 +144,10 @@ public class MonthFragment extends Fragment {
         Calendar later = (Calendar) current.clone();
         later.add(Calendar.MONTH, 1);
 
+        // Today
+        Calendar today = Calendar.getInstance();
+        dateTool.clearTimeFields(today);
+
         int i = 0;
         int rowCount = 7; // 7 = 1 header row + 6 regular rows
         int cellsPerRow = 7;
@@ -154,10 +161,15 @@ public class MonthFragment extends Fragment {
 
                 cell.setOnClickListener(new LinearLayout.OnClickListener() {
                     public void onClick(View view) {
-                        cell.setBackground(MonthFragment.this.selectedDateDrawable);
+                        cellText.setBackground(MonthFragment.this.selectedDateNumberDrawable);
+                        cellText.setTextColor(resources.getColor(R.color.selected_date_text));
 
-                        if (MonthFragment.this.currentSelectedDateCell != null) {
-                            MonthFragment.this.currentSelectedDateCell.setBackground(MonthFragment.this.defaultDateDrawable);
+                        if (MonthFragment.this.currentSelectedDateCell != null &&
+                                MonthFragment.this.currentSelectedDateCell != cell) {
+                            TextView t = (TextView) MonthFragment.this.currentSelectedDateCell.getChildAt(0);
+
+                            t.setBackground(MonthFragment.this.defaultDateNumberDrawable);
+                            t.setTextColor(dateTextColors.get(t));
                         }
 
                         // MonthFragment.this.selectedDate = dates.get(cell);
@@ -171,35 +183,54 @@ public class MonthFragment extends Fragment {
                 });
 
                 int monthDay;
-                Resources resources = getResources();
+                Calendar date;
 
                 if (i < currentFirstDayIndex) {
                     // The day belongs to the previous month
                     monthDay = prevMonthDayCount - currentFirstDayIndex + i + 1;
+                    date = getDate(prev, monthDay);
 
-                    cellText.setText(String.valueOf(monthDay));
-                    cellText.setTextColor(resources.getColor(R.color.disabled_text_color));
-
-                    dates.put(cell, getDate(prev, monthDay));
+                    if (date.getTimeInMillis() == today.getTimeInMillis()) {
+                        cellText.setTextColor(resources.getColor(R.color.today));
+                        cellText.setTypeface(null, Typeface.BOLD);
+                    } else {
+                        cellText.setTextColor(resources.getColor(R.color.disabled_text_color));
+                        cellText.setTypeface(null, Typeface.NORMAL);
+                    }
 
                 } else if (i > currentLastDayIndex) {
                     // The day belong to the next month
                     monthDay = i - (currentFirstDayIndex + currentMonthDayCount) + 1;
+                    date = getDate(later, monthDay);
 
-                    cellText.setText(String.valueOf(monthDay));
-                    cellText.setTextColor(resources.getColor(R.color.disabled_text_color));
-
-                    dates.put(cell, getDate(later, monthDay));
+                    if (date.getTimeInMillis() == today.getTimeInMillis()) {
+                        cellText.setTextColor(resources.getColor(R.color.today));
+                        cellText.setTypeface(null, Typeface.BOLD);
+                    } else {
+                        cellText.setTextColor(resources.getColor(R.color.disabled_text_color));
+                        cellText.setTypeface(null, Typeface.NORMAL);
+                    }
 
                 } else {
                     // The day belongs to the current month
                     monthDay = i - currentFirstDayIndex + 1;
+                    date = getDate(current, monthDay);
 
-                    cellText.setText(String.valueOf(monthDay));
-                    cellText.setTextColor(resources.getColor(R.color.text_color));
-
-                    dates.put(cell, getDate(current, monthDay));
+                    if (date.getTimeInMillis() == today.getTimeInMillis()) {
+                        cellText.setTextColor(resources.getColor(R.color.today));
+                        cellText.setTypeface(null, Typeface.BOLD);
+                    } else {
+                        cellText.setTextColor(resources.getColor(R.color.text_color));
+                        cellText.setTypeface(null, Typeface.NORMAL);
+                    }
                 }
+
+                cellText.setText(String.valueOf(monthDay));
+                dateTextColors.put(cellText, cellText.getCurrentTextColor());
+                dates.put(cell, date);
+
+                if ((getDateTasks(tasks, date)).size() > 0) cell.setBackground(taskDateDrawable);
+                else cell.setBackground(defaultDateDrawable);
 
                 i++;
             }
@@ -213,13 +244,57 @@ public class MonthFragment extends Fragment {
         return date;
     }
 
-    // public void setOnDateSelectedListener(OnDateSelectedListener listener) {
-    //     onDateSelectedListener = listener;
-    // }
-    //
-    // public interface OnDateSelectedListener {
-    //     void onDateSelected(Calendar date);
-    // }
+    private List<Task> getDateTasks(List<Task> tasks, Calendar date) {
+        List<Task> dateTasks = new LinkedList<>();
+        DateTimeTool tool = new DateTimeTool();
+
+        if (tasks != null && date != null) {
+            Calendar date2 = (Calendar) date.clone();
+            tool.clearTimeFields(date2);
+            long dateTime = date2.getTimeInMillis();
+
+            for (Task t: tasks) {
+                if (t != null) {
+                    Calendar single = t.getSingle();
+
+                    if (single != null) {
+                        tool.clearTimeFields(single);
+
+                        if (single.getTimeInMillis() == dateTime) {
+                            dateTasks.add(t);
+                        }
+                    }
+
+                    Calendar start = t.getStart();
+                    Calendar end = t.getEnd();
+
+                    if (start != null && end != null) {
+                        tool.clearTimeFields(start);
+                        tool.clearTimeFields(end);
+
+                        if (start.getTimeInMillis() <= dateTime && end.getTimeInMillis() >= dateTime) {
+                            dateTasks.add(t);
+                        }
+                    } else if (start != null) {
+                        tool.clearTimeFields(start);
+
+                        if (start.getTimeInMillis() == dateTime) {
+                            dateTasks.add(t);
+                        }
+
+                    } else if (end != null) {
+                        tool.clearTimeFields(end);
+
+                        if (end.getTimeInMillis() == dateTime) {
+                            dateTasks.add(t);
+                        }
+                    }
+                }
+            }
+        }
+
+        return dateTasks;
+    }
 
     public void setOnGetTasksListener(OnGetTasksListener listener) {
         onGetTasksListener = listener;

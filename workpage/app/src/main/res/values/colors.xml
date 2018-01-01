@@ -23,5 +23,8 @@
     <color name="tag_color_11">#00cc33</color>
     <color name="tag_color_12">#66ff00</color>
 
+    <color name="today">#ff0000</color>
+    <color name="selected_date_text">#fafafa</color>
+
     <color name="divider">#d6d7d7</color>
 </resources>
