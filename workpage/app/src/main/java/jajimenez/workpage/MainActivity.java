@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity
             // Fragment
             listFragment.setVisible(true);
             calendarFragment.setVisible(false);
-            calendarFragment.setInitialPosition();
+            calendarFragment.resetIndex();
         }
     }
 

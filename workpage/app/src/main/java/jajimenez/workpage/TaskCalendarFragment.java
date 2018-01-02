@@ -24,7 +24,7 @@ import jajimenez.workpage.logic.ApplicationLogic;
 
 public class TaskCalendarFragment extends Fragment implements TaskContainerFragment {
     private ViewPager pager;
-    private int currentPosition;
+    private int initialIndex;
     private List<Task> tasks;
 
     private AppBroadcastReceiver appBroadcastReceiver;
@@ -38,11 +38,10 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.task_calendar, container, false);
-
         pager = view.findViewById(R.id.task_calendar_pager);
-        // pager.setAdapter(new CalendarPagerAdapter((getActivity()).getSupportFragmentManager()));
-        // setInitialPosition();
-        currentPosition = getCurrentMonthIndex();
+
+        if (savedInstanceState == null) initialIndex = getInitialPageIndex();
+        else initialIndex = savedInstanceState.getInt("index", getInitialPageIndex());
 
         onGetTasksListener = new MonthFragment.OnGetTasksListener() {
             @Override
@@ -68,6 +67,11 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
         unregisterBroadcastReceiver();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("index", pager.getCurrentItem());
+    }
+
     private void registerBroadcastReceiver() {
         appBroadcastReceiver = new AppBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
@@ -79,7 +83,7 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
         (LocalBroadcastManager.getInstance(getContext())).unregisterReceiver(appBroadcastReceiver);
     }
 
-    private int getCurrentMonthIndex() {
+    private int getInitialPageIndex() {
         int minYear = MonthFragment.MIN_YEAR; // Month 0 (January) of this year is the pager's item no. 0
         int maxYear = MonthFragment.MAX_YEAR;
 
@@ -95,8 +99,8 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
     }
 
     // Sets the position as the initial one (the one for the current date's month)
-    public void setInitialPosition() {
-        pager.setCurrentItem(getCurrentMonthIndex());
+    public void resetIndex() {
+        pager.setCurrentItem(getInitialPageIndex());
     }
 
     @Override
@@ -127,11 +131,15 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
     }
 
     private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+        private int index;
+
         protected void onPreExecute() {
             TaskCalendarFragment.this.pager.setEnabled(false);
 
-            if (TaskCalendarFragment.this.pager.getAdapter() != null) {
-                TaskCalendarFragment.this.currentPosition = TaskCalendarFragment.this.pager.getCurrentItem();
+            if (TaskCalendarFragment.this.pager.getAdapter() == null) {
+                index = TaskCalendarFragment.this.initialIndex;
+            } else {
+                index = TaskCalendarFragment.this.pager.getCurrentItem();
             }
         }
 
@@ -179,7 +187,7 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
                 adapter.setOnGetTasksListener(TaskCalendarFragment.this.onGetTasksListener);
 
                 TaskCalendarFragment.this.pager.setAdapter(adapter);
-                TaskCalendarFragment.this.pager.setCurrentItem(TaskCalendarFragment.this.currentPosition);
+                TaskCalendarFragment.this.pager.setCurrentItem(index);
 
                 TaskCalendarFragment.this.pager.setEnabled(true);
             } catch (Exception e) {
