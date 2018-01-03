@@ -29,7 +29,6 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
     private AppBroadcastReceiver appBroadcastReceiver;
     private LoadTasksDBTask tasksDbTask = null;
-    private MonthFragment.OnGetTasksListener onGetTasksListener;
 
     public TaskCalendarFragment() {
         tasks = new LinkedList<>();
@@ -42,13 +41,6 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
         if (savedInstanceState == null) initialIndex = getInitialPageIndex();
         else initialIndex = savedInstanceState.getInt("index", getInitialPageIndex());
-
-        onGetTasksListener = new MonthFragment.OnGetTasksListener() {
-            @Override
-            public List<Task> getTasks() {
-                return TaskCalendarFragment.this.tasks;
-            }
-        };
 
         // Initial task load
         loadTasks();
@@ -109,6 +101,10 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
         if (visible) root.setVisibility(View.VISIBLE);
         else root.setVisibility(View.GONE);
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
     }
 
     private void loadTasks() {
@@ -184,7 +180,7 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
                 TaskCalendarFragment.this.tasks = tasks;
 
                 CalendarPagerAdapter adapter = new CalendarPagerAdapter((getActivity()).getSupportFragmentManager());
-                adapter.setOnGetTasksListener(TaskCalendarFragment.this.onGetTasksListener);
+                adapter.setTaskCalendarFragment(TaskCalendarFragment.this);
 
                 TaskCalendarFragment.this.pager.setAdapter(adapter);
                 TaskCalendarFragment.this.pager.setCurrentItem(index);

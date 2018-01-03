@@ -48,7 +48,7 @@ public class MonthFragment extends Fragment {
     private Calendar current;
 
     private Map<LinearLayout, Calendar> dates;
-    private OnGetTasksListener onGetTasksListener;
+    private TaskCalendarFragment taskCalendarFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,7 +127,7 @@ public class MonthFragment extends Fragment {
         dates = new HashMap<>();
 
         List<Task> tasks = null;
-        if (onGetTasksListener != null) tasks = onGetTasksListener.getTasks();
+        if (taskCalendarFragment != null) tasks = taskCalendarFragment.getTasks();
 
         int currentMonthDayCount = current.getActualMaximum(Calendar.DAY_OF_MONTH);
 
@@ -296,11 +296,7 @@ public class MonthFragment extends Fragment {
         return dateTasks;
     }
 
-    public void setOnGetTasksListener(OnGetTasksListener listener) {
-        onGetTasksListener = listener;
-    }
-
-    public interface OnGetTasksListener {
-        List<Task> getTasks();
+    public void setTaskCalendarFragment(TaskCalendarFragment fragment) {
+        taskCalendarFragment = fragment;
     }
 }
