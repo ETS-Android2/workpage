@@ -372,40 +372,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
-    //     protected void onPreExecute() {
-    //         MainActivity.this.disableInterface();
-    //     }
-    //
-    //     protected List<Task> doInBackground(Void... parameters) {
-    //         List<Task> tasks;
-    //
-    //         switch (viewStateFilter) {
-    //             case "open":
-    //                 tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
-    //                             MainActivity.this.includeTasksWithNoTag,
-    //                             MainActivity.this.currentFilterTags);
-    //                 break;
-    //             case "doable_today":
-    //                 tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
-    //                             MainActivity.this.includeTasksWithNoTag,
-    //                             MainActivity.this.currentFilterTags);
-    //                 break;
-    //             default:
-    //                 tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
-    //                             MainActivity.this.includeTasksWithNoTag,
-    //                             MainActivity.this.currentFilterTags);
-    //         }
-    //
-    //         return tasks;
-    //     }
-    //
-    //     protected void onPostExecute(List<Task> tasks) {
-    //         MainActivity.this.listFragment.setTasks(tasks);
-    //         MainActivity.this.enableInterface();
-    //     }
-    // }
-
     private class ExportDataTask extends AsyncTask<Uri, Void, Boolean> {
         protected void onPreExecute() {
             // Nothing to do
