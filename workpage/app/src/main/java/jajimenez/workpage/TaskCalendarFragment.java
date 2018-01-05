@@ -25,14 +25,9 @@ import jajimenez.workpage.logic.ApplicationLogic;
 public class TaskCalendarFragment extends Fragment implements TaskContainerFragment {
     private ViewPager pager;
     private int initialIndex;
-    private List<Task> tasks;
 
     private AppBroadcastReceiver appBroadcastReceiver;
     private LoadTasksDBTask tasksDbTask = null;
-
-    public TaskCalendarFragment() {
-        tasks = new LinkedList<>();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,10 +96,6 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
         if (visible) root.setVisibility(View.VISIBLE);
         else root.setVisibility(View.GONE);
-    }
-
-    public List<Task> getTasks() {
-        return tasks;
     }
 
     private void loadTasks() {
@@ -177,10 +168,8 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
         protected void onPostExecute(List<Task> tasks) {
             try {
-                TaskCalendarFragment.this.tasks = tasks;
-
                 CalendarPagerAdapter adapter = new CalendarPagerAdapter((getActivity()).getSupportFragmentManager());
-                adapter.setTaskCalendarFragment(TaskCalendarFragment.this);
+                adapter.setTasks(tasks);
 
                 TaskCalendarFragment.this.pager.setAdapter(adapter);
                 TaskCalendarFragment.this.pager.setCurrentItem(index);

@@ -48,7 +48,7 @@ public class MonthFragment extends Fragment {
     private Calendar current;
 
     private Map<LinearLayout, Calendar> dates;
-    private TaskCalendarFragment taskCalendarFragment;
+    private List<Task> tasks;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -120,14 +120,11 @@ public class MonthFragment extends Fragment {
         }
     }
 
-    private void updateInterface() {
+    public void updateInterface() {
         final Resources resources = getResources();
         DateTimeTool dateTool = new DateTimeTool();
 
         dates = new HashMap<>();
-
-        List<Task> tasks = null;
-        if (taskCalendarFragment != null) tasks = taskCalendarFragment.getTasks();
 
         int currentMonthDayCount = current.getActualMaximum(Calendar.DAY_OF_MONTH);
 
@@ -223,7 +220,7 @@ public class MonthFragment extends Fragment {
                 dateTextColors.put(cellText, cellText.getCurrentTextColor());
                 dates.put(cell, date);
 
-                if ((getDateTasks(tasks, date)).size() > 0) cell.setBackground(taskDateDrawable);
+                if ((getDateTasks(date)).size() > 0) cell.setBackground(taskDateDrawable);
                 else cell.setBackground(defaultDateDrawable);
 
                 i++;
@@ -238,7 +235,7 @@ public class MonthFragment extends Fragment {
         return date;
     }
 
-    private List<Task> getDateTasks(List<Task> tasks, Calendar date) {
+    private List<Task> getDateTasks(Calendar date) {
         List<Task> dateTasks = new LinkedList<>();
         DateTimeTool tool = new DateTimeTool();
 
@@ -290,7 +287,8 @@ public class MonthFragment extends Fragment {
         return dateTasks;
     }
 
-    public void setTaskCalendarFragment(TaskCalendarFragment fragment) {
-        taskCalendarFragment = fragment;
+    public void setTasks(List<Task> tasks) {
+        if (tasks == null) tasks = new LinkedList<>();
+        this.tasks = tasks;
     }
 }
