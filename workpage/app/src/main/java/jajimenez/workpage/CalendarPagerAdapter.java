@@ -37,7 +37,6 @@ public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
 
         item.setArguments(arguments);
         item.setTaskCalendarFragment(taskCalendarFragment);
-        item.setRetainInstance(true);
 
         return item;
     }

@@ -172,12 +172,6 @@ public class MonthFragment extends Fragment {
                             t.setTextColor(dateTextColors.get(t));
                         }
 
-                        // MonthFragment.this.selectedDate = dates.get(cell);
-
-                        // if (MonthFragment.this.onDateSelectedListener != null) {
-                        //     MonthFragment.this.onDateSelectedListener.onDateSelected(MonthFragment.this.selectedDate);
-                        // }
-
                         MonthFragment.this.currentSelectedDateCell = cell;
                     }
                 });
