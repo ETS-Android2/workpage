@@ -19,5 +19,5 @@
         android:id="@+id/content_main_calendar"
         android:name="jajimenez.workpage.TaskCalendarFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 </LinearLayout>

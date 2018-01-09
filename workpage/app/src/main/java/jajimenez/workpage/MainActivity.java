@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private MenuItem interfaceModeMenuItem;
+
     private TaskListFragment listFragment;
     private TaskCalendarFragment calendarFragment;
 

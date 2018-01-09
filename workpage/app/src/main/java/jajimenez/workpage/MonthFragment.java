@@ -34,6 +34,8 @@ public class MonthFragment extends Fragment {
 
     private TextView title;
     private TableLayout table;
+    private DateTaskListFragment dateListFragment;
+
     private LinearLayout currentSelectedDateCell;
 
     private Drawable defaultDateDrawable;
@@ -86,6 +88,7 @@ public class MonthFragment extends Fragment {
         title.setText(textTool.getMonthYearName(current));
 
         table = view.findViewById(R.id.month_table);
+        dateListFragment = (DateTaskListFragment) (getChildFragmentManager()).findFragmentById(R.id.month_date_list);
 
         // Drawables
         TableRow row = (TableRow) table.getChildAt(1);
@@ -158,18 +161,21 @@ public class MonthFragment extends Fragment {
 
                 cell.setOnClickListener(new LinearLayout.OnClickListener() {
                     public void onClick(View view) {
-                        cellText.setBackground(MonthFragment.this.selectedDateNumberDrawable);
-                        cellText.setTextColor(resources.getColor(R.color.selected_date_text));
+                        if (MonthFragment.this.currentSelectedDateCell != cell) {
+                            cellText.setBackground(MonthFragment.this.selectedDateNumberDrawable);
+                            cellText.setTextColor(resources.getColor(R.color.selected_date_text));
 
-                        if (MonthFragment.this.currentSelectedDateCell != null &&
-                                MonthFragment.this.currentSelectedDateCell != cell) {
-                            TextView t = (TextView) MonthFragment.this.currentSelectedDateCell.getChildAt(0);
+                            if (MonthFragment.this.currentSelectedDateCell != null &&
+                                    MonthFragment.this.currentSelectedDateCell != cell) {
+                                TextView t = (TextView) MonthFragment.this.currentSelectedDateCell.getChildAt(0);
 
-                            t.setBackground(MonthFragment.this.defaultDateNumberDrawable);
-                            t.setTextColor(dateTextColors.get(t));
+                                t.setBackground(MonthFragment.this.defaultDateNumberDrawable);
+                                t.setTextColor(dateTextColors.get(t));
+                            }
+
+                            MonthFragment.this.currentSelectedDateCell = cell;
+                            MonthFragment.this.showDateTasks(cell);
                         }
-
-                        MonthFragment.this.currentSelectedDateCell = cell;
                     }
                 });
 
@@ -285,6 +291,13 @@ public class MonthFragment extends Fragment {
         }
 
         return dateTasks;
+    }
+
+    private void showDateTasks(LinearLayout cell) {
+        Calendar date = dates.get(cell);
+        List<Task> tasks = getDateTasks(date);
+
+        dateListFragment.setTasks(tasks);
     }
 
     public void setTasks(List<Task> tasks) {
