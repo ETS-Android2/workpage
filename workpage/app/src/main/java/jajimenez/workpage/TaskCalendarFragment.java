@@ -57,6 +57,7 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt("index", pager.getCurrentItem());
+        super.onSaveInstanceState(outState);
     }
 
     private void registerBroadcastReceiver() {

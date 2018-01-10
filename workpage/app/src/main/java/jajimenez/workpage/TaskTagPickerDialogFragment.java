@@ -204,14 +204,14 @@ public class TaskTagPickerDialogFragment extends DialogFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         // Selected tags
         int tagCount = selectedTags.size();
         String[] tagNames = new String[tagCount];
         for (int i = 0; i < tagCount; i++) tagNames[i] = (selectedTags.get(i)).getName();
 
         outState.putStringArray("selected_task_tags", tagNames);
+
+        super.onSaveInstanceState(outState);
     }
 
     public void setOnTaskTagsSelectedListener(OnTaskTagsSelectedListener listener) {

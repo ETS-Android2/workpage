@@ -82,8 +82,8 @@ public class AdvancedColorPickerDialogFragment extends DialogFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putInt("selected_color", selectedColorView.getBackgroundColor());
+        super.onSaveInstanceState(outState);
     }
 
     private void updateInterface() {

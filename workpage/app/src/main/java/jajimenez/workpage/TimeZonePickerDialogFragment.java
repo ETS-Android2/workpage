@@ -216,10 +216,10 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         outState.putInt("mode", mode);
         if (selectedCountry != null) outState.putLong("selected_country", selectedCountry.getId());
+
+        super.onSaveInstanceState(outState);
     }
 
     private List<Country> searchCountries(String countryName) {
