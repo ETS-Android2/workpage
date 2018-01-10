@@ -157,7 +157,7 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         list.setAdapter(adapter);
 
         if (adapter.isEmpty()) {
-            list.setVisibility(View.GONE);
+            list.setVisibility(View.INVISIBLE);
         }
         else {
             // Re-select items
