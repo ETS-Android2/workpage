@@ -36,7 +36,8 @@ public class MonthFragment extends Fragment {
     private TableLayout table;
     private DateTaskListFragment dateListFragment;
 
-    private LinearLayout currentSelectedDateCell;
+    private LinearLayout selectedDateCell;
+    private Calendar selectedDate;
 
     private Drawable defaultDateDrawable;
     private Drawable taskDateDrawable;
@@ -49,7 +50,7 @@ public class MonthFragment extends Fragment {
     private int currentMonth;
     private Calendar current;
 
-    private Map<LinearLayout, Calendar> dates;
+    // private Map<LinearLayout, Calendar> dates;
     private List<Task> tasks;
 
     @Override
@@ -105,9 +106,32 @@ public class MonthFragment extends Fragment {
 
         // Interface
         setupWeekDayViews();
-        updateInterface();
+        if (savedInstanceState != null) selectedDate = getSavedSelectedDate(savedInstanceState);
+
+        // In case the activity was recreated, we don't call "updateInterface" because it
+        // will be called by the "setTasks" method of the "CalendarPagerAdapter" class.
+        if (savedInstanceState == null) updateInterface();
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (selectedDate != null) outState.putLong("selected_date", selectedDate.getTimeInMillis());
+        super.onSaveInstanceState(outState);
+    }
+
+    private Calendar getSavedSelectedDate(Bundle savedInstanceState) {
+        Calendar selectedDate = null;
+
+        if (savedInstanceState != null) {
+            long selectedDateTime = savedInstanceState.getLong("selected_date");
+
+            selectedDate = Calendar.getInstance();
+            selectedDate.setTimeInMillis(selectedDateTime);
+        }
+
+        return selectedDate;
     }
 
     private void setupWeekDayViews() {
@@ -124,10 +148,8 @@ public class MonthFragment extends Fragment {
     }
 
     public void updateInterface() {
-        final Resources resources = getResources();
+        Resources resources = getResources();
         DateTimeTool dateTool = new DateTimeTool();
-
-        dates = new HashMap<>();
 
         int currentMonthDayCount = current.getActualMaximum(Calendar.DAY_OF_MONTH);
 
@@ -156,31 +178,11 @@ public class MonthFragment extends Fragment {
             TableRow row = (TableRow) table.getChildAt(r);
 
             for (int c = 0; c < cellsPerRow; c++) {
-                final LinearLayout cell = (LinearLayout) row.getChildAt(c);
-                final TextView cellText = cell.findViewById(R.id.month_cell_day);
-
-                cell.setOnClickListener(new LinearLayout.OnClickListener() {
-                    public void onClick(View view) {
-                        if (MonthFragment.this.currentSelectedDateCell != cell) {
-                            cellText.setBackground(MonthFragment.this.selectedDateNumberDrawable);
-                            cellText.setTextColor(resources.getColor(R.color.selected_date_text));
-
-                            if (MonthFragment.this.currentSelectedDateCell != null &&
-                                    MonthFragment.this.currentSelectedDateCell != cell) {
-                                TextView t = (TextView) MonthFragment.this.currentSelectedDateCell.getChildAt(0);
-
-                                t.setBackground(MonthFragment.this.defaultDateNumberDrawable);
-                                t.setTextColor(dateTextColors.get(t));
-                            }
-
-                            MonthFragment.this.currentSelectedDateCell = cell;
-                            MonthFragment.this.showDateTasks(cell);
-                        }
-                    }
-                });
+                LinearLayout cell = (LinearLayout) row.getChildAt(c);
+                TextView cellText = cell.findViewById(R.id.month_cell_day);
 
                 int monthDay;
-                Calendar date;
+                final Calendar date;
 
                 if (i < currentFirstDayIndex) {
                     // The day belongs to the previous month
@@ -224,13 +226,42 @@ public class MonthFragment extends Fragment {
 
                 cellText.setText(String.valueOf(monthDay));
                 dateTextColors.put(cellText, cellText.getCurrentTextColor());
-                dates.put(cell, date);
 
                 if ((getDateTasks(date)).size() > 0) cell.setBackground(taskDateDrawable);
                 else cell.setBackground(defaultDateDrawable);
 
+                cell.setOnClickListener(new LinearLayout.OnClickListener() {
+                    public void onClick(View view) {
+                        MonthFragment.this.selectCell((LinearLayout) view, date);
+                    }
+                });
+
+                if (selectedDate != null && date.equals(selectedDate)) selectCell(cell, date);
+
                 i++;
             }
+        }
+    }
+
+    private void selectCell(LinearLayout cell, Calendar date) {
+        if (selectedDateCell != cell) {
+            Resources resources = getResources();
+            TextView cellText = cell.findViewById(R.id.month_cell_day);
+
+            cellText.setBackground(selectedDateNumberDrawable);
+            cellText.setTextColor(resources.getColor(R.color.selected_date_text));
+
+            if (selectedDateCell != null) {
+                TextView t = (TextView) selectedDateCell.getChildAt(0);
+
+                t.setBackground(defaultDateNumberDrawable);
+                t.setTextColor(dateTextColors.get(t));
+            }
+
+            selectedDateCell = cell;
+            selectedDate = date;
+
+            dateListFragment.setTasks(getDateTasks(date));
         }
     }
 
@@ -291,13 +322,6 @@ public class MonthFragment extends Fragment {
         }
 
         return dateTasks;
-    }
-
-    private void showDateTasks(LinearLayout cell) {
-        Calendar date = dates.get(cell);
-        List<Task> tasks = getDateTasks(date);
-
-        dateListFragment.setTasks(tasks);
     }
 
     public void setTasks(List<Task> tasks) {

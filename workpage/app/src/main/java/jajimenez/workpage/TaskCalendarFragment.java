@@ -174,7 +174,6 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
 
                 TaskCalendarFragment.this.pager.setAdapter(adapter);
                 TaskCalendarFragment.this.pager.setCurrentItem(index);
-
                 TaskCalendarFragment.this.pager.setEnabled(true);
             } catch (Exception e) {
                 // Nothing to do

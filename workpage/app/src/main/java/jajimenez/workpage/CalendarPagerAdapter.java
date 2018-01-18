@@ -54,8 +54,8 @@ public class CalendarPagerAdapter extends FragmentStatePagerAdapter {
         arguments.putInt("month", month);
 
         MonthFragment item = new MonthFragment();
-        item.setTasks(tasks);
         item.setArguments(arguments);
+        item.setTasks(tasks);
 
         return item;
     }
