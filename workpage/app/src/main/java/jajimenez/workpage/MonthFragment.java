@@ -6,11 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +26,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.data.model.TaskContext;
+import jajimenez.workpage.data.model.TaskTag;
+import jajimenez.workpage.logic.ApplicationLogic;
 import jajimenez.workpage.logic.DateTimeTool;
 import jajimenez.workpage.logic.TextTool;
 
@@ -50,8 +59,8 @@ public class MonthFragment extends Fragment {
     private int currentMonth;
     private Calendar current;
 
-    // private Map<LinearLayout, Calendar> dates;
-    private List<Task> tasks;
+    private LoadTasksDBTask tasksDbTask = null;
+    private AppBroadcastReceiver appBroadcastReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,11 +117,32 @@ public class MonthFragment extends Fragment {
         setupWeekDayViews();
         if (savedInstanceState != null) selectedDate = getSavedSelectedDate(savedInstanceState);
 
-        // In case the activity was recreated, we don't call "updateInterface" because it
-        // will be called by the "setTasks" method of the "CalendarPagerAdapter" class.
-        if (savedInstanceState == null) updateInterface();
+        // Initial task load
+        loadTasks();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
+    }
+
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+
+        (LocalBroadcastManager.getInstance(getContext())).registerReceiver(appBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(getContext())).unregisterReceiver(appBroadcastReceiver);
     }
 
     @Override
@@ -147,7 +177,7 @@ public class MonthFragment extends Fragment {
         }
     }
 
-    public void updateInterface() {
+    private void updateInterface(final List<Task> tasks) {
         Resources resources = getResources();
         DateTimeTool dateTool = new DateTimeTool();
 
@@ -227,23 +257,23 @@ public class MonthFragment extends Fragment {
                 cellText.setText(String.valueOf(monthDay));
                 dateTextColors.put(cellText, cellText.getCurrentTextColor());
 
-                if ((getDateTasks(date)).size() > 0) cell.setBackground(taskDateDrawable);
+                if ((getDateTasks(tasks, date)).size() > 0) cell.setBackground(taskDateDrawable);
                 else cell.setBackground(defaultDateDrawable);
 
                 cell.setOnClickListener(new LinearLayout.OnClickListener() {
                     public void onClick(View view) {
-                        MonthFragment.this.selectCell((LinearLayout) view, date);
+                        MonthFragment.this.selectCell(tasks, (LinearLayout) view, date);
                     }
                 });
 
-                if (selectedDate != null && date.equals(selectedDate)) selectCell(cell, date);
+                if (selectedDate != null && date.equals(selectedDate)) selectCell(tasks, cell, date);
 
                 i++;
             }
         }
     }
 
-    private void selectCell(LinearLayout cell, Calendar date) {
+    private void selectCell(List<Task> tasks, LinearLayout cell, Calendar date) {
         if (selectedDateCell != cell) {
             Resources resources = getResources();
             TextView cellText = cell.findViewById(R.id.month_cell_day);
@@ -261,7 +291,7 @@ public class MonthFragment extends Fragment {
             selectedDateCell = cell;
             selectedDate = date;
 
-            dateListFragment.setTasks(getDateTasks(date));
+            dateListFragment.setTasks(getDateTasks(tasks, date));
         }
     }
 
@@ -272,7 +302,7 @@ public class MonthFragment extends Fragment {
         return date;
     }
 
-    private List<Task> getDateTasks(Calendar date) {
+    private List<Task> getDateTasks(List<Task> tasks, Calendar date) {
         List<Task> dateTasks = new LinkedList<>();
         DateTimeTool tool = new DateTimeTool();
 
@@ -324,8 +354,76 @@ public class MonthFragment extends Fragment {
         return dateTasks;
     }
 
-    public void setTasks(List<Task> tasks) {
-        if (tasks == null) tasks = new LinkedList<>();
-        this.tasks = tasks;
+    private void loadTasks() {
+        if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
+            tasksDbTask = new LoadTasksDBTask();
+            tasksDbTask.execute();
+        }
+    }
+
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (action != null && action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                // Get the tasks
+                loadTasks();
+            }
+        }
+    }
+
+    private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
+        protected void onPreExecute() {
+            table.setEnabled(false);
+            dateListFragment.setEnabled(false);
+        }
+
+        protected List<Task> doInBackground(Void... parameters) {
+            List<Task> tasks = new LinkedList<>();
+
+            try {
+                ApplicationLogic applicationLogic = new ApplicationLogic(MonthFragment.this.getContext());
+                TaskContext currentTaskContext = applicationLogic.getCurrentTaskContext();
+
+                // View filters
+                String viewStateFilter = applicationLogic.getViewStateFilter();
+                boolean includeTasksWithNoTag = applicationLogic.getIncludeTasksWithNoTag();
+                List<TaskTag> currentFilterTags = applicationLogic.getCurrentFilterTags();
+
+                switch (viewStateFilter) {
+                    case "open":
+                        tasks = applicationLogic.getOpenTasksByTags(currentTaskContext,
+                                includeTasksWithNoTag,
+                                currentFilterTags);
+                        break;
+                    case "doable_today":
+                        tasks = applicationLogic.getDoableTodayTasksByTags(currentTaskContext,
+                                includeTasksWithNoTag,
+                                currentFilterTags);
+                        break;
+                    default:
+                        tasks = applicationLogic.getClosedTasksByTags(currentTaskContext,
+                                includeTasksWithNoTag,
+                                currentFilterTags);
+                }
+            }
+            catch (Exception e) {
+                // Nothing to do
+            }
+
+            return tasks;
+        }
+
+        protected void onPostExecute(List<Task> tasks) {
+            try {
+                MonthFragment.this.updateInterface(tasks);
+
+                MonthFragment.this.table.setEnabled(true);
+                MonthFragment.this.dateListFragment.setEnabled(true);
+            } catch (Exception e) {
+                // Nothing to do
+            }
+        }
     }
 }

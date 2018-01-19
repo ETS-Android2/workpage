@@ -242,6 +242,10 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         else root.setVisibility(View.GONE);
     }
 
+    public void setEnabled(boolean enabled) {
+        (getView()).setEnabled(enabled);
+    }
+
     // Method to set the height of a list view when it's inside a scroll view
     private void setListHeight() {
         ListAdapter adapter = list.getAdapter();
