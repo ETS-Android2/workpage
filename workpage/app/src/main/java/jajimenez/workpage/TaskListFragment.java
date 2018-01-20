@@ -71,7 +71,6 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         emptyText.setVisibility(View.GONE);
 
         createContextualActionBar();
-        setSelectedTasks();
 
         // Initial task load
         loadTasks();
@@ -208,19 +207,6 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
 
             list.setVisibility(View.VISIBLE);
             emptyText.setVisibility(View.GONE);
-        }
-    }
-
-    private void setSelectedTasks() {
-        ListAdapter adapter = list.getAdapter();
-
-        if (adapter != null && !adapter.isEmpty() && savedInstanceState != null) {
-            int[] selectedItems = savedInstanceState.getIntArray("selected_items");
-
-            if (selectedItems != null) {
-                for (int position : selectedItems) list.setItemChecked(position, true);
-                savedInstanceState.remove("selected_items");
-            }
         }
     }
 

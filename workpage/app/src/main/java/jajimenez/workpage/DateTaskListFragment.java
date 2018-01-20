@@ -55,7 +55,6 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         });
 
         createContextualActionBar();
-        setSelectedTasks();
 
         return view;
     }
@@ -174,19 +173,6 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         }
 
         setListHeight();
-    }
-
-    private void setSelectedTasks() {
-        ListAdapter adapter = list.getAdapter();
-
-        if (adapter != null && !adapter.isEmpty() && savedInstanceState != null) {
-            int[] selectedItems = savedInstanceState.getIntArray("selected_items");
-
-            if (selectedItems != null) {
-                for (int position : selectedItems) list.setItemChecked(position, true);
-                savedInstanceState.remove("selected_items");
-            }
-        }
     }
 
     @Override
