@@ -283,16 +283,20 @@ public class MonthFragment extends Fragment {
         cellText.setBackground(selectedDateNumberDrawable);
         cellText.setTextColor(resources.getColor(R.color.selected_date_text));
 
-        if (selectedDateCell != null && selectedDateCell != cell) {
-            TextView t = (TextView) selectedDateCell.getChildAt(0);
-            t.setBackground(defaultDateNumberDrawable);
-            t.setTextColor(dateTextColors.get(t));
-        }
+        if (selectedDateCell != null && selectedDateCell != cell) resetSelectedDateCell();
 
         selectedDateCell = cell;
         selectedDate = date;
 
         dateListFragment.setTasks(getDateTasks(tasks, date));
+    }
+
+    private void resetSelectedDateCell() {
+        if (selectedDateCell != null) {
+            TextView t = (TextView) selectedDateCell.getChildAt(0);
+            t.setBackground(defaultDateNumberDrawable);
+            t.setTextColor(dateTextColors.get(t));
+        }
     }
 
     private Calendar getDate(Calendar c, int monthDay) {
@@ -364,6 +368,7 @@ public class MonthFragment extends Fragment {
     public void clearSelection() {
         if (savedInstanceState != null) savedInstanceState.clear();
 
+        resetSelectedDateCell();
         selectedDateCell = null;
         selectedDate = null;
 
