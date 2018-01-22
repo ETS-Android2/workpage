@@ -197,6 +197,7 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         else {
             // Re-select items
             if (savedInstanceState != null) {
+                // Recover selected item positions
                 int[] selectedItems = savedInstanceState.getIntArray("selected_items");
 
                 if (selectedItems != null) {
@@ -217,6 +218,8 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         int[] selected = new int[selectedItemCount];
 
         for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItems.get(i);
+
+        // Store selected item positions
         outState.putIntArray("selected_items", selected);
 
         ActionMode mode = activity.getActionMode();
@@ -247,7 +250,7 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         TaskAdapter adapter = (TaskAdapter) list.getAdapter();
         List<Integer> selectedItems = getSelectedItems();
 
-        for (int position : selectedItems) {
+        for (int position: selectedItems) {
             Task task = adapter.getItem(position);
             selectedTasks.add(task);
         }

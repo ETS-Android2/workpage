@@ -24,6 +24,7 @@ import jajimenez.workpage.data.model.Task;
 
 public class DateTaskListFragment extends Fragment implements TaskContainerFragment {
     private ListView list;
+    private List<Integer> selectedItemPositions;
 
     private Bundle savedInstanceState;
     private TaskListHostActivity activity;
@@ -60,6 +61,8 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
     }
 
     private void createContextualActionBar() {
+        selectedItemPositions = new LinkedList<>();
+
         list.clearChoices();
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         list.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -121,6 +124,11 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
             }
 
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                // We store the selected items for later accessing them in the
+                // "onSaveInstanceState" as calling "getCheckedItemPositions in
+                // "onSaveInstanceState" will return an empty collection.
+                DateTaskListFragment.this.selectedItemPositions = getSelectedItemPositions(list.getCheckedItemPositions());
+
                 int selectedTaskCount = list.getCheckedItemCount();
                 if (selectedTaskCount > 0) mode.setTitle((DateTaskListFragment.this.getActivity()).getString(R.string.selected, selectedTaskCount));
 
@@ -145,6 +153,18 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         });
     }
 
+    private List<Integer> getSelectedItemPositions(SparseBooleanArray stateItemPositions) {
+        List<Integer> positions = new LinkedList<>();
+        int stateItemPositionCount = stateItemPositions.size();
+
+        for (int i = 0; i < stateItemPositionCount; i++) {
+            int pos = stateItemPositions.keyAt(i);
+            if (stateItemPositions.get(pos)) positions.add(pos);
+        }
+
+        return positions;
+    }
+
     public void setTasks(List<Task> tasks) {
         updateInterface(tasks);
     }
@@ -161,6 +181,7 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         else {
             // Re-select items
             if (savedInstanceState != null) {
+                // Recover selected item positions
                 int[] selectedItems = savedInstanceState.getIntArray("selected_items");
 
                 if (selectedItems != null) {
@@ -177,11 +198,12 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        List<Integer> selectedItems = getSelectedItems();
-        int selectedItemCount = selectedItems.size();
+        int selectedItemCount = selectedItemPositions.size();
         int[] selected = new int[selectedItemCount];
 
-        for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItems.get(i);
+        for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItemPositions.get(i);
+
+        // Store selected item positions
         outState.putIntArray("selected_items", selected);
 
         ActionMode mode = activity.getActionMode();
@@ -190,29 +212,12 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         super.onSaveInstanceState(outState);
     }
 
-    private List<Integer> getSelectedItems() {
-        List<Integer> selectedItems = new LinkedList<>();
-
-        SparseBooleanArray itemSelectedStates = list.getCheckedItemPositions();
-        int itemCount = list.getCount();
-
-        for (int i = 0; i < itemCount; i++) {
-            if (itemSelectedStates.get(i)) {
-                // The item with position "i" is selected.
-                selectedItems.add(i);
-            }
-        }
-
-        return selectedItems;
-    }
-
     private List<Task> getSelectedTasks() {
         List<Task> selectedTasks = new LinkedList<>();
 
         TaskAdapter adapter = (TaskAdapter) list.getAdapter();
-        List<Integer> selectedItems = getSelectedItems();
 
-        for (int position : selectedItems) {
+        for (int position: selectedItemPositions) {
             Task task = adapter.getItem(position);
             selectedTasks.add(task);
         }
@@ -230,6 +235,11 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
 
     public void setEnabled(boolean enabled) {
         (getView()).setEnabled(enabled);
+    }
+
+    public void clearSelection() {
+        if (savedInstanceState != null) savedInstanceState.clear();
+        setTasks(null);
     }
 
     // Method to set the height of a list view when it's inside a scroll view

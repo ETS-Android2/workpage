@@ -1,16 +1,32 @@
 package jajimenez.workpage;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class TaskCalendarFragment extends Fragment implements TaskContainerFragment {
+    private TaskListHostActivity activity;
     private ViewPager pager;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            activity = (TaskListHostActivity) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() +
+                    " must implement TaskListHostActivity");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -19,6 +35,30 @@ public class TaskCalendarFragment extends Fragment implements TaskContainerFragm
         pager = view.findViewById(R.id.task_calendar_pager);
         pager.setAdapter(new CalendarPagerAdapter(getFragmentManager()));
         pager.setCurrentItem(getInitialPageIndex());
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                // Nothing to do
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                FragmentManager manager = getFragmentManager();
+                List<Fragment> fragments = manager.getFragments();
+
+                for (Fragment f: fragments) {
+                    if (f instanceof MonthFragment) {
+                        ((MonthFragment) f).clearSelection();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Nothing to do
+            }
+        });
 
         return view;
     }

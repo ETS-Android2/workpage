@@ -54,6 +54,8 @@ public class MonthFragment extends Fragment {
     private Drawable defaultDateNumberDrawable;
     private Drawable selectedDateNumberDrawable;
 
+    private Bundle savedInstanceState;
+
     // Date to represent
     private int currentYear;
     private int currentMonth;
@@ -64,6 +66,7 @@ public class MonthFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.savedInstanceState = savedInstanceState;
         Bundle arguments = getArguments();
 
         if (arguments != null) {
@@ -359,6 +362,15 @@ public class MonthFragment extends Fragment {
             tasksDbTask = new LoadTasksDBTask();
             tasksDbTask.execute();
         }
+    }
+
+    public void clearSelection() {
+        if (savedInstanceState != null) savedInstanceState.clear();
+
+        selectedDateCell = null;
+        selectedDate = null;
+
+        if (dateListFragment != null) dateListFragment.clearSelection();
     }
 
     private class AppBroadcastReceiver extends BroadcastReceiver {
