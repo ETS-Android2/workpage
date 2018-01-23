@@ -183,6 +183,10 @@ public class MainActivity extends AppCompatActivity
 
                 startActivityForResult(intent, ApplicationLogic.IMPORT_DATA);
                 break;
+            case R.id.main_nav_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.main_nav_about:
                 intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);

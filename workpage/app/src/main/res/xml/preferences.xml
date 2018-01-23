@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/calendar">
+
+        <ListPreference android:key="week_start"
+            android:title="@string/week_start"
+            android:entryValues="@array/week_day_keys"
+            android:defaultValue="@string/week_start_default_key"
+            android:entries="@array/week_day_texts"
+            android:summary="%s" />
+    </PreferenceCategory>
+</PreferenceScreen>

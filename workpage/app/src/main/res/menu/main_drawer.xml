@@ -35,6 +35,11 @@
         android:title="@string/import_data" />
 
     <item
+        android:id="@+id/main_nav_settings"
+        android:icon="@drawable/settings"
+        android:title="@string/settings" />
+
+    <item
         android:id="@+id/main_nav_about"
         android:icon="@drawable/about"
         android:title="@string/about" />

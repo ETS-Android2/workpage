@@ -198,4 +198,7 @@
     <string name="license">Licencia:</string>
     <string name="project_website">Sitio web del proyecto:</string>
 
+    <string name="settings">Configuración</string>
+    <string name="week_start">Comienzo de la semana</string>
+    <string name="week_start_default_key">sun</string>
 </resources>
