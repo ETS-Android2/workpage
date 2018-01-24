@@ -116,8 +116,6 @@ public class MonthFragment extends Fragment {
         defaultDateNumberDrawable = text.getBackground();
         selectedDateNumberDrawable = resources.getDrawable(R.drawable.selected_date_number);
 
-        // Interface
-        setupWeekDayViews();
         if (savedInstanceState != null) selectedDate = getSavedSelectedDate(savedInstanceState);
 
         // Initial task load
@@ -168,6 +166,9 @@ public class MonthFragment extends Fragment {
     }
 
     private void setupWeekDayViews() {
+        ApplicationLogic logic = new ApplicationLogic(getContext());
+        int weekStartDay = logic.getWeekStartDay();
+
         TextTool textTool = new TextTool();
         TableRow row = (TableRow) table.getChildAt(0);
 
@@ -175,19 +176,29 @@ public class MonthFragment extends Fragment {
         int count = names.length;
 
         for (int i = 0; i < count; i++) {
+            int j = (weekStartDay + i) % count;
+
             TextView cell = (TextView) row.getChildAt(i);
-            cell.setText(names[i]);
+            cell.setText(names[j]);
         }
     }
 
     private void updateInterface(final List<Task> tasks) {
+        setupWeekDayViews();
+
+        ApplicationLogic logic = new ApplicationLogic(getContext());
+        int weekStartDay = logic.getWeekStartDay();
+
         Resources resources = getResources();
         DateTimeTool dateTool = new DateTimeTool();
 
         int currentMonthDayCount = current.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        // We get the cell indexes of the first day and the last day of the month
-        int currentFirstDayIndex = current.get(Calendar.DAY_OF_WEEK) - 1;
+        // We get the cell indexes of the first day and the last day of the month.
+        // The DAY_OF_WEEK value is between 1 and 7, so we subtract 1.
+        int currentFirstDayIndex = (current.get(Calendar.DAY_OF_WEEK) - 1 ) - weekStartDay;
+        if (currentFirstDayIndex < 0) currentFirstDayIndex = 7 + currentFirstDayIndex;
+
         int currentLastDayIndex = currentFirstDayIndex + currentMonthDayCount - 1;
 
         // Previous month

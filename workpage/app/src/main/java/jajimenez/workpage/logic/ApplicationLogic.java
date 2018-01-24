@@ -49,6 +49,7 @@ public class ApplicationLogic {
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
     private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_";
+    private static final String WEEK_START_DAY_KEY = "week_start_day";
 
     public static final int INTERFACE_MODE_LIST = 0;
     public static final int INTERFACE_MODE_CALENDAR = 1;
@@ -120,6 +121,11 @@ public class ApplicationLogic {
         String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
 
         return preferences.getInt(key, INTERFACE_MODE_LIST);
+    }
+
+    public int getWeekStartDay() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return Integer.parseInt(preferences.getString(WEEK_START_DAY_KEY, "0"));
     }
 
     public void setCurrentTaskContext(TaskContext context) {
