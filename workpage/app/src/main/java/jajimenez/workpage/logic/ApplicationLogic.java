@@ -257,6 +257,38 @@ public class ApplicationLogic {
         return tasks;
     }
 
+    public List<Task> getDateTasks(List<Task> tasks, Calendar date) {
+        List<Task> dateTasks = new LinkedList<>();
+
+        if (tasks != null && date != null) {
+            DateTimeTool tool = new DateTimeTool();
+            long dateTime = date.getTimeInMillis();
+
+            for (Task t: tasks) {
+                if (t != null) {
+                    Calendar single = tool.getNoTimeCopy(t.getSingle());
+                    Calendar start = tool.getNoTimeCopy(t.getStart());
+                    Calendar end = tool.getNoTimeCopy(t.getEnd());
+
+                    if (single != null && single.getTimeInMillis() == dateTime) dateTasks.add(t);
+
+                    if (start != null &&
+                            end != null &&
+                            start.getTimeInMillis() <= dateTime &&
+                            end.getTimeInMillis() >= dateTime) {
+                        dateTasks.add(t);
+                    } else if (start != null && start.getTimeInMillis() == dateTime) {
+                        dateTasks.add(t);
+                    } else if (end != null && end.getTimeInMillis() == dateTime) {
+                        dateTasks.add(t);
+                    }
+                }
+            }
+        }
+
+        return dateTasks;
+    }
+
     public int getTaskCount(boolean done, TaskContext context) {
         return dataManager.getTaskCount(done, context);
     }

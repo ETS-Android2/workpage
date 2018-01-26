@@ -271,7 +271,7 @@ public class MonthFragment extends Fragment {
                 cellText.setText(String.valueOf(monthDay));
                 dateTextColors.put(cellText, cellText.getCurrentTextColor());
 
-                if ((getDateTasks(tasks, date)).size() > 0) cell.setBackground(taskDateDrawable);
+                if ((logic.getDateTasks(tasks, date)).size() > 0) cell.setBackground(taskDateDrawable);
                 else cell.setBackground(defaultDateDrawable);
 
                 cell.setOnClickListener(new LinearLayout.OnClickListener() {
@@ -289,6 +289,7 @@ public class MonthFragment extends Fragment {
 
     private void selectCell(List<Task> tasks, LinearLayout cell, Calendar date) {
         Resources resources = getResources();
+        ApplicationLogic logic = new ApplicationLogic(getContext());
 
         TextView cellText = cell.findViewById(R.id.month_cell_day);
         cellText.setBackground(selectedDateNumberDrawable);
@@ -299,7 +300,7 @@ public class MonthFragment extends Fragment {
         selectedDateCell = cell;
         selectedDate = date;
 
-        dateListFragment.setTasks(getDateTasks(tasks, date));
+        dateListFragment.setTasks(logic.getDateTasks(tasks, date));
     }
 
     private void resetSelectedDateCell() {
@@ -315,58 +316,6 @@ public class MonthFragment extends Fragment {
         date.set(Calendar.DAY_OF_MONTH, monthDay);
 
         return date;
-    }
-
-    private List<Task> getDateTasks(List<Task> tasks, Calendar date) {
-        List<Task> dateTasks = new LinkedList<>();
-        DateTimeTool tool = new DateTimeTool();
-
-        if (tasks != null && date != null) {
-            Calendar date2 = (Calendar) date.clone();
-            tool.clearTimeFields(date2);
-            long dateTime = date2.getTimeInMillis();
-
-            for (Task t: tasks) {
-                if (t != null) {
-                    Calendar single = t.getSingle();
-
-                    if (single != null) {
-                        tool.clearTimeFields(single);
-
-                        if (single.getTimeInMillis() == dateTime) {
-                            dateTasks.add(t);
-                        }
-                    }
-
-                    Calendar start = t.getStart();
-                    Calendar end = t.getEnd();
-
-                    if (start != null && end != null) {
-                        tool.clearTimeFields(start);
-                        tool.clearTimeFields(end);
-
-                        if (start.getTimeInMillis() <= dateTime && end.getTimeInMillis() >= dateTime) {
-                            dateTasks.add(t);
-                        }
-                    } else if (start != null) {
-                        tool.clearTimeFields(start);
-
-                        if (start.getTimeInMillis() == dateTime) {
-                            dateTasks.add(t);
-                        }
-
-                    } else if (end != null) {
-                        tool.clearTimeFields(end);
-
-                        if (end.getTimeInMillis() == dateTime) {
-                            dateTasks.add(t);
-                        }
-                    }
-                }
-            }
-        }
-
-        return dateTasks;
     }
 
     private void loadTasks() {
