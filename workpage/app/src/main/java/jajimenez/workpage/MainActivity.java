@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -36,9 +39,6 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private MenuItem interfaceModeMenuItem;
-
-    private TaskListFragment listFragment;
-    private TaskCalendarFragment calendarFragment;
 
     // Broadcast receiver
     private AppBroadcastReceiver appBroadcastReceiver;
@@ -79,9 +79,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         interfaceModeMenuItem = (navigationView.getMenu()).findItem(R.id.main_nav_interface_mode);
-
-        listFragment = (TaskListFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_list);
-        calendarFragment = (TaskCalendarFragment) (getSupportFragmentManager()).findFragmentById(R.id.content_main_calendar);
 
         // Listeners
         setDialogListeners();
@@ -278,23 +275,44 @@ public class MainActivity extends AppCompatActivity
         // Task mode (List or Calendar)
         interfaceMode = applicationLogic.getInterfaceMode();
 
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment listFrag = manager.findFragmentByTag("list");
+        Fragment calendarFrag = manager.findFragmentByTag("calendar");
+
         if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
             // Drawer menu
             interfaceModeMenuItem.setTitle(R.string.calendar);
             interfaceModeMenuItem.setIcon(R.drawable.calendar_1);
 
-            // Fragment
-            listFragment.setVisible(false);
-            calendarFragment.setVisible(true);
+            if (calendarFrag == null) {
+                FragmentTransaction t = manager.beginTransaction();
+                calendarFrag = new TaskCalendarFragment();
+
+                if (listFrag == null) {
+                    t.add(R.id.content_main_container, calendarFrag, "calendar");
+                } else {
+                    t.replace(R.id.content_main_container, calendarFrag, "calendar");
+                }
+
+                t.commit();
+            }
         } else {
             // Drawer menu
             interfaceModeMenuItem.setTitle(R.string.list);
             interfaceModeMenuItem.setIcon(R.drawable.list);
 
-            // Fragment
-            listFragment.setVisible(true);
-            calendarFragment.setVisible(false);
-            calendarFragment.resetIndex();
+            if (listFrag == null) {
+                FragmentTransaction t = manager.beginTransaction();
+                listFrag = new TaskListFragment();
+
+                if (calendarFrag == null) {
+                    t.add(R.id.content_main_container, listFrag, "list");
+                } else {
+                    t.replace(R.id.content_main_container, listFrag, "list");
+                }
+
+                t.commit();
+            }
         }
     }
 
