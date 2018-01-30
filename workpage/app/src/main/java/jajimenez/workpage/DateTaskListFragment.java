@@ -240,6 +240,9 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
     public void clearSelection() {
         if (savedInstanceState != null) savedInstanceState.clear();
         setTasks(null);
+
+        ActionMode mode = activity.getActionMode();
+        if (mode != null) mode.finish();
     }
 
     // Method to set the height of a list view when it's inside a scroll view

@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -295,7 +296,7 @@ public class MonthFragment extends Fragment {
         cellText.setBackground(selectedDateNumberDrawable);
         cellText.setTextColor(resources.getColor(R.color.selected_date_text));
 
-        if (selectedDateCell != null && selectedDateCell != cell) resetSelectedDateCell();
+        if (selectedDateCell != null && selectedDateCell != cell) clearSelection(); // resetSelectedDateCell();
 
         selectedDateCell = cell;
         selectedDate = date;
