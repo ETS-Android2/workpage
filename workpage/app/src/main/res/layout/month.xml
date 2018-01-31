@@ -34,6 +34,7 @@
         <fragment android:id="@+id/month_date_list"
             android:name="jajimenez.workpage.DateTaskListFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
 </ScrollView>
