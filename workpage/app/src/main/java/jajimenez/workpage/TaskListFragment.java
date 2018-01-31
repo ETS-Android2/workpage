@@ -101,6 +101,8 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
     }
 
     private void createContextualActionBar() {
+        selectedItemPositions = new LinkedList<>();
+
         list.clearChoices();
         list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         list.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
