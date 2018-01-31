@@ -127,7 +127,7 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
                 // We store the selected items for later accessing them in the
                 // "onSaveInstanceState" as calling "getCheckedItemPositions in
                 // "onSaveInstanceState" will return an empty collection.
-                DateTaskListFragment.this.selectedItemPositions = getSelectedItemPositions(list.getCheckedItemPositions());
+                DateTaskListFragment.this.selectedItemPositions = getSelectedItemPositions(DateTaskListFragment.this.list.getCheckedItemPositions());
 
                 int selectedTaskCount = list.getCheckedItemCount();
                 if (selectedTaskCount > 0) mode.setTitle((DateTaskListFragment.this.getActivity()).getString(R.string.selected, selectedTaskCount));

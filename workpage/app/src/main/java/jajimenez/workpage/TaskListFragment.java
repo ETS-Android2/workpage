@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,6 +32,7 @@ import jajimenez.workpage.logic.ApplicationLogic;
 
 public class TaskListFragment extends Fragment implements TaskContainerFragment {
     private ListView list;
+    private List<Integer> selectedItemPositions;
     private TextView emptyText;
 
     private Bundle savedInstanceState;
@@ -162,6 +162,11 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
             }
 
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                // We store the selected items for later accessing them in the
+                // "onSaveInstanceState" as calling "getCheckedItemPositions in
+                // "onSaveInstanceState" will return an empty collection.
+                TaskListFragment.this.selectedItemPositions = getSelectedItemPositions(TaskListFragment.this.list.getCheckedItemPositions());
+
                 int selectedTaskCount = list.getCheckedItemCount();
                 if (selectedTaskCount > 0) mode.setTitle((TaskListFragment.this.getActivity()).getString(R.string.selected, selectedTaskCount));
 
@@ -184,6 +189,18 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
                 deleteItemIcon.setAlpha(255);
             }
         });
+    }
+
+    private List<Integer> getSelectedItemPositions(SparseBooleanArray stateItemPositions) {
+        List<Integer> positions = new LinkedList<>();
+        int stateItemPositionCount = stateItemPositions.size();
+
+        for (int i = 0; i < stateItemPositionCount; i++) {
+            int pos = stateItemPositions.keyAt(i);
+            if (stateItemPositions.get(pos)) positions.add(pos);
+        }
+
+        return positions;
     }
 
     private void updateInterface(List<Task> tasks) {
@@ -213,11 +230,10 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        List<Integer> selectedItems = getSelectedItems();
-        int selectedItemCount = selectedItems.size();
+        int selectedItemCount = selectedItemPositions.size();
         int[] selected = new int[selectedItemCount];
 
-        for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItems.get(i);
+        for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItemPositions.get(i);
 
         // Store selected item positions
         outState.putIntArray("selected_items", selected);
@@ -228,29 +244,12 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
         super.onSaveInstanceState(outState);
     }
 
-    private List<Integer> getSelectedItems() {
-        List<Integer> selectedItems = new LinkedList<>();
-
-        SparseBooleanArray itemSelectedStates = list.getCheckedItemPositions();
-        int itemCount = list.getCount();
-
-        for (int i = 0; i < itemCount; i++) {
-            if (itemSelectedStates.get(i)) {
-                // The item with position "i" is selected.
-                selectedItems.add(i);
-            }
-        }
-
-        return selectedItems;
-    }
-
     private List<Task> getSelectedTasks() {
         List<Task> selectedTasks = new LinkedList<>();
 
         TaskAdapter adapter = (TaskAdapter) list.getAdapter();
-        List<Integer> selectedItems = getSelectedItems();
 
-        for (int position: selectedItems) {
+        for (int position: selectedItemPositions) {
             Task task = adapter.getItem(position);
             selectedTasks.add(task);
         }
