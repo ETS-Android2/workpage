@@ -17,7 +17,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,7 @@ public class MonthFragment extends Fragment {
 
     private TextView title;
     private TableLayout table;
+    private TextView listTitle;
     private DateTaskListFragment dateListFragment;
 
     private LinearLayout selectedDateCell;
@@ -54,6 +54,7 @@ public class MonthFragment extends Fragment {
     private Map<TextView, Integer> dateTextColors;
     private Drawable defaultDateNumberDrawable;
     private Drawable selectedDateNumberDrawable;
+    private boolean isTablet;
 
     private Bundle savedInstanceState;
 
@@ -67,6 +68,8 @@ public class MonthFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        isTablet = (getResources()).getBoolean(R.bool.is_tablet);
+
         this.savedInstanceState = savedInstanceState;
         Bundle arguments = getArguments();
 
@@ -102,6 +105,13 @@ public class MonthFragment extends Fragment {
         title.setText(textTool.getMonthYearName(current));
 
         table = view.findViewById(R.id.month_table);
+
+        if (isTablet) {
+            listTitle = view.findViewById(R.id.month_list_title);
+        } else {
+            listTitle = null;
+        }
+
         dateListFragment = (DateTaskListFragment) (getChildFragmentManager()).findFragmentById(R.id.month_date_list);
 
         // Drawables
@@ -291,17 +301,35 @@ public class MonthFragment extends Fragment {
     private void selectCell(List<Task> tasks, LinearLayout cell, Calendar date) {
         Resources resources = getResources();
         ApplicationLogic logic = new ApplicationLogic(getContext());
+        TextTool tool = new TextTool();
 
         TextView cellText = cell.findViewById(R.id.month_cell_day);
         cellText.setBackground(selectedDateNumberDrawable);
         cellText.setTextColor(resources.getColor(R.color.selected_date_text));
 
-        if (selectedDateCell != null && selectedDateCell != cell) clearSelection(); // resetSelectedDateCell();
+        if (selectedDateCell != null && selectedDateCell != cell) clearSelection();
 
         selectedDateCell = cell;
         selectedDate = date;
 
-        dateListFragment.setTasks(logic.getDateTasks(tasks, date));
+        // Tasks
+        List<Task> dateTasks = logic.getDateTasks(tasks, date);
+
+        // List title
+        if (listTitle != null) {
+            if (dateTasks.size() == 0) {
+                listTitle.setVisibility(View.GONE);
+                listTitle.setText("");
+            } else {
+                listTitle.setVisibility(View.VISIBLE);
+
+                String dateText = tool.getFormattedDate(getContext(), date, true);
+                listTitle.setText(resources.getString(R.string.date_tasks, dateText));
+            }
+        }
+
+        // List
+        dateListFragment.setTasks(dateTasks);
     }
 
     private void resetSelectedDateCell() {

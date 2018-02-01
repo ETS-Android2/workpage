@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private MenuItem interfaceModeMenuItem;
+    private boolean isTablet;
 
     // Broadcast receiver
     private AppBroadcastReceiver appBroadcastReceiver;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        isTablet = (getResources()).getBoolean(R.bool.is_tablet);
 
         Toolbar toolbar = findViewById(R.id.app_bar_main_toolbar);
         setSupportActionBar(toolbar);
@@ -279,39 +282,45 @@ public class MainActivity extends AppCompatActivity
         Fragment listFrag = manager.findFragmentByTag("list");
         Fragment calendarFrag = manager.findFragmentByTag("calendar");
 
-        if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
-            // Drawer menu
-            interfaceModeMenuItem.setTitle(R.string.calendar);
-            interfaceModeMenuItem.setIcon(R.drawable.calendar_1);
-
-            if (calendarFrag == null) {
-                FragmentTransaction t = manager.beginTransaction();
-                calendarFrag = new TaskCalendarFragment();
-
-                if (listFrag == null) {
-                    t.add(R.id.content_main_container, calendarFrag, "calendar");
-                } else {
-                    t.replace(R.id.content_main_container, calendarFrag, "calendar");
-                }
-
-                t.commit();
-            }
+        if (isTablet) {
+            interfaceModeMenuItem.setVisible(false);
         } else {
-            // Drawer menu
-            interfaceModeMenuItem.setTitle(R.string.list);
-            interfaceModeMenuItem.setIcon(R.drawable.list);
+            interfaceModeMenuItem.setVisible(true);
 
-            if (listFrag == null) {
-                FragmentTransaction t = manager.beginTransaction();
-                listFrag = new TaskListFragment();
+            if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
+                // Drawer menu
+                interfaceModeMenuItem.setTitle(R.string.calendar);
+                interfaceModeMenuItem.setIcon(R.drawable.calendar_1);
 
                 if (calendarFrag == null) {
-                    t.add(R.id.content_main_container, listFrag, "list");
-                } else {
-                    t.replace(R.id.content_main_container, listFrag, "list");
-                }
+                    FragmentTransaction t = manager.beginTransaction();
+                    calendarFrag = new TaskCalendarFragment();
 
-                t.commit();
+                    if (listFrag == null) {
+                        t.add(R.id.content_main_container, calendarFrag, "calendar");
+                    } else {
+                        t.replace(R.id.content_main_container, calendarFrag, "calendar");
+                    }
+
+                    t.commit();
+                }
+            } else {
+                // Drawer menu
+                interfaceModeMenuItem.setTitle(R.string.list);
+                interfaceModeMenuItem.setIcon(R.drawable.list);
+
+                if (listFrag == null) {
+                    FragmentTransaction t = manager.beginTransaction();
+                    listFrag = new TaskListFragment();
+
+                    if (calendarFrag == null) {
+                        t.add(R.id.content_main_container, listFrag, "list");
+                    } else {
+                        t.replace(R.id.content_main_container, listFrag, "list");
+                    }
+
+                    t.commit();
+                }
             }
         }
     }

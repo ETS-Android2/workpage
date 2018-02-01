@@ -201,4 +201,7 @@
     <string name="settings">Settings</string>
     <string name="week_start">Start of the week</string>
     <string name="week_start_default_key">0</string>
+
+    <string name="all_tasks">All tasks</string>
+    <string name="date_tasks">Tasks of %1$s</string>
 </resources>
