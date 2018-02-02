@@ -27,7 +27,7 @@ Project data
 
 Requirements
 ------------
-Android 4.4 (API Level 19)
+* Android 4.4 (API Level 19)
 
 Links
 -----
