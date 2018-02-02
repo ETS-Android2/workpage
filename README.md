@@ -1,39 +1,48 @@
 Workpage
 ========
-Workpage is a simple productivity manager for Android. It allows you to note any task that you have to do or any idea, helping you to free your mind.
+Workpage is a simple task manager for Android. Useful to
+follow methodologies like GTD (Getting Things Done).
 
-Workpage is open source software (license GPL 3.0). The source code is available in GitHub:
-https://github.com/jajimenez/workpage
-
-Application available in Google Play:
-https://play.google.com/store/apps/details?id=jajimenez.workpage
+Workpage is an open source software.
 
 Features
 --------
-1. **Contexts:** Tasks are groupped by "contexts", helping you to focus on one context (e.g. "Personal", "Work"...).
-2. **Tags:** They allow you to classify and filter the tasks of a particular context.
-3. **Colors:** You can asily associate a task with one or more tags using colors.
-4. **Different date/time modes:** No Date, Single Date and Date Range.
-5. **Time zone support:** You can set specific time zones for each task. For a single task, you can set the start date with a specific time zone and the end date with another time zone.
-6. **Reminders:** Every task can optionally have reminders.
-7. **Data export/import:** You can make a backup of your data into a file and recover it later, in your device or in another.
-8. **Available languages:** English, Spanish and German.
+* Contexts ("Personal", "Work"...)
+* Tags
+* Colors
+* List and calendar
+* No date, single date and date range
+* Time zones
+* Reminders
+* Data export and import
+* For phones and tablets
+* Languages: English, Spanish and German
 
 Project data
 ------------
-* **Development version:** 0.10.0
-* **Release version:** 0.9.1
-* **Author:** Jose A. Jimenez (jajimenezcarm@gmail.com)
-* **License:** GPL 3.0
+* Development version:** 0.10.0
+* Release version: 0.9.1
+* Author: Jose A. Jimenez (jajimenezcarm@gmail.com)
+* License: GPL 3.0
 
 Requirements
 ------------
 Android 4.4 (API Level 19)
 
+Links
+-----
+* Website:
+  https://github.com/jajimenez/workpage
+
+* Application in Google Play:
+  https://play.google.com/store/apps/details?id=jajimenez.workpage
+
 Screenshot
 ----------
-![Screenshot](media/readme_screenshot.png)
+![Screenshot](media/readme_screenshot_1.png)
 
-Database Model
+![Screenshot](media/readme_screenshot_2.png)
+
+Database model
 --------------
 ![Screenshot](doc/database.png)
