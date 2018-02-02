@@ -664,7 +664,7 @@ public class EditTaskActivity extends AppCompatActivity {
         TextTool tool = new TextTool();
 
         if (selectedDateMode == ApplicationLogic.NO_DATE) {
-            dateMode.setText(R.string.add_date);
+            dateMode.setText(R.string.no_date);
 
             dateMode1.setVisibility(View.GONE);
             tableDate1.setVisibility(View.GONE);
@@ -718,7 +718,7 @@ public class EditTaskActivity extends AppCompatActivity {
             divider2.setVisibility(View.VISIBLE);
 
             if (start == null) {
-                date1.setText(R.string.add_date);
+                date1.setText(R.string.no_date);
                 time1.setText(R.string.add_time);
                 time1.setVisibility(View.GONE);
                 timeZoneRow1.setVisibility(View.GONE);
@@ -742,7 +742,7 @@ public class EditTaskActivity extends AppCompatActivity {
             }
 
             if (end == null) {
-                date2.setText(R.string.add_date);
+                date2.setText(R.string.no_date);
                 time2.setText(R.string.add_time);
                 time2.setVisibility(View.GONE);
                 timeZoneRow2.setVisibility(View.GONE);

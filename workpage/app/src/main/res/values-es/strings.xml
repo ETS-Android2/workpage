@@ -107,7 +107,6 @@
     <string name="time">Hora</string>
     <string name="date_mode">Modo de fecha</string>
     <string name="no_date">Sin fecha</string>
-    <string name="add_date">Añadir fecha</string>
     <string name="single_date">Fecha simple</string>
     <string name="no_time">Sin hora</string>
     <string name="add_time">Añadir hora</string>
