@@ -30,6 +30,10 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
+    <View android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/divider" />
+
     <fragment android:id="@+id/content_main_calendar"
         class="jajimenez.workpage.TaskCalendarFragment"
         android:layout_width="0dp"
