@@ -37,8 +37,8 @@ Links
 * Application in Google Play:
   https://play.google.com/store/apps/details?id=jajimenez.workpage
 
-Screenshot
-----------
+Screenshots
+-----------
 ![Screenshot](media/readme_screenshot_1.png)
 
 ![Screenshot](media/readme_screenshot_2.png)
