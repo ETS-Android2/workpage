@@ -182,11 +182,11 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
             // Re-select items
             if (savedInstanceState != null) {
                 // Recover selected item positions
-                int[] selectedItems = savedInstanceState.getIntArray("selected_items");
+                int[] selectedItems = savedInstanceState.getIntArray("calendar_selected_items");
 
                 if (selectedItems != null) {
                     for (int position : selectedItems) list.setItemChecked(position, true);
-                    savedInstanceState.remove("selected_items");
+                    savedInstanceState.remove("calendar_selected_items");
                 }
             }
 
@@ -204,7 +204,7 @@ public class DateTaskListFragment extends Fragment implements TaskContainerFragm
         for (int i = 0; i < selectedItemCount; i++) selected[i] = selectedItemPositions.get(i);
 
         // Store selected item positions
-        outState.putIntArray("selected_items", selected);
+        outState.putIntArray("calendar_selected_items", selected);
 
         ActionMode mode = activity.getActionMode();
         if (mode != null) mode.finish();
