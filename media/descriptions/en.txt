@@ -1,16 +1,20 @@
-Workpage is a simple productivity manager. It allows you to note any task that you have to do or any idea, helping you to free your mind.
+Workpage is a simple task manager. Useful to follow
+methodologies like GTD (Getting Things Done).
 
-Workpage is open source software. It does not have any advertisement and will never have.
+Workpage is an open source software.
 
 Features:
----------
-1. Contexts: Tasks are groupped by "contexts", helping you to focus on one context (e.g. "Personal", "Work"...).
-2. Tags: They allow you to classify and filter the tasks of a particular context.
-3. Colors: You can asily associate a task with one or more tags using colors.
-4. Different dates/time modes: No Date, Single Date and Date Range.
-5. Time zone support: You can set specific time zones for each task. For a single task, you can set the start date with a specific time zone and the end date with another time zone.
-6. Reminders: Every task can optionally have reminders.
-7. Data export/import: You can make a backup of your data into a file and recover it later, in your device or in another.
-8. Available languages: English, Spanish and German.
 
-The source code of the project is available on GitHub: https://github.com/jajimenez/workpage
+* Contexts ("Personal", "Work"...)
+* Tags
+* Colors
+* List and calendar
+* No date, single date and date range
+* Time zones
+* Reminders
+* Data export and import
+* For phones and tablets
+* Languages: English, Spanish and German
+
+Website:
+https://github.com/jajimenez/workpage
