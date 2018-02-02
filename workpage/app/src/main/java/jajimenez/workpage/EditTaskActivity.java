@@ -56,7 +56,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private Button reminder2;
     private View divider2;
 
-    private EditDescriptionDialogFragment.OnOkButtonClickedListener descriptionListener;
+    private EditDescriptionDialogFragment.OnDialogClosedListener descriptionListener;
     private DateModeDialogFragment.OnDateModeSetListener dateModeListener;
     private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener1;
     private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener2;
@@ -139,8 +139,8 @@ public class EditTaskActivity extends AppCompatActivity {
 
         if (mode != null && mode.equals("new")) title.requestFocus();
 
-        descriptionListener = new EditDescriptionDialogFragment.OnOkButtonClickedListener() {
-            public void onOkButtonClicked(String description) {
+        descriptionListener = new EditDescriptionDialogFragment.OnDialogClosedListener() {
+            public void onDialogClosed(String description) {
                 EditTaskActivity.this.currentTask.setDescription(description);
                 EditTaskActivity.this.updateInterface();
             }
@@ -424,7 +424,7 @@ public class EditTaskActivity extends AppCompatActivity {
         else {
             // Dialog listeners
             EditDescriptionDialogFragment descriptionFragment = (EditDescriptionDialogFragment) (getFragmentManager()).findFragmentByTag("edit_description");
-            if (descriptionFragment != null) descriptionFragment.setOnOkButtonClickedListener(descriptionListener);
+            if (descriptionFragment != null) descriptionFragment.setOnDialogClosedListener(descriptionListener);
 
             DateModeDialogFragment modeFragment = (DateModeDialogFragment) (getFragmentManager()).findFragmentByTag("date_mode");
             if (modeFragment != null) modeFragment.setOnDateModeSetListener(dateModeListener);
@@ -843,7 +843,7 @@ public class EditTaskActivity extends AppCompatActivity {
         arguments.putString("description", currentTask.getDescription());
         fragment.setArguments(arguments);
 
-        fragment.setOnOkButtonClickedListener(descriptionListener);
+        fragment.setOnDialogClosedListener(descriptionListener);
         fragment.show(getFragmentManager(), "edit_description");
     }
 
