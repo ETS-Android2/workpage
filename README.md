@@ -39,9 +39,7 @@ Links
 
 Screenshots
 -----------
-![Screenshot](media/readme_screenshot_1.png)
-
-![Screenshot](media/readme_screenshot_2.png)
+![Screenshot](media/readme_screenshot_1.png) ![Screenshot](media/readme_screenshot_2.png)
 
 Database model
 --------------
