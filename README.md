@@ -38,6 +38,6 @@ Screenshots
 -----------
 ![Screenshot](media/readme_screenshot_1.png) ![Screenshot](media/readme_screenshot_2.png) ![Screenshot](media/readme_screenshot_3.png)
 
-Database model
---------------
+Data model
+----------
 ![Screenshot](doc/database.png)
