@@ -1,4 +1,4 @@
-Workpage ist ein einfacher Aufgabenmanager. Nützlich
+Workpage ist ein einfacher Aufgaben Manager. Nützlich
 um zu folgen Methoden wie GTD (Getting Things Done).
 
 Workpage ist ein Freie Software.
