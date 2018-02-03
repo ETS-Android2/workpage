@@ -31,11 +31,8 @@ Requirements
 
 Links
 -----
-* Website:
-  https://github.com/jajimenez/workpage
-
-* Application in Google Play:
-  https://play.google.com/store/apps/details?id=jajimenez.workpage
+* Website: https://github.com/jajimenez/workpage
+* Application in Google Play: https://play.google.com/store/apps/details?id=jajimenez.workpage
 
 Screenshots
 -----------
