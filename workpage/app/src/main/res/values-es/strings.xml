@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Workpage</string>
 
-    <string name="app_description">Gestor de productividad</string>
-    <string name="app_version">0.9.1</string>
+    <string name="app_description">Gestor de tareas</string>
+    <string name="app_version">0.10.0</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
     <string name="app_web_site">https://github.com/jajimenez/workpage</string>
@@ -69,6 +69,10 @@
     <string name="selected">%1$d seleccionadas</string>
     <string name="state_1">Estado:</string>
 
+    <string name="mode">Modo</string>
+    <string name="list">Lista</string>
+    <string name="calendar">Calendario</string>
+
     <string name="task">Tarea</string>
     <string name="task_date_base">%1$s %2$s</string>
     <string name="task_datetime">%1$s - %2$s</string>
@@ -103,7 +107,6 @@
     <string name="time">Hora</string>
     <string name="date_mode">Modo de fecha</string>
     <string name="no_date">Sin fecha</string>
-    <string name="add_date">Añadir fecha</string>
     <string name="single_date">Fecha simple</string>
     <string name="no_time">Sin hora</string>
     <string name="add_time">Añadir hora</string>
@@ -194,4 +197,10 @@
     <string name="license">Licencia:</string>
     <string name="project_website">Sitio web del proyecto:</string>
 
+    <string name="settings">Configuración</string>
+    <string name="week_start">Comienzo de la semana</string>
+    <string name="week_start_default_key">1</string>
+
+    <string name="all_tasks">Todas las tareas</string>
+    <string name="date_tasks">Tareas de %1$s</string>
 </resources>

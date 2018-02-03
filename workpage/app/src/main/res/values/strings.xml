@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Workpage</string>
 
-    <string name="app_description">Productivity manager</string>
-    <string name="app_version">0.9.1</string>
+    <string name="app_description">Task manager</string>
+    <string name="app_version">0.10.0</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
     <string name="app_web_site">https://github.com/jajimenez/workpage</string>
@@ -69,6 +69,10 @@
     <string name="selected">%1$d selected</string>
     <string name="state_1">State:</string>
 
+    <string name="mode">Mode</string>
+    <string name="list">List</string>
+    <string name="calendar">Calendar</string>
+
     <string name="task">Task</string>
     <string name="task_date_base">%1$s %2$s</string>
     <string name="task_datetime">%1$s - %2$s</string>
@@ -103,7 +107,6 @@
     <string name="time">Time</string>
     <string name="date_mode">Date mode</string>
     <string name="no_date">No date</string>
-    <string name="add_date">Add date</string>
     <string name="single_date">Single date</string>
     <string name="no_time">No time</string>
     <string name="add_time">Add time</string>
@@ -194,4 +197,10 @@
     <string name="license">License:</string>
     <string name="project_website">Project website:</string>
 
+    <string name="settings">Settings</string>
+    <string name="week_start">Start of the week</string>
+    <string name="week_start_default_key">0</string>
+
+    <string name="all_tasks">All tasks</string>
+    <string name="date_tasks">Tasks of %1$s</string>
 </resources>

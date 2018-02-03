@@ -1,324 +1,172 @@
 package jajimenez.workpage;
 
-import java.util.List;
-import java.util.LinkedList;
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuInflater;
-import android.view.ActionMode;
-import android.widget.AdapterView;
+import android.view.View;
 import android.widget.TextView;
-import android.widget.AbsListView;
-import android.widget.ListView;
-import android.graphics.drawable.Drawable;
-import android.util.SparseBooleanArray;
 import android.widget.Toast;
 
-import jajimenez.workpage.logic.ApplicationLogic;
+import java.util.List;
+
+import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
-import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.logic.ApplicationLogic;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, TaskListHostActivity {
 
+    private ActionMode actionMode;
+    private TextView viewFilterTextView;
     private DrawerLayout drawer;
     private NavigationView navigationView;
-    private TextView viewFilterTextView;
-    private ActionMode actionMode;
-    private ListView listView;
-    private TextView emptyTextView;
+    private MenuItem interfaceModeMenuItem;
+    private boolean isTablet;
 
-    private Bundle savedInstanceState;
-    private boolean interfaceReady;
+    // Broadcast receiver
+    private AppBroadcastReceiver appBroadcastReceiver;
 
-    private SwitchTaskContextDialogFragment.OnTaskContextsChangedListener switchTaskContextListener;
-    private ChangeTaskStatusDialogFragment.OnItemClickListener taskStatusChangeListener;
-    private DeleteTaskDialogFragment.OnDeleteListener deleteTaskListener;
+    // Listeners
     private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
-
-    private LoadTasksDBTask tasksDbTask = null;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
     private String viewStateFilter;
     private boolean includeTasksWithNoTag;
     private List<TaskTag> currentFilterTags;
+    private int interfaceMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar_main_toolbar);
+        isTablet = (getResources()).getBoolean(R.bool.is_tablet);
+
+        Toolbar toolbar = findViewById(R.id.app_bar_main_toolbar);
         setSupportActionBar(toolbar);
 
-        viewFilterTextView = (TextView) findViewById(R.id.main_view_filter);
         actionMode = null;
-
-        listView = (ListView) findViewById(R.id.main_list);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView l, View v, int position, long id) {
-                Task selectedTask = (Task) l.getItemAtPosition(position);
-
-                Intent intent = new Intent(MainActivity.this, TaskActivity.class);
-                intent.putExtra("task_id", selectedTask.getId());
-
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-            }
-        });
-
-
-        emptyTextView = (TextView) findViewById(R.id.main_empty);
-
-        createContextualActionBar();
-        interfaceReady = false;
+        viewFilterTextView = findViewById(R.id.main_view_filter);
 
         // Navigation menu
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
 
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        interfaceModeMenuItem = (navigationView.getMenu()).findItem(R.id.main_nav_interface_mode);
+
         // Listeners
-        switchTaskContextListener = new SwitchTaskContextDialogFragment.OnTaskContextsChangedListener() {
-            public void onNewCurrentTaskContext() {
-                MainActivity.this.updateInterface();
-            }
+        setDialogListeners();
 
-            public void onEditTaskContextsSelected() {
-                Intent intent = new Intent(MainActivity.this, EditTaskContextsActivity.class);
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_CONTEXTS);
-            }
-        };
+        // Instance state
+        if (savedInstanceState != null) resetDialogListeners();
 
-        taskStatusChangeListener = new ChangeTaskStatusDialogFragment.OnItemClickListener() {
-            public void onItemClick() {
-                // Close the context action bar.
-                if (MainActivity.this.actionMode != null) MainActivity.this.actionMode.finish();
+        // Parameters
+        applicationLogic = new ApplicationLogic(this);
 
-                // Update the list view.
-                MainActivity.this.updateInterface();
-            }
-        };
+        // Reminders
+        applicationLogic.updateAllOpenTaskReminderAlarms(false);
 
-        deleteTaskListener = new DeleteTaskDialogFragment.OnDeleteListener() {
-            public void onDelete() {
-                // Close the context action bar.
-                if (MainActivity.this.actionMode != null) MainActivity.this.actionMode.finish();
+        // User interface
+        updateInterface();
 
-                // Update the list view.
-                MainActivity.this.updateInterface();
-            }
-        };
+        // Broadcast receiver
+        registerBroadcastReceiver();
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
+    }
+
+    private void setDialogListeners() {
         onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
             public void onConfirmation(Uri input) {
                 (new ImportDataTask()).execute(input);
             }
         };
-
-        // Instance state
-        this.savedInstanceState = savedInstanceState;
-
-        if (savedInstanceState != null) {
-            SwitchTaskContextDialogFragment switchTaskContextFragment = (SwitchTaskContextDialogFragment) (getFragmentManager()).findFragmentByTag("switch_task_context");
-            if (switchTaskContextFragment != null) switchTaskContextFragment.setOnTaskContextsChangedListener(switchTaskContextListener);
-
-            ChangeTaskStatusDialogFragment changeTaskStatusFragment = (ChangeTaskStatusDialogFragment) (getFragmentManager()).findFragmentByTag("change_task_status");
-            if (changeTaskStatusFragment != null) changeTaskStatusFragment.setOnItemClickListener(taskStatusChangeListener);
-
-            DeleteTaskDialogFragment deleteTaskFragment = (DeleteTaskDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task");
-            if (deleteTaskFragment != null) deleteTaskFragment.setOnDeleteListener(deleteTaskListener);
-
-            DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
-            if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
-        }
-
-        // Parameters
-        applicationLogic = new ApplicationLogic(this);
-        viewStateFilter = "";
-        includeTasksWithNoTag = true;
-        currentFilterTags = new LinkedList<TaskTag>();
-
-        applicationLogic.updateAllOpenTaskReminderAlarms(false);
-        updateInterface();
     }
 
-    private void createContextualActionBar() {
-        listView.clearChoices();
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                MainActivity.this.actionMode = mode;
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
 
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.task, menu);
-
-                return true;
-            }
-
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            public void onDestroyActionMode(ActionMode mode) {
-                MainActivity.this.actionMode = null;
-            }
-
-            // Returns "true" if this callback handled the event, "false"
-            // if the standard "MenuItem" invocation should continue.
-            public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
-                boolean eventHandled = false;
-                final List<Task> selectedTasks = MainActivity.this.getSelectedTasks();
-
-                Bundle arguments;
-                int selectedTaskCount;
-                long[] taskIds;
-
-                switch (item.getItemId()) {
-                    case R.id.task_menu_status:
-                        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment();
-
-                        arguments = new Bundle();
-                        selectedTaskCount = selectedTasks.size();
-                        taskIds = new long[selectedTaskCount];
-
-                        for (int i = 0; i < selectedTaskCount; i++) {
-                            Task t = selectedTasks.get(i);
-                            taskIds[i] = t.getId();
-                        }
-
-                        arguments.putLongArray("task_ids", taskIds);
-                        statusFragment.setArguments(arguments);
-
-                        statusFragment.setOnItemClickListener(MainActivity.this.taskStatusChangeListener);
-                        statusFragment.show(getFragmentManager(), "change_task_status");
-
-                        eventHandled = true;
-                        break;
-
-                    case R.id.task_menu_edit:
-                        // Open the task edition activity.
-                        long selectedTaskId = (selectedTasks.get(0)).getId();
-
-                        Intent intent = new Intent(MainActivity.this, EditTaskActivity.class);
-                        intent.putExtra("mode", "edit");
-                        intent.putExtra("task_id", selectedTaskId);
-
-                        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-
-                        // Close the context action bar.
-                        mode.finish();
-
-                        eventHandled = true;
-                        break;
-
-                    case R.id.task_menu_delete:
-                        // Show a deletion confirmation dialog.
-                        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment();
-
-                        arguments = new Bundle();
-                        selectedTaskCount = selectedTasks.size();
-                        taskIds = new long[selectedTaskCount];
-
-                        for (int i = 0; i < selectedTaskCount; i++) {
-                            Task t = selectedTasks.get(i);
-                            taskIds[i] = t.getId();
-                        }
-
-                        arguments.putLongArray("task_ids", taskIds);
-                        deleteFragment.setArguments(arguments);
-
-                        deleteFragment.setOnDeleteListener(MainActivity.this.deleteTaskListener);
-                        deleteFragment.show(getFragmentManager(), "delete_task");
-
-                        eventHandled = true;
-                        break;
-                }
-
-                return eventHandled;
-            }
-
-            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
-                int selectedTaskCount = MainActivity.this.listView.getCheckedItemCount();
-                if (selectedTaskCount > 0) mode.setTitle(MainActivity.this.getString(R.string.selected, selectedTaskCount));
-
-                MenuItem editItem = (mode.getMenu()).findItem(R.id.task_menu_edit);
-                Drawable editItemIcon = editItem.getIcon();
-
-                MenuItem deleteItem = (mode.getMenu()).findItem(R.id.task_menu_delete);
-                Drawable deleteItemIcon = deleteItem.getIcon();
-
-                if (selectedTaskCount == 1) {
-                    editItem.setEnabled(true);
-                    editItemIcon.setAlpha(255);
-                }
-                else {
-                    editItem.setEnabled(false);
-                    editItemIcon.setAlpha(127);
-                }
-
-                deleteItem.setEnabled(true);
-                deleteItemIcon.setAlpha(255);
-            }
-        });
+        (LocalBroadcastManager.getInstance(this)).registerReceiver(appBroadcastReceiver, intentFilter);
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(this)).unregisterReceiver(appBroadcastReceiver);
+    }
+
+    private void closeActionBar() {
+        // Close the context action bar
+        if (actionMode != null) actionMode.finish();
+    }
+
+    private void resetDialogListeners() {
+        DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
+        if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
+    }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         if (drawer.isDrawerOpen(GravityCompat.START)) drawer.closeDrawer(GravityCompat.START);
         else super.onBackPressed();
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        if (!interfaceReady) return true;
-
+        // Handle navigation view item clicks here
         int id = item.getItemId();
         Intent intent;
 
         switch (id) {
             case R.id.main_nav_context:
                 SwitchTaskContextDialogFragment fragment = new SwitchTaskContextDialogFragment();
-                fragment.setOnTaskContextsChangedListener(switchTaskContextListener);
                 fragment.show(getFragmentManager(), "switch_task_context");
                 break;
             case R.id.main_nav_view:
                 intent = new Intent(this, ViewActivity.class);
-                startActivityForResult(intent, ApplicationLogic.CHANGE_VIEW);
+                startActivity(intent);
                 break;
             case R.id.main_nav_edit_tags:
                 intent = new Intent(this, EditTaskTagsActivity.class);
-                startActivityForResult(intent, ApplicationLogic.CHANGE_TASK_TAGS);
+                startActivity(intent);
+                break;
+            case R.id.main_nav_interface_mode:
+                SwitchInterfaceModeDialogFragment interfaceModeFragment = new SwitchInterfaceModeDialogFragment();
+                interfaceModeFragment.show(getFragmentManager(), "switch_interface_mode");
                 break;
             case R.id.main_nav_export_data:
                 intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -335,13 +183,17 @@ public class MainActivity extends AppCompatActivity
 
                 startActivityForResult(intent, ApplicationLogic.IMPORT_DATA);
                 break;
+            case R.id.main_nav_settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.main_nav_about:
                 intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
@@ -352,14 +204,7 @@ public class MainActivity extends AppCompatActivity
         Bundle arguments;
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == ApplicationLogic.CHANGE_TASKS
-                    || requestCode == ApplicationLogic.CHANGE_TASK_TAGS
-                    || requestCode == ApplicationLogic.CHANGE_VIEW
-                    || requestCode == ApplicationLogic.CHANGE_TASK_CONTEXTS) {
-
-                updateInterface();
-            }
-            else if (requestCode == ApplicationLogic.EXPORT_DATA) {
+            if (requestCode == ApplicationLogic.EXPORT_DATA) {
                 // Export data
                 Uri output = resultData.getData();
                 (new ExportDataTask()).execute(output);
@@ -380,9 +225,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void onAddClick(View view) {
-        if (!interfaceReady) return;
-
+    public void onAddClicked(View view) {
         // Close the context action bar
         if (actionMode != null) actionMode.finish();
 
@@ -391,33 +234,30 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("mode", "new");
         intent.putExtra("task_context_id", currentTaskContext.getId());
 
-        startActivityForResult(intent, ApplicationLogic.CHANGE_TASKS);
-    }
-
-    public void enableInterface() {
-        listView.setEnabled(true);
-        interfaceReady = true;
-    }
-
-    public void disableInterface() {
-        interfaceReady = false;
-        listView.setEnabled(false);
+        startActivity(intent);
     }
 
     public void updateInterface() {
-        // Information about the current task context.
+        // Information about the current task context
         currentTaskContext = applicationLogic.getCurrentTaskContext();
         Menu drawerMenu = navigationView.getMenu();
         MenuItem contextItem = drawerMenu.findItem(R.id.main_nav_context);
         contextItem.setTitle(currentTaskContext.getName());
 
-        // Information about the current view.
+        // Information about the current view
         viewStateFilter = this.applicationLogic.getViewStateFilter();
         String stateFilterText;
 
-        if (viewStateFilter.equals("open")) stateFilterText = getString(R.string.open_2);
-        else if (viewStateFilter.equals("doable_today")) stateFilterText = getString(R.string.doable_today_2);
-        else stateFilterText = getString(R.string.closed_2);
+        switch (viewStateFilter) {
+            case "open":
+                stateFilterText = getString(R.string.open_2);
+                break;
+            case "doable_today":
+                stateFilterText = getString(R.string.doable_today_2);
+                break;
+            default:
+                stateFilterText = getString(R.string.closed_2);
+        }
 
         // Information about the current filter tags.
         includeTasksWithNoTag = this.applicationLogic.getIncludeTasksWithNoTag();
@@ -435,113 +275,146 @@ public class MainActivity extends AppCompatActivity
             viewFilterTextView.setText(stateFilterText);
         }
 
-        if (tasksDbTask == null || tasksDbTask.getStatus() == AsyncTask.Status.FINISHED) {
-            tasksDbTask = new LoadTasksDBTask();
-            tasksDbTask.execute();
-        }
-    }
+        // Task mode (List or Calendar)
+        interfaceMode = applicationLogic.getInterfaceMode();
 
-    private void updateTaskListInterface(List<Task> tasks) {
-        if (tasks == null) tasks = new LinkedList<Task>();
+        FragmentManager manager = getSupportFragmentManager();
+        Fragment listFrag = manager.findFragmentByTag("list");
+        Fragment calendarFrag = manager.findFragmentByTag("calendar");
 
-        TaskAdapter adapter = new TaskAdapter(this, R.layout.task_list_item, tasks);
-        listView.setAdapter(adapter);
+        if (isTablet) {
+            interfaceModeMenuItem.setVisible(false);
+        } else {
+            interfaceModeMenuItem.setVisible(true);
 
-        if (adapter.isEmpty()) {
-            listView.setVisibility(View.GONE);
-            emptyTextView.setVisibility(View.VISIBLE);
-        }
-        else {
-            if (savedInstanceState != null) {
-                int[] selectedItems = savedInstanceState.getIntArray("selected_items");
+            if (interfaceMode == ApplicationLogic.INTERFACE_MODE_CALENDAR) {
+                // Drawer menu
+                interfaceModeMenuItem.setTitle(R.string.calendar);
+                interfaceModeMenuItem.setIcon(R.drawable.calendar_1);
 
-                if (selectedItems != null) {
-                    for (int position : selectedItems) listView.setItemChecked(position, true);
-                    savedInstanceState.remove("selected_items");
+                if (calendarFrag == null) {
+                    FragmentTransaction t = manager.beginTransaction();
+                    calendarFrag = new TaskCalendarFragment();
+
+                    if (listFrag == null) {
+                        t.add(R.id.content_main_container, calendarFrag, "calendar");
+                    } else {
+                        t.replace(R.id.content_main_container, calendarFrag, "calendar");
+                    }
+
+                    t.commit();
+                }
+            } else {
+                // Drawer menu
+                interfaceModeMenuItem.setTitle(R.string.list);
+                interfaceModeMenuItem.setIcon(R.drawable.list);
+
+                if (listFrag == null) {
+                    FragmentTransaction t = manager.beginTransaction();
+                    listFrag = new TaskListFragment();
+
+                    if (calendarFrag == null) {
+                        t.add(R.id.content_main_container, listFrag, "list");
+                    } else {
+                        t.replace(R.id.content_main_container, listFrag, "list");
+                    }
+
+                    t.commit();
                 }
             }
-
-            listView.setVisibility(View.VISIBLE);
-            emptyTextView.setVisibility(View.GONE);
         }
     }
 
-    private List<Integer> getSelectedItems() {
-        List<Integer> selectedItems = new LinkedList<Integer>();
-
-        SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
-        int itemCount = listView.getCount();
-
-        for (int i = 0; i < itemCount; i++) {
-            if (itemSelectedStates.get(i)) {
-                // The item with position "i" is selected.
-                selectedItems.add(i);
-            }
-        }
-
-        return selectedItems;
+    @Override
+    public ActionMode getActionMode() {
+        return actionMode;
     }
 
-    private List<Task> getSelectedTasks() {
-        List<Task> selectedTasks = new LinkedList<Task>();
-
-        TaskAdapter adapter = (TaskAdapter) listView.getAdapter();
-        List<Integer> selectedItems = getSelectedItems();
-
-        for (int position : selectedItems) {
-            Task task = adapter.getItem(position);
-            selectedTasks.add(task);
-        }
-
-        return selectedTasks;
+    @Override
+    public void setActionMode(ActionMode mode) {
+        actionMode = mode;
     }
 
-    private class LoadTasksDBTask extends AsyncTask<Void, Void, List<Task>> {
-        protected void onPreExecute() {
-            MainActivity.this.disableInterface();
+    @Override
+    public void onTaskClicked(Task task) {
+        Intent intent = new Intent(MainActivity.this, TaskActivity.class);
+        intent.putExtra("task_id", task.getId());
+
+        startActivity(intent);
+    }
+
+    @Override
+    public void showChangeTaskStatusDialog(List<Task> tasks) {
+        ChangeTaskStatusDialogFragment statusFragment = new ChangeTaskStatusDialogFragment();
+
+        Bundle arguments = new Bundle();
+        int selectedTaskCount = tasks.size();
+        long[] taskIds = new long[selectedTaskCount];
+
+        for (int i = 0; i < selectedTaskCount; i++) {
+            Task t = tasks.get(i);
+            taskIds[i] = t.getId();
         }
 
-        protected List<Task> doInBackground(Void... parameters) {
-            List<Task> tasks = null;
+        arguments.putLongArray("task_ids", taskIds);
 
-            if (viewStateFilter.equals("open")) {
-                tasks = MainActivity.this.applicationLogic.getOpenTasksByTags(MainActivity.this.currentTaskContext,
-                    MainActivity.this.includeTasksWithNoTag,
-                    MainActivity.this.currentFilterTags);
-            }
-            else if (viewStateFilter.equals("doable_today")) {
-                tasks = MainActivity.this.applicationLogic.getDoableTodayTasksByTags(MainActivity.this.currentTaskContext,
-                    MainActivity.this.includeTasksWithNoTag,
-                    MainActivity.this.currentFilterTags);
-            }
-            else if (viewStateFilter.equals("closed")) {
-                tasks = MainActivity.this.applicationLogic.getClosedTasksByTags(MainActivity.this.currentTaskContext,
-                    MainActivity.this.includeTasksWithNoTag,
-                    MainActivity.this.currentFilterTags);
-            }
+        statusFragment.setArguments(arguments);
+        statusFragment.show(getFragmentManager(), "change_task_status");
+    }
 
-            return tasks;
+    @Override
+    public void showEditActivity(Task task) {
+        long taskId = task.getId();
+
+        Intent intent = new Intent(this, EditTaskActivity.class);
+        intent.putExtra("mode", "edit");
+        intent.putExtra("task_id", taskId);
+
+        startActivity(intent);
+    }
+
+    @Override
+    public void showDeleteTaskDialog(List<Task> tasks) {
+        DeleteTaskDialogFragment deleteFragment = new DeleteTaskDialogFragment();
+
+        Bundle arguments = new Bundle();
+        int selectedTaskCount = tasks.size();
+        long[] taskIds = new long[selectedTaskCount];
+
+        for (int i = 0; i < selectedTaskCount; i++) {
+            Task t = tasks.get(i);
+            taskIds[i] = t.getId();
         }
 
-        protected void onPostExecute(List<Task> tasks) {
-            MainActivity.this.updateTaskListInterface(tasks);
-            MainActivity.this.enableInterface();
+        arguments.putLongArray("task_ids", taskIds);
+
+        deleteFragment.setArguments(arguments);
+        deleteFragment.show(getFragmentManager(), "delete_task");
+    }
+
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MainActivity.this.closeActionBar();
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                MainActivity.this.updateInterface();
+            }
         }
     }
 
     private class ExportDataTask extends AsyncTask<Uri, Void, Boolean> {
         protected void onPreExecute() {
-            MainActivity.this.disableInterface();
+            // Nothing to do
         }
 
         protected Boolean doInBackground(Uri... parameters) {
             Uri output = parameters[0];
 
-            // "result" will be "false" if the operation was
-            // successful or "true" if there was any error.
-            boolean result = MainActivity.this.applicationLogic.exportData(output);
-
-            return result;
+            // The returned value will be "false" if the operation
+            // was successful or "true" if there was any error.
+            return MainActivity.this.applicationLogic.exportData(output);
         }
 
         protected void onPostExecute(Boolean result) {
@@ -551,21 +424,17 @@ public class MainActivity extends AppCompatActivity
             else {
                 (Toast.makeText(MainActivity.this, R.string.export_success, Toast.LENGTH_SHORT)).show();
             }
-
-            MainActivity.this.enableInterface();
         }
     }
 
     private class ImportDataTask extends AsyncTask<Uri, Void, Integer> {
         protected void onPreExecute() {
-            MainActivity.this.disableInterface();
+            // Nothing to do
         }
 
         protected Integer doInBackground(Uri... parameters) {
             Uri input = parameters[0];
-            int result = MainActivity.this.applicationLogic.importData(input);
-
-            return result;
+            return MainActivity.this.applicationLogic.importData(input); // Return result
         }
 
         protected void onPostExecute(Integer result) {
@@ -589,8 +458,6 @@ public class MainActivity extends AppCompatActivity
                     (Toast.makeText(MainActivity.this, R.string.import_error_importing_data, Toast.LENGTH_SHORT)).show();
                     break;
             }
-
-            MainActivity.this.updateInterface();
         }
     }
 }

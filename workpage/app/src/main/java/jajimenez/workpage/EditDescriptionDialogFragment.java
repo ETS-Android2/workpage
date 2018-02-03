@@ -1,11 +1,11 @@
 package jajimenez.workpage;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
@@ -13,12 +13,12 @@ import android.widget.EditText;
 
 public class EditDescriptionDialogFragment extends DialogFragment {
     private EditText descriptionEditText;
-    private OnOkButtonClickedListener onOkButtonClickedListener;
+    private OnDialogClosedListener onDialogClosedListener;
 
     private String description;
 
     public EditDescriptionDialogFragment() {
-        onOkButtonClickedListener = null;
+        onDialogClosedListener = null;
     }
 
     @Override
@@ -29,21 +29,13 @@ public class EditDescriptionDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_description, null);
 
-        descriptionEditText = (EditText) view.findViewById(R.id.edit_description_description);
+        descriptionEditText = view.findViewById(R.id.edit_description_description);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
 
         builder.setTitle(R.string.description);
-        builder.setNegativeButton(R.string.cancel, null);
-        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                if (EditDescriptionDialogFragment.this.onOkButtonClickedListener != null) {
-                    String description = (EditDescriptionDialogFragment.this.descriptionEditText.getText()).toString();
-                    EditDescriptionDialogFragment.this.onOkButtonClickedListener.onOkButtonClicked(description);
-                }
-            }
-        });
+        builder.setNegativeButton(R.string.accept, null);
 
         Dialog dialog = builder.create();
         (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -59,11 +51,19 @@ public class EditDescriptionDialogFragment extends DialogFragment {
         descriptionEditText.requestFocus();
     }
 
-    public void setOnOkButtonClickedListener(OnOkButtonClickedListener listener) {
-        onOkButtonClickedListener = listener;
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        if (onDialogClosedListener != null) {
+            String description = (descriptionEditText.getText()).toString();
+            onDialogClosedListener.onDialogClosed(description);
+        }
     }
 
-    public static interface OnOkButtonClickedListener {
-        void onOkButtonClicked(String description);
+    public void setOnDialogClosedListener(OnDialogClosedListener listener) {
+        onDialogClosedListener = listener;
+    }
+
+    public interface OnDialogClosedListener {
+        void onDialogClosed(String description);
     }
 }

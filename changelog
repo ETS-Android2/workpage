@@ -1,3 +1,10 @@
+0.10.0 (03 Feb 2018)
+--------------------
+* Feature added: Calendar mode.
+* Layout adapted to tablets.
+* User interface bug fix.
+* Data export suggested file name fix.
+
 0.9.1 (10 Dec 2017)
 -------------------
 * Notifications issue fix.
@@ -8,7 +15,7 @@
 * Time zones added to the tasks.
 * Week day displayed.
 * Data export/import improved and simplified. CSV format removed.
-* German translation added.
+* German language added.
 * Bug when deleting the current context fixed.
 
 0.8.0 (27 Oct 2016)
@@ -16,7 +23,7 @@
 * User interface improved.
 * Data bug fix.
 * Bug fix on task counting by tag.
-* Spanish translation bug fix.
+* Spanish language bug fix.
 
 0.7.1 (25 Jan 2016)
 -------------------
@@ -45,7 +52,7 @@
 * Tag filtering improved.
 * User interface bug fixes.
 * Internal settings bug fix.
-* Spanish translation bug fix.
+* Spanish language bug fix.
 
 0.4.0 (08 Jul 2015)
 -------------------
@@ -60,7 +67,7 @@
 * Feature added: color selection for tags.
 * UI performance issue fix.
 * Data management bug fix.
-* Spanish translation added.
+* Spanish language added.
 
 0.1.1 (12 Jan 2015)
 -------------------

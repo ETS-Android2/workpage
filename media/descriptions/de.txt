@@ -1,16 +1,20 @@
-Workpage ist ein einfacher Produktivitätsmanager. Es erlaubt Ihnen, jede Aufgabe zu aufschreiben, die Sie tun müssen oder eine Idee, die Ihnen hilft, Ihren Geist zu befreien.
+Workpage ist ein einfacher Aufgabenmanager. Nützlich
+um zu folgen Methoden wie GTD (Getting Things Done).
 
-Workpage ist Open Source Software. Es hat keine Werbung und wird es nie haben.
+Workpage ist ein Freie Software.
 
 Eigenschaften:
---------------
-1. Kontexte: Die Aufgaben werden durch "Kontexte" ergänzt und helfen Ihnen, sich auf einen Kontext zu konzentrieren (z. B. "Persönlich", "Arbeit" ...).
-2. Tags: Sie erlauben es Ihnen, die Aufgaben eines bestimmten Kontextes zu klassifizieren und zu filtern.
-3. Farben: Sie können eine Aufgabe mit einem oder mehreren Tags mit Farben verknüpfen.
-4. Verschiedene Termine / Zeit-Modi: Nein Datum, Einzeldatum und Datumsbereich.
-5. Zeitzonenunterstützung: Für jede Aufgabe können Sie bestimmte Zeitzonen festlegen. Für eine einzelne Aufgabe können Sie das Startdatum mit einer bestimmten Zeitzone und dem Enddatum mit einer anderen Zeitzone einstellen.
-6. Erinnerungen: Jede Aufgabe kann optional Erinnerungen haben.
-7. Datenexport/import: Sie können eine Sicherung Ihrer Daten in eine Datei vornehmen und später wiederherstellen, in Ihrem Gerät oder in einem anderen.
-8. Verfügbare Sprachen: Englisch, Spanisch und Deutsch.
 
-Der Quellcode des Projekts steht auf GitHub zur Verfügung: https://github.com/jajimenez/workpage
+* Kontexte
+* Stichworte
+* Farben
+* Liste und Kalender
+* Kein Datum, Einzeldatum und Datumsbereich
+* Zeitzonen
+* Erinnerungen
+* Daten Export und Import
+* Für Handys und Tablets
+* Sprachen: Englisch, Spanisch und Deutsch
+
+Webseite:
+https://github.com/jajimenez/workpage

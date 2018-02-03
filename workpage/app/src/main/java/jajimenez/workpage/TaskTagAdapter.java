@@ -27,18 +27,13 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
 
     @Override
     public View getView(int position, View itemView, ViewGroup parentViewGroup) {
-        /*ColorView colorView = null;
-        TextView nameTextView = null;
-        TextView openTaskCountTextView = null;
-        TextView closedTaskCountTextView = null;*/
-
         LayoutInflater inflater = activity.getLayoutInflater();
         itemView = inflater.inflate(resource, null);
 
-        ColorView colorView = (ColorView) itemView.findViewById(R.id.task_tag_list_item_color);
-        TextView nameTextView = (TextView) itemView.findViewById(R.id.task_tag_list_item_name);
-        TextView openTaskCountTextView = (TextView) itemView.findViewById(R.id.task_tag_list_item_open);
-        TextView closedTaskCountTextView = (TextView) itemView.findViewById(R.id.task_tag_list_item_closed);
+        ColorView colorView = itemView.findViewById(R.id.task_tag_list_item_color);
+        TextView nameTextView = itemView.findViewById(R.id.task_tag_list_item_name);
+        TextView openTaskCountTextView = itemView.findViewById(R.id.task_tag_list_item_open);
+        TextView closedTaskCountTextView = itemView.findViewById(R.id.task_tag_list_item_closed);
 
         ApplicationLogic applicationLogic = new ApplicationLogic(activity);
 
@@ -58,7 +53,7 @@ public class TaskTagAdapter extends ArrayAdapter<TaskTag> {
         if (color != null && !(color.trim()).equals("")) {
             colorView.setVisibility(View.VISIBLE);
 
-            // "Color.parseColor" converts the hexadecimal color to int-color.
+            // "Color.parseColor" converts the hexadecimal color to int-color
             colorView.setBackgroundColor(Color.parseColor(color));
         }
 

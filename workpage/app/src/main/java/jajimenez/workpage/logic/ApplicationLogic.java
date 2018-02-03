@@ -23,7 +23,9 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.LocalBroadcastManager;
 
+import jajimenez.workpage.R;
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
 import jajimenez.workpage.data.model.Country;
@@ -33,14 +35,12 @@ import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskReminder;
 
 public class ApplicationLogic {
+    public static final String ACTION_DATA_CHANGED = "jajimenez.workpage.action.DATA_CHANGED";
+
     public static final int NO_DATE = 0;
     public static final int SINGLE_DATE = 1;
     public static final int DATE_RANGE = 2;
 
-    public static final int CHANGE_TASKS = 0;
-    public static final int CHANGE_TASK_TAGS = 1;
-    public static final int CHANGE_VIEW = 2;
-    public static final int CHANGE_TASK_CONTEXTS = 3;
     public static final int EXPORT_DATA = 4;
     public static final int IMPORT_DATA = 5;
 
@@ -49,8 +49,13 @@ public class ApplicationLogic {
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
+    private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_";
+    private static final String WEEK_START_DAY_KEY = "week_start_day";
 
-    // Constants for the "importData" function.
+    public static final int INTERFACE_MODE_LIST = 0;
+    public static final int INTERFACE_MODE_CALENDAR = 1;
+
+    // Constants for the "importData" function
     public static final int IMPORT_SUCCESS = 0;
     public static final int IMPORT_ERROR_OPENING_FILE = 1;
     public static final int IMPORT_ERROR_FILE_NOT_COMPATIBLE = 2;
@@ -67,6 +72,11 @@ public class ApplicationLogic {
     public ApplicationLogic(Context appContext) {
         this.appContext = appContext;
         this.dataManager = new DataManager(appContext);
+    }
+
+    public void notifyDataChange() {
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(appContext);
+        manager.sendBroadcast(new Intent(ACTION_DATA_CHANGED));
     }
 
     public TaskContext getCurrentTaskContext() {
@@ -93,7 +103,7 @@ public class ApplicationLogic {
     public List<TaskTag> getCurrentFilterTags() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
-        List<TaskTag> filterTags = new LinkedList<TaskTag>();
+        List<TaskTag> filterTags = new LinkedList<>();
         TaskContext currentContext = getCurrentTaskContext();
         List<TaskTag> tags = getAllTaskTags(currentContext);
 
@@ -107,12 +117,39 @@ public class ApplicationLogic {
         return filterTags;
     }
 
+    public int getInterfaceMode() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
+
+        return preferences.getInt(key, INTERFACE_MODE_LIST);
+    }
+
+    public int getWeekStartDay() {
+        String defaultDay = (appContext.getResources()).getString(R.string.week_start_default_key);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return Integer.parseInt(preferences.getString(WEEK_START_DAY_KEY, defaultDay));
+    }
+
     public void setCurrentTaskContext(TaskContext context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putLong(CURRENT_TASK_CONTEXT_ID_KEY, context.getId());
         editor.commit();
+
+        notifyDataChange();
+    }
+
+    public void setInterfaceMode(int mode) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(key, mode);
+        editor.commit();
+
+        notifyDataChange();
     }
 
     public List<TaskContext> getAllTaskContexts() {
@@ -125,6 +162,7 @@ public class ApplicationLogic {
 
     public void saveTaskContext(TaskContext context) {
         dataManager.saveTaskContext(context);
+        notifyDataChange();
     }
 
     public void deleteTaskContexts(List<TaskContext> contexts) {
@@ -147,8 +185,11 @@ public class ApplicationLogic {
             editor.commit();
         }
 
-        // Delete contexts.
+        // Delete contexts
         dataManager.deleteTaskContexts(contexts);
+
+        // Notify the application about the changes
+        notifyDataChange();
     }
 
     public List<TaskReminder> getAllTaskReminders() {
@@ -173,6 +214,7 @@ public class ApplicationLogic {
 
     public void saveTaskTag(TaskTag tag) {
         dataManager.saveTaskTag(tag);
+        notifyDataChange();
     }
 
     public void deleteTaskTags(List<TaskTag> tags) {
@@ -187,6 +229,7 @@ public class ApplicationLogic {
         }
 
         dataManager.deleteTaskTags(tags);
+        notifyDataChange();
     }
 
     public List<Task> getDoableTodayTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
@@ -202,7 +245,7 @@ public class ApplicationLogic {
         List<Task> tasks = dataManager.getTasksByTags(context, false, includeTasksWithNoTag, tags);
 
         // We sort the tasks.
-        Collections.sort(tasks, new TaskComparator()); 
+        Collections.sort(tasks, new TaskComparator());
 
         return tasks;
     }
@@ -215,6 +258,38 @@ public class ApplicationLogic {
         Collections.reverse(tasks);
 
         return tasks;
+    }
+
+    public List<Task> getDateTasks(List<Task> tasks, Calendar date) {
+        List<Task> dateTasks = new LinkedList<>();
+
+        if (tasks != null && date != null) {
+            DateTimeTool tool = new DateTimeTool();
+            long dateTime = date.getTimeInMillis();
+
+            for (Task t: tasks) {
+                if (t != null) {
+                    Calendar single = tool.getNoTimeCopy(t.getSingle());
+                    Calendar start = tool.getNoTimeCopy(t.getStart());
+                    Calendar end = tool.getNoTimeCopy(t.getEnd());
+
+                    if (single != null && single.getTimeInMillis() == dateTime) dateTasks.add(t);
+
+                    if (start != null &&
+                            end != null &&
+                            start.getTimeInMillis() <= dateTime &&
+                            end.getTimeInMillis() >= dateTime) {
+                        dateTasks.add(t);
+                    } else if (start != null && start.getTimeInMillis() == dateTime) {
+                        dateTasks.add(t);
+                    } else if (end != null && end.getTimeInMillis() == dateTime) {
+                        dateTasks.add(t);
+                    }
+                }
+            }
+        }
+
+        return dateTasks;
     }
 
     public int getTaskCount(boolean done, TaskContext context) {
@@ -244,10 +319,10 @@ public class ApplicationLogic {
 
         TaskContext context = getTaskContext(task.getContextId());
         List<TaskTag> taskTags = task.getTags();
-        List<String> tagNames = null;
+        List<String> tagNames;
 
         for (TaskTag tag : taskTags) {
-            tagNames = new LinkedList<String>();
+            tagNames = new LinkedList<>();
             tagNames.add(tag.getName());
 
             List<TaskTag> dbTags = dataManager.getTaskTagsByNames(context, tagNames);
@@ -265,6 +340,9 @@ public class ApplicationLogic {
 
         // 4. Update reminder alarms.
         updateAllReminderAlarms(task, false);
+
+        // 5. Notify the application about the changes.
+        notifyDataChange();
     }
 
     // Updates all the alarms of all open tasks of all contexts.
@@ -299,8 +377,8 @@ public class ApplicationLogic {
         builder.append(reminderType);
         int reminderId = Integer.parseInt(builder.toString());
 
-        Calendar calendar = null;
-        TaskReminder reminder = null;
+        Calendar calendar;
+        TaskReminder reminder;
 
         switch (reminderType) {
             case SINGLE:
@@ -346,6 +424,9 @@ public class ApplicationLogic {
 
         // Delete tasks
         dataManager.deleteTasks(tasks);
+
+        // Notify the application about the changes
+        notifyDataChange();
     }
 
     public List<Country> getAllCountries() {
@@ -362,7 +443,7 @@ public class ApplicationLogic {
 
     public List<TimeZone> getTimeZones(Country country) {
         List<String> codes = dataManager.getTimeZoneCodes(country);
-        List<TimeZone> timeZones = new ArrayList<TimeZone>(codes.size());
+        List<TimeZone> timeZones = new ArrayList<>(codes.size());
 
         for (String c : codes) {
             TimeZone t = TimeZone.getTimeZone(c);
@@ -397,15 +478,13 @@ public class ApplicationLogic {
 
         String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-        String month = String.valueOf(calendar.get(Calendar.MONTH));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1); // The Month value is zero based
         if (month.length() == 1) month = "0" + month;
 
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if (day.length() == 1) month = "0" + day;
 
-        String name = year + month + day + "_workpage_data.db";
-
-        return name;
+        return year + month + day + "_workpage_data.db";
     }
 
     // Returns "false" if the operation was successful
@@ -439,7 +518,7 @@ public class ApplicationLogic {
 
     public int importData(Uri input) {
         int importResult;
-        int compatible = DataManager.COMPATIBLE;
+        int compatible;
 
         try {
             // Make temporal copy of the file to import and check if it is compatible
@@ -490,6 +569,8 @@ public class ApplicationLogic {
                 importResult = IMPORT_ERROR_DATA_NOT_VALID;
         }
 
+        notifyDataChange();
+
         return importResult;
     }
 
@@ -507,7 +588,7 @@ public class ApplicationLogic {
 
     private void copyData(InputStream input, OutputStream output) throws IOException {
         byte[] buffer = new byte[1024];
-        int bytesRead = 0;
+        int bytesRead;
 
         while ((bytesRead = input.read(buffer)) > 0) {
             output.write(buffer, 0, bytesRead);

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.DatePicker;
 
 public class DatePickerDialogFragment extends DialogFragment {
@@ -68,11 +67,11 @@ public class DatePickerDialogFragment extends DialogFragment {
         noDateSetListener = listener;
     }
 
-    public static interface OnDateSetListener {
+    public interface OnDateSetListener {
         void onDateSet(int year, int month, int day);
     }
 
-    public static interface OnNoDateSetListener {
+    public interface OnNoDateSetListener {
         void onNoDateSet();
     }
 }

@@ -1,16 +1,20 @@
-Workpage es un gestor de productividad sencillo. Le permite anotar cualquier tarea que tenga que hacer o idea, ayudándole a liberar su mente.
+Workpage es un gestor de tareas sencillo. Útil para
+seguir metodologías como GTD (Getting Things Done).
 
-Workpage es software libre. No tiene publicidad y nunca la tendrá.
+Workpage es un software libre.
 
 Características:
-----------------
-1. Contextos: Las tareas están agrupadas por "contextos", ayudándole a concentrarse en un sólo contexto (por ejemplo, "Personal", "Trabajo"...).
-2. Etiquetas: Permiten clasificar y filtrar las etiquetas de un contexto concreto.
-3. Colores: Puede asociar fácilmente una tarea con 1 ó más etiquetas usando colores.
-4. Varios modos de fechas/hora: Sin Fecha, Fecha Sencilla y Rango de Fechas.
-5. Soporte de husos horarios. Puede establecer husos horarios específicos en cada tarea. Para una tarea determinada, puede establecer la fecha de comienzo con un huso horario specífico y la fecha límite con otro huso horario.
-6. Recordatorios. Cada tarea puede tener opcionalmente recordatorios.
-7. Exportación/importación de los datos: Puede hacer una copia de seguridad de sus datos en un archivo e importarla más adelante, en su dispositivo o en otro.
-8. Idiomas disponibles: Inglés, Español y Alemán.
 
-El código fuente del proyecto está disponible en GitHub: https://github.com/jajimenez/workpage
+* Contextos ("Personal", "Trabajo"...)
+* Etiquetas
+* Colores
+* Lista y calendario
+* Sin fecha, fecha sencilla y rango de fechas
+* Husos horarios
+* Recordatorios
+* Exportación e importación de los datos
+* Para teléfonos y tabletas
+* Idiomas: Inglés, Español y Alemán.
+
+Sitio web:
+https://github.com/jajimenez/workpage

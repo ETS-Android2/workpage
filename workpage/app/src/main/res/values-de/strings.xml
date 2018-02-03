@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Workpage</string>
 
-    <string name="app_description">Produktivitätsmanager</string>
-    <string name="app_version">0.9.1</string>
+    <string name="app_description">Aufgabenmanager</string>
+    <string name="app_version">0.10.0</string>
     <string name="app_author">Jose A. Jimenez</string>
     <string name="app_license">GPL 3.0</string>
     <string name="app_web_site">https://github.com/jajimenez/workpage</string>
@@ -69,6 +69,10 @@
     <string name="selected">%1$d ausgewählte</string>
     <string name="state_1">Zustand:</string>
 
+    <string name="mode">Modus</string>
+    <string name="list">Liste</string>
+    <string name="calendar">Kalender</string>
+
     <string name="task">Aufgabe</string>
     <string name="task_date_base">%1$s %2$s</string>
     <string name="task_datetime">%1$s - %2$s</string>
@@ -103,7 +107,6 @@
     <string name="time">Zeit</string>
     <string name="date_mode">Datumsmodus</string>
     <string name="no_date">Kein Datum</string>
-    <string name="add_date">Datum hinzufügen</string>
     <string name="single_date">Einzeldatum</string>
     <string name="no_time">Keine Zeit</string>
     <string name="add_time">Zeit hinzufügen</string>
@@ -194,4 +197,10 @@
     <string name="license">Lizenz:</string>
     <string name="project_website">Projekt-Website:</string>
 
+    <string name="settings">Einstellungen</string>
+    <string name="week_start">Beginn der Woche</string>
+    <string name="week_start_default_key">1</string>
+
+    <string name="all_tasks">Alle Aufgaben</string>
+    <string name="date_tasks">Aufgaben vom %1$s</string>
 </resources>

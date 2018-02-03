@@ -30,4 +30,16 @@ public class DateTimeTool {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
     }
+
+    public Calendar getNoTimeCopy(Calendar calendar) {
+        Calendar copy = null;
+
+        if (calendar != null) {
+            copy = Calendar.getInstance();
+            copy.setTimeInMillis(calendar.getTimeInMillis());
+            clearTimeFields(copy);
+        }
+
+        return copy;
+    }
 }

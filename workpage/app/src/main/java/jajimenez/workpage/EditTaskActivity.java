@@ -56,7 +56,7 @@ public class EditTaskActivity extends AppCompatActivity {
     private Button reminder2;
     private View divider2;
 
-    private EditDescriptionDialogFragment.OnOkButtonClickedListener descriptionListener;
+    private EditDescriptionDialogFragment.OnDialogClosedListener descriptionListener;
     private DateModeDialogFragment.OnDateModeSetListener dateModeListener;
     private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener1;
     private TimeZonePickerDialogFragment.OnTimeZoneSelectedListener timeZoneSelectedListener2;
@@ -99,27 +99,27 @@ public class EditTaskActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String mode = intent.getStringExtra("mode");
 
-        title = (EditText) findViewById(R.id.edit_task_title);
-        dateMode = (Button) findViewById(R.id.edit_task_date_mode);
+        title = findViewById(R.id.edit_task_title);
+        dateMode = findViewById(R.id.edit_task_date_mode);
 
-        dateMode1 = (TextView) findViewById(R.id.edit_task_date_mode_1);
-        tableDate1 = (TableLayout) findViewById(R.id.edit_task_table_date_1);
-        date1 = (Button) findViewById(R.id.edit_task_date_1);
-        time1 = (Button) findViewById(R.id.edit_task_time_1);
-        timeZoneRow1 = (TableRow) findViewById(R.id.edit_task_row_time_zone_1);
-        timeZone1 = (Button) findViewById(R.id.edit_task_time_zone_1);
-        reminderRow1 = (TableRow) findViewById(R.id.edit_task_row_reminder_1);
-        reminder1 = (Button) findViewById(R.id.edit_task_reminder_1);
+        dateMode1 = findViewById(R.id.edit_task_date_mode_1);
+        tableDate1 = findViewById(R.id.edit_task_table_date_1);
+        date1 = findViewById(R.id.edit_task_date_1);
+        time1 = findViewById(R.id.edit_task_time_1);
+        timeZoneRow1 = findViewById(R.id.edit_task_row_time_zone_1);
+        timeZone1 = findViewById(R.id.edit_task_time_zone_1);
+        reminderRow1 = findViewById(R.id.edit_task_row_reminder_1);
+        reminder1 = findViewById(R.id.edit_task_reminder_1);
         divider1 = findViewById(R.id.edit_task_date_divider_1);
 
-        dateMode2 = (TextView) findViewById(R.id.edit_task_date_mode_2);
-        tableDate2 = (TableLayout) findViewById(R.id.edit_task_table_date_2);
-        date2 = (Button) findViewById(R.id.edit_task_date_2);
-        time2 = (Button) findViewById(R.id.edit_task_time_2);
-        timeZoneRow2 = (TableRow) findViewById(R.id.edit_task_row_time_zone_2);
-        timeZone2 = (Button) findViewById(R.id.edit_task_time_zone_2);
-        reminderRow2 = (TableRow) findViewById(R.id.edit_task_row_reminder_2);
-        reminder2 = (Button) findViewById(R.id.edit_task_reminder_2);
+        dateMode2 = findViewById(R.id.edit_task_date_mode_2);
+        tableDate2 = findViewById(R.id.edit_task_table_date_2);
+        date2 = findViewById(R.id.edit_task_date_2);
+        time2 = findViewById(R.id.edit_task_time_2);
+        timeZoneRow2 = findViewById(R.id.edit_task_row_time_zone_2);
+        timeZone2 = findViewById(R.id.edit_task_time_zone_2);
+        reminderRow2 = findViewById(R.id.edit_task_row_reminder_2);
+        reminder2 = findViewById(R.id.edit_task_reminder_2);
         divider2 = findViewById(R.id.edit_task_date_divider_2);
 
         title.addTextChangedListener(new TextWatcher() {
@@ -139,8 +139,8 @@ public class EditTaskActivity extends AppCompatActivity {
 
         if (mode != null && mode.equals("new")) title.requestFocus();
 
-        descriptionListener = new EditDescriptionDialogFragment.OnOkButtonClickedListener() {
-            public void onOkButtonClicked(String description) {
+        descriptionListener = new EditDescriptionDialogFragment.OnDialogClosedListener() {
+            public void onDialogClosed(String description) {
                 EditTaskActivity.this.currentTask.setDescription(description);
                 EditTaskActivity.this.updateInterface();
             }
@@ -424,7 +424,7 @@ public class EditTaskActivity extends AppCompatActivity {
         else {
             // Dialog listeners
             EditDescriptionDialogFragment descriptionFragment = (EditDescriptionDialogFragment) (getFragmentManager()).findFragmentByTag("edit_description");
-            if (descriptionFragment != null) descriptionFragment.setOnOkButtonClickedListener(descriptionListener);
+            if (descriptionFragment != null) descriptionFragment.setOnDialogClosedListener(descriptionListener);
 
             DateModeDialogFragment modeFragment = (DateModeDialogFragment) (getFragmentManager()).findFragmentByTag("date_mode");
             if (modeFragment != null) modeFragment.setOnDateModeSetListener(dateModeListener);
@@ -538,7 +538,7 @@ public class EditTaskActivity extends AppCompatActivity {
             }
 
             String[] tagNames = savedInstanceState.getStringArray("task_tags");
-            LinkedList<TaskTag> tags = new LinkedList<TaskTag>();
+            LinkedList<TaskTag> tags = new LinkedList<>();
 
             if (tagNames != null) {
                 for (String name : tagNames) {
@@ -664,7 +664,7 @@ public class EditTaskActivity extends AppCompatActivity {
         TextTool tool = new TextTool();
 
         if (selectedDateMode == ApplicationLogic.NO_DATE) {
-            dateMode.setText(R.string.add_date);
+            dateMode.setText(R.string.no_date);
 
             dateMode1.setVisibility(View.GONE);
             tableDate1.setVisibility(View.GONE);
@@ -718,7 +718,7 @@ public class EditTaskActivity extends AppCompatActivity {
             divider2.setVisibility(View.VISIBLE);
 
             if (start == null) {
-                date1.setText(R.string.add_date);
+                date1.setText(R.string.no_date);
                 time1.setText(R.string.add_time);
                 time1.setVisibility(View.GONE);
                 timeZoneRow1.setVisibility(View.GONE);
@@ -742,7 +742,7 @@ public class EditTaskActivity extends AppCompatActivity {
             }
 
             if (end == null) {
-                date2.setText(R.string.add_date);
+                date2.setText(R.string.no_date);
                 time2.setText(R.string.add_time);
                 time2.setVisibility(View.GONE);
                 timeZoneRow2.setVisibility(View.GONE);
@@ -803,7 +803,7 @@ public class EditTaskActivity extends AppCompatActivity {
             // Save Current Task
             applicationLogic.saveTask(currentTask);
             (Toast.makeText(this, R.string.task_saved, Toast.LENGTH_SHORT)).show();
-            setResult(RESULT_OK);
+            // setResult(RESULT_OK);
 
             // Close the activity
             finish();
@@ -843,7 +843,7 @@ public class EditTaskActivity extends AppCompatActivity {
         arguments.putString("description", currentTask.getDescription());
         fragment.setArguments(arguments);
 
-        fragment.setOnOkButtonClickedListener(descriptionListener);
+        fragment.setOnDialogClosedListener(descriptionListener);
         fragment.show(getFragmentManager(), "edit_description");
     }
 

@@ -57,35 +57,35 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         LayoutInflater inflater = activity.getLayoutInflater();
         itemView = inflater.inflate(resource, null);
 
-        colorsLinearLayout = (LinearLayout) itemView.findViewById(R.id.task_list_item_colors);
-        titleTextView = (TextView) itemView.findViewById(R.id.task_list_item_title);
-        tagsTextView = (TextView) itemView.findViewById(R.id.task_list_item_tags);
+        colorsLinearLayout = itemView.findViewById(R.id.task_list_item_colors);
+        titleTextView = itemView.findViewById(R.id.task_list_item_title);
+        tagsTextView = itemView.findViewById(R.id.task_list_item_tags);
 
-        singleValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_single_value);
+        singleValueTextView = itemView.findViewById(R.id.task_list_item_single_value);
 
-        datesTableLayout = (TableLayout) itemView.findViewById(R.id.task_list_item_dates);
+        datesTableLayout = itemView.findViewById(R.id.task_list_item_dates);
 
-        date1TitleTextView = (TextView) itemView.findViewById(R.id.task_list_item_date1_title);
-        date1ValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_date1_value);
+        date1TitleTextView = itemView.findViewById(R.id.task_list_item_date1_title);
+        date1ValueTextView = itemView.findViewById(R.id.task_list_item_date1_value);
 
-        date2TableRow = (TableRow) itemView.findViewById(R.id.task_list_item_date2_row);
-        date2TitleTextView = (TextView) itemView.findViewById(R.id.task_list_item_date2_title);
-        date2ValueTextView = (TextView) itemView.findViewById(R.id.task_list_item_date2_value);
+        date2TableRow = itemView.findViewById(R.id.task_list_item_date2_row);
+        date2TitleTextView = itemView.findViewById(R.id.task_list_item_date2_title);
+        date2ValueTextView = itemView.findViewById(R.id.task_list_item_date2_value);
 
-        space1TextView = (TextView) itemView.findViewById(R.id.task_list_item_space1);
-        space2TextView = (TextView) itemView.findViewById(R.id.task_list_item_space2);
-        space3TextView = (TextView) itemView.findViewById(R.id.task_list_item_space3);
+        space1TextView = itemView.findViewById(R.id.task_list_item_space1);
+        space2TextView = itemView.findViewById(R.id.task_list_item_space2);
+        space3TextView = itemView.findViewById(R.id.task_list_item_space3);
 
         task = getItem(position);
 
-        // Show title.
+        // Show title
         String title = task.getTitle();
         titleTextView.setText(title);
 
-        // Show tags.
+        // Show tags
         showTags();
 
-        // Show dates.
+        // Show dates
         showDates();
 
         return itemView;
@@ -95,16 +95,16 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         TextTool textTool = new TextTool();
         List<TaskTag> tags = task.getTags();
 
-        // Set background color based on tag colors.
+        // Set background color based on tag colors
         int tagCount = 0;
         if (tags != null) tagCount = tags.size();
 
         if (tagCount > 0) {
-            // Tag names.
+            // Tag names
             tagsTextView.setText(textTool.getTagsText(activity, task));
 
-            // Tag colors.
-            LinkedList<String> colors = new LinkedList<String>();
+            // Tag colors
+            LinkedList<String> colors = new LinkedList<>();
 
             for (int i = 0; i < tagCount; i++) {
                 TaskTag t = tags.get(i);

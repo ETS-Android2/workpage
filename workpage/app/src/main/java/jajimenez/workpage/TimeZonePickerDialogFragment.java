@@ -88,9 +88,9 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.time_zone_picker, null);
 
-        countryEditText = (EditText) view.findViewById(R.id.time_zone_picker_country);
-        clearImageButton = (ImageButton) view.findViewById(R.id.time_zone_picker_clear);
-        list = (ListView) view.findViewById(R.id.time_zone_picker_list);
+        countryEditText = view.findViewById(R.id.time_zone_picker_country);
+        clearImageButton = view.findViewById(R.id.time_zone_picker_clear);
+        list = view.findViewById(R.id.time_zone_picker_list);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -111,7 +111,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
 
         countryEditText.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
+                // Nothing to do
             }
 
             public void afterTextChanged(Editable s) {
@@ -123,7 +123,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
+                // Nothing to do
             }
         });
 
@@ -196,7 +196,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         if (mode == COUNTRY) {
             List<Country> countriesFound;
             
-            if (countryName.isEmpty()) countriesFound = new ArrayList<Country>();
+            if (countryName.isEmpty()) countriesFound = new ArrayList<>();
             else countriesFound = searchCountries(countryName);
             
             CountryAdapter adapter = new CountryAdapter(activity, R.layout.country_list_item, countriesFound);
@@ -216,14 +216,14 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         outState.putInt("mode", mode);
         if (selectedCountry != null) outState.putLong("selected_country", selectedCountry.getId());
+
+        super.onSaveInstanceState(outState);
     }
 
     private List<Country> searchCountries(String countryName) {
-        List<Country> result = new ArrayList<Country>(countryNames.size());
+        List<Country> result = new ArrayList<>(countryNames.size());
 
         if (countryName != null && !countryName.isEmpty()) {
             String name2 = getNormalizedString(countryName);
@@ -262,7 +262,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment {
         onTimeZoneSelectedListener = listener;
     }
 
-    public static interface OnTimeZoneSelectedListener {
+    public interface OnTimeZoneSelectedListener {
         void onTimeZoneSelected(TimeZone t);
     }
 }

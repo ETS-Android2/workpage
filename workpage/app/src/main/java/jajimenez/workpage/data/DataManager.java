@@ -238,8 +238,8 @@ public class DataManager extends SQLiteOpenHelper {
         values[13] = new ContentValues();
         values[13].put("minutes", 20160);
 
-        for (int i = 0; i < values.length; i++) {
-            db.insert("task_reminders", null, values[i]);
+        for (ContentValues v: values) {
+            db.insert("task_reminders", null, v);
         }
     }
 
@@ -278,7 +278,7 @@ public class DataManager extends SQLiteOpenHelper {
         Cursor tasksCursor = db.rawQuery("SELECT id, task_context_id, title, description, start_datetime, deadline_datetime, done FROM tasks", null);
 
         // Values for the new table.
-        ContentValues tasksValues = null;
+        ContentValues tasksValues;
 
         if (tasksCursor.moveToFirst()) {
             do {
@@ -1319,7 +1319,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     public static int isDatabaseCompatible(File dbFile) {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
 
         try {
             db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
@@ -1337,8 +1337,8 @@ public class DataManager extends SQLiteOpenHelper {
         //     * TaskReminders is new in version 3.
         String taskContextsTableSql = "SELECT id, name, list_order FROM task_contexts LIMIT 1";
         String taskRemindersTableSql = "";
-        String taskTagsTableSql = "";
-        String tasksTableSql = "";
+        String taskTagsTableSql;
+        String tasksTableSql;
         String taskTagRelationshipsTableSql = "SELECT id, task_id, task_tag_id FROM task_tag_relationships LIMIT 1";
         String countriesTableSql = "SELECT id, code FROM countries LIMIT 1";
         String timeZonesTableSql = "SELECT id, code, country_id FROM time_zones LIMIT 1";
@@ -1399,7 +1399,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all task contexts.
     public List<TaskContext> getAllTaskContexts() {
-        List<TaskContext> contexts = new LinkedList<TaskContext>();
+        List<TaskContext> contexts = new LinkedList<>();
         SQLiteDatabase db = null;
 
         try {
@@ -1490,7 +1490,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all task reminders.
     public List<TaskReminder> getAllTaskReminders() {
-        List<TaskReminder> reminders = new LinkedList<TaskReminder>();
+        List<TaskReminder> reminders = new LinkedList<>();
         SQLiteDatabase db = null;
 
         try {
@@ -1515,7 +1515,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     public TaskReminder getTaskReminder(long id) {
-        TaskReminder reminder = null;
+        TaskReminder reminder;
         SQLiteDatabase db = null;
 
         try {
@@ -1569,7 +1569,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all the task tags that belong to a task context.
     public List<TaskTag> getAllTaskTags(TaskContext context) {
-        List<TaskTag> tags = new LinkedList<TaskTag>();
+        List<TaskTag> tags = new LinkedList<>();
 
         long contextId = context.getId();
         SQLiteDatabase db = null;
@@ -1600,7 +1600,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     // Returns all the task tags, given its names, that belong to a task context.
     public List<TaskTag> getTaskTagsByNames(TaskContext context, List<String> tagNames) {
-        List<TaskTag> tags = new LinkedList<TaskTag>();
+        List<TaskTag> tags = new LinkedList<>();
 
         int tagCount = 0;
         if (tagNames != null) tagCount = tagNames.size();
@@ -1654,7 +1654,7 @@ public class DataManager extends SQLiteOpenHelper {
     // Returns all the task tags related to a given task, using an already open DB connection.
     // This is an auxiliar method intended to be used only inside the "getTask" method.
     private List<TaskTag> getTaskTags(SQLiteDatabase db, long taskId) {
-        List<TaskTag> tags = new LinkedList<TaskTag>();
+        List<TaskTag> tags = new LinkedList<>();
 
         Cursor cursor = db.rawQuery("SELECT t.id, t.task_context_id, t.name, t.color  " +
             "FROM task_tags AS t, task_tag_relationships AS r " +
@@ -1771,7 +1771,7 @@ public class DataManager extends SQLiteOpenHelper {
     //      or before.
 
     public List<Task> getDoableTodayTasksByTags(TaskContext context, boolean includeTasksWithNoTag, List<TaskTag> tags) {
-        List<Task> tasks = new LinkedList<Task>();
+        List<Task> tasks = new LinkedList<>();
 
         int tagCount = 0;
         if (tags != null) tagCount = tags.size();
@@ -1789,8 +1789,8 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            String query = "";
-            Cursor cursor = null;
+            String query;
+            Cursor cursor;
 
             if (includeTasksWithNoTag) {
                 query = "SELECT tasks.id, tasks.title, tasks.description, " +
@@ -1855,7 +1855,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     private List<Task> getTasksFromCursor(SQLiteDatabase db, Cursor cursor, long contextId) {
-        List<Task> tasks = new LinkedList<Task>();
+        List<Task> tasks = new LinkedList<>();
 
         if (cursor.moveToFirst()) {
             do {
@@ -1872,7 +1872,7 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreSingleTime = false;
                 if (!cursor.isNull(4)) ignoreSingleTime = (cursor.getLong(4) != 0);
 
-                String singleTimeZoneCode = null;
+                String singleTimeZoneCode;
                 if (single != null && !cursor.isNull(5)) {
                     singleTimeZoneCode = cursor.getString(5);
                     single.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
@@ -1893,7 +1893,7 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreStartTime = false;
                 if (!cursor.isNull(8)) ignoreStartTime = (cursor.getLong(8) != 0);
 
-                String startTimeZoneCode = null;
+                String startTimeZoneCode;
                 if (start != null && !cursor.isNull(9)) {
                     startTimeZoneCode = cursor.getString(9);
                     start.setTimeZone(TimeZone.getTimeZone(startTimeZoneCode));
@@ -1914,7 +1914,7 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreEndTime = false;
                 if (!cursor.isNull(12)) ignoreEndTime = (cursor.getLong(12) != 0);
 
-                String endTimeZoneCode = null;
+                String endTimeZoneCode;
                 if (end != null && !cursor.isNull(13)) {
                     endTimeZoneCode = cursor.getString(13);
                     end.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
@@ -1944,7 +1944,7 @@ public class DataManager extends SQLiteOpenHelper {
     // Returns all tasks that belong to a given context, given its state and any of its
     // tags. It includes the tasks that have no tag if "includeTasksWithNoTag" is "true".
     public List<Task> getTasksByTags(TaskContext context, boolean done, boolean includeTasksWithNoTag , List<TaskTag> tags) {
-        List<Task> tasks = new LinkedList<Task>();
+        List<Task> tasks = new LinkedList<>();
 
         int tagCount = 0;
         if (tags != null) tagCount = tags.size();
@@ -1954,8 +1954,8 @@ public class DataManager extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            String query = "";
-            Cursor cursor = null;
+            String query;
+            Cursor cursor;
 
             if (includeTasksWithNoTag) {
                 query = "SELECT tasks.id, tasks.title, tasks.description, " +
@@ -2095,7 +2095,7 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreSingleTime = false;
                 if (!cursor.isNull(4)) ignoreSingleTime = (cursor.getLong(4) != 0);
 
-                String singleTimeZoneCode = null;
+                String singleTimeZoneCode;
                 if (single != null && !cursor.isNull(5)) {
                     singleTimeZoneCode = cursor.getString(5);
                     single.setTimeZone(TimeZone.getTimeZone(singleTimeZoneCode));
@@ -2116,7 +2116,7 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreStartTime = false;
                 if (!cursor.isNull(8)) ignoreStartTime = (cursor.getLong(8) != 0);
 
-                String startTimeZoneCode = null;
+                String startTimeZoneCode;
                 if (start != null && !cursor.isNull(9)) {
                     startTimeZoneCode = cursor.getString(9);
                     start.setTimeZone(TimeZone.getTimeZone(startTimeZoneCode));
@@ -2137,7 +2137,7 @@ public class DataManager extends SQLiteOpenHelper {
                 boolean ignoreEndTime = false;
                 if (!cursor.isNull(12)) ignoreEndTime = (cursor.getLong(12) != 0);
 
-                String endTimeZoneCode = null;
+                String endTimeZoneCode;
                 if (end != null && !cursor.isNull(13)) {
                     endTimeZoneCode = cursor.getString(13);
                     end.setTimeZone(TimeZone.getTimeZone(endTimeZoneCode));
@@ -2267,7 +2267,7 @@ public class DataManager extends SQLiteOpenHelper {
 
         // Save new tags and tag relationships
         for (TaskTag tag : newTags) {
-            long tagId = -1;
+            long tagId;
             // Note: "tag" has a not valid ID yet.
 
             // Check if the tag already exists in the DB. If not, we save it
@@ -2316,7 +2316,7 @@ public class DataManager extends SQLiteOpenHelper {
     }
 
     public List<Country> getAllCountries() {
-        List<Country> countries = new LinkedList<Country>();
+        List<Country> countries = new LinkedList<>();
         SQLiteDatabase db = null;
 
         try {
@@ -2394,7 +2394,7 @@ public class DataManager extends SQLiteOpenHelper {
 
     public List<String> getTimeZoneCodes(Country country) {
         if (country == null) throw new NullPointerException("Country is null.");
-        List<String> timeZoneCodes = new LinkedList<String>();
+        List<String> timeZoneCodes = new LinkedList<>();
 
         long countryId = country.getId();
         SQLiteDatabase db = null;

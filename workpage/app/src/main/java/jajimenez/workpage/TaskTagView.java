@@ -29,8 +29,8 @@ public class TaskTagView extends LinearLayout {
     private void init(Context context) {
         inflate(context, R.layout.task_tag, this);
 
-        tagNameTextView = (TextView) findViewById(R.id.task_tag_name);
-        removeImageButton = (ImageButton) findViewById(R.id.task_tag_remove);
+        tagNameTextView = findViewById(R.id.task_tag_name);
+        removeImageButton = findViewById(R.id.task_tag_remove);
     }
 
     public void setText(String text) {

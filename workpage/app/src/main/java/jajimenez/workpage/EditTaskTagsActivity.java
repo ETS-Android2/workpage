@@ -1,9 +1,13 @@
 package jajimenez.workpage;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -32,8 +36,8 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     private Bundle savedInstanceState;
     private boolean interfaceReady;
 
-    private EditTaskTagDialogFragment.OnTaskTagSavedListener saveTaskTagListener;
-    private DeleteTaskTagDialogFragment.OnDeleteListener deleteTaskTagListener;
+    // Broadcast receiver
+    private AppBroadcastReceiver appBroadcastReceiver;
 
     private LoadTaskTagsDBTask tagsDbTask = null;
 
@@ -45,11 +49,11 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_task_tags);
         
-        Toolbar toolbar = (Toolbar) findViewById(R.id.edit_task_tags_toolbar);
+        Toolbar toolbar = findViewById(R.id.edit_task_tags_toolbar);
         setSupportActionBar(toolbar);
 
-        listView = (ListView) findViewById(R.id.edit_task_tags_list);
-        emptyTextView = (TextView) findViewById(R.id.edit_task_tags_empty);
+        listView = findViewById(R.id.edit_task_tags_list);
+        emptyTextView = findViewById(R.id.edit_task_tags_empty);
         actionMode = null;
 
         createContextualActionBar();
@@ -62,43 +66,35 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         bar.setSubtitle(currentTaskContext.getName());
         bar.setDisplayHomeAsUpEnabled(true);
 
-        saveTaskTagListener = new EditTaskTagDialogFragment.OnTaskTagSavedListener() {
-            public void onTaskTagSaved() {
-                // Set the result as OK for making Main Activity update its interface
-                setResult(RESULT_OK);
-
-                // Close the contextual action bar.
-                if (EditTaskTagsActivity.this.actionMode != null) EditTaskTagsActivity.this.actionMode.finish();
-
-                // Update the list view.
-                EditTaskTagsActivity.this.updateInterface();
-            }
-        };
-
-        deleteTaskTagListener = new DeleteTaskTagDialogFragment.OnDeleteListener() {
-            public void onDelete() {
-                // Set the result as OK for making Main Activity update its interface
-                setResult(RESULT_OK);
-
-                // Close the context action bar.
-                if (EditTaskTagsActivity.this.actionMode != null) EditTaskTagsActivity.this.actionMode.finish();
-
-                // Update the list view.
-                EditTaskTagsActivity.this.updateInterface();
-            }
-        };
-
         this.savedInstanceState = savedInstanceState;
-
-        if (savedInstanceState != null) {
-            EditTaskTagDialogFragment editFragment = (EditTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("edit_task_tag");
-            if (editFragment != null) editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
-
-            DeleteTaskTagDialogFragment deleteFragment = (DeleteTaskTagDialogFragment) (getFragmentManager()).findFragmentByTag("delete_task_tag");
-            if (deleteFragment != null) deleteFragment.setOnDeleteListener(deleteTaskTagListener);
-        }
-
         updateInterface();
+
+        // Broadcast receiver
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Broadcast receiver
+        unregisterBroadcastReceiver();
+    }
+
+    private void registerBroadcastReceiver() {
+        appBroadcastReceiver = new AppBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+
+        (LocalBroadcastManager.getInstance(this)).registerReceiver(appBroadcastReceiver, intentFilter);
+    }
+
+    private void unregisterBroadcastReceiver() {
+        (LocalBroadcastManager.getInstance(this)).unregisterReceiver(appBroadcastReceiver);
+    }
+
+    private void closeActionBar() {
+        // Close the context action bar
+        if (actionMode != null) actionMode.finish();
     }
 
     private void createContextualActionBar() {
@@ -139,8 +135,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                         arguments.putLong("context_id", currentTaskContext.getId());
 
                         editFragment.setArguments(arguments);
-
-                        editFragment.setOnTaskTagSavedListener(EditTaskTagsActivity.this.saveTaskTagListener);
                         editFragment.show(getFragmentManager(), "edit_task_tag");
 
                         eventHandled = true;
@@ -159,9 +153,8 @@ public class EditTaskTagsActivity extends AppCompatActivity {
                         }
 
                         arguments.putLongArray("tag_ids", selectedTagIds);
-                        deleteFragment.setArguments(arguments);
 
-                        deleteFragment.setOnDeleteListener(EditTaskTagsActivity.this.deleteTaskTagListener);
+                        deleteFragment.setArguments(arguments);
                         deleteFragment.show(getFragmentManager(), "delete_task_tag");
 
                         eventHandled = true;
@@ -210,7 +203,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    public void onAddClick(View view) {
+    public void onAddClicked(View view) {
         if (!interfaceReady) return;
 
         // Show an edition dialog
@@ -223,8 +216,6 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         arguments.putLong("context_id", currentTaskContext.getId());
 
         editFragment.setArguments(arguments);
-
-        editFragment.setOnTaskTagSavedListener(saveTaskTagListener);
         editFragment.show(getFragmentManager(), "edit_task_tag");
     }
 
@@ -237,7 +228,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     private void updateTaskTagListInterface(List<TaskTag> tags) {
-        if (tags == null) tags = new LinkedList<TaskTag>();
+        if (tags == null) tags = new LinkedList<>();
 
         TaskTagAdapter adapter = new TaskTagAdapter(this, R.layout.task_tag_list_item, tags);
         listView.setAdapter(adapter);
@@ -262,7 +253,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     private List<Integer> getSelectedItems() {
-        List<Integer> selectedItems = new LinkedList<Integer>();
+        List<Integer> selectedItems = new LinkedList<>();
 
         SparseBooleanArray itemSelectedStates = listView.getCheckedItemPositions();
         int itemCount = listView.getCount();
@@ -278,7 +269,7 @@ public class EditTaskTagsActivity extends AppCompatActivity {
     }
 
     private List<TaskTag> getSelectedTaskTags() {
-        List<TaskTag> selectedTags = new LinkedList<TaskTag>();
+        List<TaskTag> selectedTags = new LinkedList<>();
 
         TaskTagAdapter adapter = (TaskTagAdapter) listView.getAdapter();
         List<Integer> selectedItems = getSelectedItems();
@@ -289,6 +280,18 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         }
 
         return selectedTags;
+    }
+
+    private class AppBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            EditTaskTagsActivity.this.closeActionBar();
+            String action = intent.getAction();
+
+            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                EditTaskTagsActivity.this.updateInterface();
+            }
+        }
     }
 
     private class LoadTaskTagsDBTask extends AsyncTask<Void, Void, List<TaskTag>> {

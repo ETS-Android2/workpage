@@ -26,16 +26,14 @@ public class EditTaskContextDialogFragment extends DialogFragment {
     private AlertDialog dialog;
     private EditText nameEditText;
     private Button positiveButton;
-    private OnTaskContextSavedListener onTaskContextSavedListener;
 
     private ApplicationLogic applicationLogic;
     private TaskContext context;
     private List<TaskContext> contexts;
 
     public EditTaskContextDialogFragment() {
-        onTaskContextSavedListener = null;
         context = null;
-        contexts = new LinkedList<TaskContext>();
+        contexts = new LinkedList<>();
     }
 
     @Override
@@ -60,7 +58,7 @@ public class EditTaskContextDialogFragment extends DialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.edit_task_context, null);
 
-        nameEditText = (EditText) view.findViewById(R.id.edit_task_context_name);
+        nameEditText = view.findViewById(R.id.edit_task_context_name);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
@@ -82,10 +80,6 @@ public class EditTaskContextDialogFragment extends DialogFragment {
 
                 EditTaskContextDialogFragment.this.applicationLogic.saveTaskContext(EditTaskContextDialogFragment.this.context);
                 Toast.makeText(EditTaskContextDialogFragment.this.activity, R.string.context_saved, Toast.LENGTH_SHORT).show();
-
-                if (EditTaskContextDialogFragment.this.onTaskContextSavedListener != null) {
-                    EditTaskContextDialogFragment.this.onTaskContextSavedListener.onTaskContextSaved();
-                }
             }
         });
 
@@ -93,19 +87,19 @@ public class EditTaskContextDialogFragment extends DialogFragment {
 
         nameEditText.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Nothing to do.
+                // Nothing to do
             }
 
             public void afterTextChanged(Editable s) {
                 String text = (s.toString()).trim();
                 EditTaskContextDialogFragment.this.context.setName(text);
 
-                // The buttons can be accessed only when the dialog is shown, but not on the dialog creation
+                // The buttons can be accessed only when the dialog is shown, but not on the dialog creation.
                 if (positiveButton != null) updateNameEditText();
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Nothing to do.
+                // Nothing to do
             }
         });
 
@@ -132,13 +126,5 @@ public class EditTaskContextDialogFragment extends DialogFragment {
 
     private void updateNameEditText() {
         positiveButton.setEnabled((context.getName()).length() > 0  && !contexts.contains(context));
-    }
-
-    public void setOnTaskContextSavedListener(OnTaskContextSavedListener listener) {
-        onTaskContextSavedListener = listener;
-    }
-
-    public static interface OnTaskContextSavedListener {
-        void onTaskContextSaved();
     }
 }

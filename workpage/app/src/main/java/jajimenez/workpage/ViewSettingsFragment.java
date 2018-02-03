@@ -28,7 +28,7 @@ public class ViewSettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Load preferences.
+        // Load preferences
         addPreferencesFromResource(R.xml.view_preferences);
 
         activity = getActivity();
@@ -58,8 +58,15 @@ public class ViewSettingsFragment extends PreferenceFragment {
 
         addNoTagPreference();
         addTagPreferences();
-
         updateAllPref(null, false);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        ApplicationLogic logic = new ApplicationLogic(getActivity());
+        logic.notifyDataChange();
     }
 
     private void addStatePreference() {

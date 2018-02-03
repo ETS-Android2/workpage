@@ -35,7 +35,7 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
 
         // By default, the selected item is the task reminder with ID "4" (15 min.).
         // Note: Database IDs start at 1.
-        int selectedItem = ((int) currentTaskReminder.getId()) - 1;;
+        int selectedItem = ((int) currentTaskReminder.getId()) - 1;
 
         final List<TaskReminder> taskReminders = applicationLogic.getAllTaskReminders();
         int taskReminderCount = taskReminders.size();
@@ -81,7 +81,7 @@ public class TaskReminderPickerDialogFragment extends DialogFragment {
         onTaskReminderSetListener = listener;
     }
 
-    public static interface OnTaskReminderSetListener {
+    public interface OnTaskReminderSetListener {
         void onTaskReminderSet(TaskReminder reminder);
     }
 }
