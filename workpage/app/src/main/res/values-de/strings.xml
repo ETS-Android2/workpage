@@ -199,7 +199,7 @@
 
     <string name="settings">Einstellungen</string>
     <string name="week_start">Beginn der Woche</string>
-    <string name="week_start_default_key">0</string>
+    <string name="week_start_default_key">1</string>
 
     <string name="all_tasks">Alle Aufgaben</string>
     <string name="date_tasks">Aufgaben vom %1$s</string>

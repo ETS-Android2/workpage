@@ -25,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import jajimenez.workpage.R;
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
 import jajimenez.workpage.data.model.Country;
@@ -124,8 +125,10 @@ public class ApplicationLogic {
     }
 
     public int getWeekStartDay() {
+        String defaultDay = (appContext.getResources()).getString(R.string.week_start_default_key);
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
-        return Integer.parseInt(preferences.getString(WEEK_START_DAY_KEY, "0"));
+        return Integer.parseInt(preferences.getString(WEEK_START_DAY_KEY, defaultDay));
     }
 
     public void setCurrentTaskContext(TaskContext context) {
