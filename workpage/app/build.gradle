@@ -6,7 +6,7 @@ android {
         applicationId "jajimenez.workpage"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 13
+        versionCode 14
         versionName '0.10.0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
