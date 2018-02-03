@@ -20,8 +20,8 @@ Features
 
 Project data
 ------------
-* Development version: 0.10.0
-* Release version: 0.9.1
+* Development version: -
+* Release version: 0.10.0
 * Author: Jose A. Jimenez (jajimenezcarm@gmail.com)
 * License: GPL 3.0
 
