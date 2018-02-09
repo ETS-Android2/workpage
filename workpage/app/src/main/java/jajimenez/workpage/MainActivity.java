@@ -240,6 +240,7 @@ public class MainActivity extends AppCompatActivity
     public void updateInterface() {
         // Information about the current task context
         currentTaskContext = applicationLogic.getCurrentTaskContext();
+
         Menu drawerMenu = navigationView.getMenu();
         MenuItem contextItem = drawerMenu.findItem(R.id.main_nav_context);
         contextItem.setTitle(currentTaskContext.getName());
@@ -414,49 +415,41 @@ public class MainActivity extends AppCompatActivity
 
             // The returned value will be "false" if the operation
             // was successful or "true" if there was any error.
-            return MainActivity.this.applicationLogic.exportData(output);
+            return MainActivity.this.applicationLogic.exportData(output, ApplicationLogic.EXPORT_ALL_TASKS);
         }
 
         protected void onPostExecute(Boolean result) {
             if (result) {
-                (Toast.makeText(MainActivity.this, R.string.export_error, Toast.LENGTH_SHORT)).show();
+                (Toast.makeText(MainActivity.this, R.string.data_export_error, Toast.LENGTH_SHORT)).show();
             }
             else {
-                (Toast.makeText(MainActivity.this, R.string.export_success, Toast.LENGTH_SHORT)).show();
+                (Toast.makeText(MainActivity.this, R.string.data_export_success, Toast.LENGTH_SHORT)).show();
             }
         }
     }
 
-    private class ImportDataTask extends AsyncTask<Uri, Void, Integer> {
+    private class ImportDataTask extends AsyncTask<Uri, Void, Boolean> {
         protected void onPreExecute() {
             // Nothing to do
         }
 
-        protected Integer doInBackground(Uri... parameters) {
+        protected Boolean doInBackground(Uri... parameters) {
             Uri input = parameters[0];
-            return MainActivity.this.applicationLogic.importData(input); // Return result
+
+            ApplicationLogic logic = new ApplicationLogic(MainActivity.this, false);
+            boolean success = logic.importData(input);
+
+            logic.setNotifyDataChanges(true);
+            logic.notifyDataChange();
+
+            return success;
         }
 
-        protected void onPostExecute(Integer result) {
-            switch (result) {
-                case ApplicationLogic.IMPORT_SUCCESS:
-                    (Toast.makeText(MainActivity.this, R.string.import_success, Toast.LENGTH_SHORT)).show();
-                    break;
-                case ApplicationLogic.IMPORT_ERROR_OPENING_FILE:
-                    (Toast.makeText(MainActivity.this, R.string.import_error_opening_file, Toast.LENGTH_SHORT)).show();
-                    break;
-
-                case ApplicationLogic.IMPORT_ERROR_FILE_NOT_COMPATIBLE:
-                    (Toast.makeText(MainActivity.this, R.string.import_error_file_not_compatible, Toast.LENGTH_SHORT)).show();
-                    break;
-
-                case ApplicationLogic.IMPORT_ERROR_DATA_NOT_VALID:
-                    (Toast.makeText(MainActivity.this, R.string.import_error_data_not_valid, Toast.LENGTH_SHORT)).show();
-                    break;
-
-                default:
-                    (Toast.makeText(MainActivity.this, R.string.import_error_importing_data, Toast.LENGTH_SHORT)).show();
-                    break;
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                (Toast.makeText(MainActivity.this, R.string.data_import_success, Toast.LENGTH_SHORT)).show();
+            } else {
+                (Toast.makeText(MainActivity.this, R.string.data_import_error, Toast.LENGTH_SHORT)).show();
             }
         }
     }

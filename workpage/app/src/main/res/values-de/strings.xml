@@ -177,16 +177,12 @@
     <string name="tag_saved">Stichwort gespeichert</string>
     <string name="country_name">Ländername</string>
 
-    <string name="export_success">Daten exportiert</string>
-    <string name="export_error">Fehler beim Exportieren der Daten</string>
+    <string name="data_export_success">Daten exportiert</string>
+    <string name="data_export_error">Datenexport Fehler</string>
 
     <string name="data_import_confirmation">Alle aktuellen Daten werden überschrieben. Möchten Sie fortfahren?</string>
-
-    <string name="import_success">Daten importiert</string>
-    <string name="import_error_opening_file">Fehler beim Öffnen der Datei</string>
-    <string name="import_error_file_not_compatible">Fehler: Die Datei ist nicht kompatibel.</string>
-    <string name="import_error_data_not_valid">Fehler: Daten sind ungültig.</string>
-    <string name="import_error_importing_data">Error trying to import the data.</string>
+    <string name="data_import_success">Daten importiert</string>
+    <string name="data_import_error">Datenimport Fehler</string>
 
     <string name="state_2">Zustand</string>
 

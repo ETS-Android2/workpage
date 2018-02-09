@@ -177,16 +177,12 @@
     <string name="tag_saved">Etiqueta guardada</string>
     <string name="country_name">Nombre del país</string>
 
-    <string name="export_success">Datos exportados</string>
-    <string name="export_error">Error al intentar exportar los datos</string>
+    <string name="data_export_success">Datos exportados</string>
+    <string name="data_export_error">Error al exportar los datos</string>
 
     <string name="data_import_confirmation">Todos los datos actuales serán sobrescritos. ¿Quiere continuar?</string>
-
-    <string name="import_success">Datos importados</string>
-    <string name="import_error_opening_file">Error al intentar abrir el archivo</string>
-    <string name="import_error_file_not_compatible">Error: El archivo no es compatible.</string>
-    <string name="import_error_data_not_valid">Error: Los datos no son válidos.</string>
-    <string name="import_error_importing_data">Error al intentar importar los datos</string>
+    <string name="data_import_success">Datos importados</string>
+    <string name="data_import_error">Error al importar los datos</string>
 
     <string name="state_2">Estado</string>
 

@@ -1,19 +1,5 @@
 package jajimenez.workpage.logic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Collections;
-import java.util.Calendar;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.TimeZone;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,14 +11,34 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
 import jajimenez.workpage.R;
 import jajimenez.workpage.TaskReminderAlarmReceiver;
 import jajimenez.workpage.data.DataManager;
+import jajimenez.workpage.data.JsonDataTool;
 import jajimenez.workpage.data.model.Country;
-import jajimenez.workpage.data.model.TaskContext;
-import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.data.model.Task;
+import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskReminder;
+import jajimenez.workpage.data.model.TaskTag;
 
 public class ApplicationLogic {
     public static final String ACTION_DATA_CHANGED = "jajimenez.workpage.action.DATA_CHANGED";
@@ -55,12 +61,10 @@ public class ApplicationLogic {
     public static final int INTERFACE_MODE_LIST = 0;
     public static final int INTERFACE_MODE_CALENDAR = 1;
 
-    // Constants for the "importData" function
-    public static final int IMPORT_SUCCESS = 0;
-    public static final int IMPORT_ERROR_OPENING_FILE = 1;
-    public static final int IMPORT_ERROR_FILE_NOT_COMPATIBLE = 2;
-    public static final int IMPORT_ERROR_DATA_NOT_VALID = 3;
-    public static final int IMPORT_ERROR_IMPORTING_DATA = 4;
+    // Constants for the "exportData" function
+    public static final int EXPORT_OPEN_TASKS = 0;
+    public static final int EXPORT_CLOSED_TASKS = 1;
+    public static final int EXPORT_ALL_TASKS = 2;
 
     private static final int SINGLE = 0;
     private static final int START = 1;
@@ -68,22 +72,53 @@ public class ApplicationLogic {
 
     private Context appContext;
     private DataManager dataManager;
+    private boolean notifyDataChanges;
 
     public ApplicationLogic(Context appContext) {
+        this(appContext, true);
+    }
+
+    public ApplicationLogic(Context appContext, boolean notifyDataChanges) {
         this.appContext = appContext;
         this.dataManager = new DataManager(appContext);
+        this.notifyDataChanges = notifyDataChanges;
+    }
+
+    public boolean getNotifyDataChanges() {
+        return notifyDataChanges;
+    }
+
+    public void setNotifyDataChanges(boolean notifyDataChanges) {
+        this.notifyDataChanges = notifyDataChanges;
     }
 
     public void notifyDataChange() {
-        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(appContext);
-        manager.sendBroadcast(new Intent(ACTION_DATA_CHANGED));
+        if (notifyDataChanges) {
+            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(appContext);
+            manager.sendBroadcast(new Intent(ACTION_DATA_CHANGED));
+        }
     }
 
     public TaskContext getCurrentTaskContext() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         long currentTaskContextId = preferences.getLong(CURRENT_TASK_CONTEXT_ID_KEY, 1);
 
-        return dataManager.getTaskContext(currentTaskContextId);
+        TaskContext newCurrentContext = dataManager.getTaskContext(currentTaskContextId);
+
+        // In case of any problem, we get the first existing current context.
+        if (newCurrentContext == null) {
+            // Disable the internal notifications
+            boolean not = notifyDataChanges;
+            notifyDataChanges = false;
+
+            newCurrentContext = (getAllTaskContexts()).get(0);
+            setCurrentTaskContext(newCurrentContext);
+
+            // Restore the original value of "notifyDataChanges".
+            notifyDataChanges = not;
+        }
+
+        return newCurrentContext;
     }
 
     public String getViewStateFilter() {
@@ -484,29 +519,29 @@ public class ApplicationLogic {
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if (day.length() == 1) month = "0" + day;
 
-        return year + month + day + "_workpage_data.db";
+        return year + month + day + "_workpage_data.json";
     }
 
     // Returns "false" if the operation was successful
     // or "true" if there was any error.
-    public boolean exportData(Uri output) {
+    public boolean exportData(Uri output, int option) {
         boolean error = false;
 
         if (output != null) {
             try {
-                // Input file (database)
-                File databaseFile = dataManager.getDatabaseFile();
-                InputStream inputStr = new FileInputStream(databaseFile);
+                // Input
+                String data = (getJsonDataFromDb(option)).toString();
+                InputStream inputStr = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
 
-                // Output file
+                // Output
                 ParcelFileDescriptor desc = (appContext.getContentResolver()).openFileDescriptor(output, "w");
                 OutputStream outputStr = new FileOutputStream(desc.getFileDescriptor());
 
                 copyData(inputStr, outputStr);
 
-                inputStr.close();
                 outputStr.close();
                 desc.close();
+                inputStr.close();
             }
             catch (Exception e) {
                 error = true;
@@ -516,74 +551,79 @@ public class ApplicationLogic {
         return error;
     }
 
-    public int importData(Uri input) {
-        int importResult;
-        int compatible;
+    private JSONObject getJsonDataFromDb(int option) throws JSONException {
+        JsonDataTool tool = new JsonDataTool();
+        JSONObject data = new JSONObject();
+
+        // Add contexts
+        JSONArray contextArray = new JSONArray();
+        List<TaskContext> contexts = getAllTaskContexts();
+
+        for (TaskContext context : contexts) {
+            JSONObject contextObj = tool.getContextJson(context);
+
+            // Add context tags
+            List<TaskTag> tags = getAllTaskTags(context);
+            if (tags.size() > 0) contextObj.put("tags", tool.getContextTagsJson(tags));
+
+            // Add context tasks
+            List<Task> tasks = new LinkedList<>();
+
+            if (option == EXPORT_OPEN_TASKS || option == EXPORT_ALL_TASKS) {
+                tasks.addAll(getOpenTasksByTags(context, true, tags));
+            }
+
+            if (option == EXPORT_CLOSED_TASKS || option == EXPORT_ALL_TASKS) {
+                tasks.addAll(getClosedTasksByTags(context, true, tags));
+            }
+
+            if (tasks.size() > 0) contextObj.put("tasks", tool.getContextTasksJson(tasks));
+
+            contextArray.put(contextObj);
+        }
+
+        data.put("contexts", contextArray);
+
+        return data;
+    }
+
+    public boolean importData(Uri input) {
+        boolean success = false;
 
         try {
-            // Make temporal copy of the file to import and check if it is compatible
-            File tempDbFile = dataManager.getTemporalDatabaseFile(); // This file does not exist yet
-            copyFile(input, tempDbFile);
-            compatible = DataManager.isDatabaseCompatible(tempDbFile);
+            // Cancel reminder alarms of old tasks
+            updateAllOpenTaskReminderAlarms(true);
 
-            // Delete temporal copy
-            tempDbFile.delete();
-        }
-        catch (Exception e) {
-            compatible = DataManager.ERROR_OPENING_DB;
-        }
+            // Input
+            InputStream inputStr = (appContext.getContentResolver()).openInputStream(input);
 
-        switch (compatible) {
-            case DataManager.COMPATIBLE:
-                try {
-                    // Cancel reminder alarms of old tasks.
-                    updateAllOpenTaskReminderAlarms(true);
+            // Output
+            ByteArrayOutputStream outputStr = new ByteArrayOutputStream();
 
-                    // Import file
-                    File dbFile = dataManager.getDatabaseFile();
-                    copyFile(input, dbFile);
+            copyData(inputStr, outputStr);
+            String dataStr = outputStr.toString("UTF-8");
 
-                    // Clear settings.
-                    clearSettings();
+            outputStr.close();
+            inputStr.close();
 
-                    // Set reminder alarms for new tasks.
-                    updateAllOpenTaskReminderAlarms(false);
+            JSONObject dataObj = new JSONObject(dataStr);
+            deleteCurrentData();
+            importJsonDataIntoDb(dataObj);
 
-                    importResult = IMPORT_SUCCESS;
-                }
-                catch (Exception e) {
-                    importResult = IMPORT_ERROR_IMPORTING_DATA;
-                }
+            // Clear settings
+            clearSettings();
 
-                break;
+            // Set reminder alarms for new tasks
+            updateAllOpenTaskReminderAlarms(false);
 
-            case DataManager.ERROR_OPENING_DB:
-                importResult = IMPORT_ERROR_OPENING_FILE;
-                break;
-
-            case DataManager.ERROR_DB_NOT_COMPATIBLE:
-                importResult = IMPORT_ERROR_FILE_NOT_COMPATIBLE;
-                break;
-
-            default:
-                importResult = IMPORT_ERROR_DATA_NOT_VALID;
+            success = true;
+        } catch (Exception e) {
+            // Nothing to do
         }
 
         notifyDataChange();
 
-        return importResult;
-    }
-
-    private void copyFile(Uri input, File output) throws IOException {
-        // Input file
-        InputStream inputStr = (appContext.getContentResolver()).openInputStream(input);
-
-        // Output file
-        OutputStream outputStr = new FileOutputStream(output);
-
-        copyData(inputStr, outputStr);
-        inputStr.close();
-        outputStr.close();
+        return success;
     }
 
     private void copyData(InputStream input, OutputStream output) throws IOException {
@@ -595,6 +635,54 @@ public class ApplicationLogic {
         }
     }
 
+    private void deleteCurrentData() {
+        deleteTaskContexts(getAllTaskContexts());
+    }
+
+    // "dataObj" is assumed to be a valid object
+    private void importJsonDataIntoDb(JSONObject dataObj) throws JSONException {
+        JsonDataTool tool = new JsonDataTool();
+
+        JSONArray contextArray = dataObj.getJSONArray("contexts");
+        int contextCount = contextArray.length();
+
+        for (int i = 0; i < contextCount; i++) {
+            // Context
+            JSONObject contextObj = contextArray.getJSONObject(i);
+            TaskContext context = tool.getContext(contextObj);
+            saveTaskContext(context);
+
+            // After saving the new context, it has an ID.
+            long contextId = context.getId();
+
+            // Context tags
+            // Note: We need to set the Context ID of a given tag in order to save it.
+            if (contextObj.has("tags")) {
+                List<TaskTag> contextTags = tool.getContextTags(contextObj.getJSONArray("tags"));
+
+                for (TaskTag tag : contextTags) {
+                    tag.setContextId(contextId);
+                    saveTaskTag(tag);
+                }
+            }
+
+            // Context tasks
+            // Note: In order to save a task:
+            //           1. We need to set its Context ID.
+            //           2. We don't need to set neither the IDs nor the Context IDs of its tags, as
+            //              soon as the names of its tags are names of existing tags in the context.
+            //       See the "saveTask" method of this class.
+            if (contextObj.has("tasks")) {
+                List<Task> tasks = tool.getContextTasks(contextObj.getJSONArray("tasks"));
+
+                for (Task task : tasks) {
+                    task.setContextId(contextId);
+                    saveTask(task);
+                }
+            }
+        }
+    }
+
     private void clearSettings() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         SharedPreferences.Editor editor = preferences.edit();
@@ -603,7 +691,10 @@ public class ApplicationLogic {
 
         for (Map.Entry<String, ?> entry : keys.entrySet()) {
             String key = entry.getKey();
-            editor.remove(key);
+
+            if (!key.equals(WEEK_START_DAY_KEY)) {
+                editor.remove(key);
+            }
         }
 
         editor.commit();

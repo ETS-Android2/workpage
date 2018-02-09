@@ -3,7 +3,6 @@ package jajimenez.workpage.data;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Calendar;
-import java.io.File;
 import java.util.TimeZone;
 
 import android.content.Context;
@@ -22,14 +21,7 @@ import jajimenez.workpage.data.model.Task;
 
 public class DataManager extends SQLiteOpenHelper {
     public static final String DB_NAME = "workpage.db";
-    public static final String TEMP_DB_NAME = "temp.db";
     public static final int DB_VERSION = 4;
-
-    // Constants for the "isDatabaseCompatible" function.
-    public static final int COMPATIBLE = 0;
-    public static final int ERROR_OPENING_DB = 1;
-    public static final int ERROR_DB_NOT_COMPATIBLE = 2;
-    public static final int ERROR_DATA_NOT_VALID = 3;
 
     private Context context;
 
@@ -1307,94 +1299,6 @@ public class DataManager extends SQLiteOpenHelper {
         super.onConfigure(db);
 
         if (!db.isReadOnly()) db.setForeignKeyConstraintsEnabled(true);
-    }
-
-    public File getDatabaseFile() {
-        return context.getDatabasePath(DB_NAME);
-    }
-
-    public File getTemporalDatabaseFile() {
-        File dir = context.getFilesDir();
-        return new File(dir, TEMP_DB_NAME);
-    }
-
-    public static int isDatabaseCompatible(File dbFile) {
-        SQLiteDatabase db;
-
-        try {
-            db = SQLiteDatabase.openDatabase(dbFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
-        }
-        catch (Exception e) {
-            return ERROR_OPENING_DB;
-        }
-
-        // Check DB version.
-        int dbVersion = db.getVersion();
-        if (dbVersion < 1 || dbVersion > DB_VERSION) return ERROR_DB_NOT_COMPATIBLE;
-
-        // Check that the tables are the expected ones:
-        //     * Only TaskTags and Tasks are not the same in the 3 database versions.
-        //     * TaskReminders is new in version 3.
-        String taskContextsTableSql = "SELECT id, name, list_order FROM task_contexts LIMIT 1";
-        String taskRemindersTableSql = "";
-        String taskTagsTableSql;
-        String tasksTableSql;
-        String taskTagRelationshipsTableSql = "SELECT id, task_id, task_tag_id FROM task_tag_relationships LIMIT 1";
-        String countriesTableSql = "SELECT id, code FROM countries LIMIT 1";
-        String timeZonesTableSql = "SELECT id, code, country_id FROM time_zones LIMIT 1";
-
-        if (dbVersion == 1) { 
-            taskTagsTableSql = "SELECT id, task_context_id, name, list_order FROM task_tags LIMIT 1";
-        }
-        else if (dbVersion == 2) {
-            taskTagsTableSql = "SELECT id, task_context_id, name, list_order, color FROM task_tags LIMIT 1";
-        }
-        else { // dbVersion = 3 or dbVersion = 4
-            taskTagsTableSql = "SELECT id, task_context_id, name, color FROM task_tags LIMIT 1";
-            taskRemindersTableSql = "SELECT id, minutes FROM task_reminders LIMIT 1";
-        }
-
-        if (dbVersion == 1 || dbVersion == 2) { 
-            tasksTableSql = "SELECT id, task_context_id, title, description, start_datetime, deadline_datetime, done FROM tasks LIMIT 1";
-        }
-        else if (dbVersion == 3) {
-            tasksTableSql = "SELECT id, task_context_id, title, description, " +
-                "when_datetime, ignore_when_time, when_reminder_id, " +
-                "start_datetime, ignore_start_time, start_reminder_id, " +
-                "deadline_datetime, ignore_deadline_time, deadline_reminder_id, " +
-                "done " +
-                "FROM tasks LIMIT 1";
-        }
-        else { // dbVersion = 4
-            tasksTableSql = "SELECT id, task_context_id, title, description, " +
-                "single_datetime, ignore_single_time, single_time_zone_code, single_reminder_id, " +
-                "start_datetime, ignore_start_time, start_time_zone_code, start_reminder_id, " +
-                "end_datetime, ignore_end_time, end_time_zone_code, end_reminder_id, " +
-                "done " +
-                "FROM tasks LIMIT 1";
-        }
-
-        try {
-            db.rawQuery(taskContextsTableSql, null);
-
-            if (dbVersion == 3) db.rawQuery(taskRemindersTableSql, null);
-
-            db.rawQuery(taskTagsTableSql, null);
-            db.rawQuery(tasksTableSql, null);
-            db.rawQuery(taskTagRelationshipsTableSql, null);
-            db.rawQuery(countriesTableSql, null);
-            db.rawQuery(timeZonesTableSql, null);
-        }
-        catch (Exception e) {
-            return ERROR_DB_NOT_COMPATIBLE;
-        }
-
-        // Check DB integrity.
-        if (!db.isDatabaseIntegrityOk()) return ERROR_DATA_NOT_VALID;
-
-        db.close();
-
-        return COMPATIBLE;
     }
 
     // Returns all task contexts.

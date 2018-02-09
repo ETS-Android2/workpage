@@ -177,16 +177,12 @@
     <string name="tag_saved">Tag saved</string>
     <string name="country_name">Country name</string>
 
-    <string name="export_success">Data exported</string>
-    <string name="export_error">Error trying to export the data</string>
+    <string name="data_export_success">Data exported</string>
+    <string name="data_export_error">Data export error</string>
 
     <string name="data_import_confirmation">All current data will be overwritten. Do you want to continue?</string>
-
-    <string name="import_success">Data imported</string>
-    <string name="import_error_opening_file">Error trying to open the file</string>
-    <string name="import_error_file_not_compatible">Error: The file is not compatible.</string>
-    <string name="import_error_data_not_valid">Error: Data is not valid.</string>
-    <string name="import_error_importing_data">Error trying to import the data.</string>
+    <string name="data_import_success">Data imported</string>
+    <string name="data_import_error">Data import error</string>
 
     <string name="state_2">State</string>
 
