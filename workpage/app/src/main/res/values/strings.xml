@@ -177,6 +177,7 @@
     <string name="tag_saved">Tag saved</string>
     <string name="country_name">Country name</string>
 
+    <string name="export_as">Export as</string>
     <string name="data_export_success">Data exported</string>
     <string name="data_export_error">Data export error</string>
 
@@ -199,4 +200,7 @@
 
     <string name="all_tasks">All tasks</string>
     <string name="date_tasks">Tasks of %1$s</string>
+
+    <string name="select_contexts">Select contexts</string>
+    <string name="select_tags">Select tags</string>
 </resources>

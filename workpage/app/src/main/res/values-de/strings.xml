@@ -177,6 +177,7 @@
     <string name="tag_saved">Stichwort gespeichert</string>
     <string name="country_name">Ländername</string>
 
+    <string name="export_as">Exportieren als</string>
     <string name="data_export_success">Daten exportiert</string>
     <string name="data_export_error">Datenexport Fehler</string>
 
@@ -199,4 +200,7 @@
 
     <string name="all_tasks">Alle Aufgaben</string>
     <string name="date_tasks">Aufgaben vom %1$s</string>
+
+    <string name="select_contexts">Wählen Sie Kontexte</string>
+    <string name="select_tags">Wählen Sie Stichworte</string>
 </resources>

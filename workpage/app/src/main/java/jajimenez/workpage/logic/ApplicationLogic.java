@@ -55,6 +55,10 @@ public class ApplicationLogic {
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
     private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
+    private static final String VIEW_TAG_FILTER_KEY_START = "view_tag_filter_tag_";
+    private static final String EXPORT_DATA_CONTEXT_KEY_START = "export_data_context_";
+    private static final String EXPORT_DATA_NOTAG_CONTEXT_KEY_START = "export_data_notag_context";
+    private static final String EXPORT_DATA_TAG_KEY_START = "export_data_tag_";
     private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_";
     private static final String WEEK_START_DAY_KEY = "week_start_day";
 
@@ -143,13 +147,27 @@ public class ApplicationLogic {
         List<TaskTag> tags = getAllTaskTags(currentContext);
 
         for (TaskTag t : tags) {
-            String key = "view_tag_filter_tag_" + t.getId();
+            String key = VIEW_TAG_FILTER_KEY_START + t.getId();
             boolean value = preferences.getBoolean(key, true);
 
             if (value) filterTags.add(t);
         }
 
         return filterTags;
+    }
+
+    public boolean isContextForExport(TaskContext context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = EXPORT_DATA_CONTEXT_KEY_START + context.getId();
+        return preferences.getBoolean(key, true);
+    }
+
+    public void setContextForExport(TaskContext context, boolean forExport) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(EXPORT_DATA_CONTEXT_KEY_START + context.getId(), forExport);
+        editor.commit();
     }
 
     public int getInterfaceMode() {
@@ -211,11 +229,15 @@ public class ApplicationLogic {
             // The context's settings must be removed from the tag filtering of the view.
             long id = c.getId();
 
-            String stateKey = "view_state_filter_state_context_" + id;
-            String noTagKey = "view_tag_filter_notag_context_" + id;
+            String stateViewKey = VIEW_STATE_FILTER_KEY_START + id;
+            String noTagViewKey = VIEW_TAG_FILTER_NO_TAG_KEY_START + id;
+            String contextExportKey = EXPORT_DATA_CONTEXT_KEY_START + id;
+            String noTagContextExportKey = EXPORT_DATA_NOTAG_CONTEXT_KEY_START + id;
 
-            editor.remove(stateKey);
-            editor.remove(noTagKey);
+            editor.remove(stateViewKey);
+            editor.remove(noTagViewKey);
+            editor.remove(contextExportKey);
+            editor.remove(noTagContextExportKey);
 
             editor.commit();
         }
@@ -258,8 +280,12 @@ public class ApplicationLogic {
 
         for (TaskTag t : tags) {
             // The tag settings must be removed from the tag filtering of the view.
-            String key = "view_tag_filter_tag_" + t.getId();
-            editor.remove(key);
+            String key1 = VIEW_TAG_FILTER_KEY_START + t.getId();
+            editor.remove(key1);
+
+            String key2 = EXPORT_DATA_TAG_KEY_START + t.getId();
+            editor.remove(key2);
+
             editor.commit();
         }
 

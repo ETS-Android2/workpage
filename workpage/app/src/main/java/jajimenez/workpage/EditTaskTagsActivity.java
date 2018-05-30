@@ -63,8 +63,11 @@ public class EditTaskTagsActivity extends AppCompatActivity {
         currentTaskContext = applicationLogic.getCurrentTaskContext();
 
         ActionBar bar = getSupportActionBar();
-        bar.setSubtitle(currentTaskContext.getName());
-        bar.setDisplayHomeAsUpEnabled(true);
+
+        if (bar != null) {
+            bar.setSubtitle(currentTaskContext.getName());
+            bar.setDisplayHomeAsUpEnabled(true);
+        }
 
         this.savedInstanceState = savedInstanceState;
         updateInterface();

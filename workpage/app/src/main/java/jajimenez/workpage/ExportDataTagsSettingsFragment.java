@@ -1,12 +1,12 @@
 package jajimenez.workpage;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
+import android.preference.PreferenceScreen;
 
 import java.util.List;
 
@@ -14,14 +14,11 @@ import jajimenez.workpage.data.model.TaskContext;
 import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.logic.ApplicationLogic;
 
-public class ViewSettingsFragment extends PreferenceFragment {
+public class ExportDataTagsSettingsFragment extends PreferenceFragment {
     private Activity activity;
-    private PreferenceGroup stateFilterPref;
-    private ListPreference statePref;
-    private PreferenceGroup tagFilterPref;
     private CheckBoxPreference allPref;
 
-    private TaskContext currentContext;
+    private TaskContext context;
     private List<TaskTag> tags;
 
     @Override
@@ -29,26 +26,25 @@ public class ViewSettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         // Load preferences
-        addPreferencesFromResource(R.xml.view_preferences);
+        addPreferencesFromResource(R.xml.export_data_preferences);
 
         activity = getActivity();
         ApplicationLogic logic = new ApplicationLogic(activity);
 
-        currentContext = logic.getCurrentTaskContext();
-        tags = logic.getAllTaskTags(currentContext);
+        Intent intent = activity.getIntent();
+        long contextId = intent.getLongExtra("task_context_id", -1);
+        context = logic.getTaskContext(contextId);
 
-        stateFilterPref = (PreferenceGroup) findPreference("view_state_filter");
-        addStatePreference();
+        tags = logic.getAllTaskTags(context);
 
-        tagFilterPref = (PreferenceGroup) findPreference("view_tag_filter");
-        allPref = (CheckBoxPreference) findPreference("view_tag_filter_all");
+        allPref = (CheckBoxPreference) findPreference("export_data_all");
 
         allPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int tagPrefCount = ViewSettingsFragment.this.tags.size() + 2;
+                int tagPrefCount = ExportDataTagsSettingsFragment.this.tags.size() + 2;
 
                 for (int i = 1; i < tagPrefCount; i++) {
-                    CheckBoxPreference p = (CheckBoxPreference) ViewSettingsFragment.this.tagFilterPref.getPreference(i);
+                    CheckBoxPreference p = (CheckBoxPreference) (ExportDataTagsSettingsFragment.this.getPreferenceScreen()).getPreference(i);
                     p.setChecked((Boolean) newValue);
                 }
 
@@ -69,57 +65,22 @@ public class ViewSettingsFragment extends PreferenceFragment {
         logic.notifyDataChange();
     }
 
-    private void addStatePreference() {
-        statePref = new ListPreference(activity);
-
-        statePref.setKey("view_state_filter_state_context_" + currentContext.getId());
-        statePref.setEntries(R.array.view_state_filter_texts);
-        statePref.setEntryValues(R.array.view_state_filter_keys);
-        statePref.setDefaultValue("open");
-        statePref.setTitle(getInitialStatePreferenceTitle());
-        statePref.setDialogTitle(R.string.state_2);
-        statePref.setOrder(0);
-
-        statePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                CharSequence text = ViewSettingsFragment.this.getStatePreferenceValue(String.valueOf(newValue));
-                statePref.setTitle(text);
-
-                return true;
-            }
-        });
-
-        stateFilterPref.addPreference(statePref);
-    }
-
-    private CharSequence getInitialStatePreferenceTitle() {
-        ApplicationLogic logic = new ApplicationLogic(activity);
-        String currentStateKey = logic.getViewStateFilter();
-
-        return getStatePreferenceValue(currentStateKey);
-    }
-
-    private CharSequence getStatePreferenceValue(String key) {
-        int index = statePref.findIndexOfValue(key);
-        return (statePref.getEntries())[index];
-    }
-
     private void addNoTagPreference() {
         CheckBoxPreference p = new CheckBoxPreference(activity);
-        p.setKey("view_tag_filter_notag_context_" + currentContext.getId());
+        p.setKey("export_data_notag_context_" + context.getId());
         p.setDefaultValue(true);
         p.setTitle(R.string.without_tags);
         p.setOrder(1);
 
         p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                ViewSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
+                ExportDataTagsSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
 
                 return true;
             }
         });
 
-        tagFilterPref.addPreference(p);
+        (getPreferenceScreen()).addPreference(p);
     }
 
     private void addTagPreferences() {
@@ -129,28 +90,30 @@ public class ViewSettingsFragment extends PreferenceFragment {
             TaskTag t = tags.get(i);
             CheckBoxPreference p = new CheckBoxPreference(activity);
 
-            p.setKey("view_tag_filter_tag_" + t.getId());
+            p.setKey("export_data_tag_" + t.getId());
             p.setDefaultValue(true);
             p.setTitle(t.getName());
             p.setOrder(i + 2);
 
             p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    ViewSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
+                    ExportDataTagsSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
                     return true;
                 }
             });
 
-            tagFilterPref.addPreference(p);
+            (getPreferenceScreen()).addPreference(p);
         }
     }
 
     private void updateAllPref(Preference changedPref, boolean newValue) {
+        PreferenceScreen prefScreen = getPreferenceScreen();
+
         boolean checked = true;
         int tagPrefCount = tags.size() + 2;
 
         for (int i = 1; i < tagPrefCount && checked; i++) {
-            CheckBoxPreference p = (CheckBoxPreference) tagFilterPref.getPreference(i);
+            CheckBoxPreference p = (CheckBoxPreference) prefScreen.getPreference(i);
 
             if (changedPref == null || p != changedPref) checked = p.isChecked();
             else checked = newValue;

@@ -169,12 +169,15 @@ public class MainActivity extends AppCompatActivity
                 interfaceModeFragment.show(getFragmentManager(), "switch_interface_mode");
                 break;
             case R.id.main_nav_export_data:
-                intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType(ApplicationLogic.APP_MIME_TYPE);
-                intent.putExtra(Intent.EXTRA_TITLE, ApplicationLogic.getProposedExportDataFileName());
+                // intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                // intent.addCategory(Intent.CATEGORY_OPENABLE);
+                // intent.setType(ApplicationLogic.APP_MIME_TYPE);
+                // intent.putExtra(Intent.EXTRA_TITLE, ApplicationLogic.getProposedExportDataFileName());
+                //
+                // startActivityForResult(intent, ApplicationLogic.EXPORT_DATA);
+                intent = new Intent(this, ExportDataSettingsActivity.class);
+                startActivity(intent);
 
-                startActivityForResult(intent, ApplicationLogic.EXPORT_DATA);
                 break;
             case R.id.main_nav_import_data:
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -199,31 +202,31 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        Bundle arguments;
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == ApplicationLogic.EXPORT_DATA) {
-                // Export data
-                Uri output = resultData.getData();
-                (new ExportDataTask()).execute(output);
-            }
-            else if (requestCode == ApplicationLogic.IMPORT_DATA) {
-                // Import data
-                Uri input = resultData.getData();
-
-                DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
-
-                arguments = new Bundle();
-                arguments.putString("input", input.toString());
-
-                importFragment.setArguments(arguments);
-                importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
-                importFragment.show(getFragmentManager(), "data_import_confirmation");
-            }
-        }
-    }
+    // @Override
+    // protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+    //     Bundle arguments;
+    //
+    //     if (resultCode == RESULT_OK) {
+    //         if (requestCode == ApplicationLogic.EXPORT_DATA) {
+    //             // Export data
+    //             Uri output = resultData.getData();
+    //             (new ExportDataTask()).execute(output);
+    //         }
+    //         else if (requestCode == ApplicationLogic.IMPORT_DATA) {
+    //             // Import data
+    //             Uri input = resultData.getData();
+    //
+    //             DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
+    //
+    //             arguments = new Bundle();
+    //             arguments.putString("input", input.toString());
+    //
+    //             importFragment.setArguments(arguments);
+    //             importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
+    //             importFragment.show(getFragmentManager(), "data_import_confirmation");
+    //         }
+    //     }
+    // }
 
     public void onAddClicked(View view) {
         // Close the context action bar

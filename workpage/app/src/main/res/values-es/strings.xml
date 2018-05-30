@@ -177,6 +177,7 @@
     <string name="tag_saved">Etiqueta guardada</string>
     <string name="country_name">Nombre del país</string>
 
+    <string name="export_as">Exportar como</string>
     <string name="data_export_success">Datos exportados</string>
     <string name="data_export_error">Error al exportar los datos</string>
 
@@ -199,4 +200,7 @@
 
     <string name="all_tasks">Todas las tareas</string>
     <string name="date_tasks">Tareas de %1$s</string>
+
+    <string name="select_contexts">Seleccione contextos</string>
+    <string name="select_tags">Seleccione etiquetas</string>
 </resources>

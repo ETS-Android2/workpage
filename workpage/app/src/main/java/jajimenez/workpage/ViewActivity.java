@@ -15,7 +15,7 @@ public class ViewActivity extends AppCompatActivity {
 
         ApplicationLogic logic = new ApplicationLogic(this);
         ActionBar bar = getSupportActionBar();
-        bar.setSubtitle((logic.getCurrentTaskContext()).getName());
+        if (bar != null) bar.setSubtitle((logic.getCurrentTaskContext()).getName());
 
         // Display preference fragment
         FragmentManager manager = getFragmentManager();

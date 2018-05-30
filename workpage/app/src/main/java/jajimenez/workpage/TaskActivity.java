@@ -1,32 +1,32 @@
 package jajimenez.workpage;
 
-import java.util.List;
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.content.Intent;
-import android.view.View;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
-import jajimenez.workpage.logic.ApplicationLogic;
-import jajimenez.workpage.logic.TextTool;
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
+
 import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskTag;
+import jajimenez.workpage.logic.ApplicationLogic;
+import jajimenez.workpage.logic.TextTool;
 
 public class TaskActivity extends AppCompatActivity {
     private TextView titleTextView;
@@ -166,8 +166,10 @@ public class TaskActivity extends AppCompatActivity {
 
         ActionBar bar = getSupportActionBar();
 
-        if (currentTask.isDone()) bar.setSubtitle(R.string.closed_1);
-        else bar.setSubtitle(R.string.open_1);
+        if (bar != null) {
+            if (currentTask.isDone()) bar.setSubtitle(R.string.closed_1);
+            else bar.setSubtitle(R.string.open_1);
+        }
 
         titleTextView.setText(currentTask.getTitle());
         descriptionTextView.setText(currentTask.getDescription());
