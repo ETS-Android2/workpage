@@ -31,4 +31,16 @@
         <item>Freitag</item>
         <item>Samstag</item>
     </string-array>
+
+    <string-array name="export_data_state_keys">
+        <item>open</item>
+        <item>closed</item>
+        <item>all</item>
+    </string-array>
+
+    <string-array name="export_data_state_texts">
+        <item>Ausstehende Aufgaben</item>
+        <item>Abgeschlossene Aufgaben</item>
+        <item>All tasks</item>
+    </string-array>
 </resources>

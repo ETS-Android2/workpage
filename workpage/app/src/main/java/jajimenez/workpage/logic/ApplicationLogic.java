@@ -57,6 +57,7 @@ public class ApplicationLogic {
     private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
     private static final String VIEW_TAG_FILTER_KEY_START = "view_tag_filter_tag_";
     private static final String EXPORT_DATA_CONTEXT_KEY_START = "export_data_context_";
+    private static final String EXPORT_DATA_TASK_STATE_KEY_START = "export_data_state_context_";
     private static final String EXPORT_DATA_NOTAG_CONTEXT_KEY_START = "export_data_notag_context";
     private static final String EXPORT_DATA_TAG_KEY_START = "export_data_tag_";
     private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_";
@@ -170,6 +171,76 @@ public class ApplicationLogic {
         editor.commit();
     }
 
+    public List<TaskContext> getContextsForExport() {
+        List<TaskContext> allContexts = getAllTaskContexts();
+        List<TaskContext> contextsForExport = new ArrayList<>(allContexts.size());
+
+        for (TaskContext c: allContexts) {
+            if (isContextForExport(c)) contextsForExport.add(c);
+        }
+
+        return contextsForExport;
+    }
+
+    public int getTaskStateForExport(TaskContext context) {
+        int state;
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = EXPORT_DATA_TASK_STATE_KEY_START + context.getId();
+        String value = preferences.getString(key, "all");
+
+        switch (value) {
+            case "open":
+                state = EXPORT_OPEN_TASKS;
+                break;
+            case "closed":
+                state = EXPORT_CLOSED_TASKS;
+                break;
+            default:
+                state = EXPORT_ALL_TASKS;
+        }
+
+        return state;
+    }
+
+    public boolean getNoTagForExport(TaskContext context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = EXPORT_DATA_NOTAG_CONTEXT_KEY_START + context.getId();
+        return preferences.getBoolean(key, true);
+    }
+
+    public List<TaskTag> getTagsForExport(TaskContext context) {
+        List<TaskTag> allTags = getAllTaskTags(context);
+        List<TaskTag> tags = new ArrayList<>(allTags.size());
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        for (TaskTag t: allTags) {
+            String exportKey = EXPORT_DATA_TAG_KEY_START + t.getId();
+            if (preferences.getBoolean(exportKey, true)) tags.add(t);
+        }
+
+        return tags;
+    }
+
+    public List<Task> getTasksToExport(TaskContext context) {
+        List<Task> tasks = new LinkedList<>();
+
+        int state = getTaskStateForExport(context);
+        boolean noTag = getNoTagForExport(context);
+        List<TaskTag> tags = getTagsForExport(context);
+
+        if (state == EXPORT_OPEN_TASKS || state == EXPORT_ALL_TASKS) {
+            tasks.addAll(getOpenTasksByTags(context, noTag, tags));
+        }
+
+        if (state == EXPORT_CLOSED_TASKS || state == EXPORT_ALL_TASKS) {
+            tasks.addAll(getClosedTasksByTags(context, noTag, tags));
+        }
+
+        return tasks;
+    }
+
     public int getInterfaceMode() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         String key = INTERFACE_MODE_KEY_START + (getCurrentTaskContext()).getId();
@@ -232,12 +303,26 @@ public class ApplicationLogic {
             String stateViewKey = VIEW_STATE_FILTER_KEY_START + id;
             String noTagViewKey = VIEW_TAG_FILTER_NO_TAG_KEY_START + id;
             String contextExportKey = EXPORT_DATA_CONTEXT_KEY_START + id;
+            String taskStateContextKey = EXPORT_DATA_TASK_STATE_KEY_START + id;
             String noTagContextExportKey = EXPORT_DATA_NOTAG_CONTEXT_KEY_START + id;
 
             editor.remove(stateViewKey);
             editor.remove(noTagViewKey);
             editor.remove(contextExportKey);
+            editor.remove(taskStateContextKey);
             editor.remove(noTagContextExportKey);
+
+            List<TaskTag> tags = getAllTaskTags(c);
+
+            for (TaskTag t: tags) {
+                long tagId = t.getId();
+
+                String tagViewKey = VIEW_TAG_FILTER_KEY_START + tagId;
+                String tagExportKey = EXPORT_DATA_TAG_KEY_START + tagId;
+
+                editor.remove(tagViewKey);
+                editor.remove(tagExportKey);
+            }
 
             editor.commit();
         }
@@ -280,11 +365,11 @@ public class ApplicationLogic {
 
         for (TaskTag t : tags) {
             // The tag settings must be removed from the tag filtering of the view.
-            String key1 = VIEW_TAG_FILTER_KEY_START + t.getId();
-            editor.remove(key1);
+            String viewKey = VIEW_TAG_FILTER_KEY_START + t.getId();
+            String exportKey = EXPORT_DATA_TAG_KEY_START + t.getId();
 
-            String key2 = EXPORT_DATA_TAG_KEY_START + t.getId();
-            editor.remove(key2);
+            editor.remove(viewKey);
+            editor.remove(exportKey);
 
             editor.commit();
         }
@@ -550,13 +635,13 @@ public class ApplicationLogic {
 
     // Returns "false" if the operation was successful
     // or "true" if there was any error.
-    public boolean exportData(Uri output, int option) {
+    public boolean exportData(Uri output) {
         boolean error = false;
 
         if (output != null) {
             try {
                 // Input
-                String data = (getJsonDataFromDb(option)).toString();
+                String data = (getJsonDataFromDb()).toString();
                 InputStream inputStr = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
 
                 // Output
@@ -577,33 +662,38 @@ public class ApplicationLogic {
         return error;
     }
 
-    private JSONObject getJsonDataFromDb(int option) throws JSONException {
+    private JSONObject getJsonDataFromDb() throws JSONException {
         JsonDataTool tool = new JsonDataTool();
         JSONObject data = new JSONObject();
 
         // Add contexts
         JSONArray contextArray = new JSONArray();
-        List<TaskContext> contexts = getAllTaskContexts();
+        List<TaskContext> contexts = getContextsForExport();
 
         for (TaskContext context : contexts) {
             JSONObject contextObj = tool.getContextJson(context);
 
             // Add context tags
-            List<TaskTag> tags = getAllTaskTags(context);
-            if (tags.size() > 0) contextObj.put("tags", tool.getContextTagsJson(tags));
+            List<TaskTag> contextTags = getTagsForExport(context);
+            if (contextTags.size() > 0) contextObj.put("tags", tool.getContextTagsJson(contextTags));
 
             // Add context tasks
-            List<Task> tasks = new LinkedList<>();
+            List<Task> contextTasks = getTasksToExport(context);
 
-            if (option == EXPORT_OPEN_TASKS || option == EXPORT_ALL_TASKS) {
-                tasks.addAll(getOpenTasksByTags(context, true, tags));
+            // For each of the context's tasks, if any of the tags of the task
+            // is not supposed to be exported, we remove the tag from the task.
+            for (Task task: contextTasks) {
+                List<TaskTag> oldTaskTags = task.getTags();
+                List<TaskTag> newTaskTags = new ArrayList<>(oldTaskTags);
+
+                for (TaskTag tag: oldTaskTags) {
+                    if (!contextTags.contains(tag)) newTaskTags.remove(tag);
+                }
+
+                task.setTags(newTaskTags);
             }
 
-            if (option == EXPORT_CLOSED_TASKS || option == EXPORT_ALL_TASKS) {
-                tasks.addAll(getClosedTasksByTags(context, true, tags));
-            }
-
-            if (tasks.size() > 0) contextObj.put("tasks", tool.getContextTasksJson(tasks));
+            if (contextTasks.size() > 0) contextObj.put("tasks", tool.getContextTasksJson(contextTasks));
 
             contextArray.put(contextObj);
         }

@@ -9,7 +9,7 @@
     <string-array name="view_state_filter_texts">
         <item>Pendiente</item>
         <item>Realizable Hoy</item>
-        <item>Completa</item>
+        <item>Completada</item>
     </string-array>
 
     <string-array name="week_day_keys">
@@ -30,5 +30,17 @@
         <item>Jueves</item>
         <item>Viernes</item>
         <item>Sábado</item>
+    </string-array>
+
+    <string-array name="export_data_state_keys">
+        <item>open</item>
+        <item>closed</item>
+        <item>all</item>
+    </string-array>
+
+    <string-array name="export_data_state_texts">
+        <item>Tareas pendientes</item>
+        <item>Tareas completadas</item>
+        <item>All tasks</item>
     </string-array>
 </resources>

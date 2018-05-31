@@ -28,6 +28,7 @@
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
             android:text="@string/export_as"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:onClick="onExportClicked" />
     </LinearLayout>
 </LinearLayout>

@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
+import android.preference.PreferenceGroup;
 
 import java.util.List;
 
@@ -16,6 +17,10 @@ import jajimenez.workpage.logic.ApplicationLogic;
 
 public class ExportDataTagsSettingsFragment extends PreferenceFragment {
     private Activity activity;
+
+    private PreferenceGroup statePrefGroup;
+    private ListPreference statePref;
+    private PreferenceGroup tagPrefGroup;
     private CheckBoxPreference allPref;
 
     private TaskContext context;
@@ -37,21 +42,11 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
 
         tags = logic.getAllTaskTags(context);
 
-        allPref = (CheckBoxPreference) findPreference("export_data_all");
+        statePrefGroup = (PreferenceGroup) findPreference("export_data_state");
+        tagPrefGroup = (PreferenceGroup) findPreference("export_data_tags");
 
-        allPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int tagPrefCount = ExportDataTagsSettingsFragment.this.tags.size() + 2;
-
-                for (int i = 1; i < tagPrefCount; i++) {
-                    CheckBoxPreference p = (CheckBoxPreference) (ExportDataTagsSettingsFragment.this.getPreferenceScreen()).getPreference(i);
-                    p.setChecked((Boolean) newValue);
-                }
-
-                return true;
-            }
-        });
-
+        addStatePreference();
+        addAllPreference();
         addNoTagPreference();
         addTagPreferences();
         updateAllPref(null, false);
@@ -63,6 +58,58 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
 
         ApplicationLogic logic = new ApplicationLogic(getActivity());
         logic.notifyDataChange();
+    }
+
+    private void addStatePreference() {
+        statePref = new ListPreference(activity);
+
+        statePref.setKey("export_data_state_context_" + context.getId());
+        statePref.setEntries(R.array.export_data_state_texts);
+        statePref.setEntryValues(R.array.export_data_state_keys);
+        statePref.setDefaultValue("all");
+        statePref.setTitle(getInitialStatePreferenceTitle());
+        statePref.setDialogTitle(R.string.state_2);
+        statePref.setOrder(0);
+
+        statePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                CharSequence text = ExportDataTagsSettingsFragment.this.getStatePreferenceValue(String.valueOf(newValue));
+                statePref.setTitle(text);
+
+                return true;
+            }
+        });
+
+        statePrefGroup.addPreference(statePref);
+    }
+
+    private CharSequence getInitialStatePreferenceTitle() {
+        ApplicationLogic logic = new ApplicationLogic(activity);
+        String currentStateKey = logic.getViewStateFilter();
+
+        return getStatePreferenceValue(currentStateKey);
+    }
+
+    private CharSequence getStatePreferenceValue(String key) {
+        int index = statePref.findIndexOfValue(key);
+        return (statePref.getEntries())[index];
+    }
+
+    private void addAllPreference() {
+        allPref = (CheckBoxPreference) findPreference("export_data_all");
+
+        allPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int tagPrefCount = ExportDataTagsSettingsFragment.this.tags.size() + 2;
+
+                for (int i = 1; i < tagPrefCount; i++) {
+                    CheckBoxPreference p = (CheckBoxPreference) ExportDataTagsSettingsFragment.this.tagPrefGroup.getPreference(i);
+                    p.setChecked((Boolean) newValue);
+                }
+
+                return true;
+            }
+        });
     }
 
     private void addNoTagPreference() {
@@ -80,7 +127,7 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
             }
         });
 
-        (getPreferenceScreen()).addPreference(p);
+        tagPrefGroup.addPreference(p);
     }
 
     private void addTagPreferences() {
@@ -102,18 +149,16 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
                 }
             });
 
-            (getPreferenceScreen()).addPreference(p);
+            tagPrefGroup.addPreference(p);
         }
     }
 
     private void updateAllPref(Preference changedPref, boolean newValue) {
-        PreferenceScreen prefScreen = getPreferenceScreen();
-
         boolean checked = true;
         int tagPrefCount = tags.size() + 2;
 
         for (int i = 1; i < tagPrefCount && checked; i++) {
-            CheckBoxPreference p = (CheckBoxPreference) prefScreen.getPreference(i);
+            CheckBoxPreference p = (CheckBoxPreference) tagPrefGroup.getPreference(i);
 
             if (changedPref == null || p != changedPref) checked = p.isChecked();
             else checked = newValue;

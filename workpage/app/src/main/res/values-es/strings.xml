@@ -178,6 +178,8 @@
     <string name="country_name">Nombre del país</string>
 
     <string name="export_as">Exportar como</string>
+    <string name="select_tasks_by_state">Seleccione tareas por estado</string>
+    <string name="select_tasks_by_tags">Seleccione tareas por etiquetas</string>
     <string name="data_export_success">Datos exportados</string>
     <string name="data_export_error">Error al exportar los datos</string>
 

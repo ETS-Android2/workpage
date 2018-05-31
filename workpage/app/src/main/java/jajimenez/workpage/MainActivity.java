@@ -169,12 +169,6 @@ public class MainActivity extends AppCompatActivity
                 interfaceModeFragment.show(getFragmentManager(), "switch_interface_mode");
                 break;
             case R.id.main_nav_export_data:
-                // intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                // intent.addCategory(Intent.CATEGORY_OPENABLE);
-                // intent.setType(ApplicationLogic.APP_MIME_TYPE);
-                // intent.putExtra(Intent.EXTRA_TITLE, ApplicationLogic.getProposedExportDataFileName());
-                //
-                // startActivityForResult(intent, ApplicationLogic.EXPORT_DATA);
                 intent = new Intent(this, ExportDataSettingsActivity.class);
                 startActivity(intent);
 
@@ -202,31 +196,24 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    // @Override
-    // protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-    //     Bundle arguments;
-    //
-    //     if (resultCode == RESULT_OK) {
-    //         if (requestCode == ApplicationLogic.EXPORT_DATA) {
-    //             // Export data
-    //             Uri output = resultData.getData();
-    //             (new ExportDataTask()).execute(output);
-    //         }
-    //         else if (requestCode == ApplicationLogic.IMPORT_DATA) {
-    //             // Import data
-    //             Uri input = resultData.getData();
-    //
-    //             DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
-    //
-    //             arguments = new Bundle();
-    //             arguments.putString("input", input.toString());
-    //
-    //             importFragment.setArguments(arguments);
-    //             importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
-    //             importFragment.show(getFragmentManager(), "data_import_confirmation");
-    //         }
-    //     }
-    // }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        Bundle arguments;
+
+        if (resultCode == RESULT_OK && requestCode == ApplicationLogic.IMPORT_DATA) {
+            // Import data
+            Uri input = resultData.getData();
+
+            DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
+
+            arguments = new Bundle();
+            arguments.putString("input", input.toString());
+
+            importFragment.setArguments(arguments);
+            importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
+            importFragment.show(getFragmentManager(), "data_import_confirmation");
+        }
+    }
 
     public void onAddClicked(View view) {
         // Close the context action bar
@@ -404,29 +391,6 @@ public class MainActivity extends AppCompatActivity
 
             if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
                 MainActivity.this.updateInterface();
-            }
-        }
-    }
-
-    private class ExportDataTask extends AsyncTask<Uri, Void, Boolean> {
-        protected void onPreExecute() {
-            // Nothing to do
-        }
-
-        protected Boolean doInBackground(Uri... parameters) {
-            Uri output = parameters[0];
-
-            // The returned value will be "false" if the operation
-            // was successful or "true" if there was any error.
-            return MainActivity.this.applicationLogic.exportData(output, ApplicationLogic.EXPORT_ALL_TASKS);
-        }
-
-        protected void onPostExecute(Boolean result) {
-            if (result) {
-                (Toast.makeText(MainActivity.this, R.string.data_export_error, Toast.LENGTH_SHORT)).show();
-            }
-            else {
-                (Toast.makeText(MainActivity.this, R.string.data_export_success, Toast.LENGTH_SHORT)).show();
             }
         }
     }
