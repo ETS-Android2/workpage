@@ -1,6 +1,8 @@
 0.11.0 (development)
 --------------------
-* Exported data format changed to JSON.
+* Data export format changed to JSON.
+* Data export improved.
+* Fix of a bug on the View preferences file when deleting a task context.
 
 0.10.0 (03 Feb 2018)
 --------------------
