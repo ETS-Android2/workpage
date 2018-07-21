@@ -13,6 +13,13 @@ public class TaskContext extends Entity implements Comparable<TaskContext> {
         order = 0;
     }
 
+    public TaskContext(String name) {
+        super();
+
+        this.name = name;
+        order = 0;
+    }
+
     public TaskContext(String name, long order) {
         super();
 

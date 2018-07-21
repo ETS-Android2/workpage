@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ListView android:id="@+id/export_data_settings_list"
+    <ListView android:id="@+id/import_data_settings_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -23,11 +23,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="10dp"
-            android:drawableStart="@drawable/export_data_2"
+            android:drawableStart="@drawable/file"
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
-            android:text="@string/export_as"
+            android:text="@string/import_data_2"
             android:textSize="18sp"
-            android:onClick="onExportClicked" />
+            android:onClick="onImportClicked" />
     </LinearLayout>
 </LinearLayout>

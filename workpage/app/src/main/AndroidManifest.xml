@@ -59,6 +59,12 @@
         <activity android:name=".ExportDataTagsActivity"
             android:label="@string/export_data"
             android:parentActivityName=".ExportDataSettingsActivity" />
+        <activity android:name=".ImportDataSettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/import_data_1" />
+        <activity android:name=".ImportDataTagsActivity"
+            android:label="@string/import_data_1"
+            android:parentActivityName=".ImportDataSettingsActivity" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/settings"

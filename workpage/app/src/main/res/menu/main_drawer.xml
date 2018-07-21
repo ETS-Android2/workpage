@@ -26,13 +26,13 @@
 
     <item
         android:id="@+id/main_nav_export_data"
-        android:icon="@drawable/export_data"
+        android:icon="@drawable/export_data_1"
         android:title="@string/export_data" />
 
     <item
         android:id="@+id/main_nav_import_data"
         android:icon="@drawable/folder"
-        android:title="@string/import_data" />
+        android:title="@string/import_data_1" />
 
     <item
         android:id="@+id/main_nav_settings"

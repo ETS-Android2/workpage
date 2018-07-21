@@ -24,7 +24,7 @@ public class DataImportConfirmationDialogFragment extends DialogFragment {
 
         builder.setMessage(R.string.data_import_confirmation);
         builder.setNegativeButton(R.string.cancel, null);
-        builder.setPositiveButton(R.string.import_data, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.import_data_1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 if (DataImportConfirmationDialogFragment.this.onConfirmationListener != null) {
                     DataImportConfirmationDialogFragment.this.onConfirmationListener.onConfirmation(input);

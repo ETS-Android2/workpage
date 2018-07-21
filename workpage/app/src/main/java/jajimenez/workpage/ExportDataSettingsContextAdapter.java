@@ -44,12 +44,12 @@ public class ExportDataSettingsContextAdapter extends ArrayAdapter<TaskContext> 
         Resources resources = activity.getResources();
         ApplicationLogic logic = new ApplicationLogic(activity);
 
-        contextCheckBox.setChecked(logic.isContextForExport(context));
+        contextCheckBox.setChecked(logic.isContextToExport(context));
         contextCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 ApplicationLogic logic = new ApplicationLogic(ExportDataSettingsContextAdapter.this.activity);
-                logic.setContextForExport(context, b);
+                logic.setContextToExport(context, b);
 
                 tagsButton.setEnabled(b);
             }

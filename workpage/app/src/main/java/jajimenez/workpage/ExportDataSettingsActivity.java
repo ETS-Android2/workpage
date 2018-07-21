@@ -82,11 +82,12 @@ public class ExportDataSettingsActivity extends AppCompatActivity {
             Uri output = parameters[0];
             ApplicationLogic logic = new ApplicationLogic(ExportDataSettingsActivity.this);
 
+            // "exportData" returns "true" if there was an error or "false" otherwise.
             return logic.exportData(output);
         }
 
-        protected void onPostExecute(Boolean result) {
-            if (result) {
+        protected void onPostExecute(Boolean error) {
+            if (error) {
                 (Toast.makeText(ExportDataSettingsActivity.this, R.string.data_export_error, Toast.LENGTH_SHORT)).show();
             }
             else {

@@ -10,6 +10,7 @@ import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +29,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import jajimenez.workpage.R;
@@ -53,23 +55,32 @@ public class ApplicationLogic {
     public static final String APP_MIME_TYPE = "*/*";
 
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
-    private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_";
-    private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_";
-    private static final String VIEW_TAG_FILTER_KEY_START = "view_tag_filter_tag_";
-    private static final String EXPORT_DATA_CONTEXT_KEY_START = "export_data_context_";
-    private static final String EXPORT_DATA_TASK_STATE_KEY_START = "export_data_state_context_";
-    private static final String EXPORT_DATA_NOTAG_CONTEXT_KEY_START = "export_data_notag_context";
-    private static final String EXPORT_DATA_TAG_KEY_START = "export_data_tag_";
-    private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_";
+
+    private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_id_";
+    private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_id_";
+    private static final String VIEW_TAG_FILTER_KEY_START = "view_tag_filter_tag_id_";
+
+    public static final String EXPORT_DATA_CONTEXT_KEY_START = "export_data_context_id_";
+    public static final String EXPORT_DATA_TASK_STATE_KEY_START = "export_data_state_context_id_";
+    public static final String EXPORT_DATA_NOTAG_CONTEXT_KEY_START = "export_data_notag_context_id_";
+    public static final String EXPORT_DATA_TAG_KEY_START = "export_data_tag_id_";
+
+    public static final String IMPORT_DATA_DATA = "import_data_data";
+    public static final String IMPORT_DATA_CONTEXT_KEY_START = "import_data_context_id_";
+    public static final String IMPORT_DATA_TASK_STATE_KEY_START = "import_data_state_context_id_";
+    public static final String IMPORT_DATA_NOTAG_CONTEXT_KEY_START = "import_data_notag_context_id_";
+    public static final String IMPORT_DATA_TAG_KEY_START = "import_data_tag_id_";
+
+    private static final String INTERFACE_MODE_KEY_START = "interface_mode_context_id_";
     private static final String WEEK_START_DAY_KEY = "week_start_day";
 
     public static final int INTERFACE_MODE_LIST = 0;
     public static final int INTERFACE_MODE_CALENDAR = 1;
 
-    // Constants for the "exportData" function
-    public static final int EXPORT_OPEN_TASKS = 0;
-    public static final int EXPORT_CLOSED_TASKS = 1;
-    public static final int EXPORT_ALL_TASKS = 2;
+    // Constants for the data export and import
+    public static final int OPEN_TASKS = 0;
+    public static final int CLOSED_TASKS = 1;
+    public static final int ALL_TASKS = 2;
 
     private static final int SINGLE = 0;
     private static final int START = 1;
@@ -87,10 +98,6 @@ public class ApplicationLogic {
         this.appContext = appContext;
         this.dataManager = new DataManager(appContext);
         this.notifyDataChanges = notifyDataChanges;
-    }
-
-    public boolean getNotifyDataChanges() {
-        return notifyDataChanges;
     }
 
     public void setNotifyDataChanges(boolean notifyDataChanges) {
@@ -157,13 +164,13 @@ public class ApplicationLogic {
         return filterTags;
     }
 
-    public boolean isContextForExport(TaskContext context) {
+    public boolean isContextToExport(TaskContext context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         String key = EXPORT_DATA_CONTEXT_KEY_START + context.getId();
         return preferences.getBoolean(key, true);
     }
 
-    public void setContextForExport(TaskContext context, boolean forExport) {
+    public void setContextToExport(TaskContext context, boolean forExport) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         SharedPreferences.Editor editor = preferences.edit();
@@ -171,18 +178,18 @@ public class ApplicationLogic {
         editor.commit();
     }
 
-    public List<TaskContext> getContextsForExport() {
+    public List<TaskContext> getContextsToExport() {
         List<TaskContext> allContexts = getAllTaskContexts();
         List<TaskContext> contextsForExport = new ArrayList<>(allContexts.size());
 
         for (TaskContext c: allContexts) {
-            if (isContextForExport(c)) contextsForExport.add(c);
+            if (isContextToExport(c)) contextsForExport.add(c);
         }
 
         return contextsForExport;
     }
 
-    public int getTaskStateForExport(TaskContext context) {
+    public int getTaskStateToExport(TaskContext context) {
         int state;
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
@@ -191,33 +198,33 @@ public class ApplicationLogic {
 
         switch (value) {
             case "open":
-                state = EXPORT_OPEN_TASKS;
+                state = OPEN_TASKS;
                 break;
             case "closed":
-                state = EXPORT_CLOSED_TASKS;
+                state = CLOSED_TASKS;
                 break;
             default:
-                state = EXPORT_ALL_TASKS;
+                state = ALL_TASKS;
         }
 
         return state;
     }
 
-    public boolean getNoTagForExport(TaskContext context) {
+    public boolean getNoTagToExport(TaskContext context) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         String key = EXPORT_DATA_NOTAG_CONTEXT_KEY_START + context.getId();
         return preferences.getBoolean(key, true);
     }
 
-    public List<TaskTag> getTagsForExport(TaskContext context) {
+    public List<TaskTag> getTagsToExport(TaskContext context) {
         List<TaskTag> allTags = getAllTaskTags(context);
         List<TaskTag> tags = new ArrayList<>(allTags.size());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
 
         for (TaskTag t: allTags) {
-            String exportKey = EXPORT_DATA_TAG_KEY_START + t.getId();
-            if (preferences.getBoolean(exportKey, true)) tags.add(t);
+            String key = EXPORT_DATA_TAG_KEY_START + t.getId();
+            if (preferences.getBoolean(key, true)) tags.add(t);
         }
 
         return tags;
@@ -226,19 +233,137 @@ public class ApplicationLogic {
     public List<Task> getTasksToExport(TaskContext context) {
         List<Task> tasks = new LinkedList<>();
 
-        int state = getTaskStateForExport(context);
-        boolean noTag = getNoTagForExport(context);
-        List<TaskTag> tags = getTagsForExport(context);
+        int state = getTaskStateToExport(context);
+        boolean noTag = getNoTagToExport(context);
+        List<TaskTag> tags = getTagsToExport(context);
 
-        if (state == EXPORT_OPEN_TASKS || state == EXPORT_ALL_TASKS) {
+        if (state == OPEN_TASKS || state == ALL_TASKS) {
             tasks.addAll(getOpenTasksByTags(context, noTag, tags));
         }
 
-        if (state == EXPORT_CLOSED_TASKS || state == EXPORT_ALL_TASKS) {
+        if (state == CLOSED_TASKS || state == ALL_TASKS) {
             tasks.addAll(getClosedTasksByTags(context, noTag, tags));
         }
 
         return tasks;
+    }
+
+    public String getDataToImport() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        return preferences.getString(IMPORT_DATA_DATA, "");
+    }
+
+    public void setDataToImport(String data) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(IMPORT_DATA_DATA, data);
+        editor.commit();
+    }
+
+    public boolean isContextToImport(TaskContext context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = IMPORT_DATA_CONTEXT_KEY_START + context.getId();
+        return preferences.getBoolean(key, true);
+    }
+
+    public void setContextToImport(TaskContext context, boolean forImport) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(IMPORT_DATA_CONTEXT_KEY_START + context.getId(), forImport);
+        editor.commit();
+    }
+
+    public int getTaskStateToImport(TaskContext context) {
+        int state;
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = IMPORT_DATA_TASK_STATE_KEY_START + context.getId();
+        String value = preferences.getString(key, "all");
+
+        switch (value) {
+            case "open":
+                state = OPEN_TASKS;
+                break;
+            case "closed":
+                state = CLOSED_TASKS;
+                break;
+            default:
+                state = ALL_TASKS;
+        }
+
+        return state;
+    }
+
+    private boolean getNoTagToImport(TaskContext context) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        String key = IMPORT_DATA_NOTAG_CONTEXT_KEY_START + context.getId();
+        return preferences.getBoolean(key, true);
+    }
+
+    private List<TaskTag> getTagsToImport(TaskContext context) {
+        List<TaskTag> allTags = getAllTaskTags(context);
+        List<TaskTag> tags = new ArrayList<>(allTags.size());
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+
+        for (TaskTag t: allTags) {
+            String key = IMPORT_DATA_TAG_KEY_START + t.getId();
+            if (preferences.getBoolean(key, true)) tags.add(t);
+        }
+
+        return tags;
+    }
+
+    public List<Task> getTasksToImport(TaskContext context, List<Task> allContextTasks) {
+        List<Task> contextTasks = new LinkedList<>();
+
+        int state = getTaskStateToImport(context);
+        boolean noTag = getNoTagToImport(context);
+        List<TaskTag> contextTags = getTagsToImport(context);
+
+        long contextId = context.getId();
+
+        for (Task t: allContextTasks) {
+            t.setContextId(contextId);
+
+            List<TaskTag> taskTags = t.getTags();
+            boolean done = t.isDone();
+
+            if (((state == OPEN_TASKS && !done) || (state == CLOSED_TASKS && done) || state == ALL_TASKS) &&
+                ((noTag && taskTags.size() == 0) || anyTagInList(taskTags, contextTags))) {
+
+                contextTasks.add(t);
+            }
+        }
+
+        return contextTasks;
+    }
+
+    // Returns True if any element of the list "a" is in the list "b", or False otherwise.
+    private boolean anyTagInList(List<TaskTag> a, List<TaskTag> b) {
+        boolean contains = false;
+        int count = a.size();
+
+        for (int i = 0; i < count && !contains; i++) {
+            contains = b.contains(a.get(i));
+        }
+
+        return contains;
+    }
+
+    public void clearImportPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        Set<String> keys = (preferences.getAll()).keySet();
+
+        for (String k: keys) {
+            if ((k.substring(0, 12)).equals("import_data_")) editor.remove(k);
+        }
+
+        editor.commit();
     }
 
     public int getInterfaceMode() {
@@ -668,13 +793,13 @@ public class ApplicationLogic {
 
         // Add contexts
         JSONArray contextArray = new JSONArray();
-        List<TaskContext> contexts = getContextsForExport();
+        List<TaskContext> contexts = getContextsToExport();
 
         for (TaskContext context : contexts) {
             JSONObject contextObj = tool.getContextJson(context);
 
             // Add context tags
-            List<TaskTag> contextTags = getTagsForExport(context);
+            List<TaskTag> contextTags = getTagsToExport(context);
             if (contextTags.size() > 0) contextObj.put("tags", tool.getContextTagsJson(contextTags));
 
             // Add context tasks
@@ -703,56 +828,81 @@ public class ApplicationLogic {
         return data;
     }
 
-    public boolean importData(Uri input) {
-        boolean success = false;
+    public JSONObject loadData(Uri input) throws IOException, JSONException {
+        // Input
+        InputStream inputStr = (appContext.getContentResolver()).openInputStream(input);
+
+        // Output
+        ByteArrayOutputStream outputStr = new ByteArrayOutputStream();
+
+        copyData(inputStr, outputStr);
+        String dataStr = outputStr.toString("UTF-8");
+
+        outputStr.close();
+        inputStr.close();
+
+        return new JSONObject(dataStr);
+    }
+
+    public void importData(JSONObject data) throws JSONException {
+        // Cancel reminder alarms of current tasks
+        updateAllOpenTaskReminderAlarms(true);
+
+        // Delete current data and import new data
+        deleteCurrentData();
+        importJsonDataIntoDb(data);
+
+        // Clear settings
+        clearSettings();
+
+        // Set reminder alarms for new tasks
+        updateAllOpenTaskReminderAlarms(false);
+
+        setNotifyDataChanges(true);
+        notifyDataChange();
+    }
+
+    public List<Pair<TaskContext, List<TaskTag>>> getContextsFromJson(JSONObject data) {
+        List<Pair<TaskContext, List<TaskTag>>> contexts = new LinkedList<>();
+        JsonDataTool tool = new JsonDataTool();
 
         try {
-            // Cancel reminder alarms of old tasks
-            updateAllOpenTaskReminderAlarms(true);
+            JSONArray contextArray = data.getJSONArray("contexts");
+            int contextCount = contextArray.length();
 
-            // Input
-            InputStream inputStr = (appContext.getContentResolver()).openInputStream(input);
+            int nextTagId = 1;
 
-            // Output
-            ByteArrayOutputStream outputStr = new ByteArrayOutputStream();
+            for (int i = 0; i < contextCount; i++) {
+                JSONObject contextObj = contextArray.getJSONObject(i);
 
-            copyData(inputStr, outputStr);
-            String dataStr = outputStr.toString("UTF-8");
+                TaskContext context = tool.getContext(contextObj);
+                context.setId(i + 1); // Temporal ID
 
-            outputStr.close();
-            inputStr.close();
+                List<TaskTag> contextTags;
 
-            JSONObject dataObj = new JSONObject(dataStr);
-            deleteCurrentData();
-            importJsonDataIntoDb(dataObj);
+                if (contextObj.has("tags")) {
+                    contextTags = tool.getContextTags(contextObj.getJSONArray("tags"));
+                    int contextTagCount = contextTags.size();
 
-            // Clear settings
-            clearSettings();
+                    for (int j = 0; j < contextTagCount; j++) {
+                        TaskTag t = contextTags.get(j);
 
-            // Set reminder alarms for new tasks
-            updateAllOpenTaskReminderAlarms(false);
+                        t.setId(nextTagId); // Temporal ID
+                        t.setContextId(i);
 
-            success = true;
-        } catch (Exception e) {
-            // Nothing to do
+                        nextTagId++;
+                    }
+                } else {
+                    contextTags = new LinkedList<>();
+                }
+
+                contexts.add(new Pair<>(context, contextTags));
+            }
+        } catch (JSONException e) {
+            contexts = new LinkedList<>();
         }
 
-        notifyDataChange();
-
-        return success;
-    }
-
-    private void copyData(InputStream input, OutputStream output) throws IOException {
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-
-        while ((bytesRead = input.read(buffer)) > 0) {
-            output.write(buffer, 0, bytesRead);
-        }
-    }
-
-    private void deleteCurrentData() {
-        deleteTaskContexts(getAllTaskContexts());
+        return contexts;
     }
 
     // "dataObj" is assumed to be a valid object
@@ -766,6 +916,7 @@ public class ApplicationLogic {
             // Context
             JSONObject contextObj = contextArray.getJSONObject(i);
             TaskContext context = tool.getContext(contextObj);
+
             saveTaskContext(context);
 
             // After saving the new context, it has an ID.
@@ -788,15 +939,29 @@ public class ApplicationLogic {
             //           2. We don't need to set neither the IDs nor the Context IDs of its tags, as
             //              soon as the names of its tags are names of existing tags in the context.
             //       See the "saveTask" method of this class.
+            //       "getTasksToImport" sets the Context ID of the tasks.
             if (contextObj.has("tasks")) {
-                List<Task> tasks = tool.getContextTasks(contextObj.getJSONArray("tasks"));
+                List<Task> allContextTasks = tool.getContextTasks(contextObj.getJSONArray("tasks"));
+                List<Task> tasks = getTasksToImport(context, allContextTasks);
 
-                for (Task task : tasks) {
-                    task.setContextId(contextId);
+                for (Task task: tasks) {
                     saveTask(task);
                 }
             }
         }
+    }
+
+    private void copyData(InputStream input, OutputStream output) throws IOException {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = input.read(buffer)) > 0) {
+            output.write(buffer, 0, bytesRead);
+        }
+    }
+
+    private void deleteCurrentData() {
+        deleteTaskContexts(getAllTaskContexts());
     }
 
     private void clearSettings() {

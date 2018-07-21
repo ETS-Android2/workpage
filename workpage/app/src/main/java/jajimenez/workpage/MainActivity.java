@@ -24,6 +24,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 import jajimenez.workpage.data.model.Task;
@@ -43,9 +45,6 @@ public class MainActivity extends AppCompatActivity
 
     // Broadcast receiver
     private AppBroadcastReceiver appBroadcastReceiver;
-
-    // Listeners
-    private DataImportConfirmationDialogFragment.OnDataImportConfirmationListener onDataImportConfirmationListener;
 
     private ApplicationLogic applicationLogic;
     private TaskContext currentTaskContext;
@@ -83,12 +82,6 @@ public class MainActivity extends AppCompatActivity
 
         interfaceModeMenuItem = (navigationView.getMenu()).findItem(R.id.main_nav_interface_mode);
 
-        // Listeners
-        setDialogListeners();
-
-        // Instance state
-        if (savedInstanceState != null) resetDialogListeners();
-
         // Parameters
         applicationLogic = new ApplicationLogic(this);
 
@@ -100,6 +93,9 @@ public class MainActivity extends AppCompatActivity
 
         // Broadcast receiver
         registerBroadcastReceiver();
+
+        // Clear any existing temporal import data
+        applicationLogic.clearImportPreferences();
     }
 
     @Override
@@ -108,14 +104,6 @@ public class MainActivity extends AppCompatActivity
 
         // Broadcast receiver
         unregisterBroadcastReceiver();
-    }
-
-    private void setDialogListeners() {
-        onDataImportConfirmationListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmationListener() {
-            public void onConfirmation(Uri input) {
-                (new ImportDataTask()).execute(input);
-            }
-        };
     }
 
     private void registerBroadcastReceiver() {
@@ -132,11 +120,6 @@ public class MainActivity extends AppCompatActivity
     private void closeActionBar() {
         // Close the context action bar
         if (actionMode != null) actionMode.finish();
-    }
-
-    private void resetDialogListeners() {
-        DataImportConfirmationDialogFragment importFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
-        if (importFragment != null) importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
     }
 
     @Override
@@ -198,20 +181,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        Bundle arguments;
-
-        if (resultCode == RESULT_OK && requestCode == ApplicationLogic.IMPORT_DATA) {
-            // Import data
+        if (requestCode == ApplicationLogic.IMPORT_DATA && resultCode == RESULT_OK) {
+            // Load data
             Uri input = resultData.getData();
-
-            DataImportConfirmationDialogFragment importFragment = new DataImportConfirmationDialogFragment();
-
-            arguments = new Bundle();
-            arguments.putString("input", input.toString());
-
-            importFragment.setArguments(arguments);
-            importFragment.setOnDataImportConfirmationListener(onDataImportConfirmationListener);
-            importFragment.show(getFragmentManager(), "data_import_confirmation");
+            (new LoadDataTask()).execute(input);
         }
     }
 
@@ -389,34 +362,42 @@ public class MainActivity extends AppCompatActivity
             MainActivity.this.closeActionBar();
             String action = intent.getAction();
 
-            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+            if (action != null && action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
                 MainActivity.this.updateInterface();
             }
         }
     }
 
-    private class ImportDataTask extends AsyncTask<Uri, Void, Boolean> {
+    private class LoadDataTask extends AsyncTask<Uri, Void, JSONObject> {
         protected void onPreExecute() {
             // Nothing to do
         }
 
-        protected Boolean doInBackground(Uri... parameters) {
+        protected JSONObject doInBackground(Uri... parameters) {
+            JSONObject data = null;
+
             Uri input = parameters[0];
-
             ApplicationLogic logic = new ApplicationLogic(MainActivity.this, false);
-            boolean success = logic.importData(input);
 
-            logic.setNotifyDataChanges(true);
-            logic.notifyDataChange();
+            try {
+                data = logic.loadData(input);
+            } catch (Exception e) {
+                logic.setNotifyDataChanges(true);
+            }
 
-            return success;
+
+            return data;
         }
 
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                (Toast.makeText(MainActivity.this, R.string.data_import_success, Toast.LENGTH_SHORT)).show();
-            } else {
+        protected void onPostExecute(JSONObject data) {
+            if (data == null) {
                 (Toast.makeText(MainActivity.this, R.string.data_import_error, Toast.LENGTH_SHORT)).show();
+
+            } else {
+                ApplicationLogic logic = new ApplicationLogic(MainActivity.this);
+                logic.setDataToImport(data.toString());
+
+                startActivity(new Intent(MainActivity.this, ImportDataSettingsActivity.class));
             }
         }
     }

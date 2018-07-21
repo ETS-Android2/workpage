@@ -9,13 +9,10 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 
-import java.util.List;
-
 import jajimenez.workpage.data.model.TaskContext;
-import jajimenez.workpage.data.model.TaskTag;
 import jajimenez.workpage.logic.ApplicationLogic;
 
-public class ExportDataTagsSettingsFragment extends PreferenceFragment {
+public class ImportDataTagsSettingsFragment extends PreferenceFragment {
     private Activity activity;
 
     private PreferenceGroup statePrefGroup;
@@ -23,27 +20,26 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
     private PreferenceGroup tagPrefGroup;
     private CheckBoxPreference allPref;
 
-    private TaskContext context;
-    private List<TaskTag> tags;
+    private long contextId;
+    private long[] tagIds;
+    private String[] tagNames;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Load preferences
-        addPreferencesFromResource(R.xml.export_data_preferences);
+        addPreferencesFromResource(R.xml.import_data_preferences);
 
         activity = getActivity();
-        ApplicationLogic logic = new ApplicationLogic(activity);
 
         Intent intent = activity.getIntent();
-        long contextId = intent.getLongExtra("task_context_id", -1);
-        context = logic.getTaskContext(contextId);
+        contextId = intent.getLongExtra("task_context_id", -1);
+        tagNames = intent.getStringArrayExtra("task_tag_names");
+        tagIds = intent.getLongArrayExtra("task_tag_ids");
 
-        tags = logic.getAllTaskTags(context);
-
-        statePrefGroup = (PreferenceGroup) findPreference("export_data_state");
-        tagPrefGroup = (PreferenceGroup) findPreference("export_data_tags");
+        statePrefGroup = (PreferenceGroup) findPreference("import_data_state");
+        tagPrefGroup = (PreferenceGroup) findPreference("import_data_tags");
 
         addStatePreference();
         addAllPreference();
@@ -63,7 +59,7 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
     private void addStatePreference() {
         statePref = new ListPreference(activity);
 
-        statePref.setKey(ApplicationLogic.EXPORT_DATA_TASK_STATE_KEY_START + context.getId());
+        statePref.setKey(ApplicationLogic.IMPORT_DATA_TASK_STATE_KEY_START + contextId);
         statePref.setEntries(R.array.export_data_state_texts);
         statePref.setEntryValues(R.array.export_data_state_keys);
         statePref.setDefaultValue("all");
@@ -73,7 +69,7 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
 
         statePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                CharSequence text = ExportDataTagsSettingsFragment.this.getStatePreferenceValue(String.valueOf(newValue));
+                CharSequence text = ImportDataTagsSettingsFragment.this.getStatePreferenceValue(String.valueOf(newValue));
                 statePref.setTitle(text);
 
                 return true;
@@ -85,7 +81,10 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
 
     private CharSequence getInitialStatePreferenceTitle() {
         ApplicationLogic logic = new ApplicationLogic(activity);
-        int state = logic.getTaskStateToExport(context);
+
+        TaskContext c = new TaskContext();
+        c.setId(contextId);
+        int state = logic.getTaskStateToImport(c);
 
         return (statePref.getEntries())[state];
     }
@@ -96,14 +95,14 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
     }
 
     private void addAllPreference() {
-        allPref = (CheckBoxPreference) findPreference("export_data_all");
+        allPref = (CheckBoxPreference) findPreference("import_data_all");
 
         allPref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int tagPrefCount = ExportDataTagsSettingsFragment.this.tags.size() + 2;
+                int tagPrefCount = ImportDataTagsSettingsFragment.this.tagNames.length + 2;
 
                 for (int i = 1; i < tagPrefCount; i++) {
-                    CheckBoxPreference p = (CheckBoxPreference) ExportDataTagsSettingsFragment.this.tagPrefGroup.getPreference(i);
+                    CheckBoxPreference p = (CheckBoxPreference) ImportDataTagsSettingsFragment.this.tagPrefGroup.getPreference(i);
                     p.setChecked((Boolean) newValue);
                 }
 
@@ -114,14 +113,15 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
 
     private void addNoTagPreference() {
         CheckBoxPreference p = new CheckBoxPreference(activity);
-        p.setKey(ApplicationLogic.EXPORT_DATA_NOTAG_CONTEXT_KEY_START + context.getId());
+
+        p.setKey(ApplicationLogic.IMPORT_DATA_NOTAG_CONTEXT_KEY_START + contextId);
         p.setDefaultValue(true);
         p.setTitle(R.string.without_tags);
         p.setOrder(1);
 
         p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                ExportDataTagsSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
+                ImportDataTagsSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
 
                 return true;
             }
@@ -131,20 +131,17 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
     }
 
     private void addTagPreferences() {
-        int tagCount = tags.size();
-
-        for (int i = 0; i < tagCount; i++) {
-            TaskTag t = tags.get(i);
+        for (int i = 0; i < tagIds.length; i++) {
             CheckBoxPreference p = new CheckBoxPreference(activity);
 
-            p.setKey(ApplicationLogic.EXPORT_DATA_TAG_KEY_START + t.getId());
+            p.setKey(ApplicationLogic.IMPORT_DATA_TAG_KEY_START + tagIds[i]);
             p.setDefaultValue(true);
-            p.setTitle(t.getName());
+            p.setTitle(tagNames[i]);
             p.setOrder(i + 2);
 
             p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    ExportDataTagsSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
+                    ImportDataTagsSettingsFragment.this.updateAllPref(preference, (Boolean) newValue);
                     return true;
                 }
             });
@@ -155,7 +152,7 @@ public class ExportDataTagsSettingsFragment extends PreferenceFragment {
 
     private void updateAllPref(Preference changedPref, boolean newValue) {
         boolean checked = true;
-        int tagPrefCount = tags.size() + 2;
+        int tagPrefCount = tagNames.length + 2;
 
         for (int i = 1; i < tagPrefCount && checked; i++) {
             CheckBoxPreference p = (CheckBoxPreference) tagPrefGroup.getPreference(i);

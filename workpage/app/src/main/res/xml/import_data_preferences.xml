@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:key="export_data_state"
+    <PreferenceCategory android:key="import_data_state"
         android:title="@string/select_tasks_by_state" />
 
-    <PreferenceCategory android:key="export_data_tags"
+    <PreferenceCategory android:key="import_data_tags"
         android:title="@string/select_tasks_by_tags">
 
-        <CheckBoxPreference android:key="export_data_all"
+        <CheckBoxPreference android:key="import_data_all"
             android:title="@string/all"
             android:persistent="false" />
     </PreferenceCategory>

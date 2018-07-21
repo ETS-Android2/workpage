@@ -174,6 +174,27 @@ public class JsonDataTool {
     // 2. JSON to Data Model
 
     // 2.1. Contexts
+    public List<TaskContext> getContexts(JSONObject data) {
+        List<TaskContext> contexts = new LinkedList<>();
+
+        if (data != null) {
+            try {
+                JSONArray contextArray = data.getJSONArray("contexts");
+                int contextCount = contextArray.length();
+
+                for (int i = 0; i < contextCount; i++) {
+                    TaskContext c = getContext(contextArray.getJSONObject(i));
+                    if (c != null) contexts.add(c);
+                }
+
+            } catch (JSONException e) {
+                // Nothing to do
+            }
+        }
+
+        return contexts;
+    }
+
     public TaskContext getContext(JSONObject obj) {
         TaskContext context = new TaskContext();
 
@@ -236,6 +257,33 @@ public class JsonDataTool {
                 for (int i = 0; i < count; i++) {
                     Task task = getTask(array.getJSONObject(i));
                     tasks.add(task);
+                }
+            } catch (JSONException e) {
+                // Nothing to do
+            }
+        }
+
+        return tasks;
+    }
+
+    // Returns the tasks of a given context given the full JSON data object
+    public List<Task> getContextTasks(JSONObject data, TaskContext context) {
+        List<Task> tasks = new LinkedList<>();
+
+        if (data != null) {
+            try {
+                JSONArray contextArray = data.getJSONArray("contexts");
+                int contextCount = contextArray.length();
+                boolean found = false;
+
+                for (int i = 0; i < contextCount && !found; i++) {
+                    JSONObject contextObj = contextArray.getJSONObject(i);
+                    TaskContext c = getContext(contextObj);
+
+                    if (c.equals(context)) {
+                        if (contextObj.has("tasks")) tasks = getContextTasks(contextObj.getJSONArray("tasks"));
+                        found = true;
+                    }
                 }
             } catch (JSONException e) {
                 // Nothing to do

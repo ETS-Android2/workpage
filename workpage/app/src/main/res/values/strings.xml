@@ -21,7 +21,7 @@
     <string name="filter_tasks_by_state">Filter tasks by state</string>
     <string name="filter_tasks_by_tags">Filter tasks by tags</string>
     <string name="edit_tags">Edit tags</string>
-    <string name="import_data">Import data</string>
+    <string name="import_data_1">Import data</string>
     <string name="export_data">Export data</string>
     <string name="about">About</string>
 
@@ -182,6 +182,8 @@
     <string name="select_tasks_by_tags">Select tasks by tags</string>
     <string name="data_export_success">Data exported</string>
     <string name="data_export_error">Data export error</string>
+
+    <string name="import_data_2">Import</string>
 
     <string name="data_import_confirmation">All current data will be overwritten. Do you want to continue?</string>
     <string name="data_import_success">Data imported</string>

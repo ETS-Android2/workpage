@@ -21,7 +21,7 @@
     <string name="filter_tasks_by_state">Filter Aufgaben nach Zustand</string>
     <string name="filter_tasks_by_tags">Filtern von Aufgaben nach Stichworte</string>
     <string name="edit_tags">Stichworte bearbeiten</string>
-    <string name="import_data">Daten importieren</string>
+    <string name="import_data_1">Daten importieren</string>
     <string name="export_data">Daten exportieren</string>
     <string name="about">Über</string>
 
@@ -182,6 +182,8 @@
     <string name="select_tasks_by_tags">Wählen Sie Aufgaben nach Stichworte aus</string>
     <string name="data_export_success">Daten exportiert</string>
     <string name="data_export_error">Datenexport Fehler</string>
+
+    <string name="import_data_2">Importieren</string>
 
     <string name="data_import_confirmation">Alle aktuellen Daten werden überschrieben. Möchten Sie fortfahren?</string>
     <string name="data_import_success">Daten importiert</string>

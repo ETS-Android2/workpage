@@ -21,7 +21,7 @@
     <string name="filter_tasks_by_state">Filtrar tareas por estado</string>
     <string name="filter_tasks_by_tags">Filtrar tareas por etiquetas</string>
     <string name="edit_tags">Editar etiquetas</string>
-    <string name="import_data">Importar datos</string>
+    <string name="import_data_1">Importar datos</string>
     <string name="export_data">Exportar datos</string>
     <string name="about">Acerca De</string>
 
@@ -182,6 +182,8 @@
     <string name="select_tasks_by_tags">Seleccione tareas por etiquetas</string>
     <string name="data_export_success">Datos exportados</string>
     <string name="data_export_error">Error al exportar los datos</string>
+
+    <string name="import_data_2">Importar</string>
 
     <string name="data_import_confirmation">Todos los datos actuales serán sobrescritos. ¿Quiere continuar?</string>
     <string name="data_import_success">Datos importados</string>
