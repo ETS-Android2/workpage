@@ -30,6 +30,8 @@ public class ImportDataSettingsActivity extends AppCompatActivity {
     JSONObject data;
     private List<Pair<TaskContext, List<TaskTag>>> contexts;
 
+    private DataImportConfirmationDialogFragment.OnDataImportConfirmedListener dataImportConfirmedListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +58,19 @@ public class ImportDataSettingsActivity extends AppCompatActivity {
                 check.toggle();
             }
         });
+
+        dataImportConfirmedListener = new DataImportConfirmationDialogFragment.OnDataImportConfirmedListener() {
+            public void onConfirmed() {
+                // Import data
+                (new ImportDataTask()).execute();
+            }
+        };
+
+        if (savedInstanceState != null) {
+            // Dialog listener
+            DataImportConfirmationDialogFragment confirmationFragment = (DataImportConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("data_import_confirmation");
+            if (confirmationFragment != null) confirmationFragment.setOnDataImportConfirmedListener(dataImportConfirmedListener);
+        }
 
         updateInterface();
     }
@@ -108,8 +123,9 @@ public class ImportDataSettingsActivity extends AppCompatActivity {
     }
 
     public void onImportClicked(View view) {
-        // Import data
-        (new ImportDataTask()).execute();
+        DataImportConfirmationDialogFragment fragment = new DataImportConfirmationDialogFragment();
+        fragment.setOnDataImportConfirmedListener(dataImportConfirmedListener);
+        fragment.show(getFragmentManager(), "data_import_confirmation");
     }
 
     private class ImportDataTask extends AsyncTask<Void, Void, Boolean> {
