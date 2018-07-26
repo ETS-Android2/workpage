@@ -180,11 +180,12 @@
     <string name="export_as">Exportieren als</string>
     <string name="select_tasks_by_state">Wählen Sie Aufgaben nach Status aus</string>
     <string name="select_tasks_by_tags">Wählen Sie Aufgaben nach Stichworte aus</string>
+    <string name="file_replacement_confirmation">Die Datei existiert bereits. Möchten Sie es ersetzen?</string>
+    <string name="replace">Ersetzen</string>
     <string name="data_export_success">Daten exportiert</string>
     <string name="data_export_error">Datenexport Fehler</string>
 
     <string name="import_data_2">Importieren</string>
-
     <string name="data_import_confirmation">Alle aktuellen Daten werden überschrieben. Möchten Sie fortfahren?</string>
     <string name="data_import_success">Daten importiert</string>
     <string name="data_import_error">Datenimport Fehler</string>

@@ -52,7 +52,7 @@ public class ApplicationLogic {
     public static final int EXPORT_DATA = 4;
     public static final int IMPORT_DATA = 5;
 
-    public static final String APP_MIME_TYPE = "*/*";
+    public static final String APP_MIME_TYPE = "text/plain";
 
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
 
@@ -755,7 +755,7 @@ public class ApplicationLogic {
         String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
         if (day.length() == 1) month = "0" + day;
 
-        return year + month + day + "_workpage_data.json";
+        return year + month + day + "_workpage_data";
     }
 
     // Returns "false" if the operation was successful

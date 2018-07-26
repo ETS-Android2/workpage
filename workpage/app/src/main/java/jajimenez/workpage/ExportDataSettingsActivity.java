@@ -12,6 +12,8 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import jajimenez.workpage.data.model.TaskContext;
@@ -19,6 +21,7 @@ import jajimenez.workpage.logic.ApplicationLogic;
 
 public class ExportDataSettingsActivity extends AppCompatActivity {
     private ListView list;
+    private FileReplacementConfirmationDialogFragment.OnFileReplacementConfirmationListener fileReplacementConfirmationListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,19 @@ public class ExportDataSettingsActivity extends AppCompatActivity {
                 check.toggle();
             }
         });
+
+        fileReplacementConfirmationListener = new FileReplacementConfirmationDialogFragment.OnFileReplacementConfirmationListener() {
+            @Override
+            public void onConfirmed(Uri output) {
+                ExportDataSettingsActivity.this.exportData(output);
+            }
+        };
+
+        if (savedInstanceState != null) {
+            // Dialog listener
+            FileReplacementConfirmationDialogFragment confirmationFragment = (FileReplacementConfirmationDialogFragment) (getFragmentManager()).findFragmentByTag("file_replacement_confirmation");
+            if (confirmationFragment != null) confirmationFragment.setOnFileReplacementConfirmationListener(fileReplacementConfirmationListener);
+        }
 
         updateInterface();
     }
@@ -64,10 +80,40 @@ public class ExportDataSettingsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         if (resultCode == RESULT_OK && requestCode == ApplicationLogic.EXPORT_DATA) {
-            // Export data
-            Uri output = resultData.getData();
-            (new ExportDataTask()).execute(output);
+            Uri outputFile = resultData.getData();
+
+            if (fileHasData(outputFile)) {
+                FileReplacementConfirmationDialogFragment fragment = new FileReplacementConfirmationDialogFragment();
+
+                Bundle arguments = new Bundle();
+                arguments.putString("output_uri", outputFile.toString());
+
+                fragment.setArguments(arguments);
+                fragment.setOnFileReplacementConfirmationListener(fileReplacementConfirmationListener);
+
+                fragment.show(getFragmentManager(), "file_replacement_confirmation");
+            } else {
+                // Export data
+                exportData(outputFile);
+            }
         }
+    }
+
+    private boolean fileHasData(Uri resource) {
+        boolean data = true;
+
+        try {
+            InputStream s = (getContentResolver()).openInputStream(resource);
+            data = (s != null && s.read() != -1);
+        } catch (IOException e) {
+            // Nothing to do
+        }
+
+        return data;
+    }
+
+    private void exportData(Uri output) {
+        (new ExportDataTask()).execute(output);
     }
 
     private class ExportDataTask extends AsyncTask<Uri, Void, Boolean> {

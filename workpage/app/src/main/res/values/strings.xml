@@ -180,11 +180,12 @@
     <string name="export_as">Export as</string>
     <string name="select_tasks_by_state">Select tasks by state</string>
     <string name="select_tasks_by_tags">Select tasks by tags</string>
+    <string name="file_replacement_confirmation">The file already exists. Do you want to replace it?</string>
+    <string name="replace">Replace</string>
     <string name="data_export_success">Data exported</string>
     <string name="data_export_error">Data export error</string>
 
     <string name="import_data_2">Import</string>
-
     <string name="data_import_confirmation">All current data will be overwritten. Do you want to continue?</string>
     <string name="data_import_success">Data imported</string>
     <string name="data_import_error">Data import error</string>
