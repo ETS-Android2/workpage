@@ -44,6 +44,7 @@ import jajimenez.workpage.data.model.TaskTag;
 
 public class ApplicationLogic {
     public static final String ACTION_DATA_CHANGED = "jajimenez.workpage.action.DATA_CHANGED";
+    public static final String ACTION_DATA_CHANGED_TASK_DELETED = "jajimenez.workpage.action.DATA_CHANGED_TASK_DELETED";
 
     public static final int NO_DATE = 0;
     public static final int SINGLE_DATE = 1;
@@ -105,9 +106,13 @@ public class ApplicationLogic {
     }
 
     public void notifyDataChange() {
+        notifyDataChange(ACTION_DATA_CHANGED);
+    }
+
+    public void notifyDataChange(String action) {
         if (notifyDataChanges) {
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(appContext);
-            manager.sendBroadcast(new Intent(ACTION_DATA_CHANGED));
+            manager.sendBroadcast(new Intent(action));
         }
     }
 
@@ -697,7 +702,7 @@ public class ApplicationLogic {
         dataManager.deleteTasks(tasks);
 
         // Notify the application about the changes
-        notifyDataChange();
+        notifyDataChange(ACTION_DATA_CHANGED_TASK_DELETED);
     }
 
     public List<Country> getAllCountries() {
