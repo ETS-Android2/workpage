@@ -23,7 +23,6 @@ public class EditDescriptionDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        description = (getArguments()).getString("description", "");
         Activity activity = getActivity();
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -40,9 +39,21 @@ public class EditDescriptionDialogFragment extends DialogFragment {
         Dialog dialog = builder.create();
         (dialog.getWindow()).setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
+        if (savedInstanceState == null) {
+            description = (getArguments()).getString("description", "");
+        } else {
+            description = savedInstanceState.getString("description", "");
+        }
+
         updateInterface();
 
         return dialog;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("description", description);
+        super.onSaveInstanceState(outState);
     }
 
     private void updateInterface() {
