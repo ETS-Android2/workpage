@@ -340,8 +340,12 @@ public class TaskActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED)) {
-                TaskActivity.this.finish();
+            if (action != null) {
+                if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+                    TaskActivity.this.updateInterface();
+                } else if (action.equals(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED)) {
+                    TaskActivity.this.finish();
+                }
             }
         }
     }

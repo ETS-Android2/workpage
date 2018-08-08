@@ -108,9 +108,13 @@ public class MainActivity extends AppCompatActivity
 
     private void registerBroadcastReceiver() {
         appBroadcastReceiver = new AppBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(this);
 
-        (LocalBroadcastManager.getInstance(this)).registerReceiver(appBroadcastReceiver, intentFilter);
+        IntentFilter intentFilter1 = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+        IntentFilter intentFilter2 = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED);
+
+        manager.registerReceiver(appBroadcastReceiver, intentFilter1);
+        manager.registerReceiver(appBroadcastReceiver, intentFilter2);
     }
 
     private void unregisterBroadcastReceiver() {
@@ -362,7 +366,10 @@ public class MainActivity extends AppCompatActivity
             MainActivity.this.closeActionBar();
             String action = intent.getAction();
 
-            if (action != null && action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+            if (action != null &&
+                    (action.equals(ApplicationLogic.ACTION_DATA_CHANGED) ||
+                     action.equals(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED))) {
+
                 MainActivity.this.updateInterface();
             }
         }

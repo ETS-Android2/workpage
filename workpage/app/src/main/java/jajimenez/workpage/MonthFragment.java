@@ -1,11 +1,5 @@
 package jajimenez.workpage;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,10 +14,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import jajimenez.workpage.data.model.Task;
 import jajimenez.workpage.data.model.TaskContext;
@@ -148,9 +148,13 @@ public class MonthFragment extends Fragment {
 
     private void registerBroadcastReceiver() {
         appBroadcastReceiver = new AppBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getContext());
 
-        (LocalBroadcastManager.getInstance(getContext())).registerReceiver(appBroadcastReceiver, intentFilter);
+        IntentFilter intentFilter1 = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+        IntentFilter intentFilter2 = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED);
+
+        manager.registerReceiver(appBroadcastReceiver, intentFilter1);
+        manager.registerReceiver(appBroadcastReceiver, intentFilter2);
     }
 
     private void unregisterBroadcastReceiver() {
@@ -369,7 +373,9 @@ public class MonthFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (action != null && action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
+            if (action != null &&
+                    (action.equals(ApplicationLogic.ACTION_DATA_CHANGED) ||
+                     action.equals(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED))) {
                 // Get the tasks
                 loadTasks();
             }

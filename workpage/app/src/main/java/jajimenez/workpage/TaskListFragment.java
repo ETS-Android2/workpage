@@ -91,9 +91,13 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
 
     private void registerBroadcastReceiver() {
         appBroadcastReceiver = new AppBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getContext());
 
-        (LocalBroadcastManager.getInstance(getContext())).registerReceiver(appBroadcastReceiver, intentFilter);
+        IntentFilter intentFilter1 = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED);
+        IntentFilter intentFilter2 = new IntentFilter(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED);
+
+        manager.registerReceiver(appBroadcastReceiver, intentFilter1);
+        manager.registerReceiver(appBroadcastReceiver, intentFilter2);
     }
 
     private void unregisterBroadcastReceiver() {
@@ -286,9 +290,12 @@ public class TaskListFragment extends Fragment implements TaskContainerFragment 
             TaskListFragment.this.closeActionBar();
             String action = intent.getAction();
 
-            if (action != null && action.equals(ApplicationLogic.ACTION_DATA_CHANGED)) {
-                // Get the tasks
-                TaskListFragment.this.loadTasks();
+            if (action != null &&
+                    (action.equals(ApplicationLogic.ACTION_DATA_CHANGED) ||
+                     action.equals(ApplicationLogic.ACTION_DATA_CHANGED_TASK_DELETED))) {
+
+                    // Get the tasks
+                    TaskListFragment.this.loadTasks();
             }
         }
     }
