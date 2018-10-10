@@ -57,9 +57,9 @@ public class ApplicationLogic {
 
     private static final String CURRENT_TASK_CONTEXT_ID_KEY = "current_task_context_id";
 
-    private static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_id_";
-    private static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_id_";
-    private static final String VIEW_TAG_FILTER_KEY_START = "view_tag_filter_tag_id_";
+    public static final String VIEW_STATE_FILTER_KEY_START = "view_state_filter_state_context_id_";
+    public static final String VIEW_TAG_FILTER_NO_TAG_KEY_START = "view_tag_filter_notag_context_id_";
+    public static final String VIEW_TAG_FILTER_KEY_START = "view_tag_filter_tag_id_";
 
     public static final String EXPORT_DATA_CONTEXT_KEY_START = "export_data_context_id_";
     public static final String EXPORT_DATA_TASK_STATE_KEY_START = "export_data_state_context_id_";

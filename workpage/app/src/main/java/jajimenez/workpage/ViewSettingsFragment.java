@@ -72,7 +72,7 @@ public class ViewSettingsFragment extends PreferenceFragment {
     private void addStatePreference() {
         statePref = new ListPreference(activity);
 
-        statePref.setKey("view_state_filter_state_context_" + currentContext.getId());
+        statePref.setKey(ApplicationLogic.VIEW_STATE_FILTER_KEY_START + currentContext.getId());
         statePref.setEntries(R.array.view_state_filter_texts);
         statePref.setEntryValues(R.array.view_state_filter_keys);
         statePref.setDefaultValue("open");
@@ -106,7 +106,7 @@ public class ViewSettingsFragment extends PreferenceFragment {
 
     private void addNoTagPreference() {
         CheckBoxPreference p = new CheckBoxPreference(activity);
-        p.setKey("view_tag_filter_notag_context_" + currentContext.getId());
+        p.setKey(ApplicationLogic.VIEW_TAG_FILTER_NO_TAG_KEY_START + currentContext.getId());
         p.setDefaultValue(true);
         p.setTitle(R.string.without_tags);
         p.setOrder(1);
@@ -129,7 +129,7 @@ public class ViewSettingsFragment extends PreferenceFragment {
             TaskTag t = tags.get(i);
             CheckBoxPreference p = new CheckBoxPreference(activity);
 
-            p.setKey("view_tag_filter_tag_" + t.getId());
+            p.setKey(ApplicationLogic.VIEW_TAG_FILTER_KEY_START + t.getId());
             p.setDefaultValue(true);
             p.setTitle(t.getName());
             p.setOrder(i + 2);
