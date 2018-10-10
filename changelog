@@ -1,3 +1,7 @@
+0.11.1 (10 Oct 2018)
+--------------------
+* Setting keys bug fix.
+
 0.11.0 (09 Aug 2018)
 --------------------
 * Data export format changed to JSON.
